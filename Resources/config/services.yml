@@ -1,0 +1,7 @@
+parameters:
+#    noutnout_online.example.class: NOUT\Bundle\NOUTOnlineBundle\Example
+
+services:
+#    noutnout_online.example:
+#        class: %noutnout_online.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
