@@ -27,6 +27,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//$this->m_clNOUTOnline = new NOUTOnline($this->m_sAdresseServeur);
 	}
 
+	/**
+	 * renvoi le username token avec les bonnes infomations pour la connexion
+	 * @return UserNameToken
+	 */
 	protected function _clGetUsernameToken()
 	{
 		return new UserNameToken('superviseur', '');
