@@ -43,7 +43,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected function _sGetTokenSession_TRUE()
 	{
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_clGetUsernameToken());
-		$this->assertNotEquals($sTokenSession, false);
+		$this->assertNotEquals(false, $sTokenSession);
 		return $sTokenSession;
 	}
 
@@ -55,12 +55,12 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	{
 		//identifiant faux
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseure', ''));
-		$this->assertEquals($sTokenSession, false);
+		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 
 		//mot de passe faux
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseur', 'superviseur'));
-		$this->assertEquals($sTokenSession, false);
+		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 
 		return false;
@@ -75,10 +75,45 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	{
 		$ret = $this->m_clNOUTOnline->Diconnect($this->_clGetUsernameToken(), $sTokenSession);
 		if ($bDoitReussir)
-			$this->assertNotEquals($ret, false);
+			$this->assertNotEquals(false, $ret);
 		else
-			$this->assertEquals($ret, false);
+			$this->assertEquals(false, $ret);
 	}
+
+	/**
+	 * Valide la dernière action du contexte
+	 * @param $nIDContexteAction
+	 * @param $bDoitReussir
+	 * @return boolean
+	 */
+	protected function _bValidate($nIDContexteAction, $bDoitReussir)
+	{
+		$ret = $this->m_clNOUTOnline->Validate($nIDContexteAction);
+		if ($bDoitReussir)
+			$this->assertNotEquals(false, $ret);
+		else
+			$this->assertEquals(false, $ret);
+
+		return $ret;
+	}
+
+	/**
+	 * Annule la dernière action ou le contexte d'action entier
+	 * @param $nIDContexteAction
+	 * @param $bTout
+	 * @return boolean
+	 */
+	protected function _bCancel($nIDContexteAction, $bTout, $bDoitReussir)
+	{
+		$ret = $this->m_clNOUTOnline->Cancel($nIDContexteAction, $bTout);
+		if ($bDoitReussir)
+			$this->assertNotEquals(false, $ret);
+		else
+			$this->assertEquals(false, $ret);
+
+		return $ret;
+	}
+
 
 	/**
 	 * méthode pour tester l'identification (intranet uniquement)
@@ -96,12 +131,26 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Disconnect('aaaa-aaa-a--a', false);
 	}
 
-
+	/**
+	 * Test la méthode de liste
+	 */
 	public function testList()
 	{
+		//ouverture de session
+		$sTokenSession = $this->_sGetTokenSession_TRUE();
+		if ($sTokenSession === false)
+			return ; //pas la peine de continuer pas de session d'ouverte
 
+		//--------------------------------------------------
+		//on commence par tester la liste sans la pagination
+		//pour cela on liste les utilisateurs, sur validator il y a plus de 20 utilisateurs
 
+		$ret = $this->m_clNOUTOnline->GetList($sTokenSession, 'utilisateur');
+		$this->assertGreaterThanOrEqual(20, $nNbUtilisateur);
 
+		$this->_bValidate($nIDContexteAction, true);
+
+		$this->_Disconnect($sTokenSession, true);
 	}
 
 	public function testDisplay()
