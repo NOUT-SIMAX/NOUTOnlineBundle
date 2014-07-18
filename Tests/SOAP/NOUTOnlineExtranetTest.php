@@ -51,7 +51,7 @@ class NOUTOnlineExtranetTest extends \PHPUnit_Framework_TestCase
 	protected function _sGetTokenSession_TRUE()
 	{
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_clGetUsernameTokenSIMAX(), $this->_clGetUsernameTokenExtranet(), $this->m_sFormExtranet);
-		$this->assertNotEquals($sTokenSession, false);
+		$this->assertNotEquals(false, $sTokenSession);
 		return $sTokenSession;
 	}
 
@@ -65,30 +65,30 @@ class NOUTOnlineExtranetTest extends \PHPUnit_Framework_TestCase
 		//Test d'erreur sur l'utilisateur SIMAX
 		//identifiant faux
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('extranet faux', ''), $this->_clGetUsernameTokenExtranet(), $this->m_sFormExtranet);
-		$this->assertEquals($sTokenSession, false);
+		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 
 		//mot de passe faux
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('extranet authentifié', 'erreur de mot de passe'), $this->_clGetUsernameTokenExtranet(), $this->m_sFormExtranet);
-		$this->assertEquals($sTokenSession, false);
+		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 
 		//---------------------------------------
 		//Test d'erreur sur le formulaire extranet
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_clGetUsernameTokenSIMAX(), $this->_clGetUsernameTokenExtranet(), 'utilisateur extranet');
-		$this->assertEquals($sTokenSession, false);
+		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 
 		//---------------------------------------
 		//test d'erreur sur l'utilisateur Extranet
 		//identifiant faux
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_clGetUsernameTokenSIMAX(), new UserNameToken('toto', 'toto'), $this->m_sFormExtranet);
-		$this->assertEquals($sTokenSession, false);
+		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 
 		//mot de passe faux
 		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_clGetUsernameTokenSIMAX(), new UserNameToken('conan', ''), $this->m_sFormExtranet);
-		$this->assertEquals($sTokenSession, false);
+		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 
 		return false;
