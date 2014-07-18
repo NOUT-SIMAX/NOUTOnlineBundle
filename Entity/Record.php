@@ -69,10 +69,11 @@ class Record
 		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
 		$clXML = new XMLResponseWS($sXML);
 
-		$test = $clXML->getNodeXML('Modify');
 
-		var_dump($clXML->sGetReturnType());
-		var_dump($test);
+
+
+		$action = $clXML->clGetAction();
+		var_dump($action);
 
 
 

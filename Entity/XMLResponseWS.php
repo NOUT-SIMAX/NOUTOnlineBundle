@@ -1,12 +1,14 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Ninon
+ * User: Ninon <ninon@nout.fr>
  * Date: 18/07/14
  * Time: 16:46
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
+
+use NOUT\Bundle\NOUTOnlineBundle\Entity\CurrentAction;
 
 /**
  * Class XMLResponseWS
@@ -16,6 +18,38 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
  */
 class XMLResponseWS
 {
+	//réponse générique
+	const RETURNTYPE_EMPTY = 'Empty';
+	const RETURNTYPE_REPORT = 'Report';
+	const RETURNTYPE_VALUE = 'Value';
+	const RETURNTYPE_RECORD = 'Record';
+	const RETURNTYPE_LIST = 'List';
+	const RETURNTYPE_REQUESTFILTER = 'RequestFilter';
+	const RETURNTYPE_CHART = 'Chart';
+	const RETURNTYPE_NUMBEROFCHART = 'NumberOfChart';
+
+	//réponse particulière
+	const RETURNTYPE_XSD = 'XSD';
+	const RETURNTYPE_IDENTIFICATION = 'Identification';
+	const RETURNTYPE_PLANNING = 'Planning';
+	const RETURNTYPE_GLOBALSEARCH = 'GlobalSearch';
+	const RETURNTYPE_LISTCALCULATION = 'ListCalculation';
+
+	//réponse intermédiaire
+	const RETURNTYPE_AMBIGUOUSACTION = 'AmbiguousAction';
+	const RETURNTYPE_MESSAGEBOX = 'MessageBox';
+	const RETURNTYPE_VALIDATEACTION = 'ValidateAction';
+	const RETURNTYPE_VALIDATERECORD = 'ValidateRecord';
+	const RETURNTYPE_PRINTTEMPLATE = 'PrintTemplate';
+
+
+	//réponse de messagerie
+	const RETURNTYPE_MAILSERVICERECORD = 'MailServiceRecord';
+	const RETURNTYPE_MAILSERVICELIST = 'MailServiceList';
+	const RETURNTYPE_MAILSERVICESTATUS = 'MailServiceStatus';
+	const RETURNTYPE_WITHAUTOMATICRESPONSE = 'WithAutomaticResponse';
+
+
 	//noeud particulier
 	protected $m_ndBody;
 	protected $m_ndHeader;
@@ -55,12 +89,40 @@ class XMLResponseWS
 		return $this->m_ndHeader->children()->ActionContext;
 	}
 
-	public function sGetAction()
+	/**
+	 * @return CurrentAction : action en cours
+	 */
+	public function clGetAction()
 	{
-		return $this->m_ndHeader->children()->ActionContext;
+		$clAction = $this->m_ndHeader->children()->Action;
+		return new CurrentAction($clAction, $clAction['title'], $clAction['typeAction']);
 	}
 
+	/**
+	 * @return ConnectedUser : utilisateur actuellement connecté
+	 */
+	public function clGetConnectedUser()
+	{
+		$clConnectedUser = $this->m_ndHeader->children()->ConnectedUser;
+		return new ConnectedUser(
+			$clConnectedUser->children()->Element,
+			$clConnectedUser->children()->Element['title'],
+			$clConnectedUser->children()->Form,
+			$clConnectedUser->children()->Form['title']
+		);
+	}
 
+	public function clGetForm()
+	{
+		$clForm = $this->m_ndHeader->children()->Form;
+		return new Form($clForm, $clForm['title']);
+	}
+
+	public function clGetElement()
+	{
+		$clElem = $this->m_ndHeader->children()->Element;
+		return new Element($clElem, $clElem['title']);
+	}
 
 	/**
 	 * récupère le noeud xml dans la réponse
