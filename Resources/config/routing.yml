@@ -1,3 +1,4 @@
-noutnout_online_homepage:
-    path:     /test/
-    defaults: { _controller: NOUTOnlineBundle:Default:index }
+noutnout_online_test:
+    resource:   "@NOUTOnlineBundle/Controller/"
+    prefix:     /test
+    type:       annotation
