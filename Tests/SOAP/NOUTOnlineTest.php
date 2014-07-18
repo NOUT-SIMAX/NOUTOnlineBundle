@@ -9,39 +9,99 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 
-class NOUTOnlineTest extends \PHPUnit_Framework_TestCase {
+use NOUT\Bundle\NOUTOnlineBundle\OASIS\UserNameToken;
 
+/**
+ * Class NOUTOnlineTest
+ * classe pour tester NOUTOnline en mode Intranet
+ * @package NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP
+ */
+class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
+{
 	protected $m_sAdresseServeur = '127.0.0.1:8052';
-	protected $m_sUtilisateur = 'superviseur';
-	protected $m_sMotDePasse = '';
+	protected $m_clNOUTOnline;
 
-	protected function _aGetUsernameToken()
+	public function __construct()
 	{
-		return array('user'=>$this->m_sUtilisateur, '');
-
+		//ici on instancie NOUTOnline
+		//$this->m_clNOUTOnline = new NOUTOnline($this->m_sAdresseServeur);
 	}
 
+	protected function _clGetUsernameToken()
+	{
+		return new UserNameToken('superviseur', '');
+	}
 
+	/**
+	 * Test l'identification avec des valeurs correctes
+	 * @return mixed
+	 */
+	protected function _sGetTokenSession_TRUE()
+	{
+		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_clGetUsernameToken());
+		$this->assertNotEquals($sTokenSession, false);
+		return $sTokenSession;
+	}
 
+	/**
+	 * Teste l'identification avec des valeurs erronées
+	 * @return false (toujours faux)
+	 */
+	protected function _sGetTokenSession_FALSE()
+	{
+		//identifiant faux
+		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseure', ''));
+		$this->assertEquals($sTokenSession, false);
+		//TODO pouvoir tester le code d'erreur de retour
+
+		//mot de passe faux
+		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseur', 'superviseur'));
+		$this->assertEquals($sTokenSession, false);
+		//TODO pouvoir tester le code d'erreur de retour
+
+		return false;
+	}
+
+	/**
+	 * Ferme une session
+	 * @param $sTokenSession token de la session à fermer
+	 * @param $bDoitReussir true si l'appel doit reussir
+	 */
+	protected function _Disconnect($sTokenSession, $bDoitReussir)
+	{
+		$ret = $this->m_clNOUTOnline->Diconnect($this->_clGetUsernameToken(), $sTokenSession);
+		if ($bDoitReussir)
+			$this->assertNotEquals($ret, false);
+		else
+			$this->assertEquals($ret, false);
+	}
+
+	/**
+	 * méthode pour tester l'identification (intranet uniquement)
+	 */
 	public function testGetTokenSession()
 	{
-		$sAdresseServeur="127.0.0.1:8052";
-		$sUtilisateur="superviseur";
-		$sMotDePasse="";
-		$sCreated=date(DATE_RFC2822);
-		$sNonce=base64_encode($sCreated);
+		//on commence par tester le cas d'erreur
+		$this->_sGetTokenSession_FALSE();
+		$sTokenSession = $this->_sGetTokenSession_TRUE();
 
-		//on instancie NOUTOnlineSOAP
-		$clNOUTOnline = ""; //ici
+		//on déconnecte la session
+		$this->_Disconnect($sTokenSession, true);
 
-		//on appelle la méthode GetTokeSession()
-
-		//on appelle Disconnect pour déconnecter la session
+		//on teste avec une session qui n'existe pas
+		$this->_Disconnect('aaaa-aaa-a--a', false);
 	}
+
 
 	public function testList()
 	{
 
+
+
+	}
+
+	public function testDisplay()
+	{
 
 
 	}
