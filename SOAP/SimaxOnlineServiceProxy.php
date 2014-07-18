@@ -135,20 +135,11 @@ final class SimaxOnlineServiceProxy extends ModifiedNuSoapClient
         //on rajoute les header
         $this->addMultipleHeaders($mHeaders);
 
-        //on ajoute le tokenSessin + info de connexion dans tous les cas sauf dans le cas d'un getTokenSession
-        if($sOperation != 'GetTokenSession')
-        {
-            $this->addMultipleHeaders( getUsernameTokenFromSession() );
+
+//TODO: ajouter les header X-SIMAX pour le service.
 
 
-            $aSessionToken=getSessionToken();
-            if (is_array($aSessionToken))
-            {
-                $this->addMultipleHeaders($aSessionToken);
-            }
-        }
-
-        //si le la partie optiondialogue du header n'est pas passer en param on la cr��
+        //si le la partie optiondialogue du header n'est pas passer en param on la crée
         if( ! isset($this->__aListHeaders['OptionDialogue']) )
         {
             $this->__aListHeaders['OptionDialogue'] = array('Readable'=>false);
@@ -183,8 +174,8 @@ final class SimaxOnlineServiceProxy extends ModifiedNuSoapClient
         //si on a pas de withFieldStateControl precis�, on le mets a� 1 (pour recuperer les controle d'etat de champ)
         if(
             !isset($this->__aListHeaders['OptionDialogue']['WithFieldStateControl']) ||
-            is_null($headers['OptionDialogue']['WithFieldStateControl']) ||
-            $headers['OptionDialogue']['WithFieldStateControl'] == ''
+            is_null($mHeaders['OptionDialogue']['WithFieldStateControl']) ||
+            $mHeaders['OptionDialogue']['WithFieldStateControl'] == ''
         )
         {
             $this->__aListHeaders['OptionDialogue']['WithFieldStateControl'] = 1;
@@ -208,16 +199,567 @@ final class SimaxOnlineServiceProxy extends ModifiedNuSoapClient
     //------------------------------------------------------------------------------------------
     // Fonction d'appel  direct soap
     //------------------------------------------------------------------------------------------
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : AddPJ
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return AddPJResponse
+     * @access public
+     */
+    public function addPJ(AddPJ $clWsdlType_AddPJ, $aHeaders = array())
+    {
+        $clWsdlType_AddPJResponse = $this->call('AddPJ', array($clWsdlType_AddPJ) ,  null, null , $aHeaders);
+
+        return $clWsdlType_AddPJResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline :Cancel
+     *
+     * @param Cancel $clWsdlType_Cancel
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return CancelResponse
+     * @access public
+     */
+    public function cancel(Cancel $clWsdlType_Cancel, $aHeaders = array())
+    {
+        $clWsdlType_CancelResponse = $this->call('Cancel', array($clWsdlType_Cancel) ,  null, null , $aHeaders);
+
+        return $clWsdlType_CancelResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CancelFolder
+     *
+     * @param CancelFolder $clWsdlType_CancelFolder
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return void la reponse attendu est vide.
+     * @access public
+     */
+    public function cancelFolder(CancelFolder $clWsdlType_CancelFolder, $aHeaders = array())
+    {
+        $mResp = $this->call('CancelFolder', array($clWsdlType_CancelFolder) ,  null, null , $aHeaders);
+
+        return $mResp;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CancelMessage
+     *
+     * @param CancelMessage $clWsdlType_CancelMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return void la reponse attendu est vide.
+     * @access public
+     */
+    public function cancelMessage(CancelMessage $clWsdlType_CancelMessage, $aHeaders = array())
+    {
+        $mResp = $this->call('CancelMessage', array($clWsdlType_CancelMessage) ,  null, null , $aHeaders);
+
+        return $mResp;
+    }
+    //----
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CheckCreateElement
+     *
+     * @param CheckCreateElement $clWsdlType_CheckCreateElement
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return CheckCreateElementResponse
+     * @access public
+     */
+    public function checkCreateElement(CheckCreateElement $clWsdlType_CheckCreateElement, $aHeaders = array())
+    {
+        $clWsdlType_CheckCreateElementResponse = $this->call('CheckCreateElement', array($clWsdlType_CheckCreateElement) ,  null, null , $aHeaders);
+
+        return $clWsdlType_CheckCreateElementResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CheckRecipient
+     *
+     * @param CheckRecipient $clWsdlType_CheckRecipient
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return CheckRecipientResponse
+     * @access public
+     */
+    public function checkRecipient(CheckRecipient $clWsdlType_CheckRecipient, $aHeaders = array())
+    {
+        $clWsdlType_CheckRecipientResponse = $this->call('CheckRecipient', array($clWsdlType_CheckRecipient) ,  null, null , $aHeaders);
+
+        return $clWsdlType_CheckRecipientResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CloseFolderList
+     *
+     * @param CloseFolderList $clWsdlType_CloseFolderList
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return void la reponse attendu est vide.
+     * @access public
+     */
+    public function closeFolderList(CloseFolderList $clWsdlType_CloseFolderList, $aHeaders = array())
+    {
+        $mResp = $this->call('CloseFolderList', array($clWsdlType_CloseFolderList) ,  null, null , $aHeaders);
+
+        return $mResp;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CloseMessageList
+     *
+     * @param CloseMessageList $clWsdlType_CloseMessageList
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return void la reponse attendu est vide.
+     * @access public
+     */
+    public function closeMessageList(CloseMessageList $clWsdlType_CloseMessageList, $aHeaders = array())
+    {
+        $mResp = $this->call('CloseMessageList', array($clWsdlType_CloseMessageList) ,  null, null , $aHeaders);
+
+        return $mResp;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ConfirmResponse
+     *
+     * @param ConfirmResponse $clWsdlType_ConfirmResponse
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return ConfirmResponseResponse
+     * @access public
+     */
+    public function ConfirmResponse(ConfirmResponse $clWsdlType_ConfirmResponse, $aHeaders = array())
+    {
+        $clWsdlType_ConfirmResponseResponse = $this->call('ConfirmResponse', array($clWsdlType_ConfirmResponse) ,  null, null , $aHeaders);
+
+        return $clWsdlType_ConfirmResponseResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Create
+     *
+     * @param Create $clWsdlType_Create
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return CreateResponse
+     * @access public
+     */
+    public function create(Create $clWsdlType_Create, $aHeaders = array())
+    {
+        $clWsdlType_CreateResponse = $this->call('Create', array($clWsdlType_Create) ,  null, null , $aHeaders);
+
+        return $clWsdlType_CreateResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateFolder
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return CreateFolderResponse
+     * @access public
+     */
+    public function createFolder($aHeaders = array())
+    {
+        $clWsdlType_CreateFolderResponse = $this->call('CreateFolder', array() ,  null, null , $aHeaders);
+
+        return $clWsdlType_CreateFolderResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateFrom
+     *
+     * @param CreateFrom $clWsdlType_CreateFrom
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return CreateFromResponse
+     * @access public
+     */
+    public function createFrom(CreateFrom $clWsdlType_CreateFrom, $aHeaders = array())
+    {
+        $clWsdlType_CreateFromResponse = $this->call('CreateFrom', array($clWsdlType_CreateFrom) ,  null, null , $aHeaders);
+
+        return $clWsdlType_CreateFromResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateMessage
+     *
+     * @param CreateMessage $clWsdlType_CreateMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return CreateMessageResponse
+     * @access public
+     */
+    public function createMessage(CreateMessage $clWsdlType_CreateMessage, $aHeaders = array())
+    {
+        $clWsdlType_CreateMessageResponse = $this->call('CreateMessage', array($clWsdlType_CreateMessage) ,  null, null , $aHeaders);
+
+        return $clWsdlType_CreateMessageResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Delete
+     *
+     * @param Delete $clWsdlType_Delete
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return DeleteResponse
+     * @access public
+     */
+    public function delete(Delete $clWsdlType_Delete, $aHeaders = array())
+    {
+        $clWsdlType_DeleteResponse = $this->call('Delete', array($clWsdlType_Delete) ,  null, null , $aHeaders);
+
+        return $clWsdlType_DeleteResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DeleteFolder
+     *
+     * @param DeleteFolder $clWsdlType_DeleteFolder
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return void
+     * @access public
+     */
+    public function deleteForlder(DeleteFolder $clWsdlType_DeleteFolder, $aHeaders = array())
+    {
+        $mResp = $this->call('DeleteFolder', array($clWsdlType_DeleteFolder) ,  null, null , $aHeaders);
+
+        return $mResp;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DeletePJ
+     *
+     * @param DeletePJ $clWsdlType_DeletePJ
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return DeletePJResponse
+     * @access public
+     */
+    public function deletePj(DeletePJ $clWsdlType_DeletePJ, $aHeaders = array())
+    {
+        $clWsdlType_DeletePJResponse = $this->call('DeletePJ', array($clWsdlType_DeletePJ) ,  null, null , $aHeaders);
+
+        return $clWsdlType_DeletePJResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Disconnect
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return void la reponse attendu est vide.
+     * @access public
+     */
+    public function disconnect($aHeaders = array())
+    {
+        $mResp = $this->call('Disconnect', array() ,  null, null , $aHeaders);
+
+        return $mResp;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Display
+     *
+     * @param Display $clWsdlType_Display
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @access public
+     */
+    public function display(Display $clWsdlType_Display, $aHeaders = array())
+    {
+        $clWsdlType_DisplayResponse = $this->call('Display', array($clWsdlType_Display) ,  null, null , $aHeaders);
+
+        return $clWsdlType_DisplayResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DrillThrough
+     *
+     * @param Display DrillThrough
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return DrillThroughResponse
+     * @access public
+     */
+    public function drillThrough(DrillThrough $clWsdlType_DrillThrough, $aHeaders = array())
+    {
+        $clWsdlType_DrillThroughResponse = $this->call('DrillThrough', array($clWsdlType_DrillThrough) ,  null, null , $aHeaders);
+
+        return $clWsdlType_DrillThroughResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : EnterReorderListMode
+     *
+     * @param Display EnterReorderListMode
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return EnterReorderListModeResponse
+     * @access public
+     */
+    public function enterReorderListMode(EnterReorderListMode $clWsdlType_EnterReorderListMode, $aHeaders = array())
+    {
+        $clWsdlType_EnterReorderListModeResponse = $this->call('EnterReorderListMode', array($clWsdlType_EnterReorderListMode) ,  null, null , $aHeaders);
+
+        return $clWsdlType_EnterReorderListModeResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Execute
+     *
+     * @param Execute $clWsdlType_Execute
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return ExecuteResponse
+     * @access public
+     */
+    public function execute(Execute $clWsdlType_Execute, $aHeaders = array())
+    {
+        $clWsdlType_ExecuteResponse = $this->call('Execute', array($clWsdlType_Execute) ,  null, null , $aHeaders);
+
+        return $clWsdlType_ExecuteResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetCalculation
+     *
+     * @param GetCalculation $clWsdlType_GetCalculation
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetCalculationResponse
+     * @access public
+     */
+    public function getCalculation(GetCalculation $clWsdlType_GetCalculation, $aHeaders = array())
+    {
+        $clWsdlType_GetCalculationResponse = $this->call('GetCalculation', array($clWsdlType_GetCalculation) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetCalculationResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetChart
+     *
+     * @param GetChart $clWsdlType_GetChart
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetChartResponse
+     * @access public
+     */
+    public function getChart(GetChart  $clWsdlType_GetChart, $aHeaders = array())
+    {
+        $clWsdlType_GetChartResponse = $this->call('GetChart', array($clWsdlType_GetChart) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetChartResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetColInRecord
+     *
+     * @param GetColInRecord $clWsdlType_GetColInRecord
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetColInRecordResponse
+     * @access public
+     */
+    public function getColInRecord(GetColInRecord $clWsdlType_GetColInRecord, $aHeaders = array())
+    {
+        $clWsdlType_GetColInRecordResponse = $this->call('GetColInRecord', array($clWsdlType_GetColInRecord) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetColInRecordResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
+     *
+     * @param GetContentFolder $clWsdlType_GetContentFolder
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetContentFolderResponse
+     * @access public
+     */
+    public function getContentFolder(GetContentFolder $clWsdlType_GetContentFolder, $aHeaders = array())
+    {
+        $clWsdlType_GetContentFolderResponse = $this->call('GetContentFolder', array($clWsdlType_GetContentFolder) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetContentFolderResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetEndAutomatism
+     *
+     * @param GetEndAutomatism $clWsdlType_GetEndAutomatism
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetEndAutomatismResponse
+     * @access public
+     */
+    public function getEndAutomatism(GetEndAutomatism $clWsdlType_GetEndAutomatism, $aHeaders = array())
+    {
+        $clWsdlType_GetEndAutomatismResponse = $this->call('GetEndAutomatism', array($clWsdlType_GetEndAutomatism) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetEndAutomatismResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetFolderList
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetFolderListResponse
+     * @access public
+     */
+    public function getFolderList($aHeaders = array())
+    {
+        $clWsdlType_GetFolderListResponse = $this->call('GetFolderList', array() ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetFolderListResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetLanguages
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetLanguagesResponse
+     * @access public
+     */
+    public function getLanguages($aHeaders)
+    {
+        $clWsdlType_GetLanguagesResponse = $this->call('GetLanguages', array() ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetLanguagesResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetListMessage
+     *
+     * @param GetListMessage $clWsdlType_GetListMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetListMessageResponse
+     * @access public
+     */
+    public function getListMessage(GetListMessage $clWsdlType_GetListMessage, $aHeaders = array())
+    {
+        $clWsdlType_GetListMessageResponse = $this->call('GetListMessage', array($clWsdlType_GetListMessage) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetListMessageResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline :GetMailServiceStatus
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetMailServiceStatusResponse
+     * @access public
+     */
+    public function getMailServiceStatus($aHeaders = array())
+    {
+        $clWsdlType_GetMailServiceStatusResponse = $this->call('GetMailServiceStatus', array() ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetMailServiceStatusResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetPJ
+     *
+     * @param GetPJ $clWsdlType_GetPJ
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetPJResponse
+     * @access public
+     */
+    public function getPJ(GetPJ $clWsdlType_GetPJ, $aHeaders = array())
+    {
+        $clWsdlType_GetPJResponse = $this->call('GetPJ', array($clWsdlType_GetPJ) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetPJResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetPlanningInfo
+     *
+     * @param GetPlanningInfo $clWsdlType_GetPlanningInfo
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetPlanningInfoResponse
+     * @access public
+     */
+    public function getPlanningInfo(GetPlanningInfo $clWsdlType_GetPlanningInfo, $aHeaders = array())
+    {
+        $clWsdlType_GetPlanningInfoResponse = $this->call('GetPlanningInfo', array($clWsdlType_GetPlanningInfo) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetPlanningInfoResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetStartAutomatism
+     *
+     * @param GetStartAutomatism $clWsdlType_GetStartAutomatism
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetStartAutomatismResponse
+     * @access public
+     */
+    public function getStartAutomatism(GetStartAutomatism $clWsdlType_GetStartAutomatism, $aHeaders = array())
+    {
+        $clWsdlType_GetStartAutomatismResponse = $this->call('GetStartAutomatism', array($clWsdlType_GetStartAutomatism) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetStartAutomatismResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTableChild
+     *
+     * @param GetTableChild $clWsdlType_GetTableChild
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetTableChildResponse
+     * @access public
+     */
+    public function getTableChild(GetTableChild $clWsdlType_GetTableChild, $aHeaders = array())
+    {
+        $clWsdlType_GetTableChildResponse = $this->call('GetTableChild', array($clWsdlType_GetTableChild) ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetTableChildResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTemporalAutomatism
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return GetTemporalAutomatismResponse
+     * @access public
+     */
+    public function getTemporalAutomatism($aHeaders = array())
+    {
+        $clWsdlType_GetTemporalAutomatismResponse = $this->call('GetTemporalAutomatism', array() ,  null, null , $aHeaders);
+
+        return $clWsdlType_GetTemporalAutomatismResponse;
+    }
+    //---
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTokenSession
      *
-     * @param CWsdlType_GetTokenSession $clWsdlType_GetTokenSession
+     * @param GetTokenSession $clWsdlType_GetTokenSession
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetTokenSessionResponse
+     * @return GetTokenSessionResponse
      * @access public
      */
-    public function fSoapAction_GetTokenSession(CWsdlType_GetTokenSession $clWsdlType_GetTokenSession, $aHeaders = array())
+    public function getTokenSession(GetTokenSession $clWsdlType_GetTokenSession, $aHeaders = array())
     {
         $clWsdlType_GetTokenSessionResponse = $this->call('GetTokenSession', array($clWsdlType_GetTokenSession) , null, null , $aHeaders);
 
@@ -235,852 +777,468 @@ final class SimaxOnlineServiceProxy extends ModifiedNuSoapClient
     //---
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetLanguages
-     *
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetLanguagesResponse
-     * @access public
-     */
-    public function fSoapAction_GetLanguages()
-    {
-        $clWsdlType_GetLanguagesResponse = $this->call('GetLanguages', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetLanguagesResponse;
-    }
-
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ResetPasswordFailed
-     *
-     * @param CWsdlType_ResetPasswordFailed $clWsdlType_ResetPasswordFailed
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ResetPasswordFailedResponse
-     * @access public
-     */
-    public function fSoapAction_ResetPasswordFailed(CWsdlType_ResetPasswordFailed $clWsdlType_ResetPasswordFailed, $aHeaders = array())
-    {
-        $clWsdlType_ResetPasswordFailedResponse = $this->call('ResetPasswordFailed', array($clWsdlType_ResetPasswordFailed) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ResetPasswordFailedResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetStartAutomatism
-     *
-     * @param CWsdlType_GetStartAutomatism $clWsdlType_GetStartAutomatism
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetStartAutomatismResponse
-     * @access public
-     */
-    public function fSoapAction_GetStartAutomatism(CWsdlType_GetStartAutomatism $clWsdlType_GetStartAutomatism, $aHeaders = array())
-    {
-        $clWsdlType_GetStartAutomatismResponse = $this->call('GetStartAutomatism', array($clWsdlType_GetStartAutomatism) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetStartAutomatismResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ConfirmResponse
-     *
-     * @param CWsdlType_ConfirmResponse $clWsdlType_ConfirmResponse
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ConfirmResponseResponse
-     * @access public
-     */
-    public function fSoapAction_ConfirmResponse(CWsdlType_ConfirmResponse $clWsdlType_ConfirmResponse, $aHeaders = array())
-    {
-        $clWsdlType_ConfirmResponseResponse = $this->call('ConfirmResponse', array($clWsdlType_ConfirmResponse) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ConfirmResponseResponse;
-    }
-
-    /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : HasChanged
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_HasChangedResponse
+     * @return HasChangedResponse
      * @access public
      */
-    public function fSoapAction_HasChanged($aHeaders = array())
+    public function hasChanged($aHeaders = array())
     {
         $clWsdlType_HasChangedResponse = $this->call('HasChanged', array() ,  null, null , $aHeaders);
 
         return $clWsdlType_HasChangedResponse;
     }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectForm
-     *
-     * @param CWsdlType_SelectForm $clWsdlType_SelectForm
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_SelectFormResponse
-     * @access public
-     */
-    public function fSoapAction_SelectForm(CWsdlType_SelectForm $clWsdlType_SelectForm, $aHeaders = array())
-    {
-        $clWsdlType_SelectFormResponse = $this->call('SelectForm', array($clWsdlType_SelectForm) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SelectFormResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectPrintTemplate
-     *
-     * @param CWsdlType_SelectPrintTemplate $clWsdlType_SelectPrintTemplate
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_SelectPrintTemplateResponse
-     * @access public
-     */
-    public function fSoapAction_SelectPrintTemplate(CWsdlType_SelectPrintTemplate $clWsdlType_SelectPrintTemplate, $aHeaders = array())
-    {
-        $clWsdlType_SelectPrintTemplateResponse = $this->call('SelectPrintTemplate', array($clWsdlType_SelectPrintTemplate) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SelectPrintTemplateResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetPlanningInfo
-     *
-     * @param CWsdlType_GetPlanningInfo $clWsdlType_GetPlanningInfo
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetPlanningInfoResponse
-     * @access public
-     */
-    public function fSoapAction_GetPlanningInfo(CWsdlType_GetPlanningInfo $clWsdlType_GetPlanningInfo, $aHeaders = array())
-    {
-        $clWsdlType_GetPlanningInfoResponse = $this->call('GetPlanningInfo', array($clWsdlType_GetPlanningInfo) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetPlanningInfoResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetColInRecord
-     *
-     * @param CWsdlType_GetColInRecord $clWsdlType_GetColInRecord
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetColInRecordResponse
-     * @access public
-     */
-    public function fSoapAction_GetColInRecord(CWsdlType_GetColInRecord $clWsdlType_GetColInRecord, $aHeaders = array())
-    {
-        $clWsdlType_GetColInRecordResponse = $this->call('GetColInRecord', array($clWsdlType_GetColInRecord) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetColInRecordResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Display
-     *
-     * @param CWsdlType_Display $clWsdlType_Display
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_DisplayResponse
-     * @access public
-     */
-    public function fSoapAction_Display(CWsdlType_Display $clWsdlType_Display, $aHeaders = array())
-    {
-        $clWsdlType_DisplayResponse = $this->call('Display', array($clWsdlType_Display) ,  null, null , $aHeaders);
-
-        return $clWsdlType_DisplayResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Create
-     *
-     * @param CWsdlType_Create $clWsdlType_Create
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_CreateResponse
-     * @access public
-     */
-    public function fSoapAction_Create(CWsdlType_Create $clWsdlType_Create, $aHeaders = array())
-    {
-        $clWsdlType_CreateResponse = $this->call('Create', array($clWsdlType_Create) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateFrom
-     *
-     * @param CWsdlType_CreateFrom $clWsdlType_CreateFrom
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_CreateFromResponse
-     * @access public
-     */
-    public function fSoapAction_CreateFrom(CWsdlType_CreateFrom $clWsdlType_CreateFrom, $aHeaders = array())
-    {
-        $clWsdlType_CreateFromResponse = $this->call('CreateFrom', array($clWsdlType_CreateFrom) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateFromResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : TransformInto
-     *
-     * @param CWsdlType_TransformInto $clWsdlType_TransformInto
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_TransformIntoResponse
-     * @access public
-     */
-    public function fSoapAction_TransformInto(CWsdlType_TransformInto $clWsdlType_TransformInto, $aHeaders = array())
-    {
-        $clWsdlType_TransformIntoResponse = $this->call('TransformInto', array($clWsdlType_TransformInto) ,  null, null , $aHeaders);
-
-        return $clWsdlType_TransformIntoResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Modify
-     *
-     * @param CWsdlType_Modify $clWsdlType_Modify
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ModifyResponse
-     * @access public
-     */
-    public function fSoapAction_Modify(CWsdlType_Modify $clWsdlType_Modify, $aHeaders = array())
-    {
-        $clWsdlType_ModifyResponse = $this->call('Modify', array($clWsdlType_Modify) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ModifyResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Update
-     *
-     * @param CWsdlType_Update $clWsdlType_Update
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_UpdateResponse
-     * @access public
-     */
-    public function fSoapAction_Update(CWsdlType_Update $clWsdlType_Update, $aHeaders = array())
-    {
-        $clWsdlType_UpdateResponse = $this->call('Update', array($clWsdlType_Update) ,  null, null , $aHeaders);
-
-        return $clWsdlType_UpdateResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Print
-     *
-     * @param CWsdlType_Print $clWsdlType_Print
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_PrintResponse
-     * @access public
-     */
-    public function fSoapAction_Print(CWsdlType_Print $clWsdlType_Print, $aHeaders = array())
-    {
-        $clWsdlType_PrintResponse = $this->call('Print', array($clWsdlType_Print) ,  null, null , $aHeaders);
-
-        return $clWsdlType_PrintResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Delete
-     *
-     * @param CWsdlType_Delete $clWsdlType_Delete
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_DeleteResponse
-     * @access public
-     */
-    public function fSoapAction_Delete(CWsdlType_Delete $clWsdlType_Delete, $aHeaders = array())
-    {
-        $clWsdlType_DeleteResponse = $this->call('Delete', array($clWsdlType_Delete) ,  null, null , $aHeaders);
-
-        return $clWsdlType_DeleteResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Execute
-     *
-     * @param CWsdlType_Execute $clWsdlType_Execute
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ExecuteResponse
-     * @access public
-     */
-    public function fSoapAction_Execute(CWsdlType_Execute $clWsdlType_Execute, $aHeaders = array())
-    {
-        $clWsdlType_ExecuteResponse = $this->call('Execute', array($clWsdlType_Execute) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ExecuteResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Validate
-     *
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ValidateResponse
-     * @access public
-     */
-    public function fSoapAction_Validate($aHeaders = array())
-    {
-        $clWsdlType_ValidateResponse = $this->call('Validate', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_ValidateResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline :Cancel
-     *
-     * @param CWsdlType_Cancel $clWsdlType_Cancel
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_CancelResponse
-     * @access public
-     */
-    public function fSoapAction_Cancel(CWsdlType_Cancel $clWsdlType_Cancel, $aHeaders = array())
-    {
-        $clWsdlType_CancelResponse = $this->call('Cancel', array($clWsdlType_Cancel) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CancelResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : List
-     *
-     * @param CWsdlType_List $clWsdlType_List
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ListResponse
-     * @access public
-     */
-    public function fSoapAction_List(CWsdlType_List $clWsdlType_List, $aHeaders = array())
-    {
-        $clWsdlType_ListResponse = $this->call('List', array($clWsdlType_List) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ListResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetChart
-     *
-     * @param CWsdlType_GetChart $clWsdlType_GetChart
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetChartResponse
-     * @access public
-     */
-    public function fSoapAction_GetChart(CWsdlType_GetChart  $clWsdlType_GetChart, $aHeaders = array())
-    {
-        $clWsdlType_GetChartResponse = $this->call('GetChart', array($clWsdlType_GetChart) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetChartResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetCalculation
-     *
-     * @param CWsdlType_GetCalculation $clWsdlType_GetCalculation
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetCalculationResponse
-     * @access public
-     */
-    public function fSoapAction_GetCalculation(CWsdlType_GetCalculation $clWsdlType_GetCalculation, $aHeaders = array())
-    {
-        $clWsdlType_GetCalculationResponse = $this->call('GetCalculation', array($clWsdlType_GetCalculation) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetCalculationResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Search
-     *
-     * @param CWsdlType_Search $clWsdlType_Search
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_SearchResponse
-     * @access public
-     */
-    public function fSoapAction_Search(CWsdlType_Search $clWsdlType_Search, $aHeaders = array())
-    {
-        $clWsdlType_SearchResponse = $this->call('Search', array($clWsdlType_Search) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SearchResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Request
-     *
-     * @param CWsdlType_Request $clWsdlType_Request
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_RequestResponse
-     * @access public
-     */
-    public function fSoapAction_Request(CWsdlType_Request $clWsdlType_Request, $aHeaders = array())
-    {
-        $clWsdlType_RequestResponse = $this->call('Request', array($clWsdlType_Request) ,  null, null , $aHeaders);
-
-        return $clWsdlType_RequestResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : RequestParam
-     *
-     * @param CWsdlType_RequestParam $clWsdlType_RequestParam
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_RequestParamResponse
-     * @access public
-     */
-    public function fSoapAction_RequestParam(CWsdlType_RequestParam $clWsdlType_RequestParam, $aHeaders = array())
-    {
-        $clWsdlType_RequestParamResponse = $this->call('RequestParam', array($clWsdlType_RequestParam) ,  null, null , $aHeaders);
-
-        return $clWsdlType_RequestParamResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTemporalAutomatism
-     *
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetTemporalAutomatismResponse
-     * @access public
-     */
-    public function fSoapAction_GetTemporalAutomatism($aHeaders = array())
-    {
-        $clWsdlType_GetTemporalAutomatismResponse = $this->call('GetTemporalAutomatism', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetTemporalAutomatismResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetEndAutomatism
-     *
-     * @param CWsdlType_GetEndAutomatism $clWsdlType_GetEndAutomatism
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetEndAutomatismResponse
-     * @access public
-     */
-    public function fSoapAction_GetEndAutomatism(CWsdlType_GetEndAutomatism $clWsdlType_GetEndAutomatism, $aHeaders = array())
-    {
-        $clWsdlType_GetEndAutomatismResponse = $this->call('GetEndAutomatism', array($clWsdlType_GetEndAutomatism) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetEndAutomatismResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Disconnect
-     *
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
-     * @access public
-     */
-    public function fSoapAction_Disconnect($aHeaders = array())
-    {
-        $mResp = $this->call('Disconnect', array() ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTableChild
-     *
-     * @param CWsdlType_GetTableChild $clWsdlType_GetTableChild
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetTableChildResponse
-     * @access public
-     */
-    public function fSoapAction_GetTableChild(CWsdlType_GetTableChild $clWsdlType_GetTableChild, $aHeaders = array())
-    {
-        $clWsdlType_GetTableChildResponse = $this->call('GetTableChild', array($clWsdlType_GetTableChild) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetTableChildResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
-     *
-     * @param CWsdlType_GetContentFolder $clWsdlType_GetContentFolder
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetContentFolderResponse
-     * @access public
-     */
-    public function fSoapAction_GetContentFolder(CWsdlType_GetContentFolder $clWsdlType_GetContentFolder, $aHeaders = array())
-    {
-        $clWsdlType_GetContentFolderResponse = $this->call('GetContentFolder', array($clWsdlType_GetContentFolder) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetContentFolderResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ModifyFolder
-     *
-     * @param CWsdlType_ModifyFolder $clWsdlType_ModifyFolder
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ModifyFolderResponse
-     * @access public
-     */
-    public function fSoapAction_ModifyFolder(CWsdlType_ModifyFolder $clWsdlType_ModifyFolder, $aHeaders = array())
-    {
-        $clWsdlType_ModifyFolderResponse = $this->call('ModifyFolder', array($clWsdlType_ModifyFolder) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ModifyFolderResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : UpdateFolder
-     *
-     * @param CWsdlType_UpdateFolder $clWsdlType_UpdateFolder
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_UpdateFolderResponse
-     * @access public
-     */
-    public function fSoapAction_UpdateFolder(CWsdlType_UpdateFolder $clWsdlType_UpdateFolder, $aHeaders = array())
-    {
-        $clWsdlType_UpdateFolderResponse = $this->call('UpdateFolder', array($clWsdlType_UpdateFolder) ,  null, null , $aHeaders);
-
-        return $clWsdlType_UpdateFolderResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateFolder
-     *
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_CreateFolderResponse
-     * @access public
-     */
-    public function fSoapAction_CreateFolder($aHeaders = array())
-    {
-        $clWsdlType_CreateFolderResponse = $this->call('CreateFolder', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateFolderResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DeleteFolder
-     *
-     * @param CWsdlType_DeleteFolder $clWsdlType_DeleteFolder
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void
-     * @access public
-     */
-    public function fSoapAction_DeleteFolder(CWsdlType_DeleteFolder $clWsdlType_DeleteFolder, $aHeaders = array())
-    {
-        $mResp = $this->call('DeleteFolder', array($clWsdlType_DeleteFolder) ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ValidateFolder
-     *
-     * @param CWsdlType_ValidateFolder $clWsdlType_ValidateFolder
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
-     * @access public
-     */
-    public function fSoapAction_ValidateFolder(CWsdlType_ValidateFolder $clWsdlType_ValidateFolder, $aHeaders = array())
-    {
-        $mResp = $this->call('ValidateFolder', array($clWsdlType_ValidateFolder) ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CancelFolder
-     *
-     * @param CWsdlType_CancelFolder $clWsdlType_CancelFolder
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
-     * @access public
-     */
-    public function fSoapAction_CancelFolder(CWsdlType_CancelFolder $clWsdlType_CancelFolder, $aHeaders = array())
-    {
-        $mResp = $this->call('CancelFolder', array($clWsdlType_CancelFolder) ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetFolderList
-     *
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetFolderListResponse
-     * @access public
-     */
-    public function fSoapAction_GetFolderList($aHeaders = array())
-    {
-        $clWsdlType_GetFolderListResponse = $this->call('GetFolderList', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetFolderListResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CloseFolderList
-     *
-     * @param CWsdlType_CloseFolderList $clWsdlType_CloseFolderList
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
-     * @access public
-     */
-    public function fSoapAction_CloseFolderList(CWsdlType_CloseFolderList $clWsdlType_CloseFolderList, $aHeaders = array())
-    {
-        $mResp = $this->call('CloseFolderList', array($clWsdlType_CloseFolderList) ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : RequestMessage
-     *
-     * @param CWsdlType_RequestMessage $clWsdlType_RequestMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_RequestMessageResponse
-     * @access public
-     */
-    public function fSoapAction_RequestMessage(CWsdlType_RequestMessage $clWsdlType_RequestMessage, $aHeaders = array())
-    {
-        $clWsdlType_RequestMessageResponse = $this->call('RequestMessage', array($clWsdlType_RequestMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_RequestMessageResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetListMessage
-     *
-     * @param CWsdlType_GetListMessage $clWsdlType_GetListMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetListMessageResponse
-     * @access public
-     */
-    public function fSoapAction_GetListMessage(CWsdlType_GetListMessage $clWsdlType_GetListMessage, $aHeaders = array())
-    {
-        $clWsdlType_GetListMessageResponse = $this->call('GetListMessage', array($clWsdlType_GetListMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetListMessageResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CloseMessageList
-     *
-     * @param CWsdlType_CloseMessageList $clWsdlType_CloseMessageList
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
-     * @access public
-     */
-    public function fSoapAction_CloseMessageList(CWsdlType_CloseMessageList $clWsdlType_CloseMessageList, $aHeaders = array())
-    {
-        $mResp = $this->call('CloseMessageList', array($clWsdlType_CloseMessageList) ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ModifyMessage
-     *
-     * @param CWsdlType_ModifyMessage $clWsdlType_ModifyMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ModifyMessageResponse
-     * @access public
-     */
-    public function fSoapAction_ModifyMessage(CWsdlType_ModifyMessage $clWsdlType_ModifyMessage, $aHeaders = array())
-    {
-        $clWsdlType_ModifyMessageResponse = $this->call('ModifyMessage', array($clWsdlType_ModifyMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ModifyMessageResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : UpdateMessage
-     *
-     * @param CWsdlType_UpdateMessage $clWsdlType_UpdateMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_UpdateMessageResponse
-     * @access public
-     */
-    public function fSoapAction_UpdateMessage(CWsdlType_UpdateMessage $clWsdlType_UpdateMessage, $aHeaders = array())
-    {
-        $clWsdlType_UpdateMessageResponse = $this->call('UpdateMessage', array($clWsdlType_UpdateMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_UpdateMessageResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateMessage
-     *
-     * @param CWsdlType_CreateMessage $clWsdlType_CreateMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_CreateMessageResponse
-     * @access public
-     */
-    public function fSoapAction_CreateMessage(CWsdlType_CreateMessage $clWsdlType_CreateMessage, $aHeaders = array())
-    {
-        $clWsdlType_CreateMessageResponse = $this->call('CreateMessage', array($clWsdlType_CreateMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateMessageResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SendMessage
-     *
-     * @param CWsdlType_SendMessage $clWsdlType_SendMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_SendMessageResponse
-     * @access public
-     */
-    public function fSoapAction_SendMessage(CWsdlType_SendMessage $clWsdlType_SendMessage, $aHeaders = array())
-    {
-        $clWsdlType_SendMessageResponse = $this->call('SendMessage', array($clWsdlType_SendMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SendMessageResponse;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CancelMessage
-     *
-     * @param CWsdlType_CancelMessage $clWsdlType_CancelMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
-     * @access public
-     */
-    public function fSoapAction_CancelMessage(CWsdlType_CancelMessage $clWsdlType_CancelMessage, $aHeaders = array())
-    {
-        $mResp = $this->call('CancelMessage', array($clWsdlType_CancelMessage) ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
-
-    /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : InitRecordFromMessage
-     *
-     * @param CWsdlType_InitRecordFromMessage $clWsdlType_InitRecordFromMessage
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_InitRecordFromMessageResponse
-     * @access public
-     */
-    public function fSoapAction_InitRecordFromMessage(CWsdlType_InitRecordFromMessage $clWsdlType_InitRecordFromMessage, $aHeaders = array())
-    {
-        $clWsdlType_InitRecordFromMessageResponse = $this->call('InitRecordFromMessage', array($clWsdlType_InitRecordFromMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_InitRecordFromMessageResponse;
-    }
+    //---
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : InitRecordFromAddress
      *
-     * @param CWsdlType_InitRecordFromAddress $clWsdlType_InitRecordFromAddress
+     * @param InitRecordFromAddress $clWsdlType_InitRecordFromAddress
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_InitRecordFromAddressResponse
+     * @return InitRecordFromAddressResponse
      * @access public
      */
-    public function fSoapAction_InitRecordFromAddress(CWsdlType_InitRecordFromAddress $clWsdlType_InitRecordFromAddress, $aHeaders = array())
+    public function initRecordFromAddress(InitRecordFromAddress $clWsdlType_InitRecordFromAddress, $aHeaders = array())
     {
         $clWsdlType_InitRecordFromAddressResponse = $this->call('InitRecordFromAddress', array($clWsdlType_InitRecordFromAddress) ,  null, null , $aHeaders);
 
         return $clWsdlType_InitRecordFromAddressResponse;
     }
+    //---
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetPJ
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : InitRecordFromMessage
      *
-     * @param CWsdlType_GetPJ $clWsdlType_GetPJ
+     * @param InitRecordFromMessage $clWsdlType_InitRecordFromMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetPJResponse
+     * @return InitRecordFromMessageResponse
      * @access public
      */
-    public function fSoapAction_GetPJ(CWsdlType_GetPJ $clWsdlType_GetPJ, $aHeaders = array())
+    public function initRecordFromMessage(InitRecordFromMessage $clWsdlType_InitRecordFromMessage, $aHeaders = array())
     {
-        $clWsdlType_GetPJResponse = $this->call('GetPJ', array($clWsdlType_GetPJ) ,  null, null , $aHeaders);
+        $clWsdlType_InitRecordFromMessageResponse = $this->call('InitRecordFromMessage', array($clWsdlType_InitRecordFromMessage) ,  null, null , $aHeaders);
 
-        return $clWsdlType_GetPJResponse;
+        return $clWsdlType_InitRecordFromMessageResponse;
     }
+    //----
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DeletePJ
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : List
      *
-     * @param CWsdlType_DeletePJ $clWsdlType_DeletePJ
+     * @param List ListParams
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_DeletePJResponse
+     * @return ListResponse
      * @access public
      */
-    public function fSoapAction_DeletePJ(CWsdlType_DeletePJ $clWsdlType_DeletePJ, $aHeaders = array())
+    public function listAction(ListParams $clWsdlType_InitRecordFromMessage, $aHeaders = array())
     {
-        $clWsdlType_DeletePJResponse = $this->call('DeletePJ', array($clWsdlType_DeletePJ) ,  null, null , $aHeaders);
+        $clWsdlType_InitRecordFromMessageResponse = $this->call('InitRecordFromMessage', array($clWsdlType_InitRecordFromMessage) ,  null, null , $aHeaders);
 
-        return $clWsdlType_DeletePJResponse;
+        return $clWsdlType_InitRecordFromMessageResponse;
     }
+    //----
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : AddPJ
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Modify
      *
-     * @param CWsdlType_AddPJ $clWsdlType_AddPJ
+     * @param Modify $clWsdlType_Modify
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_AddPJResponse
+     * @return ModifyResponse
      * @access public
      */
-    public function fSoapAction_AddPJ(CWsdlType_AddPJ $clWsdlType_AddPJ, $aHeaders = array())
+    public function modify(Modify $clWsdlType_Modify, $aHeaders = array())
     {
-        $clWsdlType_AddPJResponse = $this->call('AddPJ', array($clWsdlType_AddPJ) ,  null, null , $aHeaders);
+        $clWsdlType_ModifyResponse = $this->call('Modify', array($clWsdlType_Modify) ,  null, null , $aHeaders);
 
-        return $clWsdlType_AddPJResponse;
+        return $clWsdlType_ModifyResponse;
     }
+    //---
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ZipPJ
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ModifyFolder
      *
-     * @param CWsdlType_ZipPJ $clWsdlType_ZipPJ
+     * @param ModifyFolder $clWsdlType_ModifyFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_ZipPJResponse
+     * @return ModifyFolderResponse
      * @access public
      */
-    public function fSoapAction_ZipPJ(CWsdlType_ZipPJ $clWsdlType_ZipPJ, $aHeaders = array())
+    public function modifyFolder(ModifyFolder $clWsdlType_ModifyFolder, $aHeaders = array())
     {
-        $clWsdlType_ZipPJResponse = $this->call('ZipPJ', array($clWsdlType_ZipPJ) ,  null, null , $aHeaders);
+        $clWsdlType_ModifyFolderResponse = $this->call('ModifyFolder', array($clWsdlType_ModifyFolder) ,  null, null , $aHeaders);
 
-        return $clWsdlType_ZipPJResponse;
+        return $clWsdlType_ModifyFolderResponse;
     }
+    //---
+
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CheckRecipient
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ModifyMessage
      *
-     * @param CWsdlType_CheckRecipient $clWsdlType_CheckRecipient
+     * @param ModifyMessage $clWsdlType_ModifyMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_CheckRecipientResponse
+     * @return ModifyMessageResponse
      * @access public
      */
-    public function fSoapAction_CheckRecipient(CWsdlType_CheckRecipient $clWsdlType_CheckRecipient, $aHeaders = array())
+    public function modifyMessage(ModifyMessage $clWsdlType_ModifyMessage, $aHeaders = array())
     {
-        $clWsdlType_CheckRecipientResponse = $this->call('CheckRecipient', array($clWsdlType_CheckRecipient) ,  null, null , $aHeaders);
+        $clWsdlType_ModifyMessageResponse = $this->call('ModifyMessage', array($clWsdlType_ModifyMessage) ,  null, null , $aHeaders);
 
-        return $clWsdlType_CheckRecipientResponse;
+        return $clWsdlType_ModifyMessageResponse;
     }
+    //---
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CheckCreateElement
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Print
      *
-     * @param CWsdlType_CheckCreateElement $clWsdlType_CheckCreateElement
+     * @param PrintParams $clWsdlType_Print
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_CheckCreateElementResponse
+     * @return PrintResponse
      * @access public
      */
-    public function fSoapAction_CheckCreateElement(CWsdlType_CheckCreateElement $clWsdlType_CheckCreateElement, $aHeaders = array())
+    public function printAction(PrintParams $clWsdlType_Print, $aHeaders = array())
     {
-        $clWsdlType_CheckCreateElementResponse = $this->call('CheckCreateElement', array($clWsdlType_CheckCreateElement) ,  null, null , $aHeaders);
+        $clWsdlType_PrintResponse = $this->call('Print', array($clWsdlType_Print) ,  null, null , $aHeaders);
 
-        return $clWsdlType_CheckCreateElementResponse;
+        return $clWsdlType_PrintResponse;
     }
+    //---
 
     /**
-     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline :GetMailServiceStatus
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ReorderList
      *
+     * @param ReorderList $clWsdlType_ModifyFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_GetMailServiceStatusResponse
+     * @return ReorderListResponse
      * @access public
      */
-    public function fSoapAction_GetMailServiceStatus($aHeaders = array())
+    public function reorderList(ReorderList $clWsdlType_ReorderList, $aHeaders = array())
     {
-        $clWsdlType_GetMailServiceStatusResponse = $this->call('GetMailServiceStatus', array() ,  null, null , $aHeaders);
+        $clWsdlType_reorderListResponse = $this->call('ModifyFolder', array($clWsdlType_ReorderList) ,  null, null , $aHeaders);
 
-        return $clWsdlType_GetMailServiceStatusResponse;
+        return $clWsdlType_reorderListResponse;
     }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ReorderList
+     *
+     * @param ReorderSubList $clWsdlType_ModifyFolder
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return ReorderSubListResponse
+     * @access public
+     */
+    public function reorderSubList(ReorderSubList $clWsdlType_ReorderSubList, $aHeaders = array())
+    {
+        $clWsdlType_reorderSubListResponse = $this->call('ModifyFolder', array($clWsdlType_ReorderSubList) ,  null, null , $aHeaders);
+
+        return $clWsdlType_reorderSubListResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Request
+     *
+     * @param Request $clWsdlType_Request
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return RequestResponse
+     * @access public
+     */
+    public function request(Request $clWsdlType_Request, $aHeaders = array())
+    {
+        $clWsdlType_RequestResponse = $this->call('Request', array($clWsdlType_Request) ,  null, null , $aHeaders);
+
+        return $clWsdlType_RequestResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : RequestMessage
+     *
+     * @param RequestMessage $clWsdlType_RequestMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return RequestMessageResponse
+     * @access public
+     */
+    public function requestMessage(RequestMessage $clWsdlType_RequestMessage, $aHeaders = array())
+    {
+        $clWsdlType_RequestMessageResponse = $this->call('RequestMessage', array($clWsdlType_RequestMessage) ,  null, null , $aHeaders);
+
+        return $clWsdlType_RequestMessageResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : RequestParam
+     *
+     * @param RequestParam $clWsdlType_RequestParam
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return RequestParamResponse
+     * @access public
+     */
+    public function requestParam(RequestParam $clWsdlType_RequestParam, $aHeaders = array())
+    {
+        $clWsdlType_RequestParamResponse = $this->call('RequestParam', array($clWsdlType_RequestParam) ,  null, null , $aHeaders);
+
+        return $clWsdlType_RequestParamResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ResetPasswordFailed
+     *
+     * @param ResetPasswordFailed $clWsdlType_ResetPasswordFailed
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return ResetPasswordFailedResponse
+     * @access public
+     */
+    public function resetPasswordFailed(ResetPasswordFailed $clWsdlType_ResetPasswordFailed, $aHeaders = array())
+    {
+        $clWsdlType_ResetPasswordFailedResponse = $this->call('ResetPasswordFailed', array($clWsdlType_ResetPasswordFailed) ,  null, null , $aHeaders);
+
+        return $clWsdlType_ResetPasswordFailedResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Search
+     *
+     * @param Search $clWsdlType_Search
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return SearchResponse
+     * @access public
+     */
+    public function search(Search $clWsdlType_Search, $aHeaders = array())
+    {
+        $clWsdlType_SearchResponse = $this->call('Search', array($clWsdlType_Search) ,  null, null , $aHeaders);
+
+        return $clWsdlType_SearchResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectForm
+     *
+     * @param SelectForm $clWsdlType_SelectForm
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return SelectFormResponse
+     * @access public
+     */
+    public function selectForm(SelectForm $clWsdlType_SelectForm, $aHeaders = array())
+    {
+        $clWsdlType_SelectFormResponse = $this->call('SelectForm', array($clWsdlType_SelectForm) ,  null, null , $aHeaders);
+
+        return $clWsdlType_SelectFormResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectItems
+     *
+     * @param SelectItems $clWsdlType_SelectForm
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return SelectItemsResponse
+     * @access public
+     */
+    public function selectItems(SelectItems $clWsdlType_SelectItems, $aHeaders = array())
+    {
+        $clWsdlType_SelectItemsResponse = $this->call('SelectForm', array($clWsdlType_SelectItems) ,  null, null , $aHeaders);
+
+        return $clWsdlType_SelectItemsResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectPrintTemplate
+     *
+     * @param SelectPrintTemplate $clWsdlType_SelectPrintTemplate
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return SelectPrintTemplateResponse
+     * @access public
+     */
+    public function selectPrintTemplate(SelectPrintTemplate $clWsdlType_SelectPrintTemplate, $aHeaders = array())
+    {
+        $clWsdlType_SelectPrintTemplateResponse = $this->call('SelectPrintTemplate', array($clWsdlType_SelectPrintTemplate) ,  null, null , $aHeaders);
+
+        return $clWsdlType_SelectPrintTemplateResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SendMessage
+     *
+     * @param SendMessage $clWsdlType_SendMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return SendMessageResponse
+     * @access public
+     */
+    public function sendMessage(SendMessage $clWsdlType_SendMessage, $aHeaders = array())
+    {
+        $clWsdlType_SendMessageResponse = $this->call('SendMessage', array($clWsdlType_SendMessage) ,  null, null , $aHeaders);
+
+        return $clWsdlType_SendMessageResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SetOrderList
+     *
+     * @param SetOrderList $clWsdlType_SendMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return SetOrderListResponse
+     * @access public
+     */
+    public function setOrderList(SetOrderList $clWsdlType_SetOrderList, $aHeaders = array())
+    {
+        $clWsdlType_SetOrderListeResponse = $this->call('SendMessage', array($clWsdlType_SetOrderList) ,  null, null , $aHeaders);
+
+        return $clWsdlType_SetOrderListeResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SetOrderSubList
+     *
+     * @param SetOrderSubList $clWsdlType_SendMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return SetOrderSubListResponse
+     * @access public
+     */
+    public function setOrderSubList(SetOrderSubList $clWsdlType_SetOrderSubList, $aHeaders = array())
+    {
+        $clWsdlType_SetOrderSubListeResponse = $this->call('SendMessage', array($clWsdlType_SetOrderSubList) ,  null, null , $aHeaders);
+
+        return $clWsdlType_SetOrderSubListeResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : TransformInto
+     *
+     * @param TransformInto $clWsdlType_TransformInto
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return TransformIntoResponse
+     * @access public
+     */
+    public function transformInto(TransformInto $clWsdlType_TransformInto, $aHeaders = array())
+    {
+        $clWsdlType_TransformIntoResponse = $this->call('TransformInto', array($clWsdlType_TransformInto) ,  null, null , $aHeaders);
+
+        return $clWsdlType_TransformIntoResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Update
+     *
+     * @param Update $clWsdlType_Update
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return UpdateResponse
+     * @access public
+     */
+    public function update(Update $clWsdlType_Update, $aHeaders = array())
+    {
+        $clWsdlType_UpdateResponse = $this->call('Update', array($clWsdlType_Update) ,  null, null , $aHeaders);
+
+        return $clWsdlType_UpdateResponse;
+    }
+    //----
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : UpdateFolder
+     *
+     * @param UpdateFolder $clWsdlType_UpdateFolder
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return UpdateFolderResponse
+     * @access public
+     */
+    public function updateFolder(UpdateFolder $clWsdlType_UpdateFolder, $aHeaders = array())
+    {
+        $clWsdlType_UpdateFolderResponse = $this->call('UpdateFolder', array($clWsdlType_UpdateFolder) ,  null, null , $aHeaders);
+
+        return $clWsdlType_UpdateFolderResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : UpdateMessage
+     *
+     * @param UpdateMessage $clWsdlType_UpdateMessage
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return UpdateMessageResponse
+     * @access public
+     */
+    public function updateMessage(UpdateMessage $clWsdlType_UpdateMessage, $aHeaders = array())
+    {
+        $clWsdlType_UpdateMessageResponse = $this->call('UpdateMessage', array($clWsdlType_UpdateMessage) ,  null, null , $aHeaders);
+
+        return $clWsdlType_UpdateMessageResponse;
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Validate
+     *
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return ValidateResponse
+     * @access public
+     */
+    public function validate($aHeaders = array())
+    {
+        $clWsdlType_ValidateResponse = $this->call('Validate', array() ,  null, null , $aHeaders);
+
+        return $clWsdlType_ValidateResponse;
+    }
+    //---
+
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ValidateFolder
+     *
+     * @param ValidateFolder $clWsdlType_ValidateFolder
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return void la reponse attendu est vide.
+     * @access public
+     */
+    public function validateFolder(ValidateFolder $clWsdlType_ValidateFolder, $aHeaders = array())
+    {
+        $mResp = $this->call('ValidateFolder', array($clWsdlType_ValidateFolder) ,  null, null , $aHeaders);
+
+        return $mResp;
+    }
+    //---
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : WithAutomaticResponse
      *
-     * @param CWsdlType_WithAutomaticResponse $clWsdlType_WithAutomaticResponse
+     * @param WithAutomaticResponse $clWsdlType_WithAutomaticResponse
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CWsdlType_WithAutomaticResponseResponse
+     * @return WithAutomaticResponseResponse
      * @access public
      */
-    public function fSoapAction_WithAutomaticResponse(CWsdlType_WithAutomaticResponse $clWsdlType_WithAutomaticResponse, $aHeaders = array())
+    public function withAutomaticResponse(WithAutomaticResponse $clWsdlType_WithAutomaticResponse, $aHeaders = array())
     {
         $clWsdlType_WithAutomaticResponseResponse = $this->call('WithAutomaticResponse', array($clWsdlType_WithAutomaticResponse) ,  null, null , $aHeaders);
 
         return $clWsdlType_WithAutomaticResponseResponse;
     }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ZipPJ
+     *
+     * @param ZipPJ $clWsdlType_ZipPJ
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return ZipPJResponse
+     * @access public
+     */
+    public function zipPJ(ZipPJ $clWsdlType_ZipPJ, $aHeaders = array())
+    {
+        $clWsdlType_ZipPJResponse = $this->call('ZipPJ', array($clWsdlType_ZipPJ) ,  null, null , $aHeaders);
+
+        return $clWsdlType_ZipPJResponse;
+    }
+    //---
 }
 //***
 
@@ -1111,11 +1269,6 @@ class ExtranetUserType
 {
     public $UsernameToken; // UsernameTokenType
     public $Form; // string
-}
-//***
-
-class DefaultClientLanguageCodeType
-{
 }
 //***
 
@@ -1321,7 +1474,7 @@ class UpdateResponse
 }
 //***
 
-class Print
+class PrintParams
 {
     public $Table; // string
     public $ParamXML; // string
@@ -1425,7 +1578,7 @@ class CancelResponse
 }
 //***
 
-class List
+class ListParams
 {
     public $Table; // string
     public $ParamXML; // string
@@ -1981,11 +2134,6 @@ class WithAutomaticResponseResponse
 }
 //***
 
-class APIUUID
-{
-}
-//***
-
 class UsernameToken
 {
     public $Username; // string
@@ -1995,30 +2143,6 @@ class UsernameToken
 }
 //***
 
-class SessionToken
-{
-}
-//***
-
-class APIUser
-{
-}
-//***
-
-class CustomerInfos
-{
-}
-//***
-
-class ActionContext
-{
-}
-//***
-
-class Column
-{
-}
-//***
 
 class OptionDialogue
 {
@@ -2036,10 +2160,6 @@ class OptionDialogue
 }
 //***
 
-class AutoValidate
-{
-}
-//***
 
 class RecipientCheck
 {
@@ -2049,20 +2169,6 @@ class RecipientCheck
 }
 //***
 
-class XSDSchema
-{
-}
-//***
-
-class SessionLanguageCode
-{
-}
-//***
-
-class PossibleDisplayMode
-{
-}
-//***
 
 class Action
 {
@@ -2142,10 +2248,89 @@ class ConnectedExtranet
 }
 //***
 
+/*
+class DefaultClientLanguageCodeType
+{
+}
+//***
+*/
+
+/*
+class APIUUID
+{
+}
+//***
+*/
+
+/*
+class SessionToken
+{
+}
+//***
+*/
+
+/*
+class APIUser
+{
+}
+//***
+*/
+
+/*
+class CustomerInfos
+{
+}
+//***
+*/
+
+/*
+class ActionContext
+{
+}
+//***
+*/
+
+/*
+class Column
+{
+}
+//***
+*/
+
+/*
+class AutoValidate
+{
+}
+//***
+*/
+
+/*
+class XSDSchema
+{
+}
+//***
+*/
+
+/*
+class SessionLanguageCode
+{
+}
+//***
+*/
+
+/*
+class PossibleDisplayMode
+{
+}
+//***
+*/
+
+/*
 class NextCall
 {
 }
 //***
+*/
 
 /*
  * definition des classe de constante utile a la communication soap

@@ -12,7 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
  * @version 1.0.1. last modification : 2011-10-29
  * @author   richard deguilhem <richard@nout.fr>
  */
-class ModifiedNuSoapClient extends nusoap_client
+class ModifiedNuSoapClient extends soapclient
 {
 	//definition de variable pour l'utilisation de document litteral
 	//TODO: Permettre la modification (document litteral et rpc encoded via fonction
@@ -31,7 +31,7 @@ class ModifiedNuSoapClient extends nusoap_client
  	 */
  	public function ModifiedNuSoapClient($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false)
  	{
- 		parent::nusoap_client($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
+ 		parent::__construct($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
  	}
     //---
 			
