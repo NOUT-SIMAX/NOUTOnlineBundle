@@ -35,7 +35,7 @@ class DefaultController extends Controller
 		$clRecord->testXML();
 
 		$response = new Response(json_encode($clRecord));
-		$response->headers->set('Content-Type', 'application/json');
+		//$response->headers->set('Content-Type', 'application/json');
 		return $response;
 	}
 }
