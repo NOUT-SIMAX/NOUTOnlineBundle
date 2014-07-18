@@ -12,17 +12,15 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
  * @version 1.0.1. last modification : 2011-10-29
  * @author   richard deguilhem <richard@nout.fr>
  */
-class modifiedNuSoapClient extends nusoap_client
+class ModifiedNuSoapClient extends soapclient
 {
 	//definition de variable pour l'utilisation de document litteral
 	//TODO: Permettre la modification (document litteral et rpc encoded via fonction
-	private $__sSerialisationStyle = 'document';
-	private $__sSerialisationUse = 'literal';
+	private $m_sSerialisationStyle = 'document';
+	private $m_sSerialisationUse = 'literal';
 
-	private $__sDefaultEncoding = 'UTF-8';
-	
-	//definition des variable pour l'utilisation d
-	
+	private $m_sDefaultEncoding = 'UTF-8';
+
 	/**
  	 * constructeur permettant d'instancier les classe de communication soap avec les bonne question
  	 * @param $sEndpoint
@@ -31,10 +29,11 @@ class modifiedNuSoapClient extends nusoap_client
  	 * @param $sProxyPort
  	 * @return unknown_type
  	 */
- 	public function modifiedNuSoapClient($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false)
+ 	public function ModifiedNuSoapClient($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false)
  	{
- 		parent::nusoap_client($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
+ 		parent::__construct($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
  	}
+    //---
 			
 	/**
 	 * Surcharge de la methode call de nusoap_client avec afin :
@@ -65,15 +64,15 @@ class modifiedNuSoapClient extends nusoap_client
 	public function call($sOperation, $mParams = array(),$sNamespace=null,$sSoapAction=null , $mHeaders = false,$mRpcParams=null,$sStyle='rpc',$sUse='encoded')
 	{
 		//on definit l'encodage de la requete		
-		$this->soap_defencoding = $this->__sDefaultEncoding;
-		$this->http_encoding = $this->__sDefaultEncoding;
-		if($this->__sDefaultEncoding == 'UTF-8')
+		$this->soap_defencoding = $this->m_sDefaultEncoding;
+		$this->http_encoding = $this->m_sDefaultEncoding;
+		if($this->m_sDefaultEncoding == 'UTF-8')
 		{
 			$this->decode_utf8 = false; // on est en utf-8 on n'as donc pas de decode neccessaire.
 		}
 		
 		//on appel l'operation en forcant le document literal
-		$mReturn =  parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $mHeaders, $mRpcParams , $this->__sSerialisationStyle, $this->__sSerialisationUse);
+		$mReturn =  parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $mHeaders, $mRpcParams , $this->m_sSerialisationStyle, $this->m_sSerialisationUse);
 
 		
 		//-- on test la présence d'erreur soap 1.2 :
@@ -123,6 +122,7 @@ class modifiedNuSoapClient extends nusoap_client
 
 		return $mReturn;
 	}
+    //---
 	
 	
 	/**
@@ -185,5 +185,6 @@ class modifiedNuSoapClient extends nusoap_client
 			return $return;
 		}
 	 }
-	
+    //---
 }
+//****
