@@ -78,15 +78,21 @@ class XMLResponseWS
 	}
 
 	/**
-	 * @return mixed
+	 * renvoi le type de retour
+	 * @return string
 	 */
 	public function sGetReturnType()
 	{
-		return $this->m_ndHeader->children()->ReturnType;
+		return (string)$this->m_ndHeader->children()->ReturnType;
 	}
+
+	/**
+	 * renvoi l'identifiant du contexte d'action
+	 * @return string
+	 */
 	public function sGetActionContext()
 	{
-		return $this->m_ndHeader->children()->ActionContext;
+		return (string)$this->m_ndHeader->children()->ActionContext;
 	}
 
 	/**
@@ -141,11 +147,20 @@ class XMLResponseWS
 	 */
 	public function getNodeXML($sOperation)
 	{
-		$clNodeResponse = $this->_getNodeResponse($sOperation);
+		$clNodeResponse = $this->_clGetNodeResponse($sOperation);
 		if (isset($clNodeResponse))
 			return $clNodeResponse->xml;
 
 		return null;
+	}
+
+	public function getNodeSchema()
+	{
+		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
+		if (!isset($clXSDSchema))
+			return null;
+
+		return $clXSDSchema->children('http://www.w3.org/2001/XMLSchema', false)->schema;
 	}
 
 	/**

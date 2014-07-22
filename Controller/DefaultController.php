@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\XMLResponseWS;
 
 /**
  * Class DefaultController
@@ -38,4 +39,26 @@ class DefaultController extends Controller
 		//$response->headers->set('Content-Type', 'application/json');
 		return $response;
 	}
+
+	/**
+	 * @Route("/token", name="token")
+	 */
+	public function tokenAction()
+	{
+		$sXML = file_get_contents('./bundles/noutonline/test/xml/GetTokenSessionResponse.xml');
+		$clXML = new XMLResponseWS($sXML);
+
+		$token = $clXML->sGetTokenSession();
+		var_dump($token);
+
+
+		$response = new Response(json_encode($clXML));
+		//$response->headers->set('Content-Type', 'application/json');
+		return $response;
+	}
+
+
+
+
+
 }
