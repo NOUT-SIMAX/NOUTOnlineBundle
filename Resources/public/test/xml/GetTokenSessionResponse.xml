@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+	<env:Header>
+		<ReturnType>Identification</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="superviseur">2</Element>
+		</ConnectedUser>
+	</env:Header>
+	<env:Body>
+		<GetTokenSessionResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<SessionToken>6973456a-0452-4727-bf48-ee6cdd606390</SessionToken>
+		</GetTokenSessionResponse>
+	</env:Body>
+</env:Envelope>

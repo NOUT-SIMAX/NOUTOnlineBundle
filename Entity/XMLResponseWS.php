@@ -125,13 +125,40 @@ class XMLResponseWS
 	}
 
 	/**
+	 * retourne le noeud reponse de l'operation
+	 * @param $sOperation
+	 * @return SimpleXMLElement
+	 */
+	protected function _clGetNodeResponse($sOperation)
+	{
+		return $this->m_ndBody->children()->{$sOperation.'Response'};
+	}
+
+	/**
 	 * récupère le noeud xml dans la réponse
 	 * @param string $sOperation : operation lancée
 	 * @return SimpleXMLElement
 	 */
 	public function getNodeXML($sOperation)
 	{
-		return $this->m_ndBody->children()->{$sOperation.'Response'}->xml;
+		$clNodeResponse = $this->_getNodeResponse($sOperation);
+		if (isset($clNodeResponse))
+			return $clNodeResponse->xml;
+
+		return null;
+	}
+
+	/**
+	 * récupère le token session dans la réponse XML
+	 * @return string
+	 */
+	public function sGetTokenSession()
+	{
+		$clNodeResponse = $this->_clGetNodeResponse('GetTokenSession');
+		if (isset($clNodeResponse))
+			return (string)$clNodeResponse->SessionToken;
+
+		return '';
 	}
 
 } 
