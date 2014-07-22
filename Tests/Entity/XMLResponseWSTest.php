@@ -50,7 +50,7 @@ class XMLResponseWSTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testRecordResponse()
 	{
-		$sXML = file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/xml/Record_Formulaire_Etat_Champ_ListeSync.xml');
+		$sXML = file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/xml/Modify_Formulaire_Etat_Champ_ListeSync.xml');
 		$clReponseXML = new XMLResponseWS($sXML);
 
 		//return type
@@ -117,8 +117,6 @@ class XMLResponseWSTest extends \PHPUnit_Framework_TestCase
 
 		//de la date heure
 		$this->assertEquals('2014071812351242', $clXML->attributes()->DATEHEURE);
-
-
 	}
 
 
