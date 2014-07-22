@@ -13,7 +13,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
  *
  * @final
  */
-final class SimaxOnlineServiceProxy extends ModifiedNuSoapClient
+final class OnlineServiceProxy extends ModifiedNuSoapClient
 {
 
     //Definition des variable pour gestion des headers de requete
@@ -1243,1100 +1243,24 @@ final class SimaxOnlineServiceProxy extends ModifiedNuSoapClient
 //***
 
 
+class ResetPasswordFailed
+{
+	public $Login; // string
+}
+//***
+
 //-------------------------------------------------------------------------------------------------------------------
 // Ensemble de classes utilisé par la classe SimaxOnlineServiceProxy
 // Note : les conventions de code peuvent semblé non respecté sur les nom de variables, mais elle corresponde en realite
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
-class LanguageCodeList
-{
-    public $LanguageCode; // integer
-}
-//***
 
-
-
-class UsernameTokenType
-{
-    public $Username; // string
-    public $Password; // string
-    public $Nonce; // string
-    public $Created; // string
-}
-//***
-
-class ExtranetUserType
-{
-    public $UsernameToken; // UsernameTokenType
-    public $Form; // string
-}
-//***
-
-class GetTokenSession
-{
-    public $UsernameToken; // UsernameTokenType
-    public $ExtranetUser; // ExtranetUserType
-    public $DefaultClientLanguageCode; // DefaultClientLanguageCodeType
-}
-//***
-
-class GetTokenSessionResponse
-{
-    public $SessionToken; // string
-}
-//***
-
-class ResetPasswordFailed
-{
-    public $Login; // string
-}
-//***
-
-class ResetPasswordFailedResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetStartAutomatism
-{
-    public $SpecialParamList; // SpecialParamListType
-}
-//***
-
-class GetStartAutomatismResponse
-{
-    public $xml; // string
-}
-//***
-
-class ConfirmResponse
-{
-    public $TypeConfirmation; // integer
-}
-//***
-
-class ConfirmResponseResponse
-{
-    public $xml; // string
-}
-//***
-
-class HasChangedResponse
-{
-    public $Value; // integer
-}
-//***
-
-class SelectForm
-{
-    public $Form; // string
-}
-//***
-
-class SelectFormResponse
-{
-    public $xml; // string
-}
-//***
-
-class SelectPrintTemplate
-{
-    public $Template; // string
-}
-//***
-
-class SelectPrintTemplateResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetPlanningInfo
-{
-    public $Resource; // string
-    public $StartTime; // string
-    public $EndTime; // string
-    public $Table; // string
-    public $ID; // string
-    public $ParamXML; // string
-}
-//***
-
-class GetPlanningInfoResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetColInRecord
-{
-    public $Column; // string
-    public $Record; // string
-    public $Encoding; // string
-    public $MimeType; // string
-    public $TransColor; // string
-    public $WantContent; // string
-    public $ColorFrom; // string
-    public $ColorTo; // string
-    public $Width; // string
-    public $Height; // string
-}
-//***
-
-class GetColInRecordResponse
-{
-    public $xml; // string
-}
-//***
-
-class Display
-{
-    public $Table; // string
-    public $ParamXML; // string
-}
-//***
-
-class DisplayResponse
-{
-    public $xml; // string
-}
-//***
-
-class Create
-{
-    public $Table; // string
-    public $ParamXML; // string
-    public $IDMessage; // string
-    public $CallingColumn; // string
-}
-//***
-
-class CreateResponse
-{
-    public $xml; // string
-}
-//***
-
-class CreateFrom
-{
-    public $Table; // string
-    public $TableSrc; // string
-    public $ElemSrc; // string
-}
-//***
-
-class CreateFromResponse
-{
-    public $xml; // string
-}
-//***
-
-class TransformInto
-{
-    public $Table; // string
-    public $TableSrc; // string
-    public $ElemSrc; // string
-}
-//***
-
-class TransformIntoResponse
-{
-    public $xml; // string
-}
-//***
-
-class Modify
-{
-    public $Table; // string
-    public $ParamXML; // string
-}
-//***
-
-class ModifyResponse
-{
-    public $xml; // string
-}
-//***
-
-class Update
-{
-    public $Table; // string
-    public $ParamXML; // string
-    public $Complete; // integer
-    public $UpdateData; // string
-}
-//***
-
-class UpdateResponse
-{
-    public $xml; // string
-}
-//***
-
-class PrintParams
-{
-    public $Table; // string
-    public $ParamXML; // string
-    public $ListMode; // integer
-}
-//***
-
-class PrintResponse
-{
-    public $xml; // string
-}
-//***
-
-class Delete
-{
-    public $Table; // string
-    public $ParamXML; // string
-}
-//***
-
-class DeleteResponse
-{
-    public $xml; // string
-}
-//***
-
-class SortType
-{
-    public $_; // string
-    public $asc; // string
-}
-//***
-
-class SpecialParamListType
-{
-    public $First; // integer
-    public $Length; // integer
-    public $WithBreakRow; // integer
-    public $WithEndCalculation; // integer
-    public $ChangePage; // integer
-    public $Sort1; // SortType
-    public $Sort2; // SortType
-    public $Sort3; // SortType
-}
-//***
-
-class Execute
-{
-    public $ID; // string
-    public $Sentence; // string
-    public $ParamXML; // string
-    public $SpecialParamList; // SpecialParamListType
-    public $Checksum; // integer
-    public $CallingColumn; // string
-    public $DisplayMode; // DisplayModeParamEnum
-}
-//***
-
-class ExecuteResponse
-{
-    public $xml; // string
-}
-//***
-
-class DrillThrough
-{
-    public $Record; // string
-    public $Column; // string
-    public $SpecialParamList; // SpecialParamListType
-}
-//***
-
-class DrillThroughResponse
-{
-    public $xml; // string
-}
-//***
-
-class ValidateResponse
-{
-    public $xml; // string
-}
-//***
-
-class ListeColType
-{
-    public $Column; // string
-}
-//***
-
-class Cancel
-{
-    public $Context; // integer
-    public $ByUser; // integer
-}
-//***
-
-class CancelResponse
-{
-    public $xml; // string
-}
-//***
-
-class ListParams
-{
-    public $Table; // string
-    public $ParamXML; // string
-    public $SpecialParamList; // SpecialParamListType
-    public $CallingColumn; // string
-    public $NoCache; // integer
-    public $Checksum; // integer
-    public $DisplayMode; // DisplayModeParamEnum
-}
-//***
-
-class ListResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetLanguagesResponse
-{
-    public $xml; // LanguageCodeList
-}
-//***
-
-
-class GetChart
-{
-    public $Height; // integer
-    public $Width; // integer
-    public $DPI; // integer
-    public $Index; // integer
-    public $ParamXML; // string
-    public $Table; // string
-    public $Axes; // string
-    public $Calculation; // CalculationTypeEnum
-    public $OnlyData; // integer
-}
-//***
-
-class GetChartResponse
-{
-    public $xml; // string
-}
-//***
-
-class SelectItems
-{
-    public $items; // string
-}
-//***
-
-class SelectItemsResponse
-{
-    public $xml; // string
-}
-//***
-
-class EnterReorderListModeResponse
-{
-    public $Value; // integer
-}
-//***
-
-class ReorderList
-{
-    public $items; // string
-    public $moveType; // string
-    public $scale; // integer
-}
-//***
-
-class ReorderListResponse
-{
-    public $Value; // string
-}
-//***
-
-class SetOrderList
-{
-    public $items; // string
-    public $offset; // integer
-}
-//***
-
-class SetOrderListResponse
-{
-    public $Value; // string
-}
-//***
-
-class ReorderSubList
-{
-    public $column; // string
-    public $items; // string
-    public $moveType; // string
-    public $scale; // integer
-}
-//***
-
-class ReorderSubListResponse
-{
-    public $Value; // string
-}
-//***
-
-class SetOrderSubList
-{
-    public $column; // string
-    public $items; // string
-    public $offset; // integer
-}
-//***
-
-class SetOrderSubListResponse
-{
-    public $Value; // string
-}
-//***
-
-class CalculationListType
-{
-    public $Calculation; // string
-}
-//***
-
-class ColListType
-{
-    public $Col; // string
-}
-//***
-
-class GetCalculation
-{
-    public $ColList; // ColListType
-    public $CalculationList; // CalculationListType
-}
-//***
-
-class GetCalculationResponse
-{
-    public $xml; // string
-}
-//***
-
-class Search
-{
-    public $Table; // string
-    public $ParamXML; // string
-    public $SpecialParamList; // SpecialParamListType
-    public $CallingColumn; // string
-    public $Checksum; // integer
-    public $DisplayMode; // DisplayModeParamEnum
-}
-//***
-
-class SearchResponse
-{
-    public $xml; // string
-}
-//***
-
-class Request
-{
-    public $Table; // string
-    public $CallingColumn; // string
-    public $ColList; // ColListType
-    public $CondList; // string
-    public $MaxResult; // integer
-    public $Sort1; // SortType
-    public $Sort2; // SortType
-    public $Sort3; // SortType
-}
-//***
-
-class RequestResponse
-{
-    public $xml; // string
-}
-//***
-
-class RequestParam
-{
-    public $Table; // string
-    public $CallingColumn; // string
-    public $ColList; // ColListType
-    public $CondList; // string
-    public $MaxResult; // integer
-}
-//***
-
-class RequestParamResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetTemporalAutomatismResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetEndAutomatism
-{
-    public $SpecialParamList; // SpecialParamListType
-}
-//***
-
-class GetEndAutomatismResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetTableChild
-{
-    public $Table; // string
-    public $Recursive; // string
-    public $ReadOnly; // string
-}
-//***
-
-class GetTableChildResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetContentFolder
-{
-    public $IDFolder; // string
-    public $SpecialParamList; // SpecialParamListType
-}
-//***
-
-class GetContentFolderResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetFolderListResponse
-{
-    public $xml; // string
-}
-//***
-
-class ModifyFolder
-{
-    public $IDFolder; // string
-}
-//***
-
-class ModifyFolderResponse
-{
-    public $xml; // string
-}
-//***
-
-class UpdateFolder
-{
-    public $IDFolder; // string
-    public $UpdateData; // string
-}
-//***
-
-class UpdateFolderResponse
-{
-    public $xml; // string
-}
-//***
-
-class CreateFolderResponse
-{
-    public $xml; // string
-}
-//***
-
-class DeleteFolder
-{
-    public $IDFolder; // string
-}
-//***
-
-class ValidateFolder
-{
-    public $IDFolder; // string
-}
-//***
-
-class CancelFolder
-{
-    public $IDFolder; // string
-}
-//***
-
-class CloseFolderList
-{
-    public $IDList; // string
-}
-//***
-
-class FilterType
-{
-    public $Way; // WayEnum
-    public $State; // StateEnum
-    public $Inner; // integer
-    public $Email; // integer
-    public $Spam; // integer
-    public $Max; // integer
-    public $From; // string
-    public $Containing; // string
-}
-//***
-
-class RequestMessage
-{
-    public $StartDate; // string
-    public $EndDate; // string
-    public $Filter; // FilterType
-    public $SpecialParamList; // SpecialParamListType
-}
-//***
-
-class RequestMessageResponse
-{
-    public $xml; // string
-}
-//***
-
-class GetListMessage
-{
-    public $MessageType; // MessageTypeEnum
-    public $StartDate; // string
-    public $EndDate; // string
-    public $UserMessagerie; // string
-    public $Filter; // FilterType
-    public $SpecialParamList; // SpecialParamListType
-}
-//***
-
-class GetListMessageResponse
-{
-    public $xml; // string
-}
-//***
-
-class CloseMessageList
-{
-    public $IDList; // string
-}
-//***
-
-class ModifyMessage
-{
-    public $IDMessage; // string
-}
-//***
-
-class ModifyMessageResponse
-{
-    public $xml; // string
-}
-//***
-
-class UpdateMessage
-{
-    public $IDMessage; // string
-    public $UpdateData; // string
-}
-//***
-
-class UpdateMessageResponse
-{
-    public $xml; // string
-}
-//***
-
-class CreateMessage
-{
-    public $CreateType; // CreateTypeEnum
-    public $IDMessage; // string
-    public $IDAnswerType; // string
-}
-//***
-
-class CreateMessageResponse
-{
-    public $xml; // string
-}
-//***
-
-class SendMessage
-{
-    public $IDMessage; // string
-}
-//***
-
-class SendMessageResponse
-{
-    public $xml; // string
-}
-//***
-
-class CancelMessage
-{
-    public $IDMessage; // string
-}
-//***
-
-class GetPJ
-{
-    public $IDMessage; // string
-    public $IDPJ; // string
-}
-//***
-
-class GetPJResponseType
-{
-    public $Data; // string
-}
-//***
-
-class GetPJResponse
-{
-    public $xml; // GetPJResponseType
-}
-//***
-
-class DeletePJ
-{
-    public $IDMessage; // string
-    public $IDPJ; // string
-}
-//***
-
-class DeletePJResponse
-{
-    public $xml; // string
-}
-//***
-
-class DataPJType
-{
-    public $_; // string
-    public $encoding; // string
-    public $filename; // string
-    public $size; // integer
-}
-//***
-
-class AddPJ
-{
-    public $IDMessage; // string
-    public $DataPJ; // DataPJType
-}
-//***
-
-class AddPJResponse
-{
-    public $xml; // string
-}
-//***
-
-class CheckRecipient
-{
-    public $IDMessage; // string
-}
-//***
-
-class CheckRecipientResponse
-{
-    public $xml; // string
-}
-//***
-
-class ZipPJ
-{
-    public $IDMessage; // string
-}
-//***
-
-class ZipPJResponse
-{
-    public $xml; // string
-}
-//***
-
-class CheckCreateElement
-{
-    public $IDMessage; // string
-}
-//***
-
-class CheckCreateElementResponse
-{
-    public $xml; // string
-}
-//***
-
-class InitRecordFromMessage
-{
-    public $Table; // string
-    public $Record; // string
-    public $IDMessage; // string
-}
-//***
-
-class InitRecordFromMessageResponse
-{
-    public $xml; // string
-}
-//***
-
-class InitRecordFromAddress
-{
-    public $Table; // string
-    public $Record; // string
-    public $Address; // string
-}
-//***
-
-class InitRecordFromAddressResponse
-{
-    public $xml; // string
-}
-//***
-
-class LastUnReadType
-{
-    public $xml; // string
-}
-//***
-
-class GetMailServiceStatusResponse
-{
-    public $UnRead; // integer
-    public $Receive; // integer
-    public $LastUnRead; // LastUnReadType
-}
-//***
-
-class WithAutomaticResponse
-{
-    public $IDMessage; // string
-    public $ResponseType; // integer
-    public $SendAutomaticMessage; // integer
-}
-//***
-
-class WithAutomaticResponseResponse
-{
-    public $xml; // string
-}
-//***
-
-class UsernameToken
-{
-    public $Username; // string
-    public $Password; // string
-    public $Nonce; // string
-    public $Created; // string
-}
-//***
-
-
-class OptionDialogue
-{
-    public $Readable; // integer
-    public $EncodingOutput; // integer
-    public $ReturnValue; // integer
-    public $ReturnXSD; // integer
-    public $HTTPForceReturn; // integer
-    public $Ghost; // integer
-    public $DefaultPagination; // integer
-    public $DisplayValue; // integer
-    public $LanguageCode; // integer
-    public $WithFieldStateControl; // integer
-    public $ListContentAsync; // integer
-}
-//***
-
-
-class RecipientCheck
-{
-    public $To; // string
-    public $Cc; // string
-    public $Cci; // string
-}
-//***
-
-
-class Action
-{
-    public $_; // string
-    public $title; // string
-    public $typeaction; // string
-    public $typereturn; // string
-}
-//***
-
-class Form
-{
-    public $_; // string
-    public $title; // string
-    public $checksum; // string
-    public $typeform; // string
-    public $withBtnOrderPossible; // integer
-    public $sort1; // string
-    public $sort2; // string
-    public $sort3; // string
-    public $sort1asc; // string
-    public $sort2asc; // string
-    public $sort3asc; // string
-}
-//***
-
-class Element
-{
-    public $_; // string
-    public $title; // string
-}
-//***
-
-class Filter
-{
-    public $xml; // string
-    public $schema; // string
-}
-//***
-
-class Count
-{
-    public $NbFiltered; // integer
-    public $NbTotal; // integer
-    public $NbCalculation; // integer
-    public $NbLine; // integer
-}
-//***
-
-class PlanningFilter
-{
-    public $Resource; // string
-    public $Table; // string
-    public $StartTime; // string
-    public $EndTime; // string
-}
-//***
-
-class ValidateError
-{
-    public $Message; // string
-    public $ListCol; // ListeColType
-}
-//***
-
-class ConnectedUser
-{
-    public $Form; // string
-    public $Element; // string
-}
-//***
-
-class ConnectedExtranet
-{
-    public $Form; // string
-    public $Element; // string
-}
-//***
-
-/*
-class DefaultClientLanguageCodeType
-{
-}
-//***
-*/
-
-/*
-class APIUUID
-{
-}
-//***
-*/
-
-/*
-class SessionToken
-{
-}
-//***
-*/
-
-/*
-class APIUser
-{
-}
-//***
-*/
-
-/*
-class CustomerInfos
-{
-}
-//***
-*/
-
-/*
-class ActionContext
-{
-}
-//***
-*/
-
-/*
-class Column
-{
-}
-//***
-*/
-
-/*
-class AutoValidate
-{
-}
-//***
-*/
-
-/*
-class XSDSchema
-{
-}
-//***
-*/
-
-/*
-class SessionLanguageCode
-{
-}
-//***
-*/
-
-/*
-class PossibleDisplayMode
-{
-}
-//***
-*/
-
-/*
-class NextCall
-{
-}
-//***
-*/
 
 /*
  * definition des classe de constante utile a la communication soap
  *
  */
-
+/*
 class CalculationTypeEnum
 {
     const Sum = 'Sum';
@@ -2431,11 +1355,12 @@ class DisplayModeParamEnum
     const Thumbnail = 'Thumbnail';
 }
 //***
-
+*/
 
 /*
  * definition des classe de constante utile a la communication soap mais non presente dans la WSDL (uniquement dans la doc)
  */
+/*
 class COutOfWsdlType_CalculEnumForGetCalculation
 {
     const Sum = 'sum';
@@ -2445,3 +1370,348 @@ class COutOfWsdlType_CalculEnumForGetCalculation
     const Count = 'count';
     const Percent = 'percent';
 }
+
+
+class ConfirmResponse
+{
+	public $TypeConfirmation; // integer
+}
+//***
+
+class GetTokenSessionResponse
+{
+	public $SessionToken; // string
+}
+//***
+
+
+class ResetPasswordFailedResponse
+{
+	public $xml; // string
+}
+//***
+
+
+class GetStartAutomatismResponse
+{
+	public $xml; // string
+}
+//***
+
+
+class ConfirmResponseResponse
+{
+	public $xml; // string
+}
+//***
+
+class HasChangedResponse
+{
+	public $Value; // integer
+}
+//***
+
+class SelectFormResponse
+{
+	public $xml; // string
+}
+//***
+class SelectPrintTemplateResponse
+{
+	public $xml; // string
+}
+//***
+class GetPlanningInfoResponse
+{
+	public $xml; // string
+}
+//***
+
+class GetColInRecordResponse
+{
+	public $xml; // string
+}
+//***
+class DisplayResponse
+{
+	public $xml; // string
+}
+//***
+class CreateResponse
+{
+	public $xml; // string
+}
+//***
+
+class CreateFromResponse
+{
+	public $xml; // string
+}
+//***
+class TransformIntoResponse
+{
+	public $xml; // string
+}
+//***
+//***
+class ModifyResponse
+{
+	public $xml; // string
+}
+//***
+class UpdateResponse
+{
+	public $xml; // string
+}
+//***
+class PrintResponse
+{
+	public $xml; // string
+}
+//***
+class DeleteResponse
+{
+	public $xml; // string
+}
+//***
+class ExecuteResponse
+{
+	public $xml; // string
+}
+//***
+class DrillThroughResponse
+{
+	public $xml; // string
+}
+//***
+
+class ValidateResponse
+{
+	public $xml; // string
+}
+//***
+class CancelResponse
+{
+	public $xml; // string
+}
+//***
+
+class ListResponse
+{
+	public $xml; // string
+}
+//***
+
+class GetLanguagesResponse
+{
+	public $xml; // LanguageCodeList
+}
+//***
+class GetChartResponse
+{
+	public $xml; // string
+}
+//***
+class SelectItemsResponse
+{
+	public $xml; // string
+}
+//***
+
+class EnterReorderListModeResponse
+{
+	public $Value; // integer
+}
+//***
+class ReorderListResponse
+{
+	public $Value; // string
+}
+//***
+class SetOrderListResponse
+{
+	public $Value; // string
+}
+//***
+class ReorderSubListResponse
+{
+	public $Value; // string
+}
+//***
+
+class SetOrderSubListResponse
+{
+	public $Value; // string
+}
+//***
+class GetCalculationResponse
+{
+	public $xml; // string
+}
+//***
+class SearchResponse
+{
+	public $xml; // string
+}
+//***
+class RequestResponse
+{
+	public $xml; // string
+}
+//***
+class RequestParamResponse
+{
+	public $xml; // string
+}
+//***
+
+class GetTemporalAutomatismResponse
+{
+	public $xml; // string
+}
+//***
+class GetEndAutomatismResponse
+{
+	public $xml; // string
+}
+//***
+class UpdateFolderResponse
+{
+	public $xml; // string
+}
+//***
+
+class GetContentFolderResponse
+{
+	public $xml; // string
+}
+//***
+class GetTableChildResponse
+{
+	public $xml; // string
+}
+//***
+
+class GetFolderListResponse
+{
+	public $xml; // string
+}
+//***
+
+class CreateFolderResponse
+{
+	public $xml; // string
+}
+//***
+
+class DeletePJResponse
+{
+	public $xml; // string
+}
+//***
+
+class GetPJResponse
+{
+	public $xml; // GetPJResponseType
+}
+//***
+
+class SendMessageResponse
+{
+	public $xml; // string
+}
+//***
+
+class CreateMessageResponse
+{
+	public $xml; // string
+}
+//***
+
+class UpdateMessageResponse
+{
+	public $xml; // string
+}
+//***
+
+
+class ModifyMessageResponse
+{
+	public $xml; // string
+}
+//***
+class GetListMessageResponse
+{
+	public $xml; // string
+}
+//***
+class RequestMessageResponse
+{
+	public $xml; // string
+}
+//***
+
+class ModifyFolderResponse
+{
+	public $xml; // string
+}
+//***
+
+class AddPJResponse
+{
+	public $xml; // string
+}
+//***
+
+class CheckRecipientResponse
+{
+	public $xml; // string
+}
+//***
+
+class ZipPJResponse
+{
+	public $xml; // string
+}
+//***
+
+class CheckCreateElementResponse
+{
+	public $xml; // string
+}
+//***
+
+class InitRecordFromMessageResponse
+{
+	public $xml; // string
+}
+//***
+class InitRecordFromAddressResponse
+{
+	public $xml; // string
+}
+//***
+
+
+class GetMailServiceStatusResponse
+{
+	public $UnRead; // integer
+	public $Receive; // integer
+	public $LastUnRead; // LastUnReadType
+}
+//***
+
+class WithAutomaticResponse
+{
+	public $IDMessage; // string
+	public $ResponseType; // integer
+	public $SendAutomaticMessage; // integer
+}
+//***
+
+class WithAutomaticResponseResponse
+{
+	public $xml; // string
+}
+//***
+*/

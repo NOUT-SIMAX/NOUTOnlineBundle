@@ -1,0 +1,22 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Ninon
+ * Date: 22/07/14
+ * Time: 17:22
+ */
+//-------------------------------------------------------------------------------------------------------------------
+// Ensemble de classes utilisé par la classe SimaxOnlineServiceProxy
+// Note : les conventions de code peuvent semblé non respecté sur les nom de variables, mais elle corresponde en realite
+// au fichier WSDL
+//-------------------------------------------------------------------------------------------------------------------
+
+class RequestParam
+{
+	public $Table; // string
+	public $CallingColumn; // string
+	public $ColList; // ColListType
+	public $CondList; // string
+	public $MaxResult; // integer
+}
+//***
