@@ -208,6 +208,11 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function call($sOperation, $mParams = array(),$sNamespace=null,$sSoapAction=null , $mHeaders = false,$mRpcParams=null,$sStyle='rpc',$sUse='encoded')
     {
+	    //petite modif sur le paramètre mParams si tableau vide
+	    if (is_array($mParams) && (count($mParams)==0))
+		    $mParams = '<'.$sOperation.' />';
+
+
         //si il le faut, avant toutes chose, on nettoye les header
         if($this->__bCleanHeadersBeforeRequest )
         {
@@ -560,7 +565,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function disconnect($aHeaders = array())
     {
-	    $mResp = $this->call('Disconnect', '<Disconnect />' ,  null, null , $aHeaders);
+        $mResp = $this->call('Disconnect', array() ,  null, null , $aHeaders);
 
         return $mResp;
     }
