@@ -1,5 +1,6 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPClient;
 
 /***
  * Classe qui surcharge la classe nusoap_client, afin de pouvoir lui apporté des modification mineur :
@@ -12,7 +13,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
  * @version 1.0.1. last modification : 2011-10-29
  * @author   richard deguilhem <richard@nout.fr>
  */
-class ModifiedNuSoapClient extends soapclient
+class ModifiedNuSoapClient extends SOAPClient
 {
 	//definition de variable pour l'utilisation de document litteral
 	//TODO: Permettre la modification (document litteral et rpc encoded via fonction
@@ -29,7 +30,7 @@ class ModifiedNuSoapClient extends soapclient
  	 * @param $sProxyPort
  	 * @return unknown_type
  	 */
- 	public function ModifiedNuSoapClient($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false)
+ 	public function __construct($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false)
  	{
  		parent::__construct($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
  	}

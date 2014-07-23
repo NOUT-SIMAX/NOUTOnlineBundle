@@ -29,9 +29,9 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      * @param $sProxyPort
      * @return unknown_type
      */
-    public function SimaxOnlineServiceProxy($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false, $sProtocolPrefix = 'http://')
+    public function __construct($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false, $sProtocolPrefix = 'http://')
     {
-        parent::ModifiedNuSoapClient($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
+        parent::__construct($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
         $this->forceEndpoint = $sProtocolPrefix . $sProxyHost . ':' . $sProxyPort; //on force l'ip et le port du fichier config
         // on force le timeout a 300s
         $this->timeout = 300;
