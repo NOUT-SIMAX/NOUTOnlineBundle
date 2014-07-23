@@ -82,7 +82,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     private $__aListHeaders = array();
     private $__bCleanHeadersBeforeRequest = true; //sert a savoir si on remet les headers a zero avant une requete
 
+	//classe de configuration
 	private $__ConfigurationDialogue ;
+
+	//logger symfony
+	private $__clLogger;
+
+
 
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
@@ -102,7 +108,17 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         // on force le timeout a 300s
         $this->timeout = 300;
         $this->response_timeout = 300;
+	    $this->__clLogger = null;
     }
+
+	/**
+	 * @param null $_clLogger
+	 */
+	public function setLogger($_clLogger)
+	{
+		$this->__clLogger = $_clLogger;
+	}
+
     //---
 
     //------------------------------------------------------------------------------------------
@@ -202,7 +218,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         $this->addMultipleHeaders($mHeaders);
 
 
-//TODO: ajouter les header X-SIMAX pour le service.
+		//TODO: ajouter les header X-SIMAX pour le service.
 
 
         //si le la partie optiondialogue du header n'est pas passer en param on la crée
@@ -251,8 +267,26 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         //on ajoute l'id application
         $this->__aListHeaders['APIUUID'] = $this->__ConfigurationDialogue->m_sAPIUUID;
 
-        //on fait l'appel a la methode mere
-        $mResult =  parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
+	    try
+	    {
+		    //on fait l'appel a la methode mere
+		    $mResult =  parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
+	    }
+	    catch(\Exception $e)
+	    {
+		    if (isset($this->__clLogger))
+		    {
+			    $this->__clLogger->debug($this->request);
+			    $this->__clLogger->debug($this->response);
+		    }
+		    throw $e;
+	    }
+
+	    if (isset($this->__clLogger))
+	    {
+		    $this->__clLogger->debug($this->request);
+		    $this->__clLogger->debug($this->response);
+	    }
 
         return $mResult;
     }
@@ -526,7 +560,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function disconnect($aHeaders = array())
     {
-        $mResp = $this->call('Disconnect', array() ,  null, null , $aHeaders);
+	    $mResp = $this->call('Disconnect', '<Disconnect />' ,  null, null , $aHeaders);
 
         return $mResp;
     }

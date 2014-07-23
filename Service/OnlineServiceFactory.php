@@ -14,6 +14,13 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 
 class OnlineServiceFactory
 {
+	protected $m_clLogger;
+	public function __construct($logger)
+	{
+		$this->m_clLogger = $logger;
+	}
+
+
 
 	public function clGetServiceProxy()
 	{
@@ -25,6 +32,9 @@ class OnlineServiceFactory
 
 		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
 
-		return new OnlineServiceProxy(new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix));
+		$OnlineService = new OnlineServiceProxy(new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix));
+		$OnlineService->setLogger($this->m_clLogger);
+
+		return $OnlineService;
 	}
 } 

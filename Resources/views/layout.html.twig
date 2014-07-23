@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>NOUTOnline Bundle</title>
+	{% block stylesheets %}
+	{% endblock%}
+</head>
+<body>
+<div class="container">
+	<header>
+		{% block header %}
+		{% endblock %}
+	</header>
+	{% block containt %}
+	{% endblock %}
+	<footer>
+		{% block footer %}© NOUTOnline Bundle{% endblock %}
+	</footer>
+</div>
+{% block javascripts %}
+{% endblock %}
+</body>
+</html>

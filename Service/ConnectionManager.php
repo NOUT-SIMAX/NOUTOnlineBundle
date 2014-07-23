@@ -40,5 +40,10 @@ class ConnectionManager {
 		return $clGetTokenSession;
 	}
 
+	public function getUsernameToken()
+	{
+		return new UsernameToken('superviseur', '');
+	}
+
 
 } 

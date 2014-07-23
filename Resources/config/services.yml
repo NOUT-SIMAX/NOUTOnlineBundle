@@ -14,5 +14,7 @@ services:
 #            - %lexik_top_or_flop.param_scalar%
 
     noutonline.onlineservice_factory:
-          class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-          arguments:  []
+         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
+         arguments:  [@logger]
+         tags:
+             - { name: monolog.logger, channel: soap }

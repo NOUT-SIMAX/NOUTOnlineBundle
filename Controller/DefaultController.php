@@ -70,12 +70,38 @@ class DefaultController extends Controller
 
 		$ret = $OnlineProxy->getTokenSession($clGetTokenSession);
 
+		ob_start();
 		var_dump($ret);
+		$containt = ob_get_contents();
+		ob_get_clean();
 
-
-		$response = new Response('');
 		//$response->headers->set('Content-Type', 'application/json');
-		return $response;
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+	/**
+	 * @Route("/disconnect/{token}", name="disconnect")
+	 */
+	public function disconnectAction($token)
+	{
+		$clServiceFactory = $this->get('noutonline.onlineservice_factory');
+		$OnlineProxy = $clServiceFactory->clGetServiceProxy();
+
+		$clConnectionManager = $this->get('noutonline.connection_manager');
+
+		$clUsernameToken = $clConnectionManager->getUsernameToken();
+
+		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$token);
+
+		$ret = $OnlineProxy->disconnect($TabHeader);
+
+		ob_start();
+		var_dump($ret);
+		$containt = ob_get_contents();
+		ob_get_clean();
+
+		//$response->headers->set('Content-Type', 'application/json');
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
 
