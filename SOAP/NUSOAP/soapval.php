@@ -14,7 +14,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
  * xsd:anyType and user-defined types.
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
- * @version  $Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
+ * @version  v 1.123 2010/04/26 20:15:08 snichol Exp $
  * @access   public
  */
 class SOAPVal extends NUSOAPBase {

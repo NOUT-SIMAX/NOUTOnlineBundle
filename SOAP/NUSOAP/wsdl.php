@@ -12,7 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
  * @author   Scott Nichol <snichol@users.sourceforge.net>
- * @version  $Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
+ * @version  v 1.123 2010/04/26 20:15:08 snichol Exp $
  * @access public
  */
 class WSDL extends NUSOAPBase {
@@ -210,7 +210,7 @@ class WSDL extends NUSOAPBase {
 		if (isset($wsdl_props['scheme']) && ($wsdl_props['scheme'] == 'http' || $wsdl_props['scheme'] == 'https')) {
 			$this->debug('getting WSDL http(s) URL ' . $wsdl);
 			// get wsdl
-			$tr = new soap_transport_http($wsdl, $this->curl_options, $this->use_curl);
+			$tr = new SOAPTransportHTTP($wsdl, $this->curl_options, $this->use_curl);
 			$tr->request_method = 'GET';
 			$tr->useSOAPAction = false;
 			if($this->proxyhost && $this->proxyport){
@@ -309,7 +309,7 @@ class WSDL extends NUSOAPBase {
 			$this->debug('Parsing WSDL schema');
 			// $this->debug("startElement for $name ($attrs[name]). status = $this->status (".$this->getLocalPart($name).")");
 			$this->status = 'schema';
-			$this->currentSchema = new nusoap_xmlschema('', '', $this->namespaces);
+			$this->currentSchema = new NUSOAPXmlSchema('', '', $this->namespaces);
 			$this->currentSchema->schemaStartElement($parser, $name, $attrs);
 			$this->appendDebug($this->currentSchema->getDebug());
 			$this->currentSchema->clearDebug();
@@ -694,7 +694,7 @@ class WSDL extends NUSOAPBase {
 	 * @param string $ns namespace (not prefix) of the type
 	 * @return mixed
 	 * @access public
-	 * @see nusoap_xmlschema
+	 * @see NUSOAPXmlSchema
 	 */
 	function getTypeDef($type, $ns) {
 		$this->debug("in getTypeDef: type=$type, ns=$ns");
@@ -1779,7 +1779,7 @@ class WSDL extends NUSOAPBase {
 	 * @param array $elements e.g. array ( name => array(name=>'',type=>'') )
 	 * @param array $attrs e.g. array(array('ref'=>'SOAP-ENC:arrayType','wsdl:arrayType'=>'xsd:string[]'))
 	 * @param string $arrayType as namespace:name (xsd:string)
-	 * @see nusoap_xmlschema
+	 * @see NUSOAPXmlSchema
 	 * @access public
 	 */
 	function addComplexType($name,$typeClass='complexType',$phpType='array',$compositor='',$restrictionBase='',$elements=array(),$attrs=array(),$arrayType='') {
@@ -1826,7 +1826,7 @@ class WSDL extends NUSOAPBase {
 	 * @param string $typeClass (should always be simpleType)
 	 * @param string $phpType (should always be scalar)
 	 * @param array $enumeration array of values
-	 * @see nusoap_xmlschema
+	 * @see NUSOAPXmlSchema
 	 * @access public
 	 */
 	function addSimpleType($name, $restrictionBase='', $typeClass='simpleType', $phpType='scalar', $enumeration=array()) {
@@ -1840,7 +1840,7 @@ class WSDL extends NUSOAPBase {
 	 * adds an element to the WSDL types
 	 *
 	 * @param array $attrs attributes that must include name and type
-	 * @see nusoap_xmlschema
+	 * @see NUSOAPXmlSchema
 	 * @access public
 	 */
 	function addElement($attrs) {

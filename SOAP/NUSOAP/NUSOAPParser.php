@@ -10,7 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
 
 /**
  *
- * nusoap_parser class parses SOAP XML messages into native PHP values
+ * NUSOAPParser class parses SOAP XML messages into native PHP values
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
  * @author   Scott Nichol <snichol@users.sourceforge.net>
@@ -94,7 +94,7 @@ class NUSOAPParser extends NUSOAPBase {
 			} else {
 				$this->debug('No XML declaration');
 			}
-			$this->debug('Entering nusoap_parser(), length='.strlen($xml).', encoding='.$encoding);
+			$this->debug('Entering NUSOAPParser(), length='.strlen($xml).', encoding='.$encoding);
 			// Create an XML parser - why not xml_parser_create_ns?
 			$this->parser = xml_parser_create($this->xml_encoding);
 			// Set the options for parsing the XML data.
@@ -117,7 +117,7 @@ class NUSOAPParser extends NUSOAPBase {
 				$this->debug("XML payload:\n" . $xml);
 				$this->setError($err);
 			} else {
-				$this->debug('in nusoap_parser ctor, message:');
+				$this->debug('in NUSOAPParser ctor, message:');
 				$this->appendDebug($this->varDump($this->message));
 				$this->debug('parsed successfully, found root struct: '.$this->root_struct.' of name '.$this->root_struct_name);
 				// get final value

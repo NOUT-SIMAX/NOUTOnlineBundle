@@ -1,9 +1,11 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
+use NOUT\Bundle\NOUTOnlineBundle\Exception\NOUTOnlineException;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\NUSOAPParser;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPClient;
 
 /***
- * Classe qui surcharge la classe nusoap_client, afin de pouvoir lui apporté des modification mineur :
+ * Classe qui surcharge la classe NUSOAPClient, afin de pouvoir lui apporté des modification mineur :
  * 	- gestions des content-type de retour "application/soap+xml"
  *  - gestion de l'encodage 
  *  - appel de call simplifié et forcé en document litteral
@@ -37,7 +39,7 @@ class ModifiedNuSoapClient extends SOAPClient
     //---
 			
 	/**
-	 * Surcharge de la methode call de nusoap_client avec afin :
+	 * Surcharge de la methode call de NUSOAPClient avec afin :
 	 *  - de simplifier son appel 
 	 *  - de forcer l'utilisation en document litteral.
 	 *  - de gérer les retour d'erreur format soap 1.2
@@ -58,7 +60,7 @@ class ModifiedNuSoapClient extends SOAPClient
 	 * @access   public
 	 * 
 	 * pour plus d'information :
-	 * @see lib/nusoap_client#call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use)
+	 * @see lib/NUSOAPClient#call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use)
 	 * 
 	 * note : $sStyle et $sUse sont des parametre inutile reporter uniquement pour avoir la meme signature de methode.
 	 */
@@ -118,7 +120,8 @@ class ModifiedNuSoapClient extends SOAPClient
 		{
 			if(!isset($sErrCode) ||  is_null($sErrCode))
 				$sErrCode = -1;
-			return setError($this->getError(), $sErrCode);
+
+			throw new SOAPException($this->getError(), $sErrCode);
 		}
 
 		return $mReturn;
@@ -136,7 +139,7 @@ class ModifiedNuSoapClient extends SOAPClient
 	* @return	mixed	value of the message, decoded into a PHP type
 	* @access   public
 	* 
-	* * @see lib/nusoap_client#parseResponse
+	* * @see lib/NUSOAPClient#parseResponse
 	*/
     public function parseResponse($headers, $data) {
 		$this->debug('Entering parseResponse() for data of length ' . strlen($data) . ' headers:');
@@ -161,8 +164,8 @@ class ModifiedNuSoapClient extends SOAPClient
 			// should be US-ASCII for HTTP 1.0 or ISO-8859-1 for HTTP 1.1
 			$this->xml_encoding = 'ISO-8859-1';
 		}
-		$this->debug('Use encoding: ' . $this->xml_encoding . ' when creating nusoap_parser');
-		$parser = new nusoap_parser($data,$this->xml_encoding,$this->operation,$this->decode_utf8);
+		$this->debug('Use encoding: ' . $this->xml_encoding . ' when creating NUSOAPParser');
+		$parser = new NUSOAPParser($data,$this->xml_encoding,$this->operation,$this->decode_utf8);
 		// add parser debug data to our debug
 		$this->appendDebug($parser->getDebug());
 		// if parse errors

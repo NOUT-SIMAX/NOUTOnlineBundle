@@ -1,5 +1,63 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
+//WSDLEntity utilsé en paramètres
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CheckCreateElement;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CheckRecipient;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CloseFolderList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CloseMessageList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeleteFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetChart;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromAddress;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ReorderList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ReorderSubList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestParam;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ResetPasswordFailed;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SendMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ValidateFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\WithAutomaticResponse;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ZipPJ;
 
 /**
  * Classe finale permettant la consomation du service web de simaxOnline de facon simplifié.
@@ -15,11 +73,16 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
  */
 final class OnlineServiceProxy extends ModifiedNuSoapClient
 {
+	//OPTION HEADER
+	const FORMHEAD_UNDECODED_SPECIAL_ELEM_AND_DATE = 16508; //display value a utilise
+	const FORMHEAD_UNDECODED_SPECIAL_ELEM = 16638; //display value a utilise
+	const FORMHEAD_DB_FORMAT_SPECIAL_ELEM = 0; //display value permettant de récupérer les donnée au format stockés.
 
     //Definition des variable pour gestion des headers de requete
     private $__aListHeaders = array();
     private $__bCleanHeadersBeforeRequest = true; //sert a savoir si on remet les headers a zero avant une requete
 
+	private $__ConfigurationDialogue ;
 
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
@@ -29,10 +92,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      * @param $sProxyPort
      * @return unknown_type
      */
-    public function __construct($sEndpoint,$bWsdl = false,$sProxyHost = false,$sProxyPort = false, $sProtocolPrefix = 'http://')
+    public function __construct(ConfigurationDialogue $clConfig)
     {
-        parent::__construct($sEndpoint,$bWsdl,$sProxyHost,$sProxyPort);
-        $this->forceEndpoint = $sProtocolPrefix . $sProxyHost . ':' . $sProxyPort; //on force l'ip et le port du fichier config
+        parent::__construct($clConfig->m_sEndPoint,$clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
+
+	    $this->__ConfigurationDialogue = $clConfig;
+
+        $this->forceEndpoint = $clConfig->m_sProtocolPrefix . $clConfig->m_sHost . ':' . $clConfig->m_nPort; //on force l'ip et le port du fichier config
         // on force le timeout a 300s
         $this->timeout = 300;
         $this->response_timeout = 300;
@@ -146,7 +212,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         }
         if(!isset($this->__aListHeaders['OptionDialogue']['DisplayValue']))
         {
-            $this->__aListHeaders['OptionDialogue']['DisplayValue'] = FORMHEAD_UNDECODED_SPECIAL_ELEM;
+            $this->__aListHeaders['OptionDialogue']['DisplayValue'] = OnlineServiceProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;
         }
 
         //Si on a pas encore d'encodingType, on le met a 0
@@ -167,11 +233,10 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
             $this->__aListHeaders['OptionDialogue']['LanguageCode'] == ''
         )
         {
-            $iLocalDefiner = clLocalDefiner::getInstance();
-            $this->__aListHeaders['OptionDialogue']['LanguageCode'] = $iLocalDefiner->getLangCode();
+            $this->__aListHeaders['OptionDialogue']['LanguageCode'] = $this->__ConfigurationDialogue->m_nLangCode;
         }
 
-        //si on a pas de withFieldStateControl precis�, on le mets a� 1 (pour recuperer les controle d'etat de champ)
+        //si on a pas de withFieldStateControl precisé, on le mets à 1 (pour recuperer les controle d'etat de champ)
         if(
             !isset($this->__aListHeaders['OptionDialogue']['WithFieldStateControl']) ||
             is_null($mHeaders['OptionDialogue']['WithFieldStateControl']) ||
@@ -182,10 +247,9 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         }
 
 
-        $clConfigManager = clConfigFileManager::getInstance();
 
         //on ajoute l'id application
-        $this->__aListHeaders['APIUUID'] = $clConfigManager->oGlobalConfig->getValue(CStaticConfigFileIdGest::CONFIG_OPT_SERVICE_APPLI_ID);
+        $this->__aListHeaders['APIUUID'] = $this->__ConfigurationDialogue->m_sAPIUUID;
 
         //on fait l'appel a la methode mere
         $mResult =  parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
@@ -1243,12 +1307,6 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 //***
 
 
-class ResetPasswordFailed
-{
-	public $Login; // string
-}
-//***
-
 //-------------------------------------------------------------------------------------------------------------------
 // Ensemble de classes utilisé par la classe SimaxOnlineServiceProxy
 // Note : les conventions de code peuvent semblé non respecté sur les nom de variables, mais elle corresponde en realite
@@ -1371,12 +1429,6 @@ class COutOfWsdlType_CalculEnumForGetCalculation
     const Percent = 'percent';
 }
 
-
-class ConfirmResponse
-{
-	public $TypeConfirmation; // integer
-}
-//***
 
 class GetTokenSessionResponse
 {
@@ -1701,13 +1753,6 @@ class GetMailServiceStatusResponse
 }
 //***
 
-class WithAutomaticResponse
-{
-	public $IDMessage; // string
-	public $ResponseType; // integer
-	public $SendAutomaticMessage; // integer
-}
-//***
 
 class WithAutomaticResponseResponse
 {

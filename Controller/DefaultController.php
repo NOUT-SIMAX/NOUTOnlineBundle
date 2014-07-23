@@ -2,6 +2,9 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 // this imports the annotations
@@ -32,30 +35,49 @@ class DefaultController extends Controller
 	 */
 	public function recordAction()
 	{
-		$clRecord = new Record();
-		$clRecord->testXML();
+		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
+		$clResponseXML = new XMLResponseWS($sXML);
+
+		$clOptionDialogue = new OptionDialogue();
+		$clOptionDialogue->DisplayValue = 16638;
+		$clOptionDialogue->Readable = 0;
+		$clOptionDialogue->EncodingOutput = 0;
+		$clOptionDialogue->LanguageCode = 12;
+		$clOptionDialogue->WithFieldStateControl = 1;
+
+
+		$clRecord = new Record(Record::LEVEL_RECORD, $clResponseXML->clGetForm(), $clResponseXML->clGetElement());
+		$clRecord->initFromReponseWS($clOptionDialogue, $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
+
 
 		$response = new Response(json_encode($clRecord));
 		//$response->headers->set('Content-Type', 'application/json');
 		return $response;
 	}
 
+
 	/**
 	 * @Route("/token", name="token")
 	 */
 	public function tokenAction()
 	{
-		$sXML = file_get_contents('./bundles/noutonline/test/xml/GetTokenSessionResponse.xml');
-		$clXML = new XMLResponseWS($sXML);
+		$clServiceFactory = $this->get('noutonline.onlineservice_factory');
+		$OnlineProxy = $clServiceFactory->clGetServiceProxy();
 
-		$token = $clXML->sGetTokenSession();
-		var_dump($token);
+		$clConnectionManager = $this->get('noutonline.connection_manager');
+
+		$clGetTokenSession = $clConnectionManager->getGetTokenSession();
+
+		$ret = $OnlineProxy->getTokenSession($clGetTokenSession);
+
+		var_dump($ret);
 
 
-		$response = new Response(json_encode($clXML));
+		$response = new Response('');
 		//$response->headers->set('Content-Type', 'application/json');
 		return $response;
 	}
+
 
 
 

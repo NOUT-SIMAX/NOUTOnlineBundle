@@ -57,7 +57,7 @@ class NUSOAPXmlSchema extends NUSOAPBase  {
 	 */
 	function __construct($schema='',$xml='',$namespaces=array()){
 		parent::__construct();
-		$this->debug('nusoap_xmlschema class instantiated, inside constructor');
+		$this->debug('NUSOAPXmlSchema class instantiated, inside constructor');
 		// files
 		$this->schema = $schema;
 		$this->xml = $xml;
@@ -932,7 +932,7 @@ class NUSOAPXmlSchema extends NUSOAPBase  {
 	 * @param string $phpType (should always be scalar)
 	 * @param array $enumeration array of values
 	 * @access public
-	 * @see nusoap_xmlschema
+	 * @see NUSOAPXmlSchema
 	 * @see getTypeDef
 	 */
 	function addSimpleType($name, $restrictionBase='', $typeClass='simpleType', $phpType='scalar', $enumeration=array()) {
@@ -952,7 +952,7 @@ class NUSOAPXmlSchema extends NUSOAPBase  {
 	 * adds an element to the schema
 	 *
 	 * @param array $attrs attributes that must include name and type
-	 * @see nusoap_xmlschema
+	 * @see NUSOAPXmlSchema
 	 * @access public
 	 */
 	function addElement($attrs) {

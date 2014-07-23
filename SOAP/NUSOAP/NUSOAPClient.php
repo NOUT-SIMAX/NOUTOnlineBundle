@@ -15,7 +15,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
  * usage:
  *
  * // instantiate client with server info
- * $soapclient = new nusoap_client( string path [ ,mixed wsdl] );
+ * $soapclient = new NUSOAPClient( string path [ ,mixed wsdl] );
  *
  * // call method, get results
  * echo $soapclient->call( string methodname [ ,array parameters] );
@@ -25,7 +25,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
  * @author   Scott Nichol <snichol@users.sourceforge.net>
- * @version  $Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
+ * @version  v 1.123 2010/04/26 20:15:08 snichol Exp $
  * @access   public
  */
 class NUSOAPClient extends NUSOAPBase  {
@@ -377,7 +377,7 @@ class NUSOAPClient extends NUSOAPBase  {
 	 */
 	function loadWSDL() {
 		$this->debug('instantiating wsdl class with doc: '.$this->wsdlFile);
-		$this->wsdl = new wsdl('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
+		$this->wsdl = new WSDL('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
 		$this->wsdl->setCredentials($this->username, $this->password, $this->authtype, $this->certRequest);
 		$this->wsdl->fetchWSDL($this->wsdlFile);
 		$this->checkWSDL();
@@ -426,7 +426,7 @@ class NUSOAPClient extends NUSOAPBase  {
 				if($this->persistentConnection == true && is_object($this->persistentConnection)){
 					$http =& $this->persistentConnection;
 				} else {
-					$http = new soap_transport_http($this->endpoint, $this->curl_options, $this->use_curl);
+					$http = new SOAPTransportHTTP($this->endpoint, $this->curl_options, $this->use_curl);
 					if ($this->persistentConnection) {
 						$http->usePersistentConnection();
 					}
@@ -518,8 +518,8 @@ class NUSOAPClient extends NUSOAPBase  {
 			// should be US-ASCII for HTTP 1.0 or ISO-8859-1 for HTTP 1.1
 			$this->xml_encoding = 'ISO-8859-1';
 		}
-		$this->debug('Use encoding: ' . $this->xml_encoding . ' when creating nusoap_parser');
-		$parser = new nusoap_parser($data,$this->xml_encoding,$this->operation,$this->decode_utf8);
+		$this->debug('Use encoding: ' . $this->xml_encoding . ' when creating NUSOAPParser');
+		$parser = new NUSOAPParser($data,$this->xml_encoding,$this->operation,$this->decode_utf8);
 		// add parser debug data to our debug
 		$this->appendDebug($parser->getDebug());
 		// if parse errors
@@ -714,7 +714,7 @@ class NUSOAPClient extends NUSOAPBase  {
 		// eval the class
 		eval($evalStr);
 		// instantiate proxy object
-		eval("\$proxy = new nusoap_proxy_$r('');");
+		eval("\$proxy = new NUSOAPProxy_$r('');");
 		// transfer current wsdl data to the proxy thereby avoiding parsing the wsdl twice
 		$proxy->endpointType = 'wsdl';
 		$proxy->wsdlFile = $this->wsdlFile;
@@ -798,7 +798,7 @@ class NUSOAPClient extends NUSOAPBase  {
 				unset($paramCommentStr);
 			}
 		}
-		$evalStr = 'class nusoap_proxy_'.$r.' extends nusoap_client {
+		$evalStr = 'class NUSOAPProxy_'.$r.' extends NUSOAPClient {
 	'.$evalStr.'
 }';
 		return $evalStr;

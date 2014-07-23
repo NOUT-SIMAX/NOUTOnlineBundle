@@ -1,24 +1,21 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\OASIS;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UsernameToken as WSDLUsernameToken;
+
 /**
  * Classe UserNameToken
  * permetant de générer les info de connection pour la norme OASIS (username, password, nonce, et created)
  */
-class UserNameToken
+class UsernameToken extends WSDLUsernameToken
 {
-	
-	protected $m_sUsername;
 	protected $m_sClearPassword;
-	protected $m_sPassword;
-	protected $m_sCreated;
-	protected $m_sNonce;
-	
+
 	public function __construct($sUsername, $sPassword)
 	{		
-		$this->m_sUsername = $sUsername;
+		$this->Username = $sUsername;
 		$this->m_sClearPassword = $sPassword;
-		$this->m_sPassword = $this->_getCryptedPassword($sPassword);
+		$this->Password = $this->_getCryptedPassword($sPassword);
 			
 	}
 
@@ -27,7 +24,7 @@ class UserNameToken
 	 */
 	public function getCreated()
 	{
-		return $this->m_sCreated;
+		return $this->Created;
 	}
 
 	/**
@@ -35,7 +32,7 @@ class UserNameToken
 	 */
 	public function getNonce()
 	{
-		return $this->m_sNonce;
+		return $this->Nonce;
 	}
 
 	/**
@@ -43,7 +40,7 @@ class UserNameToken
 	 */
 	public function getPassword()
 	{
-		return $this->m_sPassword;
+		return $this->Password;
 	}
 
 	/**
@@ -51,7 +48,7 @@ class UserNameToken
 	 */
 	public function getUsername()
 	{
-		return $this->m_sUsername;
+		return $this->Username;
 	}
 	
 	/**
@@ -70,10 +67,10 @@ class UserNameToken
 			$sSecurePassword = 'AAAAAAAAAAAAAAAAAAAAAA==';
 	
 
-		$this->m_sCreated = date('r');
-		$this->m_sNonce = base64_encode( microtime() );
+		$this->Created = date('r');
+		$this->Nonce = base64_encode( microtime() );
 		
-		return base64_encode(sha1($this->m_sNonce.$this->m_sCreated.$sSecurePassword, true));
+		return base64_encode(sha1($this->Nonce.$this->Created.$sSecurePassword, true));
 	}
 /*
 	protected function _sBase64($strHex)

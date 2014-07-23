@@ -9,7 +9,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
 
 /**
  *
- * nusoap_server allows the user to create a SOAP server
+ * NUSOAPServer allows the user to create a SOAP server
  * that is capable of receiving messages and returning responses
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
@@ -191,13 +191,13 @@ class NUSOAPServer extends NUSOAPBase {
 		}
 
 		if (isset($debug)) {
-			$this->debug("In nusoap_server, set debug_flag=$debug based on global flag");
+			$this->debug("In NUSOAPServer, set debug_flag=$debug based on global flag");
 			$this->debug_flag = $debug;
 		} elseif (isset($_SERVER['QUERY_STRING'])) {
 			$qs = explode('&', $_SERVER['QUERY_STRING']);
 			foreach ($qs as $v) {
 				if (substr($v, 0, 6) == 'debug=') {
-					$this->debug("In nusoap_server, set debug_flag=" . substr($v, 6) . " based on query string #1");
+					$this->debug("In NUSOAPServer, set debug_flag=" . substr($v, 6) . " based on query string #1");
 					$this->debug_flag = substr($v, 6);
 				}
 			}
@@ -205,7 +205,7 @@ class NUSOAPServer extends NUSOAPBase {
 			$qs = explode('&', $HTTP_SERVER_VARS['QUERY_STRING']);
 			foreach ($qs as $v) {
 				if (substr($v, 0, 6) == 'debug=') {
-					$this->debug("In nusoap_server, set debug_flag=" . substr($v, 6) . " based on query string #2");
+					$this->debug("In NUSOAPServer, set debug_flag=" . substr($v, 6) . " based on query string #2");
 					$this->debug_flag = substr($v, 6);
 				}
 			}
@@ -213,14 +213,14 @@ class NUSOAPServer extends NUSOAPBase {
 
 		// wsdl
 		if($wsdl){
-			$this->debug("In nusoap_server, WSDL is specified");
+			$this->debug("In NUSOAPServer, WSDL is specified");
 			if (is_object($wsdl) && (get_class($wsdl) == 'wsdl')) {
 				$this->wsdl = $wsdl;
 				$this->externalWSDLURL = $this->wsdl->wsdl;
 				$this->debug('Use existing wsdl instance from ' . $this->externalWSDLURL);
 			} else {
 				$this->debug('Create wsdl from ' . $wsdl);
-				$this->wsdl = new wsdl($wsdl);
+				$this->wsdl = new WSDL($wsdl);
 				$this->externalWSDLURL = $wsdl;
 			}
 			$this->appendDebug($this->wsdl->getDebug());
@@ -654,7 +654,7 @@ class NUSOAPServer extends NUSOAPBase {
 	function serialize_return() {
 		$this->debug('Entering serialize_return methodname: ' . $this->methodname . ' methodURI: ' . $this->methodURI);
 		// if fault
-		if (isset($this->methodreturn) && is_object($this->methodreturn) && ((get_class($this->methodreturn) == 'soap_fault') || (get_class($this->methodreturn) == 'nusoap_fault'))) {
+		if (isset($this->methodreturn) && is_object($this->methodreturn) && ((get_class($this->methodreturn) == 'SOAPFault') || (get_class($this->methodreturn) == 'NUSOAPFault'))) {
 			$this->debug('got a fault object from method');
 			$this->fault = $this->methodreturn;
 			return;
@@ -872,9 +872,9 @@ class NUSOAPServer extends NUSOAPBase {
 			// should be US-ASCII for HTTP 1.0 or ISO-8859-1 for HTTP 1.1
 			$this->xml_encoding = 'ISO-8859-1';
 		}
-		$this->debug('Use encoding: ' . $this->xml_encoding . ' when creating nusoap_parser');
+		$this->debug('Use encoding: ' . $this->xml_encoding . ' when creating NUSOAPParser');
 		// parse response, get soap parser obj
-		$parser = new nusoap_parser($data,$this->xml_encoding,'',$this->decode_utf8);
+		$parser = new NUSOAPParser($data,$this->xml_encoding,'',$this->decode_utf8);
 		// parser debug
 		$this->debug("parser debug: \n".$parser->getDebug());
 		// if fault occurred during message parsing
@@ -1034,7 +1034,7 @@ class NUSOAPServer extends NUSOAPBase {
 		if ($faultdetail == '' && $this->debug_flag) {
 			$faultdetail = $this->getDebug();
 		}
-		$this->fault = new nusoap_fault($faultcode,$faultactor,$faultstring,$faultdetail);
+		$this->fault = new NUSOAPFault($faultcode,$faultactor,$faultstring,$faultdetail);
 		$this->fault->soap_defencoding = $this->soap_defencoding;
 	}
 
@@ -1093,7 +1093,7 @@ class NUSOAPServer extends NUSOAPBase {
 			$schemaTargetNamespace = $namespace;
 		}
 
-		$this->wsdl = new wsdl;
+		$this->wsdl = new WSDL;
 		$this->wsdl->serviceName = $serviceName;
 		$this->wsdl->endpoint = $endpoint;
 		$this->wsdl->namespaces['tns'] = $namespace;
@@ -1102,7 +1102,7 @@ class NUSOAPServer extends NUSOAPBase {
 		if ($schemaTargetNamespace != $namespace) {
 			$this->wsdl->namespaces['types'] = $schemaTargetNamespace;
 		}
-		$this->wsdl->schemas[$schemaTargetNamespace][0] = new nusoap_xmlschema('', '', $this->wsdl->namespaces);
+		$this->wsdl->schemas[$schemaTargetNamespace][0] = new NUSOAPXmlSchema('', '', $this->wsdl->namespaces);
 		if ($style == 'document') {
 			$this->wsdl->schemas[$schemaTargetNamespace][0]->schemaInfo['elementFormDefault'] = 'qualified';
 		}

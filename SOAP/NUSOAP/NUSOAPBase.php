@@ -9,7 +9,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
 
 
 /*
-	$Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
+	v 1.123 2010/04/26 20:15:08 snichol Exp $
 
 	NuSOAP - Web Services Toolkit for PHP
 
@@ -172,11 +172,11 @@ function usleepWindows($usec)
 
 /**
  *
- * nusoap_base
+ * NUSOAPBase
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
  * @author   Scott Nichol <snichol@users.sourceforge.net>
- * @version  $Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
+ * @version  v 1.123 2010/04/26 20:15:08 snichol Exp $
  * @access   public
  */
 class NUSOAPBase {
@@ -274,7 +274,7 @@ class NUSOAPBase {
 	/**
 	 * XML Schema types in an array of uri => (array of xml type => php type)
 	 * is this legacy yet?
-	 * no, this is used by the nusoap_xmlschema class to verify type => namespace mappings.
+	 * no, this is used by the NUSOAPXmlSchema class to verify type => namespace mappings.
 	 * @var      array
 	 * @access   public
 	 */

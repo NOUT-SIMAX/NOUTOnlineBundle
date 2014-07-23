@@ -5,3 +5,14 @@ services:
 #    noutnout_online.example:
 #        class: %noutnout_online.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
+    noutonline.connection_manager:
+          class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager
+          arguments:  []
+#          arguments:
+#            - "@doctrine.orm.entity_manager"
+#            - "@security.context"
+#            - %lexik_top_or_flop.param_scalar%
+
+    noutonline.onlineservice_factory:
+          class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
+          arguments:  []
