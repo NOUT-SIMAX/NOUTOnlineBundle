@@ -1,4 +1,5 @@
 <?php
+namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 /**
  * Created by PhpStorm.
  * User: Ninon
@@ -12,6 +13,10 @@
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
 
+/**
+ * Class Action
+ * @package NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity
+ */
 class Action
 {
 	public $_; // string
