@@ -22,19 +22,10 @@ class OnlineServiceFactory
 
 
 
-	public function clGetServiceProxy()
+	public function clGetServiceProxy(ConfigurationDialogue $clConfiguration)
 	{
-		$sEndPoint = './bundles/noutonline/Service.wsdl';
-		$sService = 'http://127.0.0.1:8062';
-
-		//on récupére le prefixe (http | https);
-		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
-
-		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
-
-		$OnlineService = new OnlineServiceProxy(new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix));
+		$OnlineService = new OnlineServiceProxy($clConfiguration);
 		$OnlineService->setLogger($this->m_clLogger);
-
 		return $OnlineService;
 	}
 } 

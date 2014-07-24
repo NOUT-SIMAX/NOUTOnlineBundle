@@ -9,7 +9,9 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\OASIS\UserNameToken;
+use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 
 /**
  * Class NOUTOnlineTest
@@ -18,13 +20,30 @@ use NOUT\Bundle\NOUTOnlineBundle\OASIS\UserNameToken;
  */
 class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 {
-	protected $m_sAdresseServeur = '127.0.0.1:8052';
+	protected $m_clConfig;
 	protected $m_clNOUTOnline;
 
 	public function __construct()
 	{
+		//on instancie la configuration de NOUTOnline
+		$sService = 'http://12.7.0.0.1:8062';
+		//on récupére le prefixe (http | https);
+		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
+		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
+
+		//il faut récupérer la wsdl depuis le service
+		//adresse de la wsdl :  /getwsdl?
+		$sHttpWSDL = $sService.'/GetWSDL?';
+		$sWSDL = file_get_contents($sHttpWSDL);
+
+
+		$sEndPoint = './Service.wsdl';
+		file_put_contents($sEndPoint, $sWSDL);
+
+		$this->m_clConfig = new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix);
+
 		//ici on instancie NOUTOnline
-		//$this->m_clNOUTOnline = new NOUTOnline($this->m_sAdresseServeur);
+		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig);
 	}
 
 	/**
@@ -33,8 +52,32 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _clGetUsernameToken()
 	{
-		return new UserNameToken('superviseur', '');
+		return new UsernameToken('superviseur', '');
 	}
+
+	/**
+	 * Génère les paramètres pour la méthode GetTokenSession
+	 * @return GetTokenSession
+	 */
+	protected function _getGetTokenSession($UsernameToken, $UserExtranet=null, $FormExtranet=null)
+	{
+		//il faut retourner les paramètres pour la connexion
+		$clGetTokenSession = new GetTokenSession();
+		$clGetTokenSession->DefaultClientLanguageCode=12;
+		$clGetTokenSession->UsernameToken = $UsernameToken;
+
+		if ($UserExtranet == null)
+			$clGetTokenSession->ExtranetUser = null;
+		else
+		{
+			$clGetTokenSession->ExtranetUser = new ExtranetUserType();
+			$clGetTokenSession->ExtranetUser->UsernameToken = $UserExtranet;
+			$clGetTokenSession->ExtranetUser->Form = $FormExtranet;
+		}
+
+		return $clGetTokenSession;
+	}
+
 
 	/**
 	 * Test l'identification avec des valeurs correctes
@@ -42,7 +85,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _sGetTokenSession_TRUE()
 	{
-		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_clGetUsernameToken());
+		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession($this->_clGetUsernameToken()));
 		$this->assertNotEquals(false, $sTokenSession);
 		return $sTokenSession;
 	}
@@ -50,6 +93,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * Teste l'identification avec des valeurs erronées
 	 * @return false (toujours faux)
+	 * @expectedException SOAPException
 	 */
 	protected function _sGetTokenSession_FALSE()
 	{
@@ -73,9 +117,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _Disconnect($sTokenSession, $bDoitReussir)
 	{
-		$ret = $this->m_clNOUTOnline->Diconnect($this->_clGetUsernameToken(), $sTokenSession);
+		//Disconnect
+		$clUsernameToken = $this->_clGetUsernameToken();
+		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession);
+
+		$ret = $this->m_clNOUTOnline->disconnect($TabHeader);
 		if ($bDoitReussir)
-			$this->assertNotEquals(false, $ret);
+			$this->assertEquals(true, $ret);
 		else
 			$this->assertEquals(false, $ret);
 	}

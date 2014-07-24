@@ -2,6 +2,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
@@ -56,57 +57,52 @@ class DefaultController extends Controller
 	}
 
 
+	protected function _clGetConfiguration($host)
+	{
+		$sEndPoint = './bundles/noutonline/Service.wsdl';
+		$sService = 'http://'.$host;
+
+		//on récupére le prefixe (http | https);
+		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
+
+		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
+
+		$clConfiguration = new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix);
+		return $clConfiguration;
+	}
+
 	/**
-	 * @Route("/token", name="token")
+	 * pour tester la connexion déconnexion
+	 * @Route("/connexion/{host}", name="connexion", defaults={"host"="127.0.0.1:8062"})
 	 */
-	public function tokenAction()
+	public function connexionAction($host)
 	{
 		$clServiceFactory = $this->get('noutonline.onlineservice_factory');
-		$OnlineProxy = $clServiceFactory->clGetServiceProxy();
+		$OnlineProxy = $clServiceFactory->clGetServiceProxy($this->_clGetConfiguration($host));
 
 		$clConnectionManager = $this->get('noutonline.connection_manager');
 
+		//GetTokenSession
 		$clGetTokenSession = $clConnectionManager->getGetTokenSession();
-
-		$ret = $OnlineProxy->getTokenSession($clGetTokenSession);
+		$sTokenSession = $OnlineProxy->getTokenSession($clGetTokenSession);
 
 		ob_start();
-		var_dump($ret);
-		$containt = ob_get_contents();
-		ob_get_clean();
+		echo '<h1>GetTokenSession</h1>';
+		var_dump($sTokenSession);
 
-		//$response->headers->set('Content-Type', 'application/json');
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
-	}
-
-	/**
-	 * @Route("/disconnect/{token}", name="disconnect")
-	 */
-	public function disconnectAction($token)
-	{
-		$clServiceFactory = $this->get('noutonline.onlineservice_factory');
-		$OnlineProxy = $clServiceFactory->clGetServiceProxy();
-
-		$clConnectionManager = $this->get('noutonline.connection_manager');
-
+		//Disconnect
 		$clUsernameToken = $clConnectionManager->getUsernameToken();
+		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession);
+		$bDisconnect = $OnlineProxy->disconnect($TabHeader);
 
-		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$token);
+		echo '<h1>Disconnect</h1>';
+		var_dump($bDisconnect);
 
-		$ret = $OnlineProxy->disconnect($TabHeader);
-
-		ob_start();
-		var_dump($ret);
 		$containt = ob_get_contents();
 		ob_get_clean();
 
-		//$response->headers->set('Content-Type', 'application/json');
+
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
-
-
-
-
-
 
 }
