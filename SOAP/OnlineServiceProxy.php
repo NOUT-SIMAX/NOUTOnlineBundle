@@ -1,6 +1,7 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 //WSDLEntity utilsé en paramètres
+use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
@@ -98,7 +99,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      * @param $sProxyPort
      * @return unknown_type
      */
-    public function __construct(ConfigurationDialogue $clConfig)
+    public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger)
     {
         parent::__construct($clConfig->m_sEndPoint,$clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
 
@@ -108,16 +109,8 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         // on force le timeout a 300s
         $this->timeout = 300;
         $this->response_timeout = 300;
-	    $this->__clLogger = null;
+	    $this->__clLogger = $_clLogger;
     }
-
-	/**
-	 * @param null $_clLogger
-	 */
-	public function setLogger($_clLogger)
-	{
-		$this->__clLogger = $_clLogger;
-	}
 
     //---
 
@@ -272,6 +265,10 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         //on ajoute l'id application
         $this->__aListHeaders['APIUUID'] = $this->__ConfigurationDialogue->m_sAPIUUID;
 
+	    //
+	    if (isset($this->__clLogger)) //log des requetes
+		    $this->__clLogger->startQuery();
+
 	    try
 	    {
 		    //on fait l'appel a la methode mere
@@ -279,19 +276,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	    }
 	    catch(\Exception $e)
 	    {
-		    if (isset($this->__clLogger))
-		    {
-			    $this->__clLogger->debug($this->request);
-			    $this->__clLogger->debug($this->response);
-		    }
+		    if (isset($this->__clLogger)) //log des requetes
+		        $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
 		    throw $e;
 	    }
 
-	    if (isset($this->__clLogger))
-	    {
-		    $this->__clLogger->debug($this->request);
-		    $this->__clLogger->debug($this->response);
-	    }
+	    if (isset($this->__clLogger)) //log des requetes
+		    $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
 
         return $mResult;
     }

@@ -77,10 +77,10 @@ class DefaultController extends Controller
 	 */
 	public function connexionAction($host)
 	{
-		$clServiceFactory = $this->get('noutonline.onlineservice_factory');
+		$clServiceFactory = $this->get('nout_online.service_factory');
 		$OnlineProxy = $clServiceFactory->clGetServiceProxy($this->_clGetConfiguration($host));
 
-		$clConnectionManager = $this->get('noutonline.connection_manager');
+		$clConnectionManager = $this->get('nout_online.connection_manager');
 
 		//GetTokenSession
 		$clGetTokenSession = $clConnectionManager->getGetTokenSession();

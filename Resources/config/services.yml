@@ -5,16 +5,31 @@ services:
 #    noutnout_online.example:
 #        class: %noutnout_online.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
-    noutonline.connection_manager:
+
+    nout_online.connection_manager:
           class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager
           arguments:  []
-#          arguments:
-#            - "@doctrine.orm.entity_manager"
-#            - "@security.context"
-#            - %lexik_top_or_flop.param_scalar%
 
-    noutonline.onlineservice_factory:
-         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-         arguments:  [@logger]
+    # pour la barre de debug
+    nout_online.logger:
+         class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger
+         arguments:  [@logger, "%nout_online.debug%"]
          tags:
-             - { name: monolog.logger, channel: soap }
+             - { name: monolog.logger, channel: noutonline }
+
+    nout_online.datacollector:
+        class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector
+        arguments:  [@nout_online.logger]
+        tags:
+            - { name: data_collector, template: "NOUTOnlineBundle:DataCollector:layout.html.twig", id: "NOUTOnline" }
+
+    #factory pour le service
+    nout_online.service_factory:
+         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
+         arguments:  [@nout_online.logger]
+
+    nout_online.twig.nout_online_extension:
+        class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension
+        tags:
+          - { name: twig.extension }
+

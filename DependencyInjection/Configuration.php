@@ -18,11 +18,33 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('noutnout_online');
+        $rootNode = $treeBuilder->root('nout_online');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
+
+	    $rootNode
+		    ->children()
+		        ->scalarNode('debug')
+		            ->cannotBeEmpty()
+		            ->defaultValue(false)
+		            ->validate()
+		                ->ifNotInArray(array(true, false))
+		                ->thenInvalid('la valeur "%s" n\'est pas valide, les valeurs acceptées sont : true, false')
+		            ->end()
+		        ->end()
+		    ->end()
+	    ;
+
+	    // Here you should define the parameters that are allowed to
+	    // configure your bundle. See the documentation linked above for
+	    // more information on that topic.
+	    return $treeBuilder;
+
+
+
+
 
         return $treeBuilder;
     }

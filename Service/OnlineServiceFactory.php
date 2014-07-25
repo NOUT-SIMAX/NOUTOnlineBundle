@@ -24,8 +24,7 @@ class OnlineServiceFactory
 
 	public function clGetServiceProxy(ConfigurationDialogue $clConfiguration)
 	{
-		$OnlineService = new OnlineServiceProxy($clConfiguration);
-		$OnlineService->setLogger($this->m_clLogger);
+		$OnlineService = new OnlineServiceProxy($clConfiguration, $this->m_clLogger);
 		return $OnlineService;
 	}
 } 

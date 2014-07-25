@@ -1,0 +1,123 @@
+{% extends 'WebProfilerBundle:Profiler:layout.html.twig' %}
+
+{% block toolbar %}
+	{# le contenu de la barre d'outils de débuggage web #}
+	{% set icon %}
+		<img width="24" height="24" alt="NOUTOnline" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABy0lEQVRIx61UPUsDQRANIYQQglVynjFisBCJhZcY4wcWIgj+ArGytBQLi2BnKZYWwR8gFsHCyipFKhErEZEgwUIEc2MKC7GS+Oa81ct5B7u5Gxh2b2/3zezbNxOJBLT5MTNW1GjdyNAx/AbeNTTqBMWNzI1SHMC7AHwxMm+9fqfzgYErOYotjpsxgNRn0mQB8ijmWO8h8NZA4Di4CoCH8ggVGEgAOx3rH/g/pEZHluLglTm2sixaczctv/TUlMBnkQ0OXfVTQZ9OWpzrpWHKq9Ky7UWFBzVdJe6RySR8iR/Tnw64RnfYt1PJmVl5WnRKA7iNw/sYb73U4p5j35F0ANaxfagNf5ag5x1JabKcrwi1yDrOVFWyr3tc/8ufIrrnqlYJ0HVd/xEZXju+2Ql+yQpDUaWkwZcnzKSraBp8fddah4uJ+xB4z0uDs61Nv0ZFEWE8hfwW/r7/9ZwL9KSoUgCboibkWUN7SGHe8lFNE9QklcHZSjpN2YFqPr3mbGBwYXbXdCmHWljfCATMVs5SgpVj9/UqfBNvYQQGdmR/IKgIDVQYt1pWDZc+3kIPPYCoYtxiL3Tw4o/mmZonSDQRfgCNTgB+CJoKYeJ+A+BCwvOaOKbxAAAAAElFTkSuQmCC" />
+		<span class="sf-toolbar-status">{{ collector.querycount }}</span>
+		{% if collector.querycount > 0 %}
+			<span class="sf-toolbar-info-piece-additional-detail">in {{ '%0.2f'|format(collector.time * 1000) }} ms</span>
+		{% endif %}
+	{% endset %}
+	{% set text %}
+	<div class="sf-toolbar-info-piece">
+		<b>Queries</b>
+		<span>{{ collector.querycount }}</span>
+	</div>
+	<div class="sf-toolbar-info-piece">
+		<b>Query time</b>
+		<span>{{ '%0.2f'|format(collector.time * 1000) }} ms</span>
+	</div>
+	{% endset %}
+	{% include 'WebProfilerBundle:Profiler:toolbar_item.html.twig' with { 'link': profiler_url } %}
+{% endblock %}
+
+{% block menu %}
+<span class="label">
+    <span class="icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABy0lEQVRIx61UPUsDQRANIYQQglVynjFisBCJhZcY4wcWIgj+ArGytBQLi2BnKZYWwR8gFsHCyipFKhErEZEgwUIEc2MKC7GS+Oa81ct5B7u5Gxh2b2/3zezbNxOJBLT5MTNW1GjdyNAx/AbeNTTqBMWNzI1SHMC7AHwxMm+9fqfzgYErOYotjpsxgNRn0mQB8ijmWO8h8NZA4Di4CoCH8ggVGEgAOx3rH/g/pEZHluLglTm2sixaczctv/TUlMBnkQ0OXfVTQZ9OWpzrpWHKq9Ky7UWFBzVdJe6RySR8iR/Tnw64RnfYt1PJmVl5WnRKA7iNw/sYb73U4p5j35F0ANaxfagNf5ag5x1JabKcrwi1yDrOVFWyr3tc/8ufIrrnqlYJ0HVd/xEZXju+2Ql+yQpDUaWkwZcnzKSraBp8fddah4uJ+xB4z0uDs61Nv0ZFEWE8hfwW/r7/9ZwL9KSoUgCboibkWUN7SGHe8lFNE9QklcHZSjpN2YFqPr3mbGBwYXbXdCmHWljfCATMVs5SgpVj9/UqfBNvYQQGdmR/IKgIDVQYt1pWDZc+3kIPPYCoYtxiL3Tw4o/mmZonSDQRfgCNTgB+CJoKYeJ+A+BCwvOaOKbxAAAAAElFTkSuQmCC" alt="" /></span>
+    <strong>NOUTOnline</strong>
+    <span class="count">
+        <span>{{ collector.querycount }}</span>
+        <span>{{ '%0.0f'|format(collector.time * 1000) }} ms</span>
+    </span>
+</span>
+{% endblock %}
+
+{% block head %}
+	{{ parent() }}
+
+
+	<style>
+		h3 {
+			margin-bottom: 0px;
+		}
+
+		code {
+			display: none;
+			padding: 5px;
+			background-color: #ffffff;
+		}
+	</style>
+
+{% endblock %}
+{% block panel %}
+	{# le contenu du « panel » #}
+	<h2>Queries</h2>
+
+	{% if collector.queries is empty %}
+		<p>
+			<em>No queries.</em>
+		</p>
+	{% else %}
+		<ul class="alt" id="queries">
+		{% for i, query in collector.queries %}
+			<li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ '%0.2f'|format(query.executionMS * 1000) }}" data-target-id="{{ i }}">
+				<div style="margin-top: 4px" id="queryNo-{{ i }}">
+					<div>
+						{{ query.operation | nl2br }}
+					</div>
+					<div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-request-{{ i }}" style="cursor: pointer;">
+						<div>
+							<img alt="+" id="expand-request-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
+							<img alt="-" id="hide-request-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display:none ;" />
+							<span>Request</span>
+						</div>
+						<code class="prettyprint" id="code-request-{{ i }}">
+							{{ query.request | noutonline_beautify_query | nl2br }}
+						</code>
+					</div>
+					<div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-response-{{ i }}" style="cursor: pointer;">
+						<div>
+							<img alt="+" id="expand-response-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
+							<img alt="-" id="hide-response-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none;" />
+							<span>Response</span>
+						</div>
+						<code class="prettyprint" id="code-response-{{ i }}">
+							{{ query.response | noutonline_beautify_query |nl2br }}
+						</code>
+					</div>
+				</div>
+			</li>
+		{% endfor %}
+		</ul>
+
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true"></script>
+		<script type="text/javascript">//<![CDATA[
+			function expandQuery(link) {
+				var target = link.getAttribute('data-target-id');
+				var targetId = target.replace('code', '');
+
+				if (document.getElementById(target).style.display != 'none')
+				{
+					//c'est affiché
+					document.getElementById(target).style.display = 'none';
+					document.getElementById('hide'+targetId).style.display = 'none';
+					document.getElementById('expand'+targetId).style.display = 'inline';
+					link.title = 'Expand query';
+				}
+				else
+				{
+					//c'est pas affiché
+					document.getElementById(target).style.display = 'block';
+					document.getElementById('hide'+targetId).style.display = 'inline';
+					document.getElementById('expand'+targetId).style.display = 'none';
+					link.title = 'Hide query';
+				}
+				return false;
+			}
+
+			//]]></script>
+
+
+	{% endif %}
+{% endblock %}
