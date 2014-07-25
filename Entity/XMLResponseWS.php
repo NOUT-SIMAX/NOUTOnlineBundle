@@ -53,9 +53,11 @@ class XMLResponseWS
 	//noeud particulier
 	protected $m_ndBody;
 	protected $m_ndHeader;
+	protected $m_sXML;
 
 	public function __construct($sXML)
 	{
+		$this->m_sXML = $sXML;
 		$clEnvelope = simplexml_load_string($sXML);
 
 		//calcul du nom du namespace de l'enveloppe
@@ -74,7 +76,14 @@ class XMLResponseWS
 		//on trouve le noeud header et le noeud body
 		$this->m_ndHeader = $clEnvelope->children($sNomNSSoap, true)->Header;
 		$this->m_ndBody = $clEnvelope->children($sNomNSSoap, true)->Body;
+	}
 
+	/**
+	 * @return string
+	 */
+	public function sGetXML()
+	{
+		return $this->m_sXML;
 	}
 
 	/**

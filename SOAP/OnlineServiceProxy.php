@@ -3,6 +3,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 //WSDLEntity utilsé en paramètres
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Exception\NOUTOnlineException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelFolder;
@@ -188,18 +190,28 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     //------------------------------------------------------------------------------------------
     // Redefinition methode call
     //------------------------------------------------------------------------------------------
-
-    /**
-     * redefinition de la methode call de maniére a gérer les headers obligatoire de la communication
-     * avec le service simax de simaxOnline
-     *
-     * @see core/soap/ModifiedNuSoapClient#call($sOperation, $mParams, $mHeaders)
-     *
-     * @access public
-     *
-     * //note : $sStyle et $sUse sont des parametre inutile il ne sont la que pour permettre la surchage de methode sans modification de la signature.
-     */
-    public function call($sOperation, $mParams = array(),$sNamespace=null,$sSoapAction=null , $mHeaders = false,$mRpcParams=null,$sStyle='rpc',$sUse='encoded')
+	/**
+	 * redefinition de la methode call de maniére a gérer les headers obligatoire de la communication
+	 * avec le service simax de simaxOnline
+	 *
+	 * @see core/soap/ModifiedNuSoapClient#call($sOperation, $mParams, $mHeaders)
+	 *
+	 * @access public
+	 *
+	 * //note : $sStyle et $sUse sont des parametre inutile il ne sont la que pour permettre la surchage de methode sans modification de la signature.
+	 *
+	 * @param string $sOperation
+	 * @param array $mParams
+	 * @param null $sNamespace
+	 * @param null $sSoapAction
+	 * @param bool $mHeaders
+	 * @param null $mRpcParams
+	 * @param string $sStyle
+	 * @param string $sUse
+	 * @return XMLResponseWS
+	 * @throws \Exception
+	 */
+	public function call($sOperation, $mParams = array(),$sNamespace=null,$sSoapAction=null , $mHeaders = false,$mRpcParams=null,$sStyle='rpc',$sUse='encoded')
     {
 	    //petite modif sur le paramètre mParams si tableau vide
 	    if (is_array($mParams) && (count($mParams)==0))
@@ -272,19 +284,24 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	    try
 	    {
 		    //on fait l'appel a la methode mere
-		    $mResult =  parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
+		    /*$mResult =  */parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
+
+		    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
+		    $clReponse = new XMLResponseWS($this->responseData);
 	    }
 	    catch(\Exception $e)
 	    {
 		    if (isset($this->__clLogger)) //log des requetes
 		        $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
-		    throw $e;
+
+		    $clException = new NOUTOnlineException($this->responseData, $e->getMessage(), $e->getCode());
+		    throw $clException;
 	    }
 
 	    if (isset($this->__clLogger)) //log des requetes
 		    $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
 
-        return $mResult;
+        return $clReponse;
     }
     //---
 

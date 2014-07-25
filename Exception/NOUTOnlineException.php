@@ -9,13 +9,19 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Exception;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 
 class NOUTOnlineException extends SOAPException {
 
-	public  function __construct($message = "", $code = 0, Exception $previous = null)
+	protected $m_clFault;
+
+	public  function __construct($fault, $message = "", $code = 0, \Exception $previous = null)
 	{
-		parent::__construct($message, $code, $previous);
+		parent::__construct($code.' '.$message, $code, $previous);
+
+		$this->m_clFault=new XMLResponseWS($fault);
+
 		/*
 		 *
 		 * //on affiche courament que le dernier message avec un systeme
@@ -44,7 +50,5 @@ class NOUTOnlineException extends SOAPException {
 		 *
 		 *
 		 */
-
-
 	}
 }

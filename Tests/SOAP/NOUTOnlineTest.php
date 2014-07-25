@@ -36,14 +36,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sHttpWSDL = $sService.'/GetWSDL?';
 		$sWSDL = file_get_contents($sHttpWSDL);
 
-
 		$sEndPoint = './Service.wsdl';
 		file_put_contents($sEndPoint, $sWSDL);
 
 		$this->m_clConfig = new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix);
 
 		//ici on instancie NOUTOnline
-		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig);
+		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, null);
 	}
 
 	/**
@@ -85,9 +84,9 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _sGetTokenSession_TRUE()
 	{
-		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession($this->_clGetUsernameToken()));
-		$this->assertNotEquals(false, $sTokenSession);
-		return $sTokenSession;
+		$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession($this->_clGetUsernameToken()));
+		$this->assertNotEquals(false, $clReponseWS->sGetTokenSession());
+		return $clReponseWS->sGetTokenSession();
 	}
 
 	/**
@@ -98,7 +97,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected function _sGetTokenSession_FALSE()
 	{
 		//identifiant faux
-		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseure', ''));
+		$clReponseWS = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseure', ''));
 		$this->assertEquals(false, $sTokenSession);
 		//TODO pouvoir tester le code d'erreur de retour
 

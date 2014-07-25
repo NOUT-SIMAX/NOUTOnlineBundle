@@ -2,17 +2,18 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 // this imports the annotations
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\XMLResponseWS;
@@ -31,32 +32,6 @@ class DefaultController extends Controller
         return $this->render('NOUTOnlineBundle:Default:index.html.twig');
     }
 
-	/**
-	 * @Route("/record", name="record")
-	 */
-	public function recordAction()
-	{
-		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
-		$clResponseXML = new XMLResponseWS($sXML);
-
-		$clOptionDialogue = new OptionDialogue();
-		$clOptionDialogue->DisplayValue = 16638;
-		$clOptionDialogue->Readable = 0;
-		$clOptionDialogue->EncodingOutput = 0;
-		$clOptionDialogue->LanguageCode = 12;
-		$clOptionDialogue->WithFieldStateControl = 1;
-
-
-		$clRecord = new Record(Record::LEVEL_RECORD, $clResponseXML->clGetForm(), $clResponseXML->clGetElement());
-		$clRecord->initFromReponseWS($clOptionDialogue, $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
-
-
-		$response = new Response(json_encode($clRecord));
-		//$response->headers->set('Content-Type', 'application/json');
-		return $response;
-	}
-
-
 	protected function _clGetConfiguration($host)
 	{
 		$sEndPoint = './bundles/noutonline/Service.wsdl';
@@ -71,38 +46,124 @@ class DefaultController extends Controller
 		return $clConfiguration;
 	}
 
+
+	protected function _VarDumpRes($sOperation, $ret)
+	{
+		echo '<h1>'.$sOperation.'</h1>';
+		if ($ret instanceof XMLResponseWS)
+			echo '<pre>'.htmlentities($ret->sGetXML()).'</pre>';
+		else
+			var_dump($ret);
+	}
+
+	protected function _sConnexion(OnlineServiceProxy $OnlineProxy)
+	{
+		//GetTokenSession
+		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession();
+		$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
+		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
+		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());
+
+		return $clReponseXML->sGetTokenSession();
+	}
+
+	protected function _TabGetHeader($sTokenSession)
+	{
+		$clUsernameToken = $this->get('nout_online.connection_manager')->getUsernameToken();
+		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession);
+
+		return $TabHeader;
+	}
+
+	protected function _bDeconnexion(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	{
+		//récupération des headers
+		$TabHeader = $this->_TabGetHeader($sTokenSession);
+
+		//Disconnect
+		$clReponseXML = $OnlineProxy->disconnect($TabHeader);
+		$this->_VarDumpRes('Disconnect', $clReponseXML);
+		return $clReponseXML;
+	}
+
 	/**
-	 * pour tester la connexion déconnexion
+	 * pour tester la connexion/déconnexion
 	 * @Route("/connexion/{host}", name="connexion", defaults={"host"="127.0.0.1:8062"})
 	 */
 	public function connexionAction($host)
 	{
-		$clServiceFactory = $this->get('nout_online.service_factory');
-		$OnlineProxy = $clServiceFactory->clGetServiceProxy($this->_clGetConfiguration($host));
-
-		$clConnectionManager = $this->get('nout_online.connection_manager');
-
-		//GetTokenSession
-		$clGetTokenSession = $clConnectionManager->getGetTokenSession();
-		$sTokenSession = $OnlineProxy->getTokenSession($clGetTokenSession);
-
 		ob_start();
-		echo '<h1>GetTokenSession</h1>';
-		var_dump($sTokenSession);
 
-		//Disconnect
-		$clUsernameToken = $clConnectionManager->getUsernameToken();
-		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession);
-		$bDisconnect = $OnlineProxy->disconnect($TabHeader);
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
 
-		echo '<h1>Disconnect</h1>';
-		var_dump($bDisconnect);
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-
-
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
+
+	/**
+	 * pour tester la connexion/déconnexion
+	 * @Route("/cnx_error/{host}", name="cnx_error", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function cnxErrorAction($host)
+	{
+		ob_start();
+
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//GetTokenSession
+		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession(1);
+		$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
+		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
+		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+	protected function _sDisplay(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $id)
+	{
+		$clParamDisplay = new Display();
+		$clParamDisplay->Table = $form;
+		$clParamDisplay->ParamXML = '<'.$form.'>'.$id.'</'.$form.'>';
+		$clReponseXML = $OnlineProxy->display($clParamDisplay, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('Display', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+
+	/**
+	 * @Route("/display/{form}/{id}/{host}", name="display", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function displayAction($form, $id, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//ici il faut faire le display
+		$this->_sDisplay($OnlineProxy, $sTokenSession, $form, $id);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
 
 }

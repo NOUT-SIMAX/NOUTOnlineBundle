@@ -23,7 +23,7 @@ class ConnectionManager {
 	 * Génère les paramètres pour la méthode GetTokenSession
 	 * @return GetTokenSession
 	 */
-	public function getGetTokenSession()
+	public function getGetTokenSession($nErreur=0)
 	{
 		/*
 		if(isset($_SESSION) && isset($_SESSION[SS_URL . '_' . SESSION_NAME_COMPLEMENT]['UTILLOGIN']) && isset($_SESSION[SS_URL . '_' . SESSION_NAME_COMPLEMENT]['SECUREPASSWD']))
@@ -34,7 +34,19 @@ class ConnectionManager {
 		//il faut retourner les paramètres pour la connexion
 		$clGetTokenSession = new GetTokenSession();
 		$clGetTokenSession->DefaultClientLanguageCode=12;
-		$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', '');
+		switch($nErreur)
+		{
+			default:
+			case 0:
+				$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', '');
+				break;
+			case 1:
+				$clGetTokenSession->UsernameToken = new UsernameToken('superviseure', '');
+				break;
+			case 2:
+				$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', 'aze');
+				break;
+		}
 		$clGetTokenSession->ExtranetUser = null;
 
 		return $clGetTokenSession;
