@@ -92,8 +92,8 @@ class XMLResponseWS
 			foreach($ndListErr->children('http://www.nout.fr/soap/error') as $ndError)
 			{
 				$clError = new OnlineError($ndError->children()->Code['Name'],
-					$ndError->children()->Code->Category,
 					$ndError->children()->Code->Numero,
+					$ndError->children()->Code->Category,
 					$ndError->children()->Message
 				);
 
@@ -135,7 +135,13 @@ class XMLResponseWS
 		return $this->m_TabError;
 	}
 
+	public function getNumError()
+	{
+		if (!isset($this->m_TabError))
+			return false;
 
+		return $this->m_TabError[0]->getErreur();
+	}
 
 	/**
 	 * renvoi le type de retour

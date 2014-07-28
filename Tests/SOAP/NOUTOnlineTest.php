@@ -96,7 +96,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		}
 		catch(\Exception $e)
 		{
-			$nExceptionCode=$e->getCode();
+			$XMLResponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $XMLResponseWS->bIsFault());
+			$nExceptionCode=$XMLResponseWS->getNumError();
 		}
 		$this->assertEquals(1404, $nExceptionCode);
 
@@ -107,7 +110,9 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		}
 		catch(\Exception $e)
 		{
-			$nExceptionCode=$e->getCode();
+			$XMLResponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+			$this->assertEquals(true, $XMLResponseWS->bIsFault());
+			$nExceptionCode=$XMLResponseWS->getNumError();
 		}
 		$this->assertEquals(1403, $nExceptionCode);
 	}
@@ -128,7 +133,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		}
 		catch(\Exception $e)
 		{
-			$nExceptionCode=$e->getCode();
+			$XMLResponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $XMLResponseWS->bIsFault());
+			$nExceptionCode=$XMLResponseWS->getNumError();
 		}
 		$this->assertNotEquals(0, $nExceptionCode);
 	}
