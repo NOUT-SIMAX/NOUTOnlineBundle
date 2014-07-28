@@ -83,7 +83,7 @@ class XMLResponseWS
 		$this->m_TabError = null;
 
 		$ndFault = isset($this->m_ndBody) ? $this->m_ndBody->children($this->m_sNamespaceSOAP, true)->Fault : null;
-		if (isset($ndFault))
+		if (isset($ndFault) && ($ndFault->count()>0))
 		{
 			//le noeud ListErr fils de  Detail
 			$ndListErr = $ndFault->children($this->m_sNamespaceSOAP, true)->Detail->children()->ListErr;

@@ -303,8 +303,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 		    if (isset($this->__clLogger)) //log des requetes
 		        $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
 
-		    $clException = new NOUTOnlineException($this->responseData, $e->getMessage(), $e->getCode());
-		    throw $clException;
+		    throw $e;
 	    }
 
 
