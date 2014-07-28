@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
@@ -90,7 +91,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	public function testGetTokenSession_FALSE()
 	{
 		//identifiant faux
-		$nExceptionCode=0;
+		$nErreur=0;
+		$nCategorie=0;
 		try{
 			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new UserNameToken('superviseureeeeeee', '')));
 		}
@@ -99,12 +101,24 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 			$XMLResponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
 
 			$this->assertEquals(true, $XMLResponseWS->bIsFault());
-			$nExceptionCode=$XMLResponseWS->getNumError();
+			$nErreur = $XMLResponseWS->getNumError();
+			$nCategorie = $XMLResponseWS->getCatError();
 		}
-		$this->assertEquals(1404, $nExceptionCode);
+		$this->assertEquals(OnlineError::CAT_SIMAXSERVICE, $nCategorie);
+		$this->assertThat(
+			$nErreur,
+			$this->logicalOr(
+				$this->equalTo(OnlineError::ERR_UTIL_NONRESOLU),
+				$this->equalTo(OnlineError::ERR_UTIL_INCONNU)
+			)
+		);
+
+
+		$this->assertEquals(1404, $nErreur);
 
 		//mot de passe faux
-		$nExceptionCode=0;
+		$nErreur=0;
+		$nCategorie=0;
 		try{
 			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new UserNameToken('superviseur', 'ttttt')));
 		}
@@ -112,9 +126,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		{
 			$XMLResponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
 			$this->assertEquals(true, $XMLResponseWS->bIsFault());
-			$nExceptionCode=$XMLResponseWS->getNumError();
+			$nErreur = $XMLResponseWS->getNumError();
+			$nCategorie = $XMLResponseWS->getCatError();
 		}
-		$this->assertEquals(1403, $nExceptionCode);
+		$this->assertEquals(OnlineError::CAT_SIMAXSERVICE, $nCategorie);
+		$this->assertEquals(OnlineError::ERR_UTIL_PASSERRINTRA, $nErreur);
 	}
 
 	/**
@@ -127,7 +143,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
 		//mot de passe faux
-		$nExceptionCode=0;
+		$nErreur=0;
+		$nCategorie=0;
 		try{
 			$this->m_clNOUTOnline->disconnect($TabHeader);
 		}
@@ -136,9 +153,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 			$XMLResponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
 
 			$this->assertEquals(true, $XMLResponseWS->bIsFault());
-			$nExceptionCode=$XMLResponseWS->getNumError();
+			$nErreur = $XMLResponseWS->getNumError();
+			$nCategorie = $XMLResponseWS->getCatError();
+
+			//echo "\n$nCategorie $nErreur\n";
 		}
-		$this->assertNotEquals(0, $nExceptionCode);
+		$this->assertEquals(OnlineError::CAT_SIMAXSERVICE, $nCategorie);
+		$this->assertEquals(OnlineError::ERR_UTIL_DECONNECTE, $nErreur);
 	}
 
 	/**
