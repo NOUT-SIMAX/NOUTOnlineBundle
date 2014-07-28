@@ -187,6 +187,17 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     }
     //---
 
+
+	/**
+	 * @return XMLResponseWS
+	 */
+	public function getXMLResponseWS()
+	{
+		//retourne un XMLResponseWS qui permet de manipuler la réponse
+		return new XMLResponseWS($this->responseData);
+	}
+
+
     //------------------------------------------------------------------------------------------
     // Redefinition methode call
     //------------------------------------------------------------------------------------------
@@ -214,7 +225,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	public function call($sOperation, $mParams = array(),$sNamespace=null,$sSoapAction=null , $mHeaders = false,$mRpcParams=null,$sStyle='rpc',$sUse='encoded')
     {
 	    //petite modif sur le paramètre mParams si tableau vide
-	    if (is_array($mParams) && (count($mParams)==0))
+	    if (!isset($mParams) || (is_array($mParams) && (count($mParams)==0)))
 		    $mParams = '<'.$sOperation.' />';
 
 
@@ -286,8 +297,6 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 		    //on fait l'appel a la methode mere
 		    /*$mResult =  */parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
 
-		    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
-		    $clReponse = new XMLResponseWS($this->responseData);
 	    }
 	    catch(\Exception $e)
 	    {
@@ -298,10 +307,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 		    throw $clException;
 	    }
 
+
+
 	    if (isset($this->__clLogger)) //log des requetes
 		    $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
 
-        return $clReponse;
+	    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
+        return $this->getXMLResponseWS();
     }
     //---
 

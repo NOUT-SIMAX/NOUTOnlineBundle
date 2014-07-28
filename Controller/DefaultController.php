@@ -107,6 +107,7 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
+
 	/**
 	 * pour tester la connexion/déconnexion
 	 * @Route("/cnx_error/{error}/{host}", name="cnx_error", defaults={"host"="127.0.0.1:8062"})
@@ -122,6 +123,40 @@ class DefaultController extends Controller
 		$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+	/**
+	 * pour tester la connexion/déconnexion
+	 * @Route("/cnx_try_error/{error}/{host}", name="cnx_try_error", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function cnxTryErrorAction($host, $error)
+	{
+		ob_start();
+
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		//GetTokenSession
+		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
+
+		try
+		{
+			$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
+		}
+		catch(\Exception $e)
+		{
+			//on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
+			$clReponseXML = $OnlineProxy->getXMLResponseWS();
+
+			//on attrape l'exception
+			$this->_VarDumpRes('GetTokenSession', $clReponseXML);
+			$this->_VarDumpRes('GetTokenSession', $clReponseXML->bIsFault());
+			$this->_VarDumpRes('GetTokenSession', $clReponseXML->getTabError());
+		}
+
 
 		$containt = ob_get_contents();
 		ob_get_clean();

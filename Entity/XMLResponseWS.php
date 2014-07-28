@@ -53,7 +53,9 @@ class XMLResponseWS
 	//noeud particulier
 	protected $m_ndBody;
 	protected $m_ndHeader;
+	protected $m_TabError;
 	protected $m_sXML;
+	protected $m_sNamespaceSOAP;
 
 	public function __construct($sXML)
 	{
@@ -65,17 +67,45 @@ class XMLResponseWS
 		$tabNamespace = $clEnvelope->getNamespaces();
 		$tabNomNamespace = array_keys($tabNamespace, 'http://www.w3.org/2003/05/soap-envelope');
 		if (count($tabNomNamespace)>0)
-			$sNomNSSoap = $tabNomNamespace[0];
+			$this->m_sNamespaceSOAP = $tabNomNamespace[0];
 		else
 		{
 			$tabNomNamespace = array_keys($tabNamespace, 'http://schemas.xmlsoap.org/soap/envelope/');
 			if (count($tabNomNamespace)>0)
-				$sNomNSSoap = $tabNomNamespace[0];
+				$this->m_sNamespaceSOAP = $tabNomNamespace[0];
 		}
 
 		//on trouve le noeud header et le noeud body
-		$this->m_ndHeader = $clEnvelope->children($sNomNSSoap, true)->Header;
-		$this->m_ndBody = $clEnvelope->children($sNomNSSoap, true)->Body;
+		$this->m_ndHeader = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Header;
+		$this->m_ndBody = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Body;
+
+		//on parse les erreurs si c'en est une
+		$this->m_TabError = null;
+
+		$ndFault = isset($this->m_ndBody) ? $this->m_ndBody->children($this->m_sNamespaceSOAP, true)->Fault : null;
+		if (isset($ndFault))
+		{
+			//le noeud ListErr fils de  Detail
+			$ndListErr = $ndFault->children($this->m_sNamespaceSOAP, true)->Detail->children()->ListErr;
+
+			//on recherche le namespace pour les erreurs SIMAX http://www.nout.fr/soap/error
+			foreach($ndListErr->children('http://www.nout.fr/soap/error') as $ndError)
+			{
+				$clError = new OnlineError($ndError->children()->Code['Name'],
+					$ndError->children()->Code->Category,
+					$ndError->children()->Code->Numero,
+					$ndError->children()->Message
+				);
+
+				foreach($ndError->children()->Parameter as $ndParam)
+				{
+					$clParam = new OnlineErrorParameter($ndParam['IDParam'], $ndParam['TitleParam'], $ndParam['TitleElem']);
+					$clError->AddParameter($clParam);
+				}
+
+				$this->m_TabError[]=$clError;
+			}
+		}
 	}
 
 	/**
@@ -85,6 +115,27 @@ class XMLResponseWS
 	{
 		return $this->m_sXML;
 	}
+
+	/**
+	 * retourne vrai si le retour est une erreur
+	 */
+	public function bIsFault()
+	{
+		return isset($this->m_TabError);
+	}
+
+	/**
+	 * @return mixed, false si pas une erreur, un tableau d'erreur SIMAX si c'est une erreur
+	 */
+	public function getTabError()
+	{
+		if (!isset($this->m_TabError))
+			return false;
+
+		return $this->m_TabError;
+	}
+
+
 
 	/**
 	 * renvoi le type de retour
