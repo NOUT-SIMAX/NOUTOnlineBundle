@@ -41,7 +41,7 @@ class ConnectionManager {
 				$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', '');
 				break;
 			case 1:
-				$clGetTokenSession->UsernameToken = new UsernameToken('superviseure', '');
+				$clGetTokenSession->UsernameToken = new UsernameToken('superviseureeeeeeeee', '');
 				break;
 			case 2:
 				$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', 'aze');

@@ -14,6 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 
 /**
  * Class NOUTOnlineTest
@@ -91,7 +92,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//identifiant faux
 		$nExceptionCode=0;
 		try{
-			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseureeeeeee', ''));
+			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new UserNameToken('superviseureeeeeee', '')));
 		}
 		catch(\Exception $e)
 		{
@@ -102,7 +103,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//mot de passe faux
 		$nExceptionCode=0;
 		try{
-			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseur', 'ttttt'));
+			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new UserNameToken('superviseur', 'ttttt')));
 		}
 		catch(\Exception $e)
 		{
