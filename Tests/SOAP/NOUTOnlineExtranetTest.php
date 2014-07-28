@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\OASIS\UserNameToken;
  * classe pour tester NOUTOnline en mode extranet
  * @package NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP
  */
-class NOUTOnlineExtranetTest extends \PHPUnit_Framework_TestCase
+class NOUTOnlineExtranetTest //extends \PHPUnit_Framework_TestCase
 {
 	protected $m_sAdresseServeur = '127.0.0.1:8052';
 	protected $m_sFormExtranet ='Util Extranet';

@@ -109,16 +109,16 @@ class DefaultController extends Controller
 
 	/**
 	 * pour tester la connexion/déconnexion
-	 * @Route("/cnx_error/{host}", name="cnx_error", defaults={"host"="127.0.0.1:8062"})
+	 * @Route("/cnx_error/{error}/{host}", name="cnx_error", defaults={"host"="127.0.0.1:8062"})
 	 */
-	public function cnxErrorAction($host)
+	public function cnxErrorAction($host, $error)
 	{
 		ob_start();
 
 		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
 
 		//GetTokenSession
-		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession(1);
+		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
 		$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());

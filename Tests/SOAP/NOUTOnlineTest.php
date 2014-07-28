@@ -9,6 +9,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
@@ -26,7 +28,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	public function __construct()
 	{
 		//on instancie la configuration de NOUTOnline
-		$sService = 'http://12.7.0.0.1:8062';
+		$sService = 'http://127.0.0.1:8062';
 		//on récupére le prefixe (http | https);
 		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
 		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
@@ -41,8 +43,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$this->m_clConfig = new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix);
 
+		//le logger
+		$clLogger = new NOUTOnlineLogger(null, false);
+
 		//ici on instancie NOUTOnline
-		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, null);
+		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, $clLogger);
 	}
 
 	/**
@@ -79,52 +84,88 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 	/**
-	 * Test l'identification avec des valeurs correctes
-	 * @return mixed
+	 * Teste l'identification avec des valeurs erronées
 	 */
-	protected function _sGetTokenSession_TRUE()
+	public function testGetTokenSession_FALSE()
 	{
-		$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession($this->_clGetUsernameToken()));
-		$this->assertNotEquals(false, $clReponseWS->sGetTokenSession());
-		return $clReponseWS->sGetTokenSession();
+		//identifiant faux
+		$nExceptionCode=0;
+		try{
+			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseureeeeeee', ''));
+		}
+		catch(\Exception $e)
+		{
+			$nExceptionCode=$e->getCode();
+		}
+		$this->assertEquals(1404, $nExceptionCode);
+
+		//mot de passe faux
+		$nExceptionCode=0;
+		try{
+			$clReponseWS = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseur', 'ttttt'));
+		}
+		catch(\Exception $e)
+		{
+			$nExceptionCode=$e->getCode();
+		}
+		$this->assertEquals(1403, $nExceptionCode);
 	}
 
 	/**
-	 * Teste l'identification avec des valeurs erronées
-	 * @return false (toujours faux)
-	 * @expectedException SOAPException
+	 * Teste
 	 */
-	protected function _sGetTokenSession_FALSE()
+	public function testDisconnect_FALSE()
 	{
-		//identifiant faux
-		$clReponseWS = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseure', ''));
-		$this->assertEquals(false, $sTokenSession);
-		//TODO pouvoir tester le code d'erreur de retour
+		//Disconnect
+		$clUsernameToken = $this->_clGetUsernameToken();
+		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
 		//mot de passe faux
-		$sTokenSession = $this->m_clNOUTOnline->GetTokenSession(UserNameToken('superviseur', 'superviseur'));
-		$this->assertEquals(false, $sTokenSession);
-		//TODO pouvoir tester le code d'erreur de retour
-
-		return false;
+		$nExceptionCode=0;
+		try{
+			$this->m_clNOUTOnline->disconnect($TabHeader);
+		}
+		catch(\Exception $e)
+		{
+			$nExceptionCode=$e->getCode();
+		}
+		$this->assertNotEquals(0, $nExceptionCode);
 	}
+
+	/**
+	 * Test l'identification avec des valeurs correctes
+	 * @return string
+	 */
+	protected function testGetTokenSession()
+	{
+		$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession($this->_clGetUsernameToken()));
+		$sTokenSession = $clReponseWS->sGetTokenSession();
+		$this->assertNotEquals('', $sTokenSession);
+		return $sTokenSession;
+	}
+
 
 	/**
 	 * Ferme une session
 	 * @param $sTokenSession token de la session à fermer
-	 * @param $bDoitReussir true si l'appel doit reussir
+	 * @depends testGetTokenSession
 	 */
-	protected function _Disconnect($sTokenSession, $bDoitReussir)
+	protected function testDisconnect($sTokenSession)
 	{
 		//Disconnect
 		$clUsernameToken = $this->_clGetUsernameToken();
 		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession);
 
-		$ret = $this->m_clNOUTOnline->disconnect($TabHeader);
-		if ($bDoitReussir)
-			$this->assertEquals(true, $ret);
-		else
-			$this->assertEquals(false, $ret);
+		//mot de passe faux
+		$nExceptionCode=0;
+		try{
+			$this->m_clNOUTOnline->disconnect($TabHeader);
+		}
+		catch(\Exception $e)
+		{
+			$nExceptionCode=$e->getCode();
+		}
+		$this->assertEquals(0, $nExceptionCode);
 	}
 
 	/**
@@ -163,44 +204,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 	/**
-	 * méthode pour tester l'identification (intranet uniquement)
+	 * @param $sTokenSession
+	 * @depends testGetTokenSession
 	 */
-	public function testGetTokenSession()
-	{
-		//on commence par tester le cas d'erreur
-		$this->_sGetTokenSession_FALSE();
-		$sTokenSession = $this->_sGetTokenSession_TRUE();
-
-		//on déconnecte la session
-		$this->_Disconnect($sTokenSession, true);
-
-		//on teste avec une session qui n'existe pas
-		$this->_Disconnect('aaaa-aaa-a--a', false);
-	}
-
-	/**
-	 * Test la méthode de liste
-	 */
-	public function testList()
-	{
-		//ouverture de session
-		$sTokenSession = $this->_sGetTokenSession_TRUE();
-		if ($sTokenSession === false)
-			return ; //pas la peine de continuer pas de session d'ouverte
-
-		//--------------------------------------------------
-		//on commence par tester la liste sans la pagination
-		//pour cela on liste les utilisateurs, sur validator il y a plus de 20 utilisateurs
-
-		$ret = $this->m_clNOUTOnline->GetList($sTokenSession, 'utilisateur');
-		$this->assertGreaterThanOrEqual(20, $nNbUtilisateur);
-
-		$this->_bValidate($nIDContexteAction, true);
-
-		$this->_Disconnect($sTokenSession, true);
-	}
-
-	public function testDisplay()
+	public function testDisplay($sTokenSession)
 	{
 
 
