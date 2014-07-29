@@ -3,6 +3,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
 // this imports the annotations
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
@@ -190,6 +191,41 @@ class DefaultController extends Controller
 
 		//ici il faut faire le display
 		$this->_sDisplay($OnlineProxy, $sTokenSession, $form, $id);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+
+	protected function _sList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
+	{
+		$clParamList = new ListParams();
+		$clParamList->Table = $form;
+		$clReponseXML = $OnlineProxy->listAction($clParamList, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('List', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/list/{form}/{host}", name="list", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function listAction($form, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//ici il faut faire le display
+		$this->_sList($OnlineProxy, $sTokenSession, $form);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);

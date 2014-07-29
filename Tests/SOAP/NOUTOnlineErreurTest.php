@@ -21,7 +21,7 @@ class NOUTOnlineErreurTest extends NOUTOnlineTest {
 	/**
 	 * Teste l'identification avec des valeurs erronées
 	 */
-	public function testGetTokenSession_FALSE()
+	public function testGetTokenSession_ERREUR()
 	{
 		//identifiant faux
 		$nErreur=0;
@@ -66,7 +66,7 @@ class NOUTOnlineErreurTest extends NOUTOnlineTest {
 	/**
 	 * Teste
 	 */
-	public function testDisconnect_FALSE()
+	public function testDisconnect_ERREUR()
 	{
 		//Disconnect
 		$clUsernameToken = $this->_clGetUsernameToken();

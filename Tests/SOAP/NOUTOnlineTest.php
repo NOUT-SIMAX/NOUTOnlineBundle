@@ -15,8 +15,10 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 
 /**
  * Class NOUTOnlineTest
@@ -100,7 +102,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 * Test l'identification avec des valeurs correctes
 	 * @return string
 	 */
-	public function testGetTokenSession()
+	public function testGetTokenSession_OK()
 	{
 		$clReponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession($this->_clGetUsernameToken()));
 		$sTokenSession = $clReponseWS->sGetTokenSession();
@@ -111,11 +113,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Ferme une session
-	 * @param $sTokenSession token de la session à fermer
-	 * @depends testGetTokenSession
 	 */
-	public function testDisconnect($sTokenSession)
+	public function testDisconnect_OK()
 	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
 		//mot de passe faux
 		$nExceptionCode=0;
 		try{
@@ -132,9 +134,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Valide la dernière action du contexte
+	 * @param $sTokenSession
 	 * @param $nIDContexteAction
-	 * @param $bDoitReussir
-	 * @return boolean
 	 */
 	protected function _Validate($sTokenSession, $nIDContexteAction)
 	{
@@ -160,9 +161,9 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Annule la dernière action ou le contexte d'action entier
+	 * @param $sTokenSession
 	 * @param $nIDContexteAction
 	 * @param $bTout
-	 * @return boolean
 	 */
 	protected function _Cancel($sTokenSession, $nIDContexteAction, $bTout)
 	{
@@ -192,11 +193,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 	/**
-	 * @param $sTokenSession
-	 * @depends testGetTokenSession
 	 */
-	public function testDisplay($sTokenSession)
+	public function testDisplay_OK()
 	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
 		$form = 'utilisateur';
 		$id = 2;
 
@@ -232,7 +233,51 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect($sTokenSession);
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+
+	/**
+	 */
+	public function testList_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = 'utilisateur';
+		$id = 2;
+
+		$clParamList = new ListParams();
+		$clParamList->Table = $form;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->listAction($clParamList, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
 	}
 
 } 

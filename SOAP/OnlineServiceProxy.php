@@ -884,16 +884,6 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     public function getTokenSession(GetTokenSession $clWsdlType_GetTokenSession, $aHeaders = array())
     {
         $clWsdlType_GetTokenSessionResponse = $this->call('GetTokenSession', array($clWsdlType_GetTokenSession) , null, null , $aHeaders);
-
-        if($this->fault)
-        {
-            return setError($this->getError());
-        }
-        if($err = $this->getError())
-        {
-            return setError($err);
-        }
-
         return $clWsdlType_GetTokenSessionResponse;
     }
     //---
@@ -953,11 +943,11 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      * @return ListResponse
      * @access public
      */
-    public function listAction(ListParams $clWsdlType_InitRecordFromMessage, $aHeaders = array())
+    public function listAction(ListParams $clWsdlType_List, $aHeaders = array())
     {
-        $clWsdlType_InitRecordFromMessageResponse = $this->call('InitRecordFromMessage', array($clWsdlType_InitRecordFromMessage) ,  null, null , $aHeaders);
+        $clWsdlType_ListResponse = $this->call('List', array($clWsdlType_List) ,  null, null , $aHeaders);
 
-        return $clWsdlType_InitRecordFromMessageResponse;
+        return $clWsdlType_ListResponse;
     }
     //----
 
@@ -1036,7 +1026,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function reorderList(ReorderList $clWsdlType_ReorderList, $aHeaders = array())
     {
-        $clWsdlType_reorderListResponse = $this->call('ModifyFolder', array($clWsdlType_ReorderList) ,  null, null , $aHeaders);
+        $clWsdlType_reorderListResponse = $this->call('ReorderList', array($clWsdlType_ReorderList) ,  null, null , $aHeaders);
 
         return $clWsdlType_reorderListResponse;
     }
@@ -1052,7 +1042,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function reorderSubList(ReorderSubList $clWsdlType_ReorderSubList, $aHeaders = array())
     {
-        $clWsdlType_reorderSubListResponse = $this->call('ModifyFolder', array($clWsdlType_ReorderSubList) ,  null, null , $aHeaders);
+        $clWsdlType_reorderSubListResponse = $this->call('ReorderSubList', array($clWsdlType_ReorderSubList) ,  null, null , $aHeaders);
 
         return $clWsdlType_reorderSubListResponse;
     }
@@ -1212,7 +1202,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function setOrderList(SetOrderList $clWsdlType_SetOrderList, $aHeaders = array())
     {
-        $clWsdlType_SetOrderListeResponse = $this->call('SendMessage', array($clWsdlType_SetOrderList) ,  null, null , $aHeaders);
+        $clWsdlType_SetOrderListeResponse = $this->call('SetOrderList', array($clWsdlType_SetOrderList) ,  null, null , $aHeaders);
 
         return $clWsdlType_SetOrderListeResponse;
     }
@@ -1228,7 +1218,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function setOrderSubList(SetOrderSubList $clWsdlType_SetOrderSubList, $aHeaders = array())
     {
-        $clWsdlType_SetOrderSubListeResponse = $this->call('SendMessage', array($clWsdlType_SetOrderSubList) ,  null, null , $aHeaders);
+        $clWsdlType_SetOrderSubListeResponse = $this->call('SetOrderSubList', array($clWsdlType_SetOrderSubList) ,  null, null , $aHeaders);
 
         return $clWsdlType_SetOrderSubListeResponse;
     }
