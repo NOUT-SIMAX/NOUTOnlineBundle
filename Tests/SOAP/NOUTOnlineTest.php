@@ -19,6 +19,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
  * Class NOUTOnlineTest
@@ -237,8 +239,6 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 */
 	public function testList_OK()
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
@@ -272,6 +272,76 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+	public function testModify_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '41296233836619';
+		$id = '219237638150324';
+		$colonne = '45208949043557';
+		$valeur='test';
+
+		//l'action modify
+		$clParamModify = new Modify();
+		$clParamModify->Table = $form;
+		$clParamModify->ParamXML = "<id_$form>$id</id_$form>";
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->modify($clParamModify, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on fait l'update
+
+		$clParamUpdate = new Update();
+		$clParamUpdate->Table = $form;
+		$clParamUpdate->ParamXML = "<id_$form>$id</id_$form>";
+		$clParamUpdate->UpdateData = "<xml><id_$form id=\"$id\"><id_45208949043557>".htmlentities($valeur)."</id_45208949043557></id_$form></xml>";
+
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);

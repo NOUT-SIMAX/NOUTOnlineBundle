@@ -372,19 +372,6 @@ class DefaultController extends Controller
 		$clReponseXML = $OnlineProxy->update($clParamUpdate, $this->_TabGetHeader($sTokenSession, $nIDContexteAction));
 		$this->_VarDumpRes('Update', $clReponseXML);
 
-		/*
-		 *
-		 * <id_1169 simax:id="27" simax:title="automatisme temporel" simax-layout:bold="1" simax-layout:italic="0">
-<id_1171>automatisme temporel</id_1171>
-<id_1172>automatisme</id_1172>
-<id_1173>temporel</id_1173>
-<id_1174/>
-<id_7623/>
-<id_7624>1</id_7624>
-<id_10545>0</id_10545>
-</id_1169>
-		 */
-
 		return $clReponseXML;
 	}
 
