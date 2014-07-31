@@ -3,6 +3,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
 // this imports the annotations
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
@@ -414,6 +415,55 @@ class DefaultController extends Controller
 
 		//on met à jour la valeur de la colonne
 		$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $id, $colonne, $valeur);
+
+		//on valide
+		$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+
+
+	protected function _sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
+	{
+		$clParamCreate = new Create();
+		$clParamCreate->Table = $form;
+
+		$clReponseXML = $OnlineProxy->create($clParamCreate, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('Create', $clReponseXML);
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/create/{form}/{colonne}/{valeur}/{host}", name="create", defaults={"host"="127.0.0.1:8062"})
+	 *
+	 * exemple GUID : /create/41296233836619/45208949043557/trois
+	 */
+	public function createAction($form, $colonne, $valeur, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//ici il faut faire le modify
+		$clReponseWS = $this->_sCreate($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//l'enregistrement retourné
+		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Create'), $clReponseWS->getNodeSchema());
+
+		//on met à jour la valeur de la colonne
+		$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $clReponseWS->clGetElement()->getID(), $colonne, $valeur);
 
 		//on valide
 		$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);

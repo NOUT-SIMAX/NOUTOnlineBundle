@@ -419,8 +419,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$clParamUpdate = new Update();
 		$clParamUpdate->Table = $form;
-		$clParamUpdate->ParamXML = "<id_$form>$id</id_$form>";
-		$clParamUpdate->UpdateData = "<xml><id_$form id=\"$id\"><id_$colonne>test</id_$colonne></id_$form></xml>";
+		$clParamUpdate->ParamXML = "<id_$form>".$clReponseWS->clGetElement()->getID()."</id_$form>";
+		$clParamUpdate->UpdateData = "<xml><id_$form id=\"".$clReponseWS->clGetElement()->getID()."\"><id_$colonne>test</id_$colonne></id_$form></xml>";
 
 		try
 		{
