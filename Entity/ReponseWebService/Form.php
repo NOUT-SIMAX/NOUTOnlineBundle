@@ -6,7 +6,7 @@
  * Time: 18:09
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class Form
 {

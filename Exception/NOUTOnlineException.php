@@ -9,7 +9,6 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Exception;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 
 class NOUTOnlineException extends SOAPException {

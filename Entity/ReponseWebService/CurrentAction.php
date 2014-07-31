@@ -6,7 +6,7 @@
  * Time: 17:30
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 /**
  * Class ResponseHeaderAction

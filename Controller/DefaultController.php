@@ -18,8 +18,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 /**
  * Class DefaultController

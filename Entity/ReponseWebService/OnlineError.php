@@ -6,7 +6,7 @@
  * Time: 14:20
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 
 class OnlineError

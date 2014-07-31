@@ -6,9 +6,7 @@
  * Time: 16:46
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
-
-use NOUT\Bundle\NOUTOnlineBundle\Entity\CurrentAction;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 /**
  * Class XMLResponseWS

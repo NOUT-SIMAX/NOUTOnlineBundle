@@ -6,7 +6,7 @@
  * Time: 14:14
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
 
 /**
