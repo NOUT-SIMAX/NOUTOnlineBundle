@@ -11,10 +11,13 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
@@ -26,6 +29,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
  * Class NOUTOnlineTest
  * classe pour tester NOUTOnline en mode Intranet
  * @package NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP
+ *
+ * phpunip -c app --filter testCreate_OK
  */
 class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 {
@@ -66,6 +71,19 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		return new UsernameToken('superviseur', '');
 	}
 
+	protected function _clGetOptionDialogue()
+	{
+		$clOptionDialogue = new OptionDialogue();
+		$clOptionDialogue->DisplayValue = OnlineServiceProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;;
+		$clOptionDialogue->Readable = 0;
+		$clOptionDialogue->EncodingOutput = 0;
+		$clOptionDialogue->LanguageCode = 12;
+		$clOptionDialogue->WithFieldStateControl = 1;
+		$clOptionDialogue->ReturnXSD = 0;
+
+		return $clOptionDialogue;
+	}
+
 	/**
 	 * Génère les paramètres pour la méthode GetTokenSession
 	 * @return GetTokenSession
@@ -92,7 +110,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected function _aGetTabHeader($sTokenSession, $nIDContexteAction=null)
 	{
 		$clUsernameToken = $this->_clGetUsernameToken();
-		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession);
+		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession, 'OptionDialogue'=>$this->_clGetOptionDialogue());
 
 		if (isset($nIDContexteAction))
 			$TabHeader['ActionContext']=$nIDContexteAction;
@@ -287,7 +305,6 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$form = '41296233836619';
 		$id = '219237638150324';
 		$colonne = '45208949043557';
-		$valeur='test';
 
 		//l'action modify
 		$clParamModify = new Modify();
@@ -318,12 +335,18 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
+		//l'enregistrement retourné
+		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Modify'), $clReponseWS->getNodeSchema());
+
+		$sValeur = $clRecord->sGetValCol($colonne);
+
 		//on fait l'update
 
 		$clParamUpdate = new Update();
 		$clParamUpdate->Table = $form;
 		$clParamUpdate->ParamXML = "<id_$form>$id</id_$form>";
-		$clParamUpdate->UpdateData = "<xml><id_$form id=\"$id\"><id_45208949043557>".htmlentities($valeur)."</id_45208949043557></id_$form></xml>";
+		$clParamUpdate->UpdateData = "<xml><id_$form id=\"$id\"><id_$colonne>".htmlentities($sValeur.'t')."</id_$colonne></id_$form></xml>";
 
 		try
 		{
@@ -342,6 +365,79 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
 
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+
+	public function testCreate_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '41296233836619';
+		$id = '219237638150324';
+		$colonne = '45208949043557';
+
+		//l'action modify
+		$clParamCreate = new Create();
+		$clParamCreate->Table = $form;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->create($clParamCreate, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//l'enregistrement retourné
+		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Modify'), $clReponseWS->getNodeSchema());
+
+		$sValeur = $clRecord->sGetValCol($colonne);
+
+		//on fait l'update
+
+		$clParamUpdate = new Update();
+		$clParamUpdate->Table = $form;
+		$clParamUpdate->ParamXML = "<id_$form>$id</id_$form>";
+		$clParamUpdate->UpdateData = "<xml><id_$form id=\"$id\"><id_$colonne>test</id_$colonne></id_$form></xml>";
+
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);

@@ -242,6 +242,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 		//TODO: ajouter les header X-SIMAX pour le service.
 
 
+	    if (isset($this->__aListHeaders['OptionDialogue']) && is_object($this->__aListHeaders['OptionDialogue']))
+	    {
+		    //on transforme l'objet en tableau associatif
+		    $this->__aListHeaders['OptionDialogue'] = (array)$this->__aListHeaders['OptionDialogue'];
+	    }
+
+
         //si le la partie optiondialogue du header n'est pas passer en param on la crée
         if( ! isset($this->__aListHeaders['OptionDialogue']) )
         {
@@ -276,8 +283,8 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         //si on a pas de withFieldStateControl precisé, on le mets à 1 (pour recuperer les controle d'etat de champ)
         if(
             !isset($this->__aListHeaders['OptionDialogue']['WithFieldStateControl']) ||
-            is_null($mHeaders['OptionDialogue']['WithFieldStateControl']) ||
-            $mHeaders['OptionDialogue']['WithFieldStateControl'] == ''
+            is_null($this->__aListHeaders['OptionDialogue']['WithFieldStateControl']) ||
+            $this->__aListHeaders['OptionDialogue']['WithFieldStateControl'] == ''
         )
         {
             $this->__aListHeaders['OptionDialogue']['WithFieldStateControl'] = 1;

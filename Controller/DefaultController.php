@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 
@@ -70,10 +70,23 @@ class DefaultController extends Controller
 		return $clReponseXML->sGetTokenSession();
 	}
 
+	protected function _clGetOptionDialogue()
+	{
+		$clOptionDialogue = new OptionDialogue();
+		$clOptionDialogue->DisplayValue = OnlineServiceProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;;
+		$clOptionDialogue->Readable = 0;
+		$clOptionDialogue->EncodingOutput = 0;
+		$clOptionDialogue->LanguageCode = 12;
+		$clOptionDialogue->WithFieldStateControl = 1;
+		$clOptionDialogue->ReturnXSD = 0;
+
+		return $clOptionDialogue;
+	}
+
 	protected function _TabGetHeader($sTokenSession, $nIDContexteAction=null)
 	{
 		$clUsernameToken = $this->get('nout_online.connection_manager')->getUsernameToken();
-		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession);
+		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession, 'OptionDialogue'=>$this->_clGetOptionDialogue());
 
 		if (isset($nIDContexteAction))
 			$TabHeader['ActionContext']=$nIDContexteAction;
@@ -338,6 +351,9 @@ class DefaultController extends Controller
 	protected function _Validate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
 	{
 		$clReponseWS = $OnlineProxy->validate($this->_TabGetHeader($sTokenSession, $nIDContexteAction));
+
+		$this->_VarDumpRes('Validate', $clReponseWS);
+
 		return $clReponseWS;
 	}
 
@@ -392,6 +408,10 @@ class DefaultController extends Controller
 		$clReponseWS = $this->_sModify($OnlineProxy, $sTokenSession, $form, $id);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
+		//l'enregistrement retourné
+		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Modify'), $clReponseWS->getNodeSchema());
+
 		//on met à jour la valeur de la colonne
 		$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $id, $colonne, $valeur);
 
@@ -406,5 +426,25 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
+	/**
+	 * @Route("/record_test", name="record_test")
+	 *
+	 */
+	public function recordTestAction()
+	{
+		ob_start();
+
+		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
+		$clResponseXML = new XMLResponseWS($sXML);
+
+		$clRecord = new Record(Record::LEVEL_RECORD, $clResponseXML->clGetForm(), $clResponseXML->clGetElement());
+		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
+
+		var_dump($clRecord);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
 
 }

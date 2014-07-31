@@ -7,7 +7,9 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Form;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\OptionDialogue;
 
 /**
  * Class Record
@@ -79,28 +81,32 @@ class Record
 		$this->m_clElement = $clElement;
 		$this->m_nID = '';
 		$this->m_TabColumns=null;
-		$this->$m_sTitle='';
+		$this->m_sTitle='';
 	}
 
-	/**
-	 * @param OptionDialogue $clOptionDialogue : option de dialogue qui a donner la réponse
-	 * @param \SimpleXMLElement $clXML
-	 * @param \SimpleXMLElement $clSchema : schema, peut être null si la structure n'est pas utile
-	 */
-	public function initFromReponseWS(OptionDialogue $clOptionDialogue, \SimpleXMLElement $clXML, \SimpleXMLElement $clSchema=null)
+	protected function _InitValeurColonne(\SimpleXMLElement $clXML, $bLisible)
 	{
-		//il faut trouver le noeud de l'enregistrement dans le XML
-		$sXPath='';
-		if (!$clOptionDialogue->Readable)
+		foreach($clXML->children() as $ndColonne)
 		{
-			//pas lisible
-			$sXPath='.//id_'.$this->m_clForm->getID();
+			if ($ndColonne->count()>0)
+			{
+				$this->_InitValeurColonne($ndColonne, $bLisible);
+			}
+			else
+			{
+				$sNom = $ndColonne->getName();
+				$sValeur = (string)$ndColonne;
+
+				$clInfoColonne = new InfoColonne();
+				$clInfoColonne->setValeur($sValeur);
+
+				if ($bLisible)
+					$this->m_TabColumns[$sNom]=$clInfoColonne;
+				else
+					$this->m_TabColumns[str_replace('id_', '', $sNom)]=$clInfoColonne;
+			}
 		}
-		$sXPath.='[simax:id='.$this->m_clElement->getID().']';
 
-
-		$clEnreg=$clXML->xpath($sXPath);
-		var_dump($clEnreg);
 	}
 
 	/**
@@ -121,10 +127,59 @@ class Record
 	 */
 	protected function _initFromEnregXML(OptionDialogue $clOptionDialogue, \SimpleXMLElement $clXML)
 	{
+		if ($clOptionDialogue->Readable)
+			return false;
 
+		foreach($clXML->children() as $noeud)
+		{
+			if ($noeud->getName()!='id_'.$this->m_clForm->getID())
+				continue;
+
+			$sID = '';
+			$sTitle = '';
+			foreach($noeud->attributes('http://www.nout.fr/XML/', false) as $sAtt=>$sVal)
+			{
+				switch($sAtt)
+				{
+					case 'id':
+						$sID = (string)$sVal;
+						break;
+					case 'title':
+						$sTitle = (string)$sVal;
+						break;
+				}
+			}
+
+			if ($sID != $this->m_clElement->getID())
+				continue ; //c'est pas l'élément qu'on cherche
+
+			$this->m_nID = $sID;
+			$this->m_sTitle = $sTitle;
+
+			$this->_InitValeurColonne($noeud, $clOptionDialogue->Readable);
+
+			break;
+
+		}
 
 	}
+	/**
+	 * @param OptionDialogue $clOptionDialogue : option de dialogue qui a donner la réponse
+	 * @param \SimpleXMLElement $clXML
+	 * @param \SimpleXMLElement $clSchema : schema, peut être null si la structure n'est pas utile
+	 */
+	public function initFromReponseWS(OptionDialogue $clOptionDialogue, \SimpleXMLElement $clXML, \SimpleXMLElement $clSchema=null)
+	{
+		$this->_initFromEnregXML($clOptionDialogue, $clXML);
+	}
 
+	public function sGetValCol($idColonne)
+	{
+		if (isset($this->m_TabColumns[$idColonne]))
+			return $this->m_TabColumns[$idColonne]->getValeur();
+
+		return null;
+	}
 
 
 

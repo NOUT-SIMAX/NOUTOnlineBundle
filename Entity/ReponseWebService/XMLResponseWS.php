@@ -228,9 +228,10 @@ class XMLResponseWS
 	public function getNodeSchema()
 	{
 		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
-		if (!isset($clXSDSchema))
+		if (!isset($clXSDSchema) || ($clXSDSchema->count()==0))
 			return null;
 
+		//le noeud XSDSchema n'a qu'un fils
 		return $clXSDSchema->children('http://www.w3.org/2001/XMLSchema', false)->schema;
 	}
 
