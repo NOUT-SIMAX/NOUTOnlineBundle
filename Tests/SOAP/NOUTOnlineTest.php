@@ -18,11 +18,13 @@ use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
@@ -262,7 +264,6 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = 'utilisateur';
-		$id = 2;
 
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
@@ -297,6 +298,47 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);
 	}
+
+	public function testSearch_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = 'utilisateur';
+
+		$clParamSearch = new Search();
+		$clParamSearch->Table = $form;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->listAction($clParamSearch, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on valide le contexte
+		$this->_Cancel($sTokenSession, $sActionContexte, false);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
 
 	public function testModify_OK()
 	{
@@ -413,14 +455,14 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Modify'), $clReponseWS->getNodeSchema());
 
-		$sValeur = $clRecord->sGetValCol($colonne);
 
 		//on fait l'update
+		$sIDEnreg = $clReponseWS->clGetElement()->getID();
 
 		$clParamUpdate = new Update();
 		$clParamUpdate->Table = $form;
-		$clParamUpdate->ParamXML = "<id_$form>".$clReponseWS->clGetElement()->getID()."</id_$form>";
-		$clParamUpdate->UpdateData = "<xml><id_$form id=\"".$clReponseWS->clGetElement()->getID()."\"><id_$colonne>test</id_$colonne></id_$form></xml>";
+		$clParamUpdate->ParamXML = "<id_$form>".$sIDEnreg."</id_$form>";
+		$clParamUpdate->UpdateData = "<xml><id_$form id=\"".$sIDEnreg."\"><id_$colonne>test</id_$colonne></id_$form></xml>";
 
 		try
 		{
@@ -444,6 +486,56 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);
+
+		return $sIDEnreg;
+	}
+
+	public function testDelete_OK()
+	{
+		$sIDEnreg = $this->testCreate_OK();
+
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '41296233836619';
+
+
+
+		//l'action modify
+		$clParamDelete = new Delete();
+		$clParamDelete->Table = $form;
+		$clParamDelete->ParamXML="<id_$form>".$sIDEnreg."</id_$form>";
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->delete($clParamDelete, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+
+		return $sIDEnreg;
 	}
 
 } 
