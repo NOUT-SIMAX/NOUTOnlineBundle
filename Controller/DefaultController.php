@@ -9,6 +9,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -762,6 +764,82 @@ class DefaultController extends Controller
 
 		//on valide
 		$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+	protected function _sGetStartAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	{
+		$clParamStartAutomatism = new GetStartAutomatism();
+
+		$clReponseXML = $OnlineProxy->getStartAutomatism($clParamStartAutomatism, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('GetStartAutomatism', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/getstartautomatism/{host}", name="getstartautomatism", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function getStartAutomatismAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWS = $this->_sGetStartAutomatism($OnlineProxy, $sTokenSession);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//annulation de la liste
+		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+	protected function _sGetEndAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	{
+		$clParamEndAutomatism = new GetEndAutomatism();
+
+		$clReponseXML = $OnlineProxy->getEndAutomatism($clParamEndAutomatism, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('GetEndAutomatism', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/getendautomatism/{host}", name="getendautomatism", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function getEndAutomatismAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWS = $this->_sGetEndAutomatism($OnlineProxy, $sTokenSession);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//annulation de la liste
+		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
