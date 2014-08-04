@@ -558,7 +558,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      * @return void
      * @access public
      */
-    public function deleteForlder(DeleteFolder $clWsdlType_DeleteFolder, $aHeaders = array())
+    public function deleteFolder(DeleteFolder $clWsdlType_DeleteFolder, $aHeaders = array())
     {
         $mResp = $this->call('DeleteFolder', array($clWsdlType_DeleteFolder) ,  null, null , $aHeaders);
 
