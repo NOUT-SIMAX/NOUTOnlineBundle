@@ -5,10 +5,12 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 // this imports the annotations
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -360,6 +362,49 @@ class DefaultController extends Controller
 	}
 
 
+
+	protected function _sRequest(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
+	{
+		$clParamRequest = new Request();
+		$clParamRequest->Table = $form;
+		$clParamRequest->CondList = "<Condition><CondCol>$colonne</CondCol><CondType>Equal</CondType><CondValue>$valeur</CondValue></Condition>";
+
+
+		$clReponseXML = $OnlineProxy->request($clParamRequest, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('Request', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/request/{form}/{colonne}/{valeur}/{host}", name="execute", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function requestAction($form, $colonne, $valeur, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWS = $this->_sRequest($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//annulation de la liste
+		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+
 	protected function _sSearch(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamSearch = new Search();
@@ -544,8 +589,6 @@ class DefaultController extends Controller
 	}
 
 
-
-
 	protected function _sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamCreate = new Create();
@@ -592,6 +635,49 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
+
+
+	protected function _sCreateFrom(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $origine)
+	{
+		$clParamCreateFrom = new CreateFrom();
+		$clParamCreateFrom->Table = $form;
+		$clParamCreateFrom->TableSrc = $form;
+		$clParamCreateFrom->ElemSrc = $origine;
+
+		$clReponseXML = $OnlineProxy->createFrom($clParamCreateFrom, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('CreateFrom', $clReponseXML);
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/create_from/{form}/{origine}/{host}", name="create_from", defaults={"host"="127.0.0.1:8062"})
+	 *
+	 * exemple GUID : /create/41296233836619/45354977933184
+	 *
+	 */
+	public function createFromAction($form, $origine, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//ici il faut faire le modify
+		$clReponseWS = $this->_sCreateFrom($OnlineProxy, $sTokenSession, $form, $origine);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//on valide
+		$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
 
 
 

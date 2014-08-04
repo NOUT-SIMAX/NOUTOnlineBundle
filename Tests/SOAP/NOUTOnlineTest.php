@@ -25,6 +25,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
@@ -338,6 +339,48 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);
 	}
+
+
+	public function testRequest_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$clParamRequest = new Request();
+		$clParamRequest->CondList = '<Condition><CondCol>Invalide</CondCol><CondType>Equal</CondType><CondValue>1</CondValue></Condition>';
+		$clParamRequest->Table = 'utilisateur';
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->request($clParamRequest, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+
 
 	public function testSearch_OK()
 	{
