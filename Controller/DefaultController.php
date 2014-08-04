@@ -6,6 +6,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
@@ -204,13 +205,17 @@ class DefaultController extends Controller
 		return $str;
 	}
 
+	protected function _bEstNumerique($form)
+	{
+		return strlen(str_replace(array(0,1,2,3,4,5,6,7,8,9), array('', '', '', '', '', '', '', '', '', ''), $form))==0;
+	}
 
 	protected function _sNettoieForm($form)
 	{
 		// prefixe pour les balises où on utilise l'identifiant au lieu du libellé
 		$_pszPrefixeBaliseID = "id_";
 
-		if (strlen(str_replace(array(0,1,2,3,4,5,6,7,8,9), array('', '', '', '', '', '', '', '', '', ''), $form))==0)
+		if ($this->_bEstNumerique($form))
 			return $_pszPrefixeBaliseID.$form;
 
 
@@ -297,6 +302,50 @@ class DefaultController extends Controller
 
 		//la liste
 		$clReponseWS = $this->_sList($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//annulation de la liste
+		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+
+	protected function _sExecute(OnlineServiceProxy $OnlineProxy, $sTokenSession, $action)
+	{
+		$clParamExecute = new Execute();
+
+		if ($this->_bEstNumerique($action))
+			$clParamExecute->ID = $action;
+		else
+			$clParamExecute->Sentence=$action;
+
+		$clReponseXML = $OnlineProxy->execute($clParamExecute, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('Execute', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/execute/{action}/{host}", name="execute", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function executeAction($action, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWS = $this->_sExecute($OnlineProxy, $sTokenSession, $action);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste

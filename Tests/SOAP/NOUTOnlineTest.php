@@ -20,6 +20,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
@@ -259,6 +260,45 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	}
 
 
+	public function testExecute_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$clParamExecute = new Execute();
+		$clParamExecute->Sentence = 'liste utilisateur';
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->Execute($clParamExecute, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+
 	public function testList_OK()
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
@@ -344,7 +384,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$form = '41296233836619';
+		$form = '41296233836619'; //formulaire avec liste images
 		$id = '219237638150324';
 		$colonne = '45208949043557';
 
@@ -419,8 +459,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$form = '41296233836619';
-		$id = '219237638150324';
+		$form = '41296233836619'; //formulaire avec liste images
 		$colonne = '45208949043557';
 
 		//l'action modify
@@ -496,7 +535,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$form = '41296233836619';
+		$form = '41296233836619'; //formulaire avec liste images
 
 
 
