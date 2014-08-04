@@ -8,6 +8,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -484,6 +485,51 @@ class DefaultController extends Controller
 		ob_get_clean();
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
+
+
+
+	protected function _sGetColInRecord(OnlineServiceProxy $OnlineProxy, $sTokenSession, $colonne, $id, $content)
+	{
+		$clParamGCR = new GetColInRecord();
+		$clParamGCR->Column = $colonne;
+		$clParamGCR->Record = $id;
+		$clParamGCR->WantContent=$content;
+
+
+		$clReponseXML = $OnlineProxy->getColInRecord($clParamGCR, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('GetColInRecord', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+
+	/**
+	 * @Route("/getcolinrecord/{colonne}/{id}/{content}/{host}", name="getcolinrecord", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function getColInRecordAction($colonne, $id, $host, $content)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//ici il faut faire le display
+		$clReponseWS=$this->_sGetColInRecord($OnlineProxy, $sTokenSession, $colonne, $id, $content);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//annulation de la liste
+		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
 
 
 	/**
