@@ -3,10 +3,13 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
 // this imports the annotations
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordManager;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
@@ -88,7 +91,7 @@ class DefaultController extends Controller
 		$clOptionDialogue->EncodingOutput = 0;
 		$clOptionDialogue->LanguageCode = 12;
 		$clOptionDialogue->WithFieldStateControl = 1;
-		$clOptionDialogue->ReturnXSD = 0;
+		$clOptionDialogue->ReturnXSD = 1;
 
 		return $clOptionDialogue;
 	}
@@ -381,7 +384,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/request/{form}/{colonne}/{valeur}/{host}", name="execute", defaults={"host"="127.0.0.1:8062"})
+	 * @Route("/request/{form}/{colonne}/{valeur}/{host}", name="request", defaults={"host"="127.0.0.1:8062"})
 	 */
 	public function requestAction($form, $colonne, $valeur, $host)
 	{
@@ -748,7 +751,7 @@ class DefaultController extends Controller
 	/**
 	 * @Route("/delete/{form}/{id}/{host}", name="delete", defaults={"host"="127.0.0.1:8062"})
 	 *
-	 * exemple GUID : /create/41296233836619/45208949043557/trois
+	 * exemple GUID : /delete/41296233836619/45208949043557/trois
 	 */
 	public function deleteAction($form, $id, $host)
 	{
@@ -850,6 +853,46 @@ class DefaultController extends Controller
 	}
 
 
+	protected function _sDrillthrought(OnlineServiceProxy $OnlineProxy, $sTokenSession, $colonne, $enreg)
+	{
+		$clParamDrillThrough = new DrillThrough();
+		$clParamDrillThrough->Record = $enreg;
+		$clParamDrillThrough->Column = $colonne;
+
+		$clReponseXML = $OnlineProxy->drillThrough($clParamDrillThrough, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('DrillThrough', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/drillthrought/{host}", name="drillthrought", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function drillthroughtAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWS = $this->_sGetEndAutomatism($OnlineProxy, $sTokenSession);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//annulation de la liste
+		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
 
 	/**
 	 * @Route("/record_test", name="record_test")
@@ -862,10 +905,16 @@ class DefaultController extends Controller
 		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
 		$clResponseXML = new XMLResponseWS($sXML);
 
-		$clRecord = new Record(Record::LEVEL_RECORD, $clResponseXML->clGetForm(), $clResponseXML->clGetElement());
-		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
+		$clRecordManager = new RecordManager();
 
-		var_dump($clRecord);
+		$clRecordManager->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $this->_clGetOptionDialogue(), $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
+
+
+
+		//$clRecord = new Record(Record::LEVEL_RECORD, $clResponseXML->clGetForm(), $clResponseXML->clGetElement());
+		//$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
+
+		var_dump($clRecordManager);
 
 		$containt = ob_get_contents();
 		ob_get_clean();
