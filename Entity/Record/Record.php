@@ -63,9 +63,6 @@ class Record
 	protected $m_clElement;
 
 
-	const LEVEL_RECORD = 1;
-	const LEVEL_LIST = 2;
-	const LEVEL_TITLE = 3;
 	/**
 	 * @var $m_nLevel : niveau de la description de l'enregistrement
 	 */
