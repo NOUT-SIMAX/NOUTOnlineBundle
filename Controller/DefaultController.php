@@ -2,39 +2,46 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
-// this imports the annotations
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
+// this imports the annotations
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+
+
+
 
 /**
  * Class DefaultController
@@ -299,6 +306,26 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
+	protected function _sGetCaculation(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabIDColonne)
+	{
+		$clParamGetCalculation = new GetCalculation();
+		$clParamGetCalculation->ColList=new ColListType($TabIDColonne);
+		$clParamGetCalculation->CalculationList=new CalculationListType(
+					array(
+						CalculationListType::SUM,
+						CalculationListType::AVERAGE,
+						CalculationListType::MIN,
+						CalculationListType::MAX,
+						CalculationListType::COUNT
+					)
+			)
+		;
+
+		$clReponseXML = $OnlineProxy->getCalculation($clParamGetCalculation, $this->_TabGetHeader($sTokenSession, $sIDActionContexte));
+		$this->_VarDumpRes('GetCalculation', $clReponseXML);
+		return $clReponseXML;
+	}
+
 	/**
 	 * @Route("/list/{form}/{host}", name="list", defaults={"host"="127.0.0.1:8062"})
 	 */
@@ -313,6 +340,15 @@ class DefaultController extends Controller
 		//la liste
 		$clReponseWS = $this->_sList($OnlineProxy, $sTokenSession, $form);
 		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//on parse le XML pour avoir les enregistrement
+		$clRecordParser = new RecordParser();
+		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$StructForm = $clRecordParser->clGetStructureElement($clReponseWS->clGetForm()->getID());
+		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
+
+		$this->_sGetCaculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
 
 		//annulation de la liste
 		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);

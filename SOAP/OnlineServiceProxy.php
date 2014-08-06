@@ -670,8 +670,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function getCalculation(GetCalculation $clWsdlType_GetCalculation, $aHeaders = array())
     {
-        $clWsdlType_GetCalculationResponse = $this->call('GetCalculation', array($clWsdlType_GetCalculation) ,  null, null , $aHeaders);
-
+        $clWsdlType_GetCalculationResponse = $this->call('GetCalculation', array((array)$clWsdlType_GetCalculation) ,  null, null , $aHeaders);
         return $clWsdlType_GetCalculationResponse;
     }
     //---
