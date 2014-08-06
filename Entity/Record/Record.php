@@ -79,7 +79,7 @@ class Record
 	public function sGetValCol($idColonne)
 	{
 		if (isset($this->m_TabColumns) && isset($this->m_TabColumns[$idColonne]))
-			return $this->m_TabColumns[$idColonne]->m_sValeur;
+			return $this->m_TabColumns[$idColonne]->m_Valeur;
 
 		return null;
 	}

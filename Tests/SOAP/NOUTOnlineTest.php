@@ -13,10 +13,15 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
@@ -185,6 +190,33 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
 	}
+
+
+	protected function _ConfirmResponse($sTokenSession, $sActionContexte, MessageBox $clMessageBox)
+	{
+		$clConfirm = new ConfirmResponse();
+		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->ConfirmResponse($clConfirm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+	}
+
 
 	/**
 	 * Annule la dernière action ou le contexte d'action entier
@@ -507,14 +539,17 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
-		//l'enregistrement retourné
-		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		//on parse le XML pour avoir les enregistrement
+		$clRecordParser = new RecordParser();
+		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$this->assertNotNull($clRecord);
 
 		$sValeur = $clRecord->sGetValCol($colonne);
 
 		//on fait l'update
-
 		$clParamUpdate = new Update();
 		$clParamUpdate->Table = $form;
 		$clParamUpdate->ParamXML = "<id_$form>$id</id_$form>";
@@ -544,15 +579,9 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-
-	public function testCreate_OK()
+	protected function _sCreate($form, $colonne, $sTokenSession)
 	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
-		$form = '41296233836619'; //formulaire avec liste images
-		$colonne = '45208949043557';
-
-		//l'action modify
+		//l'action create
 		$clParamCreate = new Create();
 		$clParamCreate->Table = $form;
 
@@ -580,10 +609,12 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
-		//l'enregistrement retourné
-		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		//on parse le XML pour avoir les enregistrement
+		$clRecordParser = new RecordParser();
+		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
+		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$this->assertNotNull($clRecord);
 
 		//on fait l'update
 		$sIDEnreg = $clReponseWS->clGetElement()->getID();
@@ -591,7 +622,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamUpdate = new Update();
 		$clParamUpdate->Table = $form;
 		$clParamUpdate->ParamXML = "<id_$form>".$sIDEnreg."</id_$form>";
-		$clParamUpdate->UpdateData = "<xml><id_$form id=\"".$sIDEnreg."\"><id_$colonne>test</id_$colonne></id_$form></xml>";
+		$clParamUpdate->UpdateData = "<xml><id_$form id=\"".$sIDEnreg."\"><id_$colonne>phpUnit Test Create</id_$colonne></id_$form></xml>";
 
 		try
 		{
@@ -613,20 +644,34 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
 
+		return $sIDEnreg;
+	}
+
+	public function testCreate_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '41296233836619'; //formulaire avec liste images
+		$colonne = '45208949043557';
+
+		$sIDEnreg = $this->_sCreate($form, $colonne, $sTokenSession);
+
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);
 
 		return $sIDEnreg;
 	}
 
+
+
 	public function testDelete_OK()
 	{
-		$sIDEnreg = $this->testCreate_OK();
 
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = '41296233836619'; //formulaire avec liste images
-
+		$colonne = '45208949043557';
+		$sIDEnreg = $this->_sCreate($form, $colonne, $sTokenSession);
 
 
 		//l'action modify
@@ -658,13 +703,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_MESSAGEBOX, $clReponseWS->sGetReturnType());
+
 		//on valide le contexte
-		$this->_Validate($sTokenSession, $sActionContexte);
+		$this->_ConfirmResponse($sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
 
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);
-
-		return $sIDEnreg;
 	}
 
 
