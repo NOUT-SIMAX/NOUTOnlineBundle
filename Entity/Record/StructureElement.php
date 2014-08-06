@@ -27,6 +27,7 @@ class StructureElement
 	public $m_sLibelle;
 	public $m_nNiveau;
 	public $m_TabStructureColonne;
+	public $m_MapIDColonne2StructColonne;
 
 	public function __construct()
 	{
@@ -34,5 +35,16 @@ class StructureElement
 		$this->m_sLibelle = '';
 		$this->m_nNiveau = -1;
 		$this->m_TabStructureColonne = array();
+		$this->m_MapIDColonne2StructColonne = array();
 	}
+
+
+	public function sGetColonneTypeElement($sIDColonne)
+	{
+		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+			return null;
+
+		return $this->m_MapIDColonne2StructColonne[$sIDColonne]->m_eTypeElement;
+	}
+
 } 

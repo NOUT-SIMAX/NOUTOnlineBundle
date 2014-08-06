@@ -11,6 +11,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 class StructureColonne
 {
+	const TM_Invalide   = null;
+
 	//type simple
 	const TM_Booleen    = 'xs:boolean';
 	const TM_Entier     = 'xs:integer';
@@ -49,48 +51,59 @@ class StructureColonne
 	public $m_TabStructureColonne;
 
 
-	public function __construct($sID, $TabAttribSIMAX)
+	public function __construct($sID, \SimpleXMLElement $clAttribNOUT)
 	{
 		$this->m_TabStructureColonne = array();
 
 		$this->m_nIDColonne = $sID;
-		$this->m_sLibelle = (string)$TabAttribSIMAX['name'];
-		$this->m_eTypeElement =  (string)$TabAttribSIMAX['typeElement'];
+		$this->m_sLibelle = '';
+		$this->m_eTypeElement =  '';
 		$this->m_clRestriction = null;
+		$this->m_bPrinted=0;
+		$this->m_bReadonly=0;
+		$this->m_bComputed=0;
+		$this->m_bSort=0;
+		$this->m_bLink=0;
+		$this->m_sLinkedTableXml='';
+		$this->m_sLinkedTableID='';
 
-		if (isset($TabAttribSIMAX['printed']))
-			$this->m_bPrinted = (int)$TabAttribSIMAX['printed'];
-		else
-			$this->m_bPrinted=false;
+		$this->InitInfoColonne($clAttribNOUT);
+	}
 
-		if (isset($TabAttribSIMAX['readOnly']))
-			$this->m_bReadonly = (int)$TabAttribSIMAX['readOnly'];
-		else
-			$this->m_bReadonly=false;
-
-		if (isset($TabAttribSIMAX['computed']))
-			$this->m_bComputed = (int)$TabAttribSIMAX['computed'];
-		else
-			$this->m_bComputed=false;
-
-		if (isset($TabAttribSIMAX['sort']))
-			$this->m_bSort = (int)$TabAttribSIMAX['sort'];
-		else
-			$this->m_bSort=false;
-
-		if (isset($TabAttribSIMAX['link']))
-			$this->m_bLink = (int)$TabAttribSIMAX['link'];
-		else
-			$this->m_bLink=false;
-
-		if (isset($TabAttribSIMAX['linkedTableXml']))
-			$this->m_sLinkedTableXml = (string)$TabAttribSIMAX['linkedTableXml'];
-		else
-			$this->m_sLinkedTableXml='';
-
-		if (isset($TabAttribSIMAX['linkedTableID']))
-			$this->m_sLinkedTableID = (string)$TabAttribSIMAX['linkedTableID'];
-		else
-			$this->m_sLinkedTableID='';
+	public function InitInfoColonne(\SimpleXMLElement $clAttribNOUT)
+	{
+		foreach($clAttribNOUT as $sAttribName => $ndAttrib)
+		{
+			switch($sAttribName)
+			{
+				case 'name':
+					$this->m_sLibelle = (string)$ndAttrib;
+					break;
+				case 'typeElement':
+					$this->m_eTypeElement = (string)$ndAttrib;
+					break;
+				case 'printed':
+					$this->m_bPrinted = (int)$ndAttrib;
+					break;
+				case 'readOnly':
+					$this->m_bReadonly = (int)$ndAttrib;
+					break;
+				case 'computed':
+					$this->m_bComputed = (int)$ndAttrib;
+					break;
+				case 'sort':
+					$this->m_bSort = (int)$ndAttrib;
+					break;
+				case 'link':
+					$this->m_bLink = (int)$ndAttrib;
+					break;
+				case 'linkedTableXml':
+					$this->m_sLinkedTableXml = (string)$ndAttrib;
+					break;
+				case 'linkedTableID':
+					$this->m_sLinkedTableID = (string)$ndAttrib;
+					break;
+			}
+		}
 	}
 }

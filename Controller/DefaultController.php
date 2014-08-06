@@ -3,9 +3,11 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
 // this imports the annotations
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordManager;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
@@ -621,15 +623,24 @@ class DefaultController extends Controller
 		$clReponseWS = $this->_sModify($OnlineProxy, $sTokenSession, $form, $id);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
-		//l'enregistrement retourné
-		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Modify'), $clReponseWS->getNodeSchema());
+		//on parse le XML pour avoir les enregistrement
+		$clRecordParser = new RecordParser();
+		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
-		//on met à jour la valeur de la colonne
-		$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $id, $colonne, $valeur);
 
-		//on valide
-		$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		if (!is_null($clRecord))
+		{
+			//on met à jour la valeur de la colonne
+			$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $id, $colonne, $valeur);
+
+			//on valide
+			$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+		}
+		else
+		{
+			echo '<p>On n\'a pas l\'enregistrement</p>';
+		}
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -640,7 +651,7 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
+	protected function __sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamCreate = new Create();
 		$clParamCreate->Table = $form;
@@ -649,6 +660,31 @@ class DefaultController extends Controller
 		$this->_VarDumpRes('Create', $clReponseXML);
 
 		return $clReponseXML;
+	}
+
+	protected function _sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
+	{
+		//ici il faut faire le modify
+		$clReponseWS = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//on parse le XML pour avoir les enregistrement
+		$clRecordParser = new RecordParser();
+		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		if (!is_null($clRecord))
+		{
+			//on met à jour la valeur de la colonne
+			$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $clReponseWS->clGetElement()->getID(), $colonne, $valeur);
+
+			//on valide
+			$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+			return $clRecord->m_nIDEnreg;
+		}
+
+		echo '<p>On n\'a pas l\'enregistrement</p>';
+		return null;
 	}
 
 	/**
@@ -664,19 +700,7 @@ class DefaultController extends Controller
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
-		//ici il faut faire le modify
-		$clReponseWS = $this->_sCreate($OnlineProxy, $sTokenSession, $form);
-		$sActionContexte = $clReponseWS->sGetActionContext();
-
-		//l'enregistrement retourné
-		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Create'), $clReponseWS->getNodeSchema());
-
-		//on met à jour la valeur de la colonne
-		$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $clReponseWS->clGetElement()->getID(), $colonne, $valeur);
-
-		//on valide
-		$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -747,13 +771,23 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
+	protected function _sConfirmResponse(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, MessageBox $clMessageBox)
+	{
+		$clConfirm = new ConfirmResponse();
+		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
+
+		$clReponseWS = $OnlineProxy->ConfirmResponse($clConfirm, $this->_TabGetHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('ConfirmResponse', $clReponseWS);
+
+		return $clReponseWS;
+	}
 
 	/**
-	 * @Route("/delete/{form}/{id}/{host}", name="delete", defaults={"host"="127.0.0.1:8062"})
+	 * @Route("/delete/{form}/{colonne}/{valeur}/{host}", name="delete", defaults={"host"="127.0.0.1:8062"})
 	 *
-	 * exemple GUID : /delete/41296233836619/45208949043557/trois
+	 * exemple GUID : /delete
 	 */
-	public function deleteAction($form, $id, $host)
+	public function deleteAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
 		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
@@ -761,12 +795,18 @@ class DefaultController extends Controller
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
-		//ici il faut faire le modify
-		$clReponseWS = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $id);
+		$sIDEnreg = $this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
+
+		//ici il faut faire le delete
+		$clReponseWS = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $sIDEnreg);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on valide
-		$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+		if ($clReponseWS->sGetReturnType()==XMLResponseWS::RETURNTYPE_MESSAGEBOX)
+		{
+			//il faut confirmer la réponse
+			$this->_sConfirmResponse($OnlineProxy, $sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
+		}
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -905,14 +945,10 @@ class DefaultController extends Controller
 		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
 		$clResponseXML = new XMLResponseWS($sXML);
 
-		$clRecordManager = new RecordManager();
+		$clRecordManager = new RecordParser();
 
-		$clRecordManager->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $this->_clGetOptionDialogue(), $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
+		$clRecordManager->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clResponseXML->getNodeXML(), $clResponseXML->getNodeSchema());
 
-
-
-		//$clRecord = new Record(Record::LEVEL_RECORD, $clResponseXML->clGetForm(), $clResponseXML->clGetElement());
-		//$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clResponseXML->getNodeXML('Modify'), $clResponseXML->getNodeSchema());
 
 		var_dump($clRecordManager);
 

@@ -107,7 +107,7 @@ class XMLResponseWSTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('1', $clSchema->attributes()->VERSION_LECTURE);
 
 		//quelque vérification sur le xml
-		$clXML = $clReponseXML->getNodeXML('Modify');
+		$clXML = $clReponseXML->getNodeXML();
 		$this->assertNotNull($clXML);
 
 		//verif des versions

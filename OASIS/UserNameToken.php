@@ -59,7 +59,7 @@ class UsernameToken extends WSDLUsernameToken
 	 */
 	protected function _getCryptedPassword($sPassword=null)
 	{		
-		if (strlen($sPassword)>0 || $sPassword!=null )
+		if (($sPassword!=null) && (strlen($sPassword)>0) )
 			//$this->securePassword = base64_encode(md5($strPassword, true));
 			$sSecurePassword = base64_encode(md5($sPassword,true));
 			//$this->securePassword = base64_encode(md5($strPassword));

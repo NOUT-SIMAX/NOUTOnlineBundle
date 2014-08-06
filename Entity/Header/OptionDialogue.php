@@ -15,7 +15,7 @@ class OptionDialogue extends WSDLOptionDialogue
 
 	public function __construct()
 	{
-		$this->Readable=0; // integer
+		$this->Readable=0; // integer TOUJOURS laisser 0, on considère que c'est toujours non lisible dans le bundle
 		$this->EncodingOutput=0; // integer
 		$this->ReturnValue=1; // integer
 		$this->ReturnXSD=1; // integer

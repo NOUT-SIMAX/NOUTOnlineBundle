@@ -167,6 +167,14 @@ class XMLResponseWS
 	}
 
 	/**
+	 * @return MessageBox
+	 */
+	public function clGetMessageBox()
+	{
+		return new MessageBox($this->getNodeXML());
+	}
+
+	/**
 	 * @return CurrentAction : action en cours
 	 */
 	public function clGetAction()
@@ -189,12 +197,18 @@ class XMLResponseWS
 		);
 	}
 
+	/**
+	 * @return Form
+	 */
 	public function clGetForm()
 	{
 		$clForm = $this->m_ndHeader->children()->Form;
 		return new Form($clForm, $clForm['title']);
 	}
 
+	/**
+	 * @return Element
+	 */
 	public function clGetElement()
 	{
 		$clElem = $this->m_ndHeader->children()->Element;
@@ -204,27 +218,30 @@ class XMLResponseWS
 	/**
 	 * retourne le noeud reponse de l'operation
 	 * @param $sOperation
-	 * @return SimpleXMLElement
+	 * @return \SimpleXMLElement
 	 */
-	protected function _clGetNodeResponse($sOperation)
+	protected function _clGetNodeResponse()
 	{
-		return $this->m_ndBody->children()->{$sOperation.'Response'};
+		return $this->m_ndBody->children()[0];
 	}
 
 	/**
 	 * récupère le noeud xml dans la réponse
 	 * @param string $sOperation : operation lancée
-	 * @return SimpleXMLElement
+	 * @return \SimpleXMLElement
 	 */
-	public function getNodeXML($sOperation)
+	public function getNodeXML()
 	{
-		$clNodeResponse = $this->_clGetNodeResponse($sOperation);
+		$clNodeResponse = $this->_clGetNodeResponse();
 		if (isset($clNodeResponse))
 			return $clNodeResponse->xml;
 
 		return null;
 	}
 
+	/**
+	 * @return \SimpleXMLElement
+	 */
 	public function getNodeSchema()
 	{
 		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;

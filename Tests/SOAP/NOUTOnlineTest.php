@@ -509,7 +509,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//l'enregistrement retourné
 		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Modify'), $clReponseWS->getNodeSchema());
+		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 		$sValeur = $clRecord->sGetValCol($colonne);
 
@@ -582,7 +582,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//l'enregistrement retourné
 		$clRecord = new Record(Record::LEVEL_RECORD, $clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML('Modify'), $clReponseWS->getNodeSchema());
+		$clRecord->initFromReponseWS($this->_clGetOptionDialogue(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 
 		//on fait l'update
