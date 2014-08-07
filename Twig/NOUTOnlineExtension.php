@@ -35,7 +35,7 @@ class NOUTOnlineExtension extends \Twig_Extension {
 	public function getFilters()
 	{
 		return array(
-			'noutonline_beautify_query' => new \Twig_Filter_Method($this, 'beautifyQuery'),
+			'noutonline_beautify_soap_query' => new \Twig_Filter_Method($this, 'beautifySOAPQuery'),
 		);
 	}
 
@@ -46,7 +46,7 @@ class NOUTOnlineExtension extends \Twig_Extension {
 	 *
 	 * @return string
 	 */
-	public function beautifyQuery($query)
+	public function beautifySOAPQuery($query)
 	{
 		$nPos = strpos($query, '<?xml ');
 		$header = substr($query, 0, $nPos);

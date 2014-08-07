@@ -73,7 +73,7 @@
 							<span>Request</span>
 						</div>
 						<code class="prettyprint" id="code-request-{{ i }}">
-							{{ query.request | noutonline_beautify_query | nl2br }}
+							{{ query.request | noutonline_beautify_soap_query | nl2br }}
 						</code>
 					</div>
 					<div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-response-{{ i }}" style="cursor: pointer;">
@@ -83,7 +83,7 @@
 							<span>Response</span>
 						</div>
 						<code class="prettyprint" id="code-response-{{ i }}">
-							{{ query.response | noutonline_beautify_query |nl2br }}
+							{{ query.response | noutonline_beautify_soap_query |nl2br }}
 						</code>
 					</div>
 				</div>
