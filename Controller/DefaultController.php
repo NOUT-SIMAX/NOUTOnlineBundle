@@ -409,6 +409,46 @@ class DefaultController extends Controller
 	}
 
 
+	protected function _sDrillthrought(OnlineServiceProxy $OnlineProxy, $sTokenSession, $colonne, $enreg)
+	{
+		$clParamDrillThrough = new DrillThrough();
+		$clParamDrillThrough->Record = $enreg;
+		$clParamDrillThrough->Column = $colonne;
+
+		$clReponseXML = $OnlineProxy->drillThrough($clParamDrillThrough, $this->_TabGetHeader($sTokenSession));
+		$this->_VarDumpRes('DrillThrough', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/drillthrought/{host}", name="drillthrought", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function drillthroughtAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+
+		//execute
+		$clReponseWS = $this->_sExecute($OnlineProxy, $sTokenSession, 'Afficher Nb Jour d\'absence par contact');
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//annulation de la liste
+		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
 
 	protected function _sRequest(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
 	{
@@ -932,44 +972,6 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sDrillthrought(OnlineServiceProxy $OnlineProxy, $sTokenSession, $colonne, $enreg)
-	{
-		$clParamDrillThrough = new DrillThrough();
-		$clParamDrillThrough->Record = $enreg;
-		$clParamDrillThrough->Column = $colonne;
-
-		$clReponseXML = $OnlineProxy->drillThrough($clParamDrillThrough, $this->_TabGetHeader($sTokenSession));
-		$this->_VarDumpRes('DrillThrough', $clReponseXML);
-
-
-		return $clReponseXML;
-	}
-
-	/**
-	 * @Route("/drillthrought/{host}", name="drillthrought", defaults={"host"="127.0.0.1:8062"})
-	 */
-	public function drillthroughtAction($host)
-	{
-		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
-
-		//la connexion
-		$sTokenSession = $this->_sConnexion($OnlineProxy);
-
-		//la liste
-		$clReponseWS = $this->_sGetEndAutomatism($OnlineProxy, $sTokenSession);
-		$sActionContexte = $clReponseWS->sGetActionContext();
-
-		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
-
-		//la deconnexion
-		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
-
-		$containt = ob_get_contents();
-		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
-	}
 
 
 
