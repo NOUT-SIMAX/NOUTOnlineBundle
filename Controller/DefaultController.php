@@ -6,7 +6,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
@@ -342,10 +342,10 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
-		$clRecordParser = new RecordParser();
-		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
-		$StructForm = $clRecordParser->clGetStructureElement($clReponseWS->clGetForm()->getID());
+		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWS->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
 
 		$this->_sGetCaculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
@@ -660,11 +660,11 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
-		$clRecordParser = new RecordParser();
-		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 
-		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if (!is_null($clRecord))
 		{
 			//on met à jour la valeur de la colonne
@@ -705,10 +705,10 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
-		$clRecordParser = new RecordParser();
-		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
-		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if (!is_null($clRecord))
 		{
 			//on met à jour la valeur de la colonne
@@ -981,7 +981,7 @@ class DefaultController extends Controller
 		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
 		$clResponseXML = new XMLResponseWS($sXML);
 
-		$clRecordManager = new RecordParser();
+		$clRecordManager = new ReponseWSParser();
 
 		$clRecordManager->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clResponseXML->getNodeXML(), $clResponseXML->getNodeSchema());
 

@@ -13,7 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
@@ -83,6 +83,9 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		return new UsernameToken('superviseur', '');
 	}
 
+	/**
+	 * @return OptionDialogue
+	 */
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
@@ -98,6 +101,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Génère les paramètres pour la méthode GetTokenSession
+	 *
+	 * @param $UsernameToken : utilisateur NOUTOnline
+	 * @param null $UserExtranet : utilisateur extranet
+	 * @param null $FormExtranet : formulaire pour l'utilisateur extranet
 	 * @return GetTokenSession
 	 */
 	protected function _getGetTokenSession($UsernameToken, $UserExtranet=null, $FormExtranet=null)
@@ -119,6 +126,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		return $clGetTokenSession;
 	}
 
+	/**
+	 * @param $sTokenSession
+	 * @param null $nIDContexteAction
+	 * @return array
+	 */
 	protected function _aGetTabHeader($sTokenSession, $nIDContexteAction=null)
 	{
 		$clUsernameToken = $this->_clGetUsernameToken();
@@ -144,7 +156,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 	/**
-	 * Ferme une session
+	 * Test de la fermeture d'une session
+	 * @return boolean
 	 */
 	public function testDisconnect_OK()
 	{
@@ -191,7 +204,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(0, $nCategorie);
 	}
 
-
+	/**
+	 * @param $sTokenSession
+	 * @param $sActionContexte
+	 * @param MessageBox $clMessageBox
+	 */
 	protected function _ConfirmResponse($sTokenSession, $sActionContexte, MessageBox $clMessageBox)
 	{
 		$clConfirm = new ConfirmResponse();
@@ -252,6 +269,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 	/**
+	 * Test la méthode d'affichage
 	 */
 	public function testDisplay_OK()
 	{
@@ -279,7 +297,6 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 			$nCategorie = $clReponseWS->getCatError();
 		}
 
-
 		$this->assertEquals(false, $clReponseWS->bIsFault());
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
@@ -295,9 +312,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-
-
 	/**
+	 * Test la méthode de récupération d'une valeur d'une colonne d'un enregistrement particulier
 	 */
 	public function testGetColInRecord_OK()
 	{
@@ -339,7 +355,9 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-
+	/**
+	 * Test de la méthode execute (liste utilisateur)
+	 */
 	public function testExecute_OK()
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
@@ -378,13 +396,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-
-	public function testList_OK()
+	/**
+	 * @param $sTokenSession
+	 * @param $form
+	 * @return XMLResponseWS |\NOUT\Bundle\NOUTOnlineBundle\SOAP\ListResponse
+	 */
+	protected function _sTestList($sTokenSession, $form)
 	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
-		$form = 'utilisateur';
-
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
 
@@ -408,6 +426,20 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
 
+		return $clReponseWS;
+	}
+
+	/**
+	 * Test de la méthode List (liste utilisateur)
+	 */
+	public function testList_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = 'utilisateur';
+
+		$clReponseWS = $this->_sTestList($sTokenSession, $form);
+
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
@@ -419,7 +451,69 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
+	/**
+	 * Test de la méthode pour récupérer les caculs de fin de liste
+	 */
+	public function testGetCaculation_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
 
+		$form = 'utilisateur';
+
+		$clReponseWS = $this->_sTestList($sTokenSession, $form);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParserList = new ReponseWSParser();
+		$clReponseWSParserList->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$StructForm = $clReponseWSParserList->clGetStructureElement($clReponseWS->clGetForm()->getID());
+		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
+
+		$clParamGetCalculation = new GetCalculation();
+		$clParamGetCalculation->ColList=new ColListType($TabIDColonne);
+		$clParamGetCalculation->CalculationList=new CalculationListType(
+			array(
+				CalculationListType::SUM,
+				CalculationListType::AVERAGE,
+				CalculationListType::MIN,
+				CalculationListType::MAX,
+				CalculationListType::COUNT
+			)
+		)
+		;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getCalculation($clParamGetCalculation, $this->_aTabGetHeader($sTokenSession, $sActionContexte));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		//il faut parser le résultat pour avoir les calculs de fin de liste
+
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+	/**
+	 * Test de la méthode request (requete des utilisateurs invalide)
+	 */
 	public function testRequest_OK()
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
@@ -541,10 +635,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 		//on parse le XML pour avoir les enregistrement
-		$clRecordParser = new RecordParser();
-		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
-		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$this->assertNotNull($clRecord);
 
 		$sValeur = $clRecord->sGetValCol($colonne);
@@ -610,10 +704,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertNotEquals('', $sActionContexte);
 
 		//on parse le XML pour avoir les enregistrement
-		$clRecordParser = new RecordParser();
-		$clRecordParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
-		$clRecord = $clRecordParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$this->assertNotNull($clRecord);
 
 		//on fait l'update

@@ -15,7 +15,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Form;
  * Class RecordManager
  * @package NOUT\Bundle\NOUTOnlineBundle\Entity\Record
  */
-class RecordParser
+class ReponseWSParser
 {
 	public $m_MapIDTableau2Niv2StructureElement;
 	public $m_MapIDTableau2IDEnreg2Record;
