@@ -27,4 +27,9 @@ class Calculation
 	{
 		$this->m_MapCalcul[$sTypeCalcul]=$sValeur;
 	}
+
+	public function GetCalcul($sTypeCalcul)
+	{
+		return $this->m_MapCalcul[$sTypeCalcul];
+	}
 } 

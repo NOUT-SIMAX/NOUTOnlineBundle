@@ -12,9 +12,11 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
@@ -27,6 +29,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
@@ -94,7 +97,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clOptionDialogue->EncodingOutput = 0;
 		$clOptionDialogue->LanguageCode = 12;
 		$clOptionDialogue->WithFieldStateControl = 1;
-		$clOptionDialogue->ReturnXSD = 0;
+		$clOptionDialogue->ReturnXSD = 1;
 
 		return $clOptionDialogue;
 	}
@@ -454,23 +457,23 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * Test de la méthode pour récupérer les caculs de fin de liste
 	 */
-	public function testGetCaculation_OK()
+	public function testGetCalculation_OK()
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = 'utilisateur';
 
-		$clReponseWS = $this->_sTestList($sTokenSession, $form);
+		$clReponseWSList = $this->_sTestList($sTokenSession, $form);
 
 		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
+		$sActionContexte = $clReponseWSList->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
 		//on parse le XML pour avoir les enregistrement
-		$clReponseWSParserList = new ReponseWSParser();
-		$clReponseWSParserList->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
 
-		$StructForm = $clReponseWSParserList->clGetStructureElement($clReponseWS->clGetForm()->getID());
+		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
 
 		$clParamGetCalculation = new GetCalculation();
@@ -490,18 +493,26 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$nCategorie=0;
 		try
 		{
-			$clReponseWS = $this->m_clNOUTOnline->getCalculation($clParamGetCalculation, $this->_aTabGetHeader($sTokenSession, $sActionContexte));
+			$clReponseWSCalcul = $this->m_clNOUTOnline->getCalculation($clParamGetCalculation, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		}
 		catch(\Exception $e)
 		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+			$clReponseWSCalcul = $this->m_clNOUTOnline->getXMLResponseWS();
 
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
+			$this->assertEquals(true, $clReponseWSCalcul->bIsFault());
+			$nErreur = $clReponseWSCalcul->getNumError();
+			$nCategorie = $clReponseWSCalcul->getCatError();
 		}
+		$this->assertEquals(false, $clReponseWSCalcul->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
 
 		//il faut parser le résultat pour avoir les calculs de fin de liste
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul->sGetReturnType(), $clReponseWSCalcul->getNodeXML(), $clReponseWSCalcul->getNodeSchema());
+
+		$nCalculCount = (int)$clReponseWSParser->m_MapColonne2Calcul[1171]->GetCalcul('count'); //c'est la colonne pseudo
+		$nCountNbTotal = $clReponseWSList->clGetCount()->m_nNbTotal;
+		$this->assertEquals($nCountNbTotal, $nCalculCount);
 
 
 		//on valide le contexte

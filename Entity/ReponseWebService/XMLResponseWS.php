@@ -215,7 +215,28 @@ class XMLResponseWS
 	public function clGetElement()
 	{
 		$clElem = $this->m_ndHeader->children()->Element;
-		return new Element($clElem, $clElem['title']);
+		if (isset($clElem))
+			return new Element($clElem, $clElem['title']);
+
+		return null;
+	}
+
+	/**
+	 * @return Count
+	 */
+	public function clGetCount()
+	{
+		$ndCount = $this->m_ndHeader->children()->Count;
+		if (!isset($ndCount))
+			return null;
+
+		$clCount = new Count();
+		$clCount->m_nNbCaculation = (int)$ndCount->children()->NbCalculation;
+		$clCount->m_nNbLine = (int)$ndCount->children()->NbLine;
+		$clCount->m_nNbFiltered = (int)$ndCount->children()->NbFiltered;
+		$clCount->m_nNbTotal = (int)$ndCount->children()->NbTotal;
+
+		return $clCount;
 	}
 
 	/**
