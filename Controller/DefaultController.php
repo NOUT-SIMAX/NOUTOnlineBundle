@@ -6,7 +6,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ReponseWSParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
@@ -343,7 +343,7 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWS->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
@@ -661,7 +661,7 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
@@ -706,7 +706,7 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if (!is_null($clRecord))
@@ -983,7 +983,7 @@ class DefaultController extends Controller
 
 		$clRecordManager = new ReponseWSParser();
 
-		$clRecordManager->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clResponseXML->getNodeXML(), $clResponseXML->getNodeSchema());
+		$clRecordManager->InitFromXmlXsd($clResponseXML->sGetReturnType(), $clResponseXML->getNodeXML(), $clResponseXML->getNodeSchema());
 
 
 		var_dump($clRecordManager);

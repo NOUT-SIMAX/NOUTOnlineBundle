@@ -6,10 +6,14 @@
  * Time: 10:54
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Form;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 
 /**
  * Class RecordManager
@@ -35,11 +39,11 @@ class ReponseWSParser
 		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_Enreg]))
 			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_Enreg];
 
-		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_SousEnreg]))
-			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_SousEnreg];
+		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_List]))
+			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_List];
 
-		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_EnregSansEntete]))
-			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_EnregSansEntete];
+		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_LienElement]))
+			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_LienElement];
 
 		return null;
 	}
@@ -85,7 +89,7 @@ class ReponseWSParser
 		$ndSequence = $ndElement->children('http://www.w3.org/2001/XMLSchema')->complexType
 								->children('http://www.w3.org/2001/XMLSchema')->sequence;
 
-		$this->__ParseXSDSequence($clStructureElement, $ndSequence, null);
+		$this->__ParseXSDSequence($nNiveau, $clStructureElement, $ndSequence, null);
 	}
 
 	/**
@@ -94,7 +98,7 @@ class ReponseWSParser
 	 * @param \SimpleXMLElement $clSequence
 	 * @return mixed
 	 */
-	protected function __ParseXSDSequence( StructureElement $clStructElement, \SimpleXMLElement $clSequence, $sIDColonnePere)
+	protected function __ParseXSDSequence($nNivCourant, StructureElement $clStructElement, \SimpleXMLElement $clSequence, $sIDColonnePere)
 	{
 		//'http://www.nout.fr/XMLSchema'
 
@@ -117,7 +121,8 @@ class ReponseWSParser
 						$ndSequence = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->complexType
 												->children('http://www.w3.org/2001/XMLSchema')->sequence;
 
-						$this->_ParseXSD(StructureElement::NV_XSD_SousEnreg, $ndSequence);
+						$nNiveau = ($nNivCourant == StructureElement::NV_XSD_Enreg) ? StructureElement::NV_XSD_List : StructureElement::NV_XSD_LienElement;
+						$this->_ParseXSD($nNiveau, $ndSequence);
 					}
 					break;
 				case StructureColonne::TM_Separateur:
@@ -126,7 +131,7 @@ class ReponseWSParser
 						$ndSequence = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->complexType
 							->children('http://www.w3.org/2001/XMLSchema')->sequence;
 
-						$this->__ParseXSDSequence($clStructElement, $ndSequence, $sIDColonne);
+						$this->__ParseXSDSequence($nNivCourant, $clStructElement, $ndSequence, $sIDColonne);
 					}
 					break;
 				case '':
@@ -319,17 +324,32 @@ class ReponseWSParser
 
 
 
-	public function InitFromXmlXsd($nNiveau, \SimpleXMLElement $clXML, \SimpleXMLElement $clSchema=null)
+	public function InitFromXmlXsd($sReturnType, \SimpleXMLElement $clXML, \SimpleXMLElement $clSchema = null)
 	{
 		//on commence par les schemas
-		if (!is_null($clSchema))
+		if (    ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD)
+			||  ($sReturnType == XMLResponseWS::RETURNTYPE_LIST))
 		{
-			$this->m_MapIDTableau2Niv2StructureElement = array();
-			$this->_ParseXSD($nNiveau, $clSchema);
+			if (!is_null($clSchema))
+			{
+				$this->m_MapIDTableau2Niv2StructureElement = array();
+				$nNiveau = ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD) ? StructureElement::NV_XSD_Enreg : StructureElement::NV_XSD_List;
+				$this->_ParseXSD($nNiveau, $clSchema);
+			}
+
+			//après, on fait le XML
+			$this->m_MapIDTableau2IDEnreg2Record = array();
+			$this->_ParseXML($clXML);
+
+			return ;
 		}
 
-		//après, on fait le XML
-		$this->m_MapIDTableau2IDEnreg2Record = array();
-		$this->_ParseXML($clXML);
+		if ($sReturnType == XMLResponseWS::RETURNTYPE_LISTCALCULATION)
+		{
+			//on a un retour de GetCalculation
+
+		}
+
+
 	}
 }

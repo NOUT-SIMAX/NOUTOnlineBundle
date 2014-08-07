@@ -7,7 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
 
 /**

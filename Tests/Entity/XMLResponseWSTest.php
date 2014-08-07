@@ -9,11 +9,11 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ConnectedUser;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Form;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\CurrentAction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ConnectedUser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Element;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Form;
 
 class XMLResponseWSTest extends \PHPUnit_Framework_TestCase
 {

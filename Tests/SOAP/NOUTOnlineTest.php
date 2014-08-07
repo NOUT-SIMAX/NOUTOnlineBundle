@@ -13,7 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ReponseWSParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
@@ -468,7 +468,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParserList = new ReponseWSParser();
-		$clReponseWSParserList->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParserList->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 		$StructForm = $clReponseWSParserList->clGetStructureElement($clReponseWS->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
@@ -636,7 +636,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$this->assertNotNull($clRecord);
@@ -705,7 +705,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd(StructureElement::NV_XSD_Enreg, $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$this->assertNotNull($clRecord);

@@ -20,11 +20,14 @@ class XMLResponseWS
 	const RETURNTYPE_EMPTY = 'Empty';
 	const RETURNTYPE_REPORT = 'Report';
 	const RETURNTYPE_VALUE = 'Value';
-	const RETURNTYPE_RECORD = 'Record';
-	const RETURNTYPE_LIST = 'List';
 	const RETURNTYPE_REQUESTFILTER = 'RequestFilter';
 	const RETURNTYPE_CHART = 'Chart';
 	const RETURNTYPE_NUMBEROFCHART = 'NumberOfChart';
+
+	//retourne des enregistrements
+	const RETURNTYPE_RECORD = 'Record';
+	const RETURNTYPE_LIST = 'List';
+
 
 	//réponse particulière
 	const RETURNTYPE_XSD = 'XSD';

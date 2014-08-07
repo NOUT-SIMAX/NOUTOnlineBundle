@@ -7,8 +7,8 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Form;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Element;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Form;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\OptionDialogue;
 
 /**
