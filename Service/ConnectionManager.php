@@ -9,7 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 
 class ConnectionManager {

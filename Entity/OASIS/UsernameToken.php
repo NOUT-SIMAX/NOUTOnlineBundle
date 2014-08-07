@@ -1,5 +1,5 @@
 <?php
-namespace NOUT\Bundle\NOUTOnlineBundle\OASIS;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UsernameToken as WSDLUsernameToken;
 

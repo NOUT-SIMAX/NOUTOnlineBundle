@@ -8,7 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\OnlineError;
-use NOUT\Bundle\NOUTOnlineBundle\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 
 /**
  * classe qui teste les cas d'erreur
