@@ -338,17 +338,20 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//la liste
-		$clReponseWS = $this->_sList($OnlineProxy, $sTokenSession, $form);
-		$sActionContexte = $clReponseWS->sGetActionContext();
+		$clReponseWSList = $this->_sList($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseWSList->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
 
-		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWS->clGetForm()->getID());
+		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
 
-		$this->_sGetCaculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
+		$clReponseWSCalcul = $this->_sGetCaculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul->sGetReturnType(), $clReponseWSCalcul->getNodeXML(), $clReponseWSCalcul->getNodeSchema());
+
+		$this->_VarDumpRes('Calculation', $clReponseWSParser->m_MapColonne2Calcul);
 
 		//annulation de la liste
 		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);

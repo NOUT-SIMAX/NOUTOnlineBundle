@@ -23,11 +23,13 @@ class ReponseWSParser
 {
 	public $m_MapIDTableau2Niv2StructureElement;
 	public $m_MapIDTableau2IDEnreg2Record;
+	public $m_MapColonne2Calcul;
 
 	public function __construct()
 	{
 		$this->m_MapIDTableau2Niv2StructureElement = array();
 		$this->m_MapIDTableau2IDEnreg2Record = array();
+		$this->m_MapColonne2Calcul = array();
 	}
 
 	public function clGetStructureElement($sIDTableau)
@@ -322,6 +324,26 @@ class ReponseWSParser
 		}
 	}
 
+	protected function _ParseListCaculation(\SimpleXMLElement $clXML)
+	{
+		/*
+		<col simax:id="1171">
+			<sum/>
+			<average/>
+			<min/>
+			<max/>
+			<count>24</count>
+		</col>
+		*/
+		foreach($clXML->children() as $ndCol)
+		{
+			$clCalculation = new Calculation((string)$ndCol->attributes('http://www.nout.fr/XML/')['id']);
+			foreach($ndCol->children() as $ndCalcul)
+				$clCalculation->AddCacul((string)$ndCalcul->getName(), (string)$ndCalcul);
+
+			$this->m_MapColonne2Calcul[$clCalculation->m_nIDColonne]=$clCalculation;
+		}
+	}
 
 
 	public function InitFromXmlXsd($sReturnType, \SimpleXMLElement $clXML, \SimpleXMLElement $clSchema = null)
@@ -347,9 +369,8 @@ class ReponseWSParser
 		if ($sReturnType == XMLResponseWS::RETURNTYPE_LISTCALCULATION)
 		{
 			//on a un retour de GetCalculation
-
+			$this->_ParseListCaculation($clXML);
+			return ;
 		}
-
-
 	}
 }
