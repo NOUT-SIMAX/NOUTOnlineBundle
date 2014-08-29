@@ -75,6 +75,10 @@ class Record
 		$this->m_clStructElem=null;
 	}
 
+	public function bRef()
+	{
+		return isset($this->m_TabColumns) && (count($this->m_TabColumns)>0);
+	}
 
 	public function sGetValCol($idColonne)
 	{

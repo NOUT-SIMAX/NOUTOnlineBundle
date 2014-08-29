@@ -409,13 +409,13 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sDrillthrought(OnlineServiceProxy $OnlineProxy, $sTokenSession, $colonne, $enreg)
+	protected function _sDrillthrought(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $colonne, $enreg)
 	{
 		$clParamDrillThrough = new DrillThrough();
 		$clParamDrillThrough->Record = $enreg;
 		$clParamDrillThrough->Column = $colonne;
 
-		$clReponseXML = $OnlineProxy->drillThrough($clParamDrillThrough, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->drillThrough($clParamDrillThrough, $this->_TabGetHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('DrillThrough', $clReponseXML);
 
 
@@ -435,11 +435,25 @@ class DefaultController extends Controller
 
 
 		//execute
-		$clReponseWS = $this->_sExecute($OnlineProxy, $sTokenSession, 'Afficher Nb Jour d\'absence par contact');
-		$sActionContexte = $clReponseWS->sGetActionContext();
+		$clReponseWSList = $this->_sExecute($OnlineProxy, $sTokenSession, 'Afficher Nb Jour d\'absence par contact');
+		$sActionContexte = $clReponseWSList->sGetActionContext();
+
+		//on parse le résultat
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
+
+		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
+		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
+		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseWSList->clGetForm()->getID());
+
+		$clReponseWSDrill = $this->_sDrillthrought($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne[0], $TabIDEnreg[0]);
+		$sActionContexteDrill = $clReponseWSDrill->sGetActionContext();
 
 		//annulation de la liste
 		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		if ($sActionContexte != $sActionContexteDrill)
+			$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexteDrill);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -789,6 +803,28 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
+	/**
+	 * @Route("/select_form/{form}/{host}", name="select_form", defaults={"host"="127.0.0.1:8062"})
+	 *
+	 * exemple GUID : /selectForm/48918773563102
+	 */
+	public function selectFormAction($form, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		$this->__sCreate($OnlineProxy, $sTokenSession, $form);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
 
 
 	protected function _sCreateFrom(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $origine)

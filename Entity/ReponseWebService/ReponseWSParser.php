@@ -10,6 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
@@ -32,6 +33,10 @@ class ReponseWSParser
 		$this->m_MapColonne2Calcul = array();
 	}
 
+	/**
+	 * @param $sIDTableau
+	 * @return StructureElement
+	 */
 	public function clGetStructureElement($sIDTableau)
 	{
 		if (!isset($this->m_MapIDTableau2Niv2StructureElement) ||
@@ -50,6 +55,11 @@ class ReponseWSParser
 		return null;
 	}
 
+	/**
+	 * @param Form $clForm
+	 * @param Element $clElement
+	 * @return Record
+	 */
 	public function clGetRecord(Form $clForm, Element $clElement)
 	{
 		if (    !isset($this->m_MapIDTableau2IDEnreg2Record)
@@ -58,6 +68,41 @@ class ReponseWSParser
 			return null;
 
 		return $this->m_MapIDTableau2IDEnreg2Record[$clForm->getID()][$clElement->getID()];
+	}
+
+	/**
+	 * @param $form
+	 * @return array : tableau des identifiants des enregistrements
+	 */
+	public function GetTabIDEnregFromForm($form)
+	{
+		if ($form instanceof Form)
+			$form = $form->getID();
+
+		if (    !isset($this->m_MapIDTableau2IDEnreg2Record)
+			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$form]))
+			return array();
+
+		return array_keys($this->m_MapIDTableau2IDEnreg2Record[$form]);
+	}
+
+	/**
+	 * @param $form
+	 * @return array : tableau des identifiants des enregistrements
+	 */
+	public function GetTabEnregTableau()
+	{
+		if (!isset($this->m_MapIDTableau2IDEnreg2Record))
+			return array();
+
+		$TabEnregTableau = new EnregTableauArray();
+		foreach($this->m_MapIDTableau2IDEnreg2Record as $nIDTableau=>$TabIDEnreg)
+		{
+			foreach($TabIDEnreg as $nIDEnreg)
+				$TabEnregTableau->Add($nIDTableau, $nIDEnreg);
+		}
+
+		return $TabEnregTableau;
 	}
 
 
