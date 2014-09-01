@@ -41,6 +41,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
@@ -750,6 +751,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$clParamUpdate->UpdateData.="</id_$form></xml>";
 
+		$nErreur=0;
+		$nCategorie=0;
 		try
 		{
 			$clReponseWS = $this->m_clNOUTOnline->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
@@ -811,6 +814,57 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 
 		return $sIDEnreg;
+	}
+
+	protected function _sSelectForm($sTokenSession, $sActionContexte, $form)
+	{
+		$clParamSelectForm = new SelectForm();
+		$clParamSelectForm->Form = $form;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->selectForm($clParamSelectForm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_RECORD, $clReponseWS->sGetReturnType());
+
+		return $clReponseWS;
+	}
+
+	public function testSelectForm_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '48918773563102';
+
+		$clReponseXML = $this->__sCreate($sTokenSession, $form);
+		$sActionContexte = $clReponseXML->sGetActionContext();
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION, $clReponseXML->sGetReturnType());
+
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+
+		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseXML->clGetForm()->getID());
+
+		//le selectForm en réponse du retour d'action ambigue
+		$this->_sSelectForm($sTokenSession, $sActionContexte, $TabIDEnreg[0]);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
 	}
 
 	protected function _sModify($sTokenSession, $form, $id)
