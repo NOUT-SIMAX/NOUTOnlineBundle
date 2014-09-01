@@ -1207,7 +1207,22 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
+	/**
+	 * @Route("/getlanguages/{host}", name="getlanguages", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function getLanguagesAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
 
+		//récupération des langues
+		$clReponseXML = $OnlineProxy->getLanguages($this->_aGetTabHeader(''));
+		$this->_VarDumpRes('GetLanguages', $clReponseXML);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
 
 
 
