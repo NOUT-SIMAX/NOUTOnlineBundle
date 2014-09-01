@@ -109,7 +109,7 @@ class DefaultController extends Controller
 		return $clOptionDialogue;
 	}
 
-	protected function _TabGetHeader($sTokenSession, $nIDContexteAction=null)
+	protected function _aGetTabHeader($sTokenSession, $nIDContexteAction=null)
 	{
 		$clUsernameToken = $this->get('nout_online.connection_manager')->getUsernameToken();
 		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession, 'OptionDialogue'=>$this->_clGetOptionDialogue());
@@ -123,7 +123,7 @@ class DefaultController extends Controller
 	protected function _bDeconnexion(OnlineServiceProxy $OnlineProxy, $sTokenSession)
 	{
 		//récupération des headers
-		$TabHeader = $this->_TabGetHeader($sTokenSession);
+		$TabHeader = $this->_aGetTabHeader($sTokenSession);
 
 		//Disconnect
 		$clReponseXML = $OnlineProxy->disconnect($TabHeader);
@@ -309,7 +309,7 @@ class DefaultController extends Controller
 	{
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
-		$clReponseXML = $OnlineProxy->listAction($clParamList, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->listAction($clParamList, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('List', $clReponseXML);
 
 
@@ -338,7 +338,7 @@ class DefaultController extends Controller
 			)
 		;
 
-		$clReponseXML = $OnlineProxy->getCalculation($clParamGetCalculation, $this->_TabGetHeader($sTokenSession, $sIDActionContexte));
+		$clReponseXML = $OnlineProxy->getCalculation($clParamGetCalculation, $this->_aGetTabHeader($sTokenSession, $sIDActionContexte));
 		$this->_VarDumpRes('GetCalculation', $clReponseXML);
 		return $clReponseXML;
 	}
@@ -397,7 +397,7 @@ class DefaultController extends Controller
 		else
 			$clParamExecute->Sentence=$action;
 
-		$clReponseXML = $OnlineProxy->execute($clParamExecute, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->execute($clParamExecute, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Execute', $clReponseXML);
 
 
@@ -445,7 +445,7 @@ class DefaultController extends Controller
 		$clParamDrillThrough->Record = $enreg;
 		$clParamDrillThrough->Column = $colonne;
 
-		$clReponseXML = $OnlineProxy->drillThrough($clParamDrillThrough, $this->_TabGetHeader($sTokenSession, $sActionContexte));
+		$clReponseXML = $OnlineProxy->drillThrough($clParamDrillThrough, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('DrillThrough', $clReponseXML);
 
 
@@ -511,7 +511,7 @@ class DefaultController extends Controller
 		$clParamRequest->CondList = $clFileNPI->sToSoap();
 
 
-		$clReponseXML = $OnlineProxy->request($clParamRequest, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->request($clParamRequest, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Request', $clReponseXML);
 
 
@@ -555,7 +555,7 @@ class DefaultController extends Controller
 	{
 		$clParamSearch = new Search();
 		$clParamSearch->Table = $form;
-		$clReponseXML = $OnlineProxy->search($clParamSearch, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->search($clParamSearch, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Search', $clReponseXML);
 
 
@@ -604,7 +604,7 @@ class DefaultController extends Controller
 		$baliseXML = $this->_sNettoieForm($form);
 		$clParamDisplay->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
-		$clReponseXML = $OnlineProxy->display($clParamDisplay, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->display($clParamDisplay, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Display', $clReponseXML);
 
 
@@ -648,7 +648,7 @@ class DefaultController extends Controller
 		$clParamGCR->WantContent=$content;
 
 
-		$clReponseXML = $OnlineProxy->getColInRecord($clParamGCR, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->getColInRecord($clParamGCR, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('GetColInRecord', $clReponseXML);
 
 
@@ -691,7 +691,7 @@ class DefaultController extends Controller
 	 */
 	protected function _Validate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
 	{
-		$clReponseWS = $OnlineProxy->validate($this->_TabGetHeader($sTokenSession, $nIDContexteAction));
+		$clReponseWS = $OnlineProxy->validate($this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
 
 		$this->_VarDumpRes('Validate', $clReponseWS);
 
@@ -711,7 +711,7 @@ class DefaultController extends Controller
 		$clParamCancel->ByUser = 1;
 		$clParamCancel->Context = 0;
 
-		$clReponseWS = $OnlineProxy->cancel($clParamCancel,$this->_TabGetHeader($sTokenSession, $nIDContexteAction));
+		$clReponseWS = $OnlineProxy->cancel($clParamCancel,$this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
 
 		$this->_VarDumpRes('Cancel', $clReponseWS);
 
@@ -734,7 +734,7 @@ class DefaultController extends Controller
 		$baliseXML = $this->_sNettoieForm($form);
 		$clParamModify->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
-		$clReponseXML = $OnlineProxy->modify($clParamModify, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->modify($clParamModify, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Modify', $clReponseXML);
 
 
@@ -753,7 +753,7 @@ class DefaultController extends Controller
 		$baliseColonne = $this->_sNettoieForm($colonne);
 		$clParamUpdate->UpdateData = "<xml><$baliseXML id=\"$id\"><$baliseColonne>".htmlentities($valeur)."</$baliseColonne></$baliseXML></xml>";
 
-		$clReponseXML = $OnlineProxy->update($clParamUpdate, $this->_TabGetHeader($sTokenSession, $nIDContexteAction));
+		$clReponseXML = $OnlineProxy->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
 		$this->_VarDumpRes('Update', $clReponseXML);
 
 		return $clReponseXML;
@@ -815,7 +815,7 @@ class DefaultController extends Controller
 		$clParamCreate = new Create();
 		$clParamCreate->Table = $form;
 
-		$clReponseXML = $OnlineProxy->create($clParamCreate, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->create($clParamCreate, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Create', $clReponseXML);
 
 		return $clReponseXML;
@@ -883,7 +883,7 @@ class DefaultController extends Controller
 		$clParamSelectForm = new SelectForm();
 		$clParamSelectForm->Form = $form;
 
-		$clReponseXML = $OnlineProxy->selectForm($clParamSelectForm, $this->_TabGetHeader($sTokenSession, $sActionContexte));
+		$clReponseXML = $OnlineProxy->selectForm($clParamSelectForm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('SelectForm', $clReponseXML);
 
 		return $clReponseXML;
@@ -937,7 +937,7 @@ class DefaultController extends Controller
 		$clParamCreateFrom->TableSrc = $form;
 		$clParamCreateFrom->ElemSrc = $origine;
 
-		$clReponseXML = $OnlineProxy->createFrom($clParamCreateFrom, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->createFrom($clParamCreateFrom, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('CreateFrom', $clReponseXML);
 
 		return $clReponseXML;
@@ -982,7 +982,7 @@ class DefaultController extends Controller
 		$baliseXML = $this->_sNettoieForm($form);
 		$clParamDelete->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
-		$clReponseXML = $OnlineProxy->delete($clParamDelete, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->delete($clParamDelete, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Delete', $clReponseXML);
 
 
@@ -1002,7 +1002,7 @@ class DefaultController extends Controller
 		$clConfirm = new ConfirmResponse();
 		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
 
-		$clReponseWS = $OnlineProxy->ConfirmResponse($clConfirm, $this->_TabGetHeader($sTokenSession, $sActionContexte));
+		$clReponseWS = $OnlineProxy->ConfirmResponse($clConfirm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('ConfirmResponse', $clReponseWS);
 
 		return $clReponseWS;
@@ -1051,7 +1051,7 @@ class DefaultController extends Controller
 	{
 		$clParamStartAutomatism = new GetStartAutomatism();
 
-		$clReponseXML = $OnlineProxy->getStartAutomatism($clParamStartAutomatism, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->getStartAutomatism($clParamStartAutomatism, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('GetStartAutomatism', $clReponseXML);
 
 
@@ -1089,7 +1089,7 @@ class DefaultController extends Controller
 	{
 		$clParamEndAutomatism = new GetEndAutomatism();
 
-		$clReponseXML = $OnlineProxy->getEndAutomatism($clParamEndAutomatism, $this->_TabGetHeader($sTokenSession));
+		$clReponseXML = $OnlineProxy->getEndAutomatism($clParamEndAutomatism, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('GetEndAutomatism', $clReponseXML);
 
 
