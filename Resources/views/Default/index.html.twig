@@ -1,30 +1,60 @@
 {% extends "NOUTOnlineBundle::layout.html.twig" %}
 
-{% block containt %}
+{% block stylesheets %}
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+{% endblock%}
 
-	<ul>
-		<li><a href="{{ path('connexion') }}">Connexion</a></li>
-		<li><a href="{{ path('cnx_error', {'error': 1}) }}">Connexion Erreur 1</a></li>
-		<li><a href="{{ path('cnx_error', {'error': 2}) }}">Connexion Erreur 2</a></li>
-		<li><a href="{{ path('cnx_try_error', {'error': 1}) }}">Connexion Try Erreur 1</a></li>
-		<li><a href="{{ path('cnx_try_error', {'error': 2}) }}">Connexion Try Erreur 2</a></li>
-		<li><a href="{{ path('list', {'form': 'utilisateur'}) }}">Liste Utilisateur (list) + getCalculation</a></li>
-		<li><a href="{{ path('execute', {'action': 'liste utilisateur'}) }}">Liste Utilisateur (execute)</a></li>
-		<li><a href="{{ path('request', {'form': 'utilisateur', 'colonne': 'invalide', 'valeur': 1}) }}">Request Utilisateur invalide</a></li>
-		<li><a href="{{ path('search', {'form': 'utilisateur'}) }}">Rechercher utilisateur (search)</a></li>
-		<li><a href="{{ path('display', {'form': 'utilisateur', 'id':2}) }}">Afficher utilisateur 2</a></li>
-		<li><a href="{{ path('getcolinrecord', {'colonne': 'photo utilisateur', 'id':2, 'content':1}) }}">Afficher le contenu de la photo de l'utilisateur 2</a></li>
-		<li><a href="{{ path('modify', {'form': '41296233836619', 'id':'219237638150324', 'colonne':'45208949043557', 'valeur':'test modify'}) }}">Modifier le libelle de formulaire avec liste image</a></li>
-		<li><a href="{{ path('create', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test create'}) }}">creer formulaire avec liste image</a></li>
-		<li><a href="{{ path('create_from', {'form': '41296233836619', 'origine':'45354977933184'}) }}">dupliquer formulaire avec liste image</a></li>
-		<li><a href="{{ path('delete', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test delete'}) }}">supprimer formulaire avec liste image</a></li>
-		<li><a href="{{ path('getstartautomatism') }}">GetStartAutomatism</a></li>
-		<li><a href="{{ path('getendautomatism') }}">GetEndAutomatism</a></li>
-		<li><a href="{{ path('select_form', { 'form':'48918773563102'}) }}">SelectForm (Mode déconnecté - Père abstrait avec fils accessibles en mode deconnecté : Père)</a></li>
-		<li><a href="{{ path('drillthrought') }}">DrillThrought</a></li>
-	</ul>
-	<ul>
-		<li><a href="{{ path('record_test') }}">Test pour record</a></li>
-		<li><a href="{{ path('filenpi_test') }}">Test pour FileNPI</a></li>
-	</ul>
+{% block containt %}
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6">
+				<h2>Connexion</h2>
+				<ul>
+					<li><a href="{{ path('connexion') }}">Connexion</a></li>
+					<li><a href="{{ path('cnx_error', {'error': 1}) }}">Connexion Erreur 1</a></li>
+					<li><a href="{{ path('cnx_error', {'error': 2}) }}">Connexion Erreur 2</a></li>
+					<li><a href="{{ path('cnx_try_error', {'error': 1}) }}">Connexion Try Erreur 1</a></li>
+					<li><a href="{{ path('cnx_try_error', {'error': 2}) }}">Connexion Try Erreur 2</a></li>
+				</ul>
+				<h2>Liste et assimilé</h2>
+				<ul>
+					<li><a href="{{ path('list', {'form': 'utilisateur'}) }}">Liste Utilisateur (list) + getCalculation</a></li>
+					<li><a href="{{ path('execute', {'action': 'liste utilisateur'}) }}">Liste Utilisateur (execute)</a></li>
+					<li><a href="{{ path('request', {'form': 'utilisateur', 'colonne': 'invalide', 'valeur': 1}) }}">Request Utilisateur invalide (request)</a></li>
+					<li><a href="{{ path('search', {'form': 'utilisateur'}) }}">Rechercher utilisateur (search)</a></li>
+					<li><a href="{{ path('drillthrought') }}">DrillThrought</a></li>
+				</ul>
+				<h2>Autres</h2>
+				<ul>
+					<li><a href="{{ path('getstartautomatism') }}">GetStartAutomatism</a></li>
+					<li><a href="{{ path('getendautomatism') }}">GetEndAutomatism</a></li>
+				</ul>
+				<h2>Test classes outils</h2>
+				<ul>
+					<li><a href="{{ path('record_test') }}">Test pour record</a></li>
+					<li><a href="{{ path('filenpi_test') }}">Test pour FileNPI</a></li>
+				</ul>
+			</div>
+			<div class="col-md-6">
+				<h2>Manipulation enregistrement</h2>
+				<h3>Creation</h3>
+				<ul>
+					<li><a href="{{ path('create', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test create'}) }}">creer formulaire avec liste image</a></li>
+					<li><a href="{{ path('create_from', {'form': '41296233836619', 'origine':'45354977933184'}) }}">dupliquer formulaire avec liste image</a></li>
+					<li><a href="{{ path('select_form', { 'form':'48918773563102'}) }}">SelectForm (Mode déconnecté - Père abstrait avec fils accessibles en mode deconnecté : Père)</a></li>
+				</ul>
+				<h3>Consultation</h3>
+				<ul>
+					<li><a href="{{ path('display', {'form': 'utilisateur', 'id':2}) }}">Afficher utilisateur 2</a></li>
+					<li><a href="{{ path('getcolinrecord', {'colonne': 'photo utilisateur', 'id':2, 'content':1}) }}">Afficher le contenu de la photo de l'utilisateur 2</a></li>
+				</ul>
+				<h3>Autres</h3>
+				<ul>
+					<li><a href="{{ path('modify', {'form': '41296233836619', 'id':'219237638150324', 'colonne':'45208949043557', 'valeur':'test modify'}) }}">Modifier le libelle de formulaire avec liste image</a></li>
+					<li><a href="{{ path('delete', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test delete'}) }}">supprimer formulaire avec liste image</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
 {% endblock %}
