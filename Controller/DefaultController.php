@@ -1084,6 +1084,40 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @return XMLResponseWS
+	 */
+	protected function _sGetTemporalAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	{
+		$clReponseXML = $OnlineProxy->getTemporalAutomatism($this->_aGetTabHeader($sTokenSession));
+		$this->_VarDumpRes('GetTemporalAutomatism', $clReponseXML);
+
+		return $clReponseXML;
+	}
+	/**
+	 * @Route("/gettemporalautomatism/{host}", name="gettemporalautomatism", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function getTemporalAutomatismAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWS = $this->_sGetTemporalAutomatism($OnlineProxy, $sTokenSession);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
 
 	protected function _sGetEndAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
 	{

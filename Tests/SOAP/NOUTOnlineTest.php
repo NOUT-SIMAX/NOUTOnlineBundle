@@ -1027,6 +1027,36 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	}
 
 
+	public function testGetTemporalAutomatism_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getTemporalAutomatism($this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_EMPTY, $clReponseWS->sGetReturnType());
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+
 
 	public function testGetEndAutomatism_OK()
 	{
