@@ -32,6 +32,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 
@@ -298,6 +299,12 @@ class DefaultController extends Controller
 		return $form;
 	}
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @return XMLResponseWS
+	 */
 	protected function _sList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamList = new ListParams();
@@ -309,6 +316,13 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $sIDActionContexte
+	 * @param $TabIDColonne
+	 * @return XMLResponseWS
+	 */
 	protected function _sGetCaculation(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabIDColonne)
 	{
 		$clParamGetCalculation = new GetCalculation();
@@ -357,7 +371,7 @@ class DefaultController extends Controller
 		$this->_VarDumpRes('Calculation', $clReponseWSParser->m_MapColonne2Calcul);
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -368,7 +382,12 @@ class DefaultController extends Controller
 	}
 
 
-
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $action
+	 * @return XMLResponseWS
+	 */
 	protected function _sExecute(OnlineServiceProxy $OnlineProxy, $sTokenSession, $action)
 	{
 		$clParamExecute = new Execute();
@@ -401,7 +420,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -411,7 +430,15 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
-
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $sActionContexte
+	 * @param $colonne
+	 * @param $enreg
+	 *
+	 * @return XMLResponseWS
+	 */
 	protected function _sDrillthrought(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $colonne, $enreg)
 	{
 		$clParamDrillThrough = new DrillThrough();
@@ -453,10 +480,10 @@ class DefaultController extends Controller
 		$sActionContexteDrill = $clReponseWSDrill->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		if ($sActionContexte != $sActionContexteDrill)
-			$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexteDrill);
+			$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexteDrill);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -466,12 +493,22 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
-
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @param $colonne
+	 * @param $valeur
+	 * @return XMLResponseWS
+	 */
 	protected function _sRequest(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
 	{
+		$clFileNPI = new ConditionFileNPI();
+		$clFileNPI->EmpileCondition($colonne, ConditionColonne::COND_EQUAL, $valeur);
+
 		$clParamRequest = new Request();
 		$clParamRequest->Table = $form;
-		$clParamRequest->CondList = "<Condition><CondCol>$colonne</CondCol><CondType>Equal</CondType><CondValue>$valeur</CondValue></Condition>";
+		$clParamRequest->CondList = $clFileNPI->sToSoap();
 
 
 		$clReponseXML = $OnlineProxy->request($clParamRequest, $this->_TabGetHeader($sTokenSession));
@@ -497,7 +534,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -508,7 +545,12 @@ class DefaultController extends Controller
 	}
 
 
-
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @return XMLResponseWS
+	 */
 	protected function _sSearch(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamSearch = new Search();
@@ -536,7 +578,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -547,6 +589,13 @@ class DefaultController extends Controller
 	}
 
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @param $id
+	 * @return XMLResponseWS
+	 */
 	protected function _sDisplay(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
 		$clParamDisplay = new Display();
@@ -579,7 +628,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -623,7 +672,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -654,8 +703,9 @@ class DefaultController extends Controller
 	 * Valide la dernière action du contexte
 	 * @param $sTokenSession
 	 * @param $nIDContexteAction
+	 * @return XMLResponseWS
 	 */
-	protected function _Cancel(OnlineServiceProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
+	protected function _sCancel(OnlineServiceProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
 	{
 		$clParamCancel = new Cancel();
 		$clParamCancel->ByUser = 1;
@@ -668,7 +718,14 @@ class DefaultController extends Controller
 		return $clReponseWS;
 	}
 
-
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @param $id
+	 *
+	 * @return XMLResponseWS
+	 */
 	protected function _sModify(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
 		$clParamModify = new Modify();
@@ -746,7 +803,13 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
-
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 *
+	 * @return XMLResponseWS
+	 */
 	protected function __sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamCreate = new Create();
@@ -758,6 +821,14 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @param $colonne
+	 * @param $valeur
+	 * @return null|string
+	 */
 	protected function _sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
 	{
 		//ici il faut faire le modify
@@ -806,6 +877,18 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
+
+	protected function _sSelectForm(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $form)
+	{
+		$clParamSelectForm = new SelectForm();
+		$clParamSelectForm->Form = $form;
+
+		$clReponseXML = $OnlineProxy->selectForm($clParamSelectForm, $this->_TabGetHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('SelectForm', $clReponseXML);
+
+		return $clReponseXML;
+	}
+
 	/**
 	 * @Route("/select_form/{form}/{host}", name="select_form", defaults={"host"="127.0.0.1:8062"})
 	 *
@@ -819,7 +902,17 @@ class DefaultController extends Controller
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
-		$this->__sCreate($OnlineProxy, $sTokenSession, $form);
+		$clReponseXML = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseXML->sGetActionContext();
+
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+
+		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseXML->clGetForm()->getID());
+
+		//le selectForm en réponse du retour d'action ambigue
+		$this->_sSelectForm($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDEnreg[0]);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -830,6 +923,13 @@ class DefaultController extends Controller
 	}
 
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @param $origine
+	 * @return XMLResponseWS
+	 */
 	protected function _sCreateFrom(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $origine)
 	{
 		$clParamCreateFrom = new CreateFrom();
@@ -889,6 +989,14 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $sActionContexte
+	 * @param MessageBox $clMessageBox
+	 *
+	 * @return XMLResponseWS
+	 */
 	protected function _sConfirmResponse(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, MessageBox $clMessageBox)
 	{
 		$clConfirm = new ConfirmResponse();
@@ -934,7 +1042,11 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
-
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @return XMLResponseWS
+	 */
 	protected function _sGetStartAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
 	{
 		$clParamStartAutomatism = new GetStartAutomatism();
@@ -962,7 +1074,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -1000,7 +1112,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
-		$this->_Cancel($OnlineProxy, $sTokenSession, $sActionContexte);
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
