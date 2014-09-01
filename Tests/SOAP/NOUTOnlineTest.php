@@ -27,6 +27,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
@@ -358,15 +359,10 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-	/**
-	 * Test de la méthode execute (liste utilisateur)
-	 */
-	public function testExecute_OK()
+	protected function _sExecute($sTokenSession, $sSentence)
 	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
 		$clParamExecute = new Execute();
-		$clParamExecute->Sentence = 'liste utilisateur';
+		$clParamExecute->Sentence = $sSentence;
 
 		$nErreur=0;
 		$nCategorie=0;
@@ -383,17 +379,27 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 			$nCategorie = $clReponseWS->getCatError();
 		}
 
-
 		$this->assertEquals(false, $clReponseWS->bIsFault());
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
 
 		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
+		$this->assertNotEquals('', $clReponseWS->sGetActionContext());
+
+		return $clReponseWS;
+	}
+
+	/**
+	 * Test de la méthode execute (liste utilisateur)
+	 */
+	public function testExecute_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$clReponseWS = $this->_sExecute($sTokenSession, 'liste utilisateur');
 
 		//on valide le contexte
-		$this->_Validate($sTokenSession, $sActionContexte);
+		$this->_Validate($sTokenSession, $clReponseWS->sGetActionContext());
 
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);
@@ -454,28 +460,75 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-	/**
-	 * Test de la méthode pour récupérer les caculs de fin de liste
-	 */
-	public function testGetCalculation_OK()
+	protected function _sDrillThrough($sTokenSession, $sActionContext, $sColonne, $sEnreg)
+	{
+		$clParamDrillThrough = new DrillThrough();
+		$clParamDrillThrough->Record = $sEnreg;
+		$clParamDrillThrough->Column = $sColonne;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->drillThrough($clParamDrillThrough, $this->_aGetTabHeader($sTokenSession, $sActionContext));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_RECORD, $clReponseWS->sGetReturnType());
+
+		return $clReponseWS;
+
+
+
+	}
+
+	public function testDrillThrough_OK()
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$form = 'utilisateur';
 
-		$clReponseWSList = $this->_sTestList($sTokenSession, $form);
+		//execute
+		$clReponseWSList = $this->_sExecute($sTokenSession, 'Afficher Nb Jour d\'absence par contact');
 
-		//vérification du contexte d'action
 		$sActionContexte = $clReponseWSList->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
 
-		//on parse le XML pour avoir les enregistrement
+		//on parse le résultat
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
 
 		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
+		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseWSList->clGetForm()->getID());
 
+
+		//le drillthrough
+
+		$clReponseWSDrill = $this->_sDrillThrough($sTokenSession, $sActionContexte, $TabIDColonne[0], $TabIDEnreg[0]);
+		$sActionContexteDrill = $clReponseWSDrill->sGetActionContext();
+
+		//annulation de la liste
+		$this->_sCancel($sTokenSession, $sActionContexte);
+
+		if ($sActionContexte != $sActionContexteDrill)
+			$this->_sCancel($sTokenSession, $sActionContexteDrill);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+
+	}
+
+	protected function _sGetCalculation($sTokenSession, $sActionContexte, $TabIDColonne)
+	{
 		$clParamGetCalculation = new GetCalculation();
 		$clParamGetCalculation->ColList=new ColListType($TabIDColonne);
 		$clParamGetCalculation->CalculationList=new CalculationListType(
@@ -507,13 +560,39 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
 
+		return $clReponseWSCalcul;
+	}
+
+	/**
+	 * Test de la méthode pour récupérer les caculs de fin de liste
+	 */
+	public function testGetCalculation_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = 'utilisateur';
+
+		$clReponseWSList = $this->_sTestList($sTokenSession, $form);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWSList->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
+
+		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
+		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
+
+		$clReponseWSCalcul = $this->_sGetCalculation($sTokenSession, $sActionContexte, $TabIDColonne);
+
 		//il faut parser le résultat pour avoir les calculs de fin de liste
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul->sGetReturnType(), $clReponseWSCalcul->getNodeXML(), $clReponseWSCalcul->getNodeSchema());
 
 		$nCalculCount = (int)$clReponseWSParser->m_MapColonne2Calcul[1171]->GetCalcul('count'); //c'est la colonne pseudo
 		$nCountNbTotal = $clReponseWSList->clGetCount()->m_nNbTotal;
 		$this->assertEquals($nCountNbTotal, $nCalculCount);
-
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
@@ -522,16 +601,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-	/**
-	 * Test de la méthode request (requete des utilisateurs invalide)
-	 */
-	public function testRequest_OK()
+	protected function _sRequest($sTokenSession, $table, $sCondList)
 	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
 		$clParamRequest = new Request();
-		$clParamRequest->CondList = '<Condition><CondCol>Invalide</CondCol><CondType>Equal</CondType><CondValue>1</CondValue></Condition>';
-		$clParamRequest->Table = 'utilisateur';
+		$clParamRequest->CondList = $sCondList;
+		$clParamRequest->Table = $table;
 
 		$nErreur=0;
 		$nCategorie=0;
@@ -557,6 +631,23 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
+		return $clReponseWS;
+	}
+
+	/**
+	 * Test de la méthode request (requete des utilisateurs invalide)
+	 */
+	public function testRequest_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$table = 'utilisateur';
+		$CondList = '<Condition><CondCol>Invalide</CondCol><CondType>Equal</CondType><CondValue>1</CondValue></Condition>';
+
+		$clReponseWS = $this->_sRequest($sTokenSession, $table, $CondList);
+
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
 
@@ -565,13 +656,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-
-	public function testSearch_OK()
+	protected function _sSearch($sTokenSession, $form)
 	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
-		$form = 'utilisateur';
-
 		$clParamSearch = new Search();
 		$clParamSearch->Table = $form;
 
@@ -599,6 +685,18 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
+		return $clReponseWS;
+	}
+
+	public function testSearch_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = 'utilisateur';
+
+		$clReponseWS = $this->_sSearch($sTokenSession, $form);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
 		//on valide le contexte
 		$this->_Cancel($sTokenSession, $sActionContexte, false);
 
@@ -606,16 +704,112 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
+	protected function __sCreate($sTokenSession, $form)
+	{
+		//l'action create
+		$clParamCreate = new Create();
+		$clParamCreate->Table = $form;
 
-	public function testModify_OK()
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->create($clParamCreate, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		return $clReponseWS;
+	}
+
+
+	protected function _sUpdate($sTokenSession, $sActionContexte, $form, $enreg, $TabCol2Val)
+	{
+		$clParamUpdate = new Update();
+		$clParamUpdate->Table = $form;
+		$clParamUpdate->ParamXML = "<id_$form>".$enreg."</id_$form>";
+		$clParamUpdate->UpdateData = "<xml><id_$form id=\"".$enreg."\">";
+
+		foreach($TabCol2Val as $colonne=>$valeur)
+			$clParamUpdate->UpdateData.="<id_$colonne>".htmlspecialchars($valeur)."</id_$colonne>";
+
+		$clParamUpdate->UpdateData.="</id_$form></xml>";
+
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		return $clReponseWS;
+	}
+
+	protected function _sCreate($sTokenSession, $form, $colonne)
+	{
+		$clReponseWS = $this->__sCreate( $sTokenSession, $form);
+
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		$this->assertNotNull($clRecord);
+
+		//on fait l'update
+		$sIDEnreg = $clReponseWS->clGetElement()->getID();
+
+		//l'update
+		$this->_sUpdate($sTokenSession, $sActionContexte, $form, $sIDEnreg, array($colonne=>'phpUnit Test Create'));
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		return $sIDEnreg;
+	}
+
+	public function testCreate_OK()
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = '41296233836619'; //formulaire avec liste images
-		$id = '219237638150324';
-		$colonne = '45208949043557';
+		$colonne = '45208949043557'; //libelle
 
-		//l'action modify
+		$sIDEnreg = $this->_sCreate($sTokenSession, $form, $colonne);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+
+		return $sIDEnreg;
+	}
+
+	protected function _sModify($sTokenSession, $form, $id)
+	{
 		$clParamModify = new Modify();
 		$clParamModify->Table = $form;
 		$clParamModify->ParamXML = "<id_$form>$id</id_$form>";
@@ -644,6 +838,21 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
 
+		return $clReponseWS;
+	}
+
+	public function testModify_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '41296233836619'; //formulaire avec liste images
+		$id = '219237638150324';
+		$colonne = '45208949043557';
+
+		//l'action modify
+		$clReponseWS = $this->_sModify($sTokenSession, $form, $id);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
@@ -655,27 +864,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sValeur = $clRecord->sGetValCol($colonne);
 
 		//on fait l'update
-		$clParamUpdate = new Update();
-		$clParamUpdate->Table = $form;
-		$clParamUpdate->ParamXML = "<id_$form>$id</id_$form>";
-		$clParamUpdate->UpdateData = "<xml><id_$form id=\"$id\"><id_$colonne>".htmlentities($sValeur.'t')."</id_$colonne></id_$form></xml>";
-
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
+		$clReponseWS = $this->_sUpdate($sTokenSession, $sActionContexte, $form, $id, array($colonne=>$sValeur.'t'));
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
@@ -684,105 +873,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-	protected function _sCreate($form, $colonne, $sTokenSession)
+	protected function _sDelete($sTokenSession, $form, $id)
 	{
-		//l'action create
-		$clParamCreate = new Create();
-		$clParamCreate->Table = $form;
-
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->create($clParamCreate, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
-
-		//on parse le XML pour avoir les enregistrement
-		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
-
-		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		$this->assertNotNull($clRecord);
-
-		//on fait l'update
-		$sIDEnreg = $clReponseWS->clGetElement()->getID();
-
-		$clParamUpdate = new Update();
-		$clParamUpdate->Table = $form;
-		$clParamUpdate->ParamXML = "<id_$form>".$sIDEnreg."</id_$form>";
-		$clParamUpdate->UpdateData = "<xml><id_$form id=\"".$sIDEnreg."\"><id_$colonne>phpUnit Test Create</id_$colonne></id_$form></xml>";
-
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//on valide le contexte
-		$this->_Validate($sTokenSession, $sActionContexte);
-
-		return $sIDEnreg;
-	}
-
-	public function testCreate_OK()
-	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
-		$form = '41296233836619'; //formulaire avec liste images
-		$colonne = '45208949043557';
-
-		$sIDEnreg = $this->_sCreate($form, $colonne, $sTokenSession);
-
-		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
-
-		return $sIDEnreg;
-	}
-
-
-
-	public function testDelete_OK()
-	{
-
-		$sTokenSession = $this->testGetTokenSession_OK();
-
-		$form = '41296233836619'; //formulaire avec liste images
-		$colonne = '45208949043557';
-		$sIDEnreg = $this->_sCreate($form, $colonne, $sTokenSession);
-
-
-		//l'action modify
 		$clParamDelete = new Delete();
 		$clParamDelete->Table = $form;
-		$clParamDelete->ParamXML="<id_$form>".$sIDEnreg."</id_$form>";
+		$clParamDelete->ParamXML="<id_$form>".$id."</id_$form>";
 
 		$nErreur=0;
 		$nCategorie=0;
@@ -807,6 +902,22 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
 		$this->assertNotEquals('', $sActionContexte);
+
+		return $clReponseWS;
+	}
+
+	public function testDelete_OK()
+	{
+
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '41296233836619'; //formulaire avec liste images
+		$colonne = '45208949043557';
+		$sIDEnreg = $this->_sCreate($form, $colonne, $sTokenSession);
+
+		//l'action delete
+		$clReponseWS = $this->_sDelete($sTokenSession, $form, $sIDEnreg);
+		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		$this->assertEquals(XMLResponseWS::RETURNTYPE_MESSAGEBOX, $clReponseWS->sGetReturnType());
 
