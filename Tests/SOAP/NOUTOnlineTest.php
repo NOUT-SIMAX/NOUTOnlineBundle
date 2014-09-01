@@ -39,6 +39,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
@@ -314,6 +315,55 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+
+	public function testPrint_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = 'utilisateur';
+		$id = 2;
+
+		$clParamPrint = new PrintParams();
+		$clParamPrint->Table = $form;
+		$clParamPrint->ParamXML = '<'.$form.'>'.$id.'</'.$form.'>';
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->printAction($clParamPrint, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWS->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$clData = $clReponseWSParser->clGetData(0);
+		$html_raw = $clData->sGetRaw();
+
+		$sXML = file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/utilisateur_2.html');
+
+		$this->assertEquals(str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$sXML), str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$html_raw));
 
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);

@@ -288,5 +288,4 @@ class XMLResponseWS
 
 		return '';
 	}
-
-} 
+}

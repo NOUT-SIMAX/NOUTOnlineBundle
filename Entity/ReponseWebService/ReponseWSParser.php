@@ -25,12 +25,14 @@ class ReponseWSParser
 	public $m_MapIDTableau2Niv2StructureElement;
 	public $m_MapIDTableau2IDEnreg2Record;
 	public $m_MapColonne2Calcul;
+	public $m_MapRef2Data;
 
 	public function __construct()
 	{
 		$this->m_MapIDTableau2Niv2StructureElement = array();
 		$this->m_MapIDTableau2IDEnreg2Record = array();
 		$this->m_MapColonne2Calcul = array();
+		$this->m_MapRef2Data = array();
 	}
 
 	/**
@@ -58,7 +60,7 @@ class ReponseWSParser
 	/**
 	 * @param Form $clForm
 	 * @param Element $clElement
-	 * @return Record
+	 * @return null|Record
 	 */
 	public function clGetRecord(Form $clForm, Element $clElement)
 	{
@@ -88,7 +90,7 @@ class ReponseWSParser
 
 	/**
 	 * @param $form
-	 * @return array : tableau des identifiants des enregistrements
+	 * @return array|EnregTableauArray : tableau des identifiants des enregistrements
 	 */
 	public function GetTabEnregTableau()
 	{
@@ -105,12 +107,28 @@ class ReponseWSParser
 		return $TabEnregTableau;
 	}
 
+	/**
+	 * @param $nRef
+	 * @return Data
+	 */
+	public function clGetData($nRef)
+	{
+		return $this->m_MapRef2Data[$nRef];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function GetTabData()
+	{
+		return $this->m_MapRef2Data;
+	}
+
 
 	/**
 	 * @param $nNiveau
 	 * @param \SimpleXMLElement $clSchema
 	 * @param array $MapStructureElement
-	 * @return array
 	 */
 	protected function _ParseXSD($nNiveau, \SimpleXMLElement $clSchema)
 	{
@@ -143,7 +161,6 @@ class ReponseWSParser
 	 * @param $clStructCurrent (StructureElement ou StructureColonne)
 	 * @param $MapStructureElement
 	 * @param \SimpleXMLElement $clSequence
-	 * @return mixed
 	 */
 	protected function __ParseXSDSequence($nNivCourant, StructureElement $clStructElement, \SimpleXMLElement $clSequence, $sIDColonnePere)
 	{
@@ -240,6 +257,9 @@ class ReponseWSParser
 	}
 
 
+	/**
+	 * @param \SimpleXMLElement $clXML
+	 */
 	protected function _ParseXML(\SimpleXMLElement $clXML)
 	{
 		/*
@@ -247,7 +267,7 @@ class ReponseWSParser
          * xmlns:simax-layout="http://www.nout.fr/XML/layout"
 		 */
 
-		//on commence par faire un premier tour
+		//on commence par faire un premier tour, pour récuperer les formulaires présent au premier niveau
 		$TabFormPresent=array();
 		foreach($clXML->children() as $ndRecord)
 		{
@@ -257,10 +277,45 @@ class ReponseWSParser
 
 		foreach($clXML->children() as $ndRecord)
 		{
-			$this->_ParseRecord($ndRecord, $TabFormPresent);
+			if (strncmp($ndRecord->getName(), 'id_', strlen('id_'))==0)
+				$this->_ParseRecord($ndRecord, $TabFormPresent);
+			else if (strcmp($ndRecord->getName(), 'Data')==0)
+				$this->_ParseData($ndRecord);
 		}
 	}
 
+	/**
+	 * Parse la balise Data
+	 * @param \SimpleXMLElement $clXML
+	 */
+	protected function _ParseData(\SimpleXMLElement $ndData)
+	{
+		/*
+		 * <Data simax:size="12770"
+		 *  simax:filename="C:\Users\NINON~1.NOU\AppData\Local\Temp\Utilisateur - superviseur.html"
+		 * simax:typemime="text/html"
+		 * simax:encoding="base64"
+		 * simax:ref="0"> ... </Data>
+		 */
+
+		$TabAttrib = $ndData->attributes('http://www.nout.fr/soap');
+
+		$clData = new Data();
+		$clData->m_nRef = (int)$TabAttrib['ref'];
+		$clData->m_nSize = (int)$TabAttrib['size'];
+		$clData->m_sEncoding = (string)$TabAttrib['encoding'];
+		$clData->m_sFileName = (string)$TabAttrib['filename'];
+		$clData->m_sMimeType = (string)$TabAttrib['typemime'];
+		$clData->m_sContent = (string)$ndData;
+
+		$this->m_MapRef2Data[$clData->m_nRef]=$clData;
+	}
+
+	/**
+	 * Parse un élément XML
+	 * @param \SimpleXMLElement $clXML
+	 * @param $TabFormPresent
+	 */
 	protected function _ParseRecord(\SimpleXMLElement $clXML, $TabFormPresent)
 	{
 		//<id_47909919412330 simax:id="33475861129246" simax:title="Janvier">
@@ -288,6 +343,13 @@ class ReponseWSParser
 		$this->__ParseColumnRecord($clXML, $TabFormPresent, $sIDTableau, $sIDEnreg);
 	}
 
+	/**
+	 * Parse la colonne d'un enregistrement
+	 * @param \SimpleXMLElement $clXML
+	 * @param $TabFormPresent
+	 * @param $sIDTableau
+	 * @param $sIDEnreg
+	 */
 	protected function __ParseColumnRecord(\SimpleXMLElement $clXML, $TabFormPresent, $sIDTableau, $sIDEnreg)
 	{
 		/*
@@ -369,6 +431,10 @@ class ReponseWSParser
 		}
 	}
 
+	/**
+	 * Parse les calculs de fin de liste
+	 * @param \SimpleXMLElement $clXML
+	 */
 	protected function _ParseListCaculation(\SimpleXMLElement $clXML)
 	{
 		/*
@@ -390,7 +456,11 @@ class ReponseWSParser
 		}
 	}
 
-
+	/**
+	 * @param $sReturnType
+	 * @param \SimpleXMLElement $clXML
+	 * @param \SimpleXMLElement $clSchema
+	 */
 	public function InitFromXmlXsd($sReturnType, \SimpleXMLElement $clXML, \SimpleXMLElement $clSchema = null)
 	{
 		//on commence par les schemas
@@ -418,5 +488,17 @@ class ReponseWSParser
 			$this->_ParseListCaculation($clXML);
 			return ;
 		}
+
+		if ($sReturnType == XMLResponseWS::RETURNTYPE_REPORT)
+		{
+			//après, on fait le XML
+			$this->m_MapIDTableau2IDEnreg2Record = array();
+			$this->_ParseXML($clXML);
+			return ;
+		}
+
 	}
+
+
+
 }

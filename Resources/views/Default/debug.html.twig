@@ -2,4 +2,12 @@
 
 {% block containt %}
 	{{ containt | raw }}
+
+	{% if html_raw is defined %}
+	<h1>HTML_RAW</h1>
+		<h2>htmlspecialchars</h2>
+		{{ html_raw | nl2br}}
+		<h2>raw</h2>
+		{{ html_raw | raw }}
+	{% endif %}
 {% endblock %}
