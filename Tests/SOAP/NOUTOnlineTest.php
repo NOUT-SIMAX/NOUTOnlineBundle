@@ -14,6 +14,8 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
@@ -641,8 +643,11 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	{
 		$sTokenSession = $this->testGetTokenSession_OK();
 
+		$clFileNPI = new ConditionFileNPI();
+		$clFileNPI->EmpileCondition('Invalide', ConditionColonne::COND_EQUAL, 1);
+		$CondList = $clFileNPI->sToSoap();
+
 		$table = 'utilisateur';
-		$CondList = '<Condition><CondCol>Invalide</CondCol><CondType>Equal</CondType><CondValue>1</CondValue></Condition>';
 
 		$clReponseWS = $this->_sRequest($sTokenSession, $table, $CondList);
 
