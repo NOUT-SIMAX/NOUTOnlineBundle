@@ -337,9 +337,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function addPJ(AddPJ $clWsdlType_AddPJ, $aHeaders = array())
     {
-        $clWsdlType_AddPJResponse = $this->call('AddPJ', array($clWsdlType_AddPJ) ,  null, null , $aHeaders);
-
-        return $clWsdlType_AddPJResponse;
+        return $this->call('AddPJ', array($clWsdlType_AddPJ) ,  null, null , $aHeaders);
     }
     //---
 
@@ -348,15 +346,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Cancel $clWsdlType_Cancel
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CancelResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function cancel(Cancel $clWsdlType_Cancel, $aHeaders = array())
     {
-        $clWsdlType_CancelResponse = $this->call('Cancel', array($clWsdlType_Cancel) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CancelResponse;
-    }
+	    return $this->call('Cancel', array($clWsdlType_Cancel) ,  null, null , $aHeaders);
+	}
     //---
 
     /**
@@ -364,14 +360,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CancelFolder $clWsdlType_CancelFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
+     * @return XMLResponseWS
      * @access public
      */
     public function cancelFolder(CancelFolder $clWsdlType_CancelFolder, $aHeaders = array())
     {
-        $mResp = $this->call('CancelFolder', array($clWsdlType_CancelFolder) ,  null, null , $aHeaders);
-
-        return $mResp;
+	    return $this->call('CancelFolder', array($clWsdlType_CancelFolder) ,  null, null , $aHeaders);
     }
     //---
 
@@ -380,14 +374,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CancelMessage $clWsdlType_CancelMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
+     * @return XMLResponseWS
      * @access public
      */
     public function cancelMessage(CancelMessage $clWsdlType_CancelMessage, $aHeaders = array())
     {
-        $mResp = $this->call('CancelMessage', array($clWsdlType_CancelMessage) ,  null, null , $aHeaders);
-
-        return $mResp;
+	    return $this->call('CancelMessage', array($clWsdlType_CancelMessage) ,  null, null , $aHeaders);
     }
     //----
 
@@ -396,14 +388,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CheckCreateElement $clWsdlType_CheckCreateElement
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CheckCreateElementResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function checkCreateElement(CheckCreateElement $clWsdlType_CheckCreateElement, $aHeaders = array())
     {
-        $clWsdlType_CheckCreateElementResponse = $this->call('CheckCreateElement', array($clWsdlType_CheckCreateElement) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CheckCreateElementResponse;
+	    return $this->call('CheckCreateElement', array($clWsdlType_CheckCreateElement) ,  null, null , $aHeaders);
     }
     //---
 
@@ -412,14 +402,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CheckRecipient $clWsdlType_CheckRecipient
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CheckRecipientResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function checkRecipient(CheckRecipient $clWsdlType_CheckRecipient, $aHeaders = array())
     {
-        $clWsdlType_CheckRecipientResponse = $this->call('CheckRecipient', array($clWsdlType_CheckRecipient) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CheckRecipientResponse;
+	    return $this->call('CheckRecipient', array($clWsdlType_CheckRecipient) ,  null, null , $aHeaders);
     }
     //---
 
@@ -428,15 +416,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CloseFolderList $clWsdlType_CloseFolderList
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
+     * @return XMLResponseWS
      * @access public
      */
     public function closeFolderList(CloseFolderList $clWsdlType_CloseFolderList, $aHeaders = array())
     {
-        $mResp = $this->call('CloseFolderList', array($clWsdlType_CloseFolderList) ,  null, null , $aHeaders);
-
-        return $mResp;
-    }
+	    return $this->call('CloseFolderList', array($clWsdlType_CloseFolderList) ,  null, null , $aHeaders);
+	}
     //---
 
     /**
@@ -444,14 +430,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CloseMessageList $clWsdlType_CloseMessageList
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
+     * @return XMLResponseWS
      * @access public
      */
     public function closeMessageList(CloseMessageList $clWsdlType_CloseMessageList, $aHeaders = array())
     {
-        $mResp = $this->call('CloseMessageList', array($clWsdlType_CloseMessageList) ,  null, null , $aHeaders);
-
-        return $mResp;
+	    return $this->call('CloseMessageList', array($clWsdlType_CloseMessageList) ,  null, null , $aHeaders);
     }
     //---
 
@@ -460,14 +444,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ConfirmResponse $clWsdlType_ConfirmResponse
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ConfirmResponseResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function ConfirmResponse(ConfirmResponse $clWsdlType_ConfirmResponse, $aHeaders = array())
     {
-        $clWsdlType_ConfirmResponseResponse = $this->call('ConfirmResponse', array($clWsdlType_ConfirmResponse) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ConfirmResponseResponse;
+	    return $this->call('ConfirmResponse', array($clWsdlType_ConfirmResponse) ,  null, null , $aHeaders);
     }
     //---
 
@@ -476,14 +458,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Create $clWsdlType_Create
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CreateResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function create(Create $clWsdlType_Create, $aHeaders = array())
     {
-        $clWsdlType_CreateResponse = $this->call('Create', array($clWsdlType_Create) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateResponse;
+	    return $this->call('Create', array($clWsdlType_Create) ,  null, null , $aHeaders);
     }
     //---
 
@@ -491,14 +471,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateFolder
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CreateFolderResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function createFolder($aHeaders = array())
     {
-        $clWsdlType_CreateFolderResponse = $this->call('CreateFolder', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateFolderResponse;
+	    return $this->call('CreateFolder', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -507,14 +485,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CreateFrom $clWsdlType_CreateFrom
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CreateFromResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function createFrom(CreateFrom $clWsdlType_CreateFrom, $aHeaders = array())
     {
-        $clWsdlType_CreateFromResponse = $this->call('CreateFrom', array($clWsdlType_CreateFrom) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateFromResponse;
+	    return $this->call('CreateFrom', array($clWsdlType_CreateFrom) ,  null, null , $aHeaders);
     }
     //---
 
@@ -523,14 +499,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param CreateMessage $clWsdlType_CreateMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return CreateMessageResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function createMessage(CreateMessage $clWsdlType_CreateMessage, $aHeaders = array())
     {
-        $clWsdlType_CreateMessageResponse = $this->call('CreateMessage', array($clWsdlType_CreateMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_CreateMessageResponse;
+	    return $this->call('CreateMessage', array($clWsdlType_CreateMessage) ,  null, null , $aHeaders);
     }
     //---
 
@@ -539,14 +513,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Delete $clWsdlType_Delete
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return DeleteResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function delete(Delete $clWsdlType_Delete, $aHeaders = array())
     {
-        $clWsdlType_DeleteResponse = $this->call('Delete', array($clWsdlType_Delete) ,  null, null , $aHeaders);
-
-        return $clWsdlType_DeleteResponse;
+	    return $this->call('Delete', array($clWsdlType_Delete) ,  null, null , $aHeaders);
     }
     //---
 
@@ -555,14 +527,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param DeleteFolder $clWsdlType_DeleteFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void
+     * @return XMLResponseWS
      * @access public
      */
     public function deleteFolder(DeleteFolder $clWsdlType_DeleteFolder, $aHeaders = array())
     {
-        $mResp = $this->call('DeleteFolder', array($clWsdlType_DeleteFolder) ,  null, null , $aHeaders);
-
-        return $mResp;
+	    return $this->call('DeleteFolder', array($clWsdlType_DeleteFolder) ,  null, null , $aHeaders);
     }
     //---
 
@@ -571,14 +541,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param DeletePJ $clWsdlType_DeletePJ
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return DeletePJResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function deletePj(DeletePJ $clWsdlType_DeletePJ, $aHeaders = array())
     {
-        $clWsdlType_DeletePJResponse = $this->call('DeletePJ', array($clWsdlType_DeletePJ) ,  null, null , $aHeaders);
-
-        return $clWsdlType_DeletePJResponse;
+	    return $this->call('DeletePJ', array($clWsdlType_DeletePJ) ,  null, null , $aHeaders);
     }
     //---
 
@@ -586,14 +554,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Disconnect
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
+     * @return XMLResponseWS
      * @access public
      */
     public function disconnect($aHeaders = array())
     {
-        $mResp = $this->call('Disconnect', array() ,  null, null , $aHeaders);
-
-        return $mResp;
+	    return $this->call('Disconnect', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -602,13 +568,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Display $clWsdlType_Display
      * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
      * @access public
      */
     public function display(Display $clWsdlType_Display, $aHeaders = array())
     {
-        $clWsdlType_DisplayResponse = $this->call('Display', array($clWsdlType_Display) ,  null, null , $aHeaders);
-
-        return $clWsdlType_DisplayResponse;
+	    return $this->call('Display', array($clWsdlType_Display) ,  null, null , $aHeaders);
     }
     //---
 
@@ -617,14 +582,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Display DrillThrough
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return DrillThroughResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function drillThrough(DrillThrough $clWsdlType_DrillThrough, $aHeaders = array())
     {
-        $clWsdlType_DrillThroughResponse = $this->call('DrillThrough', array($clWsdlType_DrillThrough) ,  null, null , $aHeaders);
-
-        return $clWsdlType_DrillThroughResponse;
+	    return $this->call('DrillThrough', array($clWsdlType_DrillThrough) ,  null, null , $aHeaders);
     }
     //---
 
@@ -633,14 +596,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Display EnterReorderListMode
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return EnterReorderListModeResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function enterReorderListMode(EnterReorderListMode $clWsdlType_EnterReorderListMode, $aHeaders = array())
     {
-        $clWsdlType_EnterReorderListModeResponse = $this->call('EnterReorderListMode', array($clWsdlType_EnterReorderListMode) ,  null, null , $aHeaders);
-
-        return $clWsdlType_EnterReorderListModeResponse;
+	    return $this->call('EnterReorderListMode', array($clWsdlType_EnterReorderListMode) ,  null, null , $aHeaders);
     }
     //---
 
@@ -649,14 +610,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Execute $clWsdlType_Execute
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ExecuteResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function execute(Execute $clWsdlType_Execute, $aHeaders = array())
     {
-        $clWsdlType_ExecuteResponse = $this->call('Execute', array($clWsdlType_Execute) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ExecuteResponse;
+	    return $this->call('Execute', array($clWsdlType_Execute) ,  null, null , $aHeaders);
     }
     //---
 
@@ -665,13 +624,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetCalculation $clWsdlType_GetCalculation
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetCalculationResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getCalculation(GetCalculation $clWsdlType_GetCalculation, $aHeaders = array())
     {
-        $clWsdlType_GetCalculationResponse = $this->call('GetCalculation', array((array)$clWsdlType_GetCalculation) ,  null, null , $aHeaders);
-        return $clWsdlType_GetCalculationResponse;
+	    return $this->call('GetCalculation', array((array)$clWsdlType_GetCalculation) ,  null, null , $aHeaders);
     }
     //---
 
@@ -680,14 +638,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetChart $clWsdlType_GetChart
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetChartResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getChart(GetChart  $clWsdlType_GetChart, $aHeaders = array())
     {
-        $clWsdlType_GetChartResponse = $this->call('GetChart', array($clWsdlType_GetChart) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetChartResponse;
+	    return $this->call('GetChart', array($clWsdlType_GetChart) ,  null, null , $aHeaders);
     }
     //---
 
@@ -696,14 +652,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetColInRecord $clWsdlType_GetColInRecord
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetColInRecordResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getColInRecord(GetColInRecord $clWsdlType_GetColInRecord, $aHeaders = array())
     {
-        $clWsdlType_GetColInRecordResponse = $this->call('GetColInRecord', array($clWsdlType_GetColInRecord) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetColInRecordResponse;
+	    return $this->call('GetColInRecord', array($clWsdlType_GetColInRecord) ,  null, null , $aHeaders);
     }
     //---
 
@@ -712,14 +666,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetContentFolder $clWsdlType_GetContentFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetContentFolderResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getContentFolder(GetContentFolder $clWsdlType_GetContentFolder, $aHeaders = array())
     {
-        $clWsdlType_GetContentFolderResponse = $this->call('GetContentFolder', array($clWsdlType_GetContentFolder) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetContentFolderResponse;
+	    return $this->call('GetContentFolder', array($clWsdlType_GetContentFolder) ,  null, null , $aHeaders);
     }
     //---
 
@@ -728,14 +680,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetEndAutomatism $clWsdlType_GetEndAutomatism
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetEndAutomatismResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getEndAutomatism(GetEndAutomatism $clWsdlType_GetEndAutomatism, $aHeaders = array())
     {
-        $clWsdlType_GetEndAutomatismResponse = $this->call('GetEndAutomatism', array($clWsdlType_GetEndAutomatism) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetEndAutomatismResponse;
+	    return $this->call('GetEndAutomatism', array($clWsdlType_GetEndAutomatism) ,  null, null , $aHeaders);
     }
     //---
 
@@ -743,14 +693,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetFolderList
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetFolderListResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getFolderList($aHeaders = array())
     {
-        $clWsdlType_GetFolderListResponse = $this->call('GetFolderList', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetFolderListResponse;
+	    return $this->call('GetFolderList', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -758,14 +706,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetLanguages
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetLanguagesResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getLanguages($aHeaders)
     {
-        $clWsdlType_GetLanguagesResponse = $this->call('GetLanguages', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetLanguagesResponse;
+	    return $this->call('GetLanguages', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -774,14 +720,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetListMessage $clWsdlType_GetListMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetListMessageResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getListMessage(GetListMessage $clWsdlType_GetListMessage, $aHeaders = array())
     {
-        $clWsdlType_GetListMessageResponse = $this->call('GetListMessage', array($clWsdlType_GetListMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetListMessageResponse;
+	    return $this->call('GetListMessage', array($clWsdlType_GetListMessage) ,  null, null , $aHeaders);
     }
     //---
 
@@ -789,14 +733,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline :GetMailServiceStatus
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetMailServiceStatusResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getMailServiceStatus($aHeaders = array())
     {
-        $clWsdlType_GetMailServiceStatusResponse = $this->call('GetMailServiceStatus', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetMailServiceStatusResponse;
+	    return $this->call('GetMailServiceStatus', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -805,14 +747,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetPJ $clWsdlType_GetPJ
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetPJResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getPJ(GetPJ $clWsdlType_GetPJ, $aHeaders = array())
     {
-        $clWsdlType_GetPJResponse = $this->call('GetPJ', array($clWsdlType_GetPJ) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetPJResponse;
+	    return $this->call('GetPJ', array($clWsdlType_GetPJ) ,  null, null , $aHeaders);
     }
     //---
 
@@ -821,14 +761,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetPlanningInfo $clWsdlType_GetPlanningInfo
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetPlanningInfoResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getPlanningInfo(GetPlanningInfo $clWsdlType_GetPlanningInfo, $aHeaders = array())
     {
-        $clWsdlType_GetPlanningInfoResponse = $this->call('GetPlanningInfo', array($clWsdlType_GetPlanningInfo) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetPlanningInfoResponse;
+	    return $this->call('GetPlanningInfo', array($clWsdlType_GetPlanningInfo) ,  null, null , $aHeaders);
     }
     //---
 
@@ -837,14 +775,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetStartAutomatism $clWsdlType_GetStartAutomatism
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetStartAutomatismResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getStartAutomatism(GetStartAutomatism $clWsdlType_GetStartAutomatism, $aHeaders = array())
     {
-        $clWsdlType_GetStartAutomatismResponse = $this->call('GetStartAutomatism', array($clWsdlType_GetStartAutomatism) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetStartAutomatismResponse;
+	    return $this->call('GetStartAutomatism', array($clWsdlType_GetStartAutomatism) ,  null, null , $aHeaders);
     }
     //---
 
@@ -853,14 +789,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetTableChild $clWsdlType_GetTableChild
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetTableChildResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getTableChild(GetTableChild $clWsdlType_GetTableChild, $aHeaders = array())
     {
-        $clWsdlType_GetTableChildResponse = $this->call('GetTableChild', array($clWsdlType_GetTableChild) ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetTableChildResponse;
+	    return $this->call('GetTableChild', array($clWsdlType_GetTableChild) ,  null, null , $aHeaders);
     }
     //---
 
@@ -868,14 +802,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTemporalAutomatism
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetTemporalAutomatismResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getTemporalAutomatism($aHeaders = array())
     {
-        $clWsdlType_GetTemporalAutomatismResponse = $this->call('GetTemporalAutomatism', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_GetTemporalAutomatismResponse;
+	    return $this->call('GetTemporalAutomatism', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -884,13 +816,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param GetTokenSession $clWsdlType_GetTokenSession
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return GetTokenSessionResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function getTokenSession(GetTokenSession $clWsdlType_GetTokenSession, $aHeaders = array())
     {
-        $clWsdlType_GetTokenSessionResponse = $this->call('GetTokenSession', array($clWsdlType_GetTokenSession) , null, null , $aHeaders);
-        return $clWsdlType_GetTokenSessionResponse;
+	    return $this->call('GetTokenSession', array($clWsdlType_GetTokenSession) , null, null , $aHeaders);
     }
     //---
 
@@ -898,14 +829,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : HasChanged
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return HasChangedResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function hasChanged($aHeaders = array())
     {
-        $clWsdlType_HasChangedResponse = $this->call('HasChanged', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_HasChangedResponse;
+	    return $this->call('HasChanged', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -914,14 +843,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param InitRecordFromAddress $clWsdlType_InitRecordFromAddress
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return InitRecordFromAddressResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function initRecordFromAddress(InitRecordFromAddress $clWsdlType_InitRecordFromAddress, $aHeaders = array())
     {
-        $clWsdlType_InitRecordFromAddressResponse = $this->call('InitRecordFromAddress', array($clWsdlType_InitRecordFromAddress) ,  null, null , $aHeaders);
-
-        return $clWsdlType_InitRecordFromAddressResponse;
+	    return $this->call('InitRecordFromAddress', array($clWsdlType_InitRecordFromAddress) ,  null, null , $aHeaders);
     }
     //---
 
@@ -930,14 +857,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param InitRecordFromMessage $clWsdlType_InitRecordFromMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return InitRecordFromMessageResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function initRecordFromMessage(InitRecordFromMessage $clWsdlType_InitRecordFromMessage, $aHeaders = array())
     {
-        $clWsdlType_InitRecordFromMessageResponse = $this->call('InitRecordFromMessage', array($clWsdlType_InitRecordFromMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_InitRecordFromMessageResponse;
+	    return $this->call('InitRecordFromMessage', array($clWsdlType_InitRecordFromMessage) ,  null, null , $aHeaders);
     }
     //----
 
@@ -946,14 +871,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param List ListParams
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ListResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function listAction(ListParams $clWsdlType_List, $aHeaders = array())
     {
-        $clWsdlType_ListResponse = $this->call('List', array($clWsdlType_List) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ListResponse;
+	    return $this->call('List', array($clWsdlType_List) ,  null, null , $aHeaders);
     }
     //----
 
@@ -962,14 +885,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Modify $clWsdlType_Modify
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ModifyResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function modify(Modify $clWsdlType_Modify, $aHeaders = array())
     {
-        $clWsdlType_ModifyResponse = $this->call('Modify', array($clWsdlType_Modify) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ModifyResponse;
+	    return $this->call('Modify', array($clWsdlType_Modify) ,  null, null , $aHeaders);
     }
     //---
 
@@ -978,14 +899,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ModifyFolder $clWsdlType_ModifyFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ModifyFolderResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function modifyFolder(ModifyFolder $clWsdlType_ModifyFolder, $aHeaders = array())
     {
-        $clWsdlType_ModifyFolderResponse = $this->call('ModifyFolder', array($clWsdlType_ModifyFolder) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ModifyFolderResponse;
+	    return $this->call('ModifyFolder', array($clWsdlType_ModifyFolder) ,  null, null , $aHeaders);
     }
     //---
 
@@ -995,14 +914,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ModifyMessage $clWsdlType_ModifyMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ModifyMessageResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function modifyMessage(ModifyMessage $clWsdlType_ModifyMessage, $aHeaders = array())
     {
-        $clWsdlType_ModifyMessageResponse = $this->call('ModifyMessage', array($clWsdlType_ModifyMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ModifyMessageResponse;
+	    return $this->call('ModifyMessage', array($clWsdlType_ModifyMessage) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1011,14 +928,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param PrintParams $clWsdlType_Print
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return PrintResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function printAction(PrintParams $clWsdlType_Print, $aHeaders = array())
     {
-        $clWsdlType_PrintResponse = $this->call('Print', array($clWsdlType_Print) ,  null, null , $aHeaders);
-
-        return $clWsdlType_PrintResponse;
+	    return $this->call('Print', array($clWsdlType_Print) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1027,14 +942,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ReorderList $clWsdlType_ModifyFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ReorderListResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function reorderList(ReorderList $clWsdlType_ReorderList, $aHeaders = array())
     {
-        $clWsdlType_reorderListResponse = $this->call('ReorderList', array($clWsdlType_ReorderList) ,  null, null , $aHeaders);
-
-        return $clWsdlType_reorderListResponse;
+	    return $this->call('ReorderList', array($clWsdlType_ReorderList) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1043,14 +956,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ReorderSubList $clWsdlType_ModifyFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ReorderSubListResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function reorderSubList(ReorderSubList $clWsdlType_ReorderSubList, $aHeaders = array())
     {
-        $clWsdlType_reorderSubListResponse = $this->call('ReorderSubList', array($clWsdlType_ReorderSubList) ,  null, null , $aHeaders);
-
-        return $clWsdlType_reorderSubListResponse;
+	    return $this->call('ReorderSubList', array($clWsdlType_ReorderSubList) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1059,14 +970,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Request $clWsdlType_Request
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return RequestResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function request(Request $clWsdlType_Request, $aHeaders = array())
     {
-        $clWsdlType_RequestResponse = $this->call('Request', array($clWsdlType_Request) ,  null, null , $aHeaders);
-
-        return $clWsdlType_RequestResponse;
+	    return $this->call('Request', array($clWsdlType_Request) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1075,14 +984,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param RequestMessage $clWsdlType_RequestMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return RequestMessageResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function requestMessage(RequestMessage $clWsdlType_RequestMessage, $aHeaders = array())
     {
-        $clWsdlType_RequestMessageResponse = $this->call('RequestMessage', array($clWsdlType_RequestMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_RequestMessageResponse;
+	    return $this->call('RequestMessage', array($clWsdlType_RequestMessage) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1091,14 +998,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param RequestParam $clWsdlType_RequestParam
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return RequestParamResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function requestParam(RequestParam $clWsdlType_RequestParam, $aHeaders = array())
     {
-        $clWsdlType_RequestParamResponse = $this->call('RequestParam', array($clWsdlType_RequestParam) ,  null, null , $aHeaders);
-
-        return $clWsdlType_RequestParamResponse;
+	    return $this->call('RequestParam', array($clWsdlType_RequestParam) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1107,14 +1012,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ResetPasswordFailed $clWsdlType_ResetPasswordFailed
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ResetPasswordFailedResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function resetPasswordFailed(ResetPasswordFailed $clWsdlType_ResetPasswordFailed, $aHeaders = array())
     {
-        $clWsdlType_ResetPasswordFailedResponse = $this->call('ResetPasswordFailed', array($clWsdlType_ResetPasswordFailed) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ResetPasswordFailedResponse;
+	    return $this->call('ResetPasswordFailed', array($clWsdlType_ResetPasswordFailed) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1123,14 +1026,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Search $clWsdlType_Search
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return SearchResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function search(Search $clWsdlType_Search, $aHeaders = array())
     {
-        $clWsdlType_SearchResponse = $this->call('Search', array($clWsdlType_Search) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SearchResponse;
+	    return $this->call('Search', array($clWsdlType_Search) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1139,14 +1040,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param SelectForm $clWsdlType_SelectForm
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return SelectFormResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function selectForm(SelectForm $clWsdlType_SelectForm, $aHeaders = array())
     {
-        $clWsdlType_SelectFormResponse = $this->call('SelectForm', array($clWsdlType_SelectForm) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SelectFormResponse;
+	    return $this->call('SelectForm', array($clWsdlType_SelectForm) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1155,14 +1054,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param SelectItems $clWsdlType_SelectForm
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return SelectItemsResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function selectItems(SelectItems $clWsdlType_SelectItems, $aHeaders = array())
     {
-        $clWsdlType_SelectItemsResponse = $this->call('SelectForm', array($clWsdlType_SelectItems) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SelectItemsResponse;
+	    return $this->call('SelectForm', array($clWsdlType_SelectItems) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1171,14 +1068,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param SelectPrintTemplate $clWsdlType_SelectPrintTemplate
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return SelectPrintTemplateResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function selectPrintTemplate(SelectPrintTemplate $clWsdlType_SelectPrintTemplate, $aHeaders = array())
     {
-        $clWsdlType_SelectPrintTemplateResponse = $this->call('SelectPrintTemplate', array($clWsdlType_SelectPrintTemplate) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SelectPrintTemplateResponse;
+	    return $this->call('SelectPrintTemplate', array($clWsdlType_SelectPrintTemplate) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1187,14 +1082,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param SendMessage $clWsdlType_SendMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return SendMessageResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function sendMessage(SendMessage $clWsdlType_SendMessage, $aHeaders = array())
     {
-        $clWsdlType_SendMessageResponse = $this->call('SendMessage', array($clWsdlType_SendMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SendMessageResponse;
+	    return $this->call('SendMessage', array($clWsdlType_SendMessage) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1203,14 +1096,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param SetOrderList $clWsdlType_SendMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return SetOrderListResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function setOrderList(SetOrderList $clWsdlType_SetOrderList, $aHeaders = array())
     {
-        $clWsdlType_SetOrderListeResponse = $this->call('SetOrderList', array($clWsdlType_SetOrderList) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SetOrderListeResponse;
+	    return $this->call('SetOrderList', array($clWsdlType_SetOrderList) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1219,14 +1110,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param SetOrderSubList $clWsdlType_SendMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return SetOrderSubListResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function setOrderSubList(SetOrderSubList $clWsdlType_SetOrderSubList, $aHeaders = array())
     {
-        $clWsdlType_SetOrderSubListeResponse = $this->call('SetOrderSubList', array($clWsdlType_SetOrderSubList) ,  null, null , $aHeaders);
-
-        return $clWsdlType_SetOrderSubListeResponse;
+	    return $this->call('SetOrderSubList', array($clWsdlType_SetOrderSubList) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1235,14 +1124,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param TransformInto $clWsdlType_TransformInto
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return TransformIntoResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function transformInto(TransformInto $clWsdlType_TransformInto, $aHeaders = array())
     {
-        $clWsdlType_TransformIntoResponse = $this->call('TransformInto', array($clWsdlType_TransformInto) ,  null, null , $aHeaders);
-
-        return $clWsdlType_TransformIntoResponse;
+	    return $this->call('TransformInto', array($clWsdlType_TransformInto) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1251,14 +1138,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param Update $clWsdlType_Update
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return UpdateResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function update(Update $clWsdlType_Update, $aHeaders = array())
     {
-        $clWsdlType_UpdateResponse = $this->call('Update', array($clWsdlType_Update) ,  null, null , $aHeaders);
-
-        return $clWsdlType_UpdateResponse;
+	    return $this->call('Update', array($clWsdlType_Update) ,  null, null , $aHeaders);
     }
     //----
 
@@ -1267,14 +1152,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param UpdateFolder $clWsdlType_UpdateFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return UpdateFolderResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function updateFolder(UpdateFolder $clWsdlType_UpdateFolder, $aHeaders = array())
     {
-        $clWsdlType_UpdateFolderResponse = $this->call('UpdateFolder', array($clWsdlType_UpdateFolder) ,  null, null , $aHeaders);
-
-        return $clWsdlType_UpdateFolderResponse;
+	    return $this->call('UpdateFolder', array($clWsdlType_UpdateFolder) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1283,14 +1166,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param UpdateMessage $clWsdlType_UpdateMessage
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return UpdateMessageResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function updateMessage(UpdateMessage $clWsdlType_UpdateMessage, $aHeaders = array())
     {
-        $clWsdlType_UpdateMessageResponse = $this->call('UpdateMessage', array($clWsdlType_UpdateMessage) ,  null, null , $aHeaders);
-
-        return $clWsdlType_UpdateMessageResponse;
+	    return $this->call('UpdateMessage', array($clWsdlType_UpdateMessage) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1298,14 +1179,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Validate
      *
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ValidateResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function validate($aHeaders = array())
     {
-        $clWsdlType_ValidateResponse = $this->call('Validate', array() ,  null, null , $aHeaders);
-
-        return $clWsdlType_ValidateResponse;
+	    return $this->call('Validate', array() ,  null, null , $aHeaders);
     }
     //---
 
@@ -1315,14 +1194,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ValidateFolder $clWsdlType_ValidateFolder
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return void la reponse attendu est vide.
+     * @return XMLResponseWS
      * @access public
      */
     public function validateFolder(ValidateFolder $clWsdlType_ValidateFolder, $aHeaders = array())
     {
-        $mResp = $this->call('ValidateFolder', array($clWsdlType_ValidateFolder) ,  null, null , $aHeaders);
-
-        return $mResp;
+	    return $this->call('ValidateFolder', array($clWsdlType_ValidateFolder) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1331,14 +1208,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param WithAutomaticResponse $clWsdlType_WithAutomaticResponse
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return WithAutomaticResponseResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function withAutomaticResponse(WithAutomaticResponse $clWsdlType_WithAutomaticResponse, $aHeaders = array())
     {
-        $clWsdlType_WithAutomaticResponseResponse = $this->call('WithAutomaticResponse', array($clWsdlType_WithAutomaticResponse) ,  null, null , $aHeaders);
-
-        return $clWsdlType_WithAutomaticResponseResponse;
+	    return $this->call('WithAutomaticResponse', array($clWsdlType_WithAutomaticResponse) ,  null, null , $aHeaders);
     }
     //---
 
@@ -1347,14 +1222,12 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      *
      * @param ZipPJ $clWsdlType_ZipPJ
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return ZipPJResponse
+     * @return XMLResponseWS
      * @access public
      */
     public function zipPJ(ZipPJ $clWsdlType_ZipPJ, $aHeaders = array())
     {
-        $clWsdlType_ZipPJResponse = $this->call('ZipPJ', array($clWsdlType_ZipPJ) ,  null, null , $aHeaders);
-
-        return $clWsdlType_ZipPJResponse;
+	    return $this->call('ZipPJ', array($clWsdlType_ZipPJ) ,  null, null , $aHeaders);
     }
     //---
 }
