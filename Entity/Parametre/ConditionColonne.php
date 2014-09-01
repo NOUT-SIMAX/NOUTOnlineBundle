@@ -41,6 +41,6 @@ class ConditionColonne
 
 	public function sToSOAP()
 	{
-		return '<Condition><CondCol>'.$this->m_sColonne.'</CondCol><CondType>'.$this->m_sCondition.'</CondType><CondValue>'.$this->m_Valeur.'</CondValue></Condition>';
+		return '<Condition><CondCol>'.htmlspecialchars($this->m_sColonne).'</CondCol><CondType>'.$this->m_sCondition.'</CondType><CondValue>'.htmlspecialchars($this->m_Valeur).'</CondValue></Condition>';
 	}
 } 
