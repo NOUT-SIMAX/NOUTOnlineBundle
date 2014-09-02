@@ -35,6 +35,7 @@ class XMLResponseWS
 	const RETURNTYPE_PLANNING = 'Planning';
 	const RETURNTYPE_GLOBALSEARCH = 'GlobalSearch';
 	const RETURNTYPE_LISTCALCULATION = 'ListCalculation';
+	const RETURNTYPE_EXCEPTION = 'Exception';
 
 	//réponse intermédiaire
 	const RETURNTYPE_AMBIGUOUSACTION = 'AmbiguousAction';
@@ -287,5 +288,30 @@ class XMLResponseWS
 			return (string)$clNodeResponse->SessionToken;
 
 		return '';
+	}
+
+	/**
+	 * returne le tableau des codes langues disponibles
+	 * @return array
+	 */
+	public function GetTabLanguages()
+	{
+		$ndXML = $this->getNodeXML();
+		if (is_null($ndXML))
+			return array();
+/*
+		<xml>
+			<LanguageCode>12</LanguageCode>
+			<LanguageCode>9</LanguageCode>
+			<LanguageCode>10</LanguageCode>
+		</xml>
+*/
+		$TabLanguages = array();
+		foreach ($ndXML->LanguageCode as $ndLanguageCode)
+		{
+			$TabLanguages[]=(int)$ndLanguageCode;
+		}
+
+		return $TabLanguages;
 	}
 }

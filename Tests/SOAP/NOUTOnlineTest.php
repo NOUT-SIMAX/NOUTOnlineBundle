@@ -1106,6 +1106,44 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
+	public function testGetLanguages_OK()
+	{
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getLanguages($this->_aGetTabHeader(''));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_EXCEPTION, $clReponseWS->sGetReturnType());
+
+		$tabLanguages = $clReponseWS->GetTabLanguages();
+		sort($tabLanguages);
+		$tabAttendu = array(9, 10, 12);
+
+		$this->assertEquals($tabLanguages, $tabAttendu);
+		/*
+		<xml>
+			<LanguageCode>12</LanguageCode>
+			<LanguageCode>9</LanguageCode>
+			<LanguageCode>10</LanguageCode>
+		</xml>
+*/
+	}
+
+
+
 
 
 	public function testGetEndAutomatism_OK()
