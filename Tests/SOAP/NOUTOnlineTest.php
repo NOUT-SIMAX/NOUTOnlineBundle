@@ -44,6 +44,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
@@ -321,17 +322,17 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
-
-	public function testPrint_OK()
+	/**
+	 * @param $sTokenSession
+	 * @param $form
+	 * @param $id
+	 * @return XMLResponseWS
+	 */
+	protected function _sPrint($sTokenSession, $form, $id)
 	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
-		$form = 'utilisateur';
-		$id = 2;
-
 		$clParamPrint = new PrintParams();
 		$clParamPrint->Table = $form;
-		$clParamPrint->ParamXML = '<'.$form.'>'.$id.'</'.$form.'>';
+		$clParamPrint->ParamXML = '<id_'.$form.'>'.$id.'</id_'.$form.'>';
 
 		$nErreur=0;
 		$nCategorie=0;
@@ -352,9 +353,16 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
 
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
+		$this->assertNotEquals('', $clReponseWS->sGetActionContext());
+		return $clReponseWS;
+	}
+
+	public function testPrint_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$clReponseWS = $this->_sPrint($sTokenSession, 'utilisateur', 2);
+
 
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
@@ -364,6 +372,80 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$sXML = file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/utilisateur_2.html');
 
+		$this->assertEquals(str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$sXML), str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$html_raw));
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+	/**
+	 * @param $sTokenSession
+	 * @return XMLResponseWS
+	 */
+	protected function _sSelectPrintTemplate($sTokenSession, $sActionContexte, $modele)
+	{
+		$clParamSelectPrintTemplate = new SelectPrintTemplate();
+		$clParamSelectPrintTemplate->Template = $modele;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->selectPrintTemplate($clParamSelectPrintTemplate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		return $clReponseWS;
+	}
+
+
+	public function testSelectPrintTemplate_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		//GUID : "1DJVR37SET", 50165053649373 [F_TABLEAU]
+		$clReponseWSPrint = $this->_sPrint($sTokenSession, '50165053649373', '37658108898600');
+
+		//il faut vérifier le type de retour
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_PRINTTEMPLATE, $clReponseWSPrint->sGetReturnType());
+
+		$clReponseWSParserPrint = new ReponseWSParser();
+		$clReponseWSParserPrint->InitFromXmlXsd($clReponseWSPrint->sGetReturnType(), $clReponseWSPrint->getNodeXML(), $clReponseWSPrint->getNodeSchema());
+
+		//il faut vérifier l'existance des enregistrements suivant dans la liste des templates
+		//39234361897596 (Form avec ME Titre Bleu - Vrai)
+		//41291660900316 (HTML Form avec ME Titre Jaune)
+		//201116455061095 (Form Avec ME Avec Section Odt)
+		//42636439109550 (Form Avec ME Odt)
+		//46227041313139 (Form Avec ME Odt Evo)
+		//46360185592694 (Form Avec ME Odt Local)
+
+		$TabIDTemplate = $clReponseWSParserPrint->GetTabIDEnregFromForm($clReponseWSPrint->clGetForm()->getID());
+		$this->assertContains('39234361897596', $TabIDTemplate);
+		$this->assertContains('41291660900316', $TabIDTemplate);
+		$this->assertContains('201116455061095', $TabIDTemplate);
+		$this->assertContains('42636439109550', $TabIDTemplate);
+		$this->assertContains('46227041313139', $TabIDTemplate);
+		$this->assertContains('46360185592694', $TabIDTemplate);
+
+		$clReponseWSSelect = $this->_sSelectPrintTemplate($sTokenSession, $clReponseWSPrint->sGetActionContext(), '41291660900316');
+
+		$clReponseWSParserSelect = new ReponseWSParser();
+		$clReponseWSParserSelect->InitFromXmlXsd($clReponseWSSelect->sGetReturnType(), $clReponseWSSelect->getNodeXML(), $clReponseWSSelect->getNodeSchema());
+		$clData = $clReponseWSParserSelect->clGetData(0);
+		$html_raw = $clData->sGetRaw();
+
+		$sXML = file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/form avec me.html');
 		$this->assertEquals(str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$sXML), str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$html_raw));
 
 		//on déconnecte

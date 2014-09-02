@@ -35,6 +35,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 
@@ -690,6 +691,56 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt, 'html_raw'=>utf8_encode($html_raw)));
 	}
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 * @param $id
+	 * @return XMLResponseWS
+	 */
+	protected function _sSelectPrintTemplate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $modele)
+	{
+		$clParamSelectPrintTemplate = new SelectPrintTemplate();
+		$clParamSelectPrintTemplate->Template = $modele;
+
+		$clReponseXML = $OnlineProxy->selectPrintTemplate($clParamSelectPrintTemplate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('SelectPrintTemplate', $clReponseXML);
+
+
+		return $clReponseXML;
+	}
+
+
+	/**
+	 * @Route("/select_print_template/{form}/{id}/{modele}/{host}", name="select_print_template", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function selectPrintTemplateAction($form, $id, $host, $modele)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//ici il faut faire le display
+		$clReponseWS=$this->_sPrint($OnlineProxy, $sTokenSession, $form, $id);
+
+		//sélection du modèle
+		$clReponseWS=$this->_sSelectPrintTemplate($OnlineProxy, $sTokenSession, $clReponseWS->sGetActionContext(), $modele);
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$clData = $clReponseWSParser->clGetData(0);
+		$html_raw = $clData->sGetRaw();
+
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt, 'html_raw'=>utf8_encode($html_raw)));
+	}
 
 
 	protected function _sGetColInRecord(OnlineServiceProxy $OnlineProxy, $sTokenSession, $colonne, $id, $content)
