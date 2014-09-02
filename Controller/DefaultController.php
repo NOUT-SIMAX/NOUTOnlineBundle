@@ -27,6 +27,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
@@ -1218,6 +1219,34 @@ class DefaultController extends Controller
 		//récupération des langues
 		$clReponseXML = $OnlineProxy->getLanguages($this->_aGetTabHeader(''));
 		$this->_VarDumpRes('GetLanguages', $clReponseXML);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+	/**
+	 * @Route("/gettablechild/{form}/{host}", name="gettablechild", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function getTableChildAction($form, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		$clTableChildParam = new GetTableChild();
+		$clTableChildParam->Table = $form;
+		$clTableChildParam->Recursive = 1;
+		$clTableChildParam->ReadOnly = 1;
+
+		//récupération des langues
+		$clReponseXML = $OnlineProxy->getTableChild($clTableChildParam, $this->_aGetTabHeader($sTokenSession));
+		$this->_VarDumpRes('GetTableChild', $clReponseXML);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
 
 		$containt = ob_get_contents();
 		ob_get_clean();

@@ -36,6 +36,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
@@ -1142,7 +1143,39 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 */
 	}
 
+	public function testGetTableChild_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
 
+
+		$clTableChildParam = new GetTableChild();
+		$clTableChildParam->Table = '48918773563102';
+		$clTableChildParam->Recursive = 1;
+		$clTableChildParam->ReadOnly = 1;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getTableChild($clTableChildParam, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_LIST, $clReponseWS->sGetReturnType());
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
 
 
 
