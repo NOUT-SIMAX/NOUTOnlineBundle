@@ -264,6 +264,15 @@ class XMLResponseWS
 		return null;
 	}
 
+	public function getValue()
+	{
+		$clNodeResponse = $this->_clGetNodeResponse();
+		if (isset($clNodeResponse))
+			return (string)$clNodeResponse->Value;
+
+		return null;
+	}
+
 	/**
 	 * @return \SimpleXMLElement
 	 */

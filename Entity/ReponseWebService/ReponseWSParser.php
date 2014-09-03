@@ -497,7 +497,6 @@ class ReponseWSParser
 			$this->_ParseXML($clXML);
 			return ;
 		}
-
 	}
 
 

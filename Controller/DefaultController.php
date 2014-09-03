@@ -88,6 +88,10 @@ class DefaultController extends Controller
 			var_dump($ret);
 	}
 
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @return string
+	 */
 	protected function _sConnexion(OnlineServiceProxy $OnlineProxy)
 	{
 		//GetTokenSession
@@ -110,6 +114,15 @@ class DefaultController extends Controller
 		$clOptionDialogue->ReturnXSD = 1;
 
 		return $clOptionDialogue;
+	}
+
+	/**
+	 * @param $host
+	 * @return OnlineServiceProxy
+	 */
+	protected function _clGetOnlineProxy($host)
+	{
+		return $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
 	}
 
 	protected function _aGetTabHeader($sTokenSession, $nIDContexteAction=null)
@@ -142,7 +155,7 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -164,7 +177,7 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//GetTokenSession
 		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
@@ -186,7 +199,7 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 		//GetTokenSession
 		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
 
@@ -352,7 +365,7 @@ class DefaultController extends Controller
 	public function listAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -413,7 +426,7 @@ class DefaultController extends Controller
 	public function executeAction($action, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -571,7 +584,7 @@ class DefaultController extends Controller
 	public function searchAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -621,7 +634,7 @@ class DefaultController extends Controller
 	public function displayAction($form, $id, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -670,7 +683,7 @@ class DefaultController extends Controller
 	public function printAction($form, $id, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -717,7 +730,7 @@ class DefaultController extends Controller
 	public function selectPrintTemplateAction($form, $id, $host, $modele)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -765,7 +778,7 @@ class DefaultController extends Controller
 	public function getColInRecordAction($colonne, $id, $host, $content)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -870,7 +883,7 @@ class DefaultController extends Controller
 	public function modifyAction($form, $id, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -924,6 +937,14 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
+	protected function _sHasChanged(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sContexteAction)
+	{
+		$clReponseXML = $OnlineProxy->hasChanged($this->_aGetTabHeader($sTokenSession, $sContexteAction));
+		$this->_VarDumpRes('HasChanged', $clReponseXML);
+
+		return $clReponseXML;
+	}
+
 	/**
 	 * @param OnlineServiceProxy $OnlineProxy
 	 * @param $sTokenSession
@@ -965,7 +986,7 @@ class DefaultController extends Controller
 	public function createAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -978,6 +999,61 @@ class DefaultController extends Controller
 		$containt = ob_get_contents();
 		ob_get_clean();
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+	/**
+	 * @Route("/has_changed/{form}/{colonne}/{valeur}/{host}", name="has_changed", defaults={"host"="127.0.0.1:8062"})
+	 *
+	 * exemple GUID : /create/41296233836619/45208949043557/trois
+	 */
+	public function hasChangedAction($form, $colonne, $valeur, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+
+		//ici il faut faire le modify
+		$clReponseWS = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		if (!is_null($clRecord))
+		{
+			//on met à jour la valeur de la colonne
+			$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $clReponseWS->clGetElement()->getID(), $colonne, $valeur);
+
+			//on fait un has changed pour pouvoir imprimer après
+			$clReponseWS = $this->_sHasChanged($OnlineProxy, $sTokenSession, $sActionContexte);
+			if ($clReponseWS->getValue() == 1)
+			{
+				//on valide
+				$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+
+				//et on imprime
+				$clReponseWS=$this->_sPrint($OnlineProxy, $sTokenSession, $form, $clRecord->m_nIDEnreg);
+				$clReponseWSParser = new ReponseWSParser();
+				$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+				$clData = $clReponseWSParser->clGetData(0);
+				$html_raw = $clData->sGetRaw();
+			}
+		}
+
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt, 'html_raw'=>utf8_encode($html_raw)));
 	}
 
 
@@ -1000,7 +1076,7 @@ class DefaultController extends Controller
 	public function selectFormAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1055,7 +1131,7 @@ class DefaultController extends Controller
 	public function createFromAction($form, $origine, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1119,7 +1195,7 @@ class DefaultController extends Controller
 	public function deleteAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1167,7 +1243,7 @@ class DefaultController extends Controller
 	public function getStartAutomatismAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1205,7 +1281,7 @@ class DefaultController extends Controller
 	public function getTemporalAutomatismAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1239,7 +1315,7 @@ class DefaultController extends Controller
 	public function getEndAutomatismAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1265,7 +1341,7 @@ class DefaultController extends Controller
 	public function getLanguagesAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//récupération des langues
 		$clReponseXML = $OnlineProxy->getLanguages($this->_aGetTabHeader(''));
@@ -1282,7 +1358,7 @@ class DefaultController extends Controller
 	public function getTableChildAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
