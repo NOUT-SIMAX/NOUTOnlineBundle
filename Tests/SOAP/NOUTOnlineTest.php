@@ -42,6 +42,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestParam;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
@@ -840,6 +841,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(false, $clReponseWS->bIsFault());
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_LIST, $clReponseWS->sGetReturnType());
 
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
@@ -872,6 +874,56 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->testDisconnect_OK($sTokenSession);
 	}
 
+	protected function _sRequestParam($sTokenSession, $table, $sCondList)
+	{
+		$clParamRequest = new RequestParam();
+		$clParamRequest->CondList = $sCondList;
+		$clParamRequest->Table = $table;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->requestParam($clParamRequest, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_LIST, $clReponseWS->sGetReturnType());
+
+		return $clReponseWS;
+	}
+
+
+	public function testRequestParam_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$clFileNPI = new ConditionFileNPI();
+		$clFileNPI->EmpileCondition('8521', ConditionColonne::COND_EQUAL, 8267);
+		$CondList = $clFileNPI->sToSoap();
+		$table = '8267';
+
+		$clReponseWS = $this->_sRequestParam($sTokenSession, $table, $CondList);
+
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
 
 	protected function _sSearch($sTokenSession, $form)
 	{

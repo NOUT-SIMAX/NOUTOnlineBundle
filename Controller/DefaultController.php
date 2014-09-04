@@ -33,6 +33,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestParam;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
@@ -474,7 +475,7 @@ class DefaultController extends Controller
 	public function drillthroughtAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -540,7 +541,7 @@ class DefaultController extends Controller
 	public function requestAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -559,6 +560,43 @@ class DefaultController extends Controller
 		ob_get_clean();
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
+
+	/**
+	 * @Route("/request_param/{host}", name="request_param", defaults={"host"="127.0.0.1:8062"})
+	 *
+	 * <RequestParam><Table>8267</Table>
+	 * <CondList>
+	 * <Condition> <CondCol>8521</CondCol><CondType>Equal</CondType><CondValue>8267</CondValue></Condition>  </Operator>
+	 * </RequestParam>
+	 */
+	public function requestParamAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		$clFileNPI = new ConditionFileNPI();
+		$clFileNPI->EmpileCondition('8521', ConditionColonne::COND_EQUAL, 8267);
+
+		$clParamRequest = new RequestParam();
+		$clParamRequest->Table = 8267;
+		$clParamRequest->CondList = $clFileNPI->sToSoap();
+
+
+		$clReponseXML = $OnlineProxy->requestParam($clParamRequest, $this->_aGetTabHeader($sTokenSession));
+		$this->_VarDumpRes('RequestParam', $clReponseXML);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
 
 
 	/**
