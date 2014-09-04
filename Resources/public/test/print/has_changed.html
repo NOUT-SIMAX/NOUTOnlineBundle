@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<style type="text/css"> <!-- 
+body
+{	
+	font-family:Arial,Helvetica,sans-serif;
+	font-size: 12pt;
+	margin:0;
+	text-align:left;
+}
+
+/* -- Titre du document -- */			
+h1 
+{
+	text-align:center;
+	font-size: 24pt;
+	page-break-before: avoid;
+}
+body > h1,
+body > header > h1
+{
+	page-break-before: avoid;
+}
+
+h1.soustitre
+{
+	font-size: 18pt;
+}
+/* -- Titre separateur primaire -- */		
+h2
+{
+	font-size: 18pt;
+	background: #deefff;
+	background: -moz-linear-gradient(top,  #add9e4 0%, #d9edf2 45%, #f7fbfc 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#add9e4), color-stop(45%,#d9edf2), color-stop(100%,#f7fbfc));
+	background: -webkit-linear-gradient(top,  #add9e4 0%,#d9edf2 45%,#f7fbfc 100%);
+	background: -o-linear-gradient(top,  #add9e4 0%,#d9edf2 45%,#f7fbfc 100%);
+	background: -ms-linear-gradient(top,  #add9e4 0%,#d9edf2 45%,#f7fbfc 100%);
+	background: linear-gradient(top,  #add9e4 0%,#d9edf2 45%,#f7fbfc 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#add9e4', endColorstr='#f7fbfc',GradientType=0 );
+	color: #3c6db0;
+}
+			
+h2 img 
+{
+	width: 20pt;
+	height: 20pt;
+	vertical-align: middle;
+}
+/* -- Titre separateur secondaire -- */
+h3
+{
+	font-size: 14pt;
+	background: #f4da97;
+	background: -moz-linear-gradient(top,  #f4da97 0%, #fefcea 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4da97), color-stop(100%,#fefcea));
+	background: -webkit-linear-gradient(top,  #f4da97 0%,#fefcea 100%);
+	background: -o-linear-gradient(top,  #f4da97 0%,#fefcea 100%);
+	background: -ms-linear-gradient(top,  #f4da97 0%,#fefcea 100%);
+	background: linear-gradient(top,  #f4da97 0%,#fefcea 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4da97', endColorstr='#fefcea',GradientType=0 );
+	color: #3c6dbe;
+}
+
+/* -- Titre sequence de champs (separateur de niveau 3) -- */
+h4
+{
+
+}
+
+/* -- Titre liste -- */
+caption
+{
+	text-align:left;
+}
+
+/* -- Separateur primaire -- */
+.sep_principal
+{
+	margin-left:0.5cm;
+}
+
+/* -- Separateur secondaire -- */
+.sep_secondaire
+{
+	margin-left:0.5cm;
+}
+
+/* -- Sequence de champs (separateur de niveau 3) -- */
+.sep_sequence
+{
+	/*margin-left:0.5cm;*/
+}
+
+/* -- Gestion veuve et orphelin séparateur -- */
+.sep_principal,
+.sep_secondaire,
+.sep_sequence
+{
+	orphans:3;
+	widows:3;
+}
+
+
+ /* -- Liste -- */											
+.liste_element
+{
+	border-collapse:collapse;
+	border:none;
+	max-width:100%;
+	margin-top:3px;
+	margin-right:30pt;
+	width:99%;
+	table-layout:auto; /*pas fixed car sinon si image, alors l'image déborde si trop grande, on fixe une taille pour les cellules*/
+	word-wrap:break-word;
+}
+
+.liste_element thead
+{
+	background:#3582c4;
+	color:#FFF;
+	text-align:center;
+	font-weight:bold;
+}
+
+.liste_element td,
+.liste_element th 
+{
+	border: 1pt solid black;
+	min-width: 5em;
+}
+
+.liste_element td
+{
+	vertical-align:top;
+}
+.liste_element_lignepaire
+{
+	background-color:#FCF7DE;
+}
+
+/* -- Mise en forme de modéles particuliers -- */
+/* texte long */
+.texte_long
+{
+	page-break-inside : avoid;
+}
+
+/* fichier image */
+.fichier img
+{
+	vertical-align:text-top;
+}
+
+/* les numerique sont aligné a droite */
+.entier td,
+.reel  td,
+.monetaire td,
+.duree td
+{
+	text-align:right;
+}
+.entier td:first-child,
+.reel  td:first-child,
+.monetaire td:first-child,
+.duree td:first-child
+{
+	text-align:inherit;
+}
+
+td.entier,
+td.reel,
+td.monetaire,
+td.duree
+{
+	text-align:right;
+}
+
+/* -- Mise en forme complémentaire -- */
+.datedujour
+{
+	text-align:right;
+}
+
+.tab_miseenforme
+{
+	border-spacing:0;
+	border-collapse:collapse;
+}
+
+.tab_miseenforme,
+.tab_miseenforme tbody,
+.tab_miseenforme tr,
+.tab_miseenforme td
+{
+	margin:0;
+	padding:0;
+}
+
+
+.page_break 
+{
+	page-break-before:always;
+}--> </style>
+</head>
+<body>
+<div class="datedujour">§§DateDuJour§§</div>
+<h1 class="titre" id="41296233836619">Formulaire avec liste images</h1>
+<table class="tab_miseenforme">
+<tr id="45208949043557" class="texte">
+<td>Libell&eacute; : </td>
+<td>phpUnit Test HasChanged</td>
+</tr>
+</table>
+</body>
+</html>

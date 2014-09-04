@@ -52,7 +52,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
  * classe pour tester NOUTOnline en mode Intranet
  * @package NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP
  *
- * phpunip -c app --filter testCreate_OK
+ * phpunit -c app --filter testCreate_OK
  */
 class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 {
@@ -376,6 +376,84 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);
+	}
+
+	/**
+	 * @param $sTokenSession
+	 * @param $sContexteAction
+	 * @return XMLResponseWS
+	 */
+	protected function _sHasChanged($sTokenSession, $sContexteAction)
+	{
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->hasChanged($this->_aGetTabHeader($sTokenSession, $sContexteAction));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_VALUE, $clReponseWS->sGetReturnType());
+
+		$this->assertNotEquals('', $clReponseWS->sGetActionContext());
+		return $clReponseWS;
+	}
+
+
+	public function testHasChanged_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$clReponseWS = $this->__sCreate($sTokenSession, '41296233836619');
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
+		if (!is_null($clRecord))
+		{
+			//on met à jour la valeur de la colonne
+			$this->_sUpdate($sTokenSession, $sActionContexte, '41296233836619', $clRecord->m_nIDEnreg, array('45208949043557'=>'phpUnit Test HasChanged'));
+
+			//on fait un has changed pour pouvoir imprimer après
+			$clReponseWS = $this->_sHasChanged($sTokenSession, $sActionContexte);
+			$this->assertEquals(1, $clReponseWS->getValue());
+
+			if ($clReponseWS->getValue() == 1)
+			{
+				//on valide
+				$this->_Validate($sTokenSession, $sActionContexte);
+
+				//et on imprime
+				$clReponseWS=$this->_sPrint($sTokenSession, '41296233836619', $clRecord->m_nIDEnreg);
+				$clReponseWSParser = new ReponseWSParser();
+				$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+
+				$clData = $clReponseWSParser->clGetData(0);
+				$html_raw = $clData->sGetRaw();
+			}
+		}
+
+		$sXML = utf8_encode(file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/has_changed.html'));
+		$sXML=utf8_decode(str_replace('§§DateDuJour§§', date('d/m/Y') , $sXML));
+
+		$this->assertEquals(str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$sXML), str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$html_raw));
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+
 	}
 
 	/**

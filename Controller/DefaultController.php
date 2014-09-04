@@ -1016,7 +1016,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 
-		//ici il faut faire le modify
+		//un create
 		$clReponseWS = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
