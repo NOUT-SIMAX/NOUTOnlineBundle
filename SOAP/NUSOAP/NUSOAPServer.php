@@ -182,10 +182,10 @@ class NUSOAPServer extends NUSOAPBase {
 
 		if (isset($_SERVER)) {
 			$this->debug("_SERVER is defined:");
-			$this->appendDebug($this->varDump($_SERVER));
+			$this->appendDebugVarDump($_SERVER);
 		} elseif (isset($HTTP_SERVER_VARS)) {
 			$this->debug("HTTP_SERVER_VARS is defined:");
-			$this->appendDebug($this->varDump($HTTP_SERVER_VARS));
+			$this->appendDebugVarDump($HTTP_SERVER_VARS);
 		} else {
 			$this->debug("Neither _SERVER nor HTTP_SERVER_VARS is defined.");
 		}
@@ -291,7 +291,7 @@ class NUSOAPServer extends NUSOAPBase {
 				print $this->wsdl->serialize($this->debug_flag);
 				if ($this->debug_flag) {
 					$this->debug('wsdl:');
-					$this->appendDebug($this->varDump($this->wsdl));
+					$this->appendDebugVarDump($this->wsdl);
 					print $this->getDebugAsXMLComment();
 				}
 			} else {
@@ -511,11 +511,11 @@ class NUSOAPServer extends NUSOAPBase {
 		if ($this->wsdl) {
 			if ($this->opData = $this->wsdl->getOperationData($this->methodname)) {
 				$this->debug('in invoke_method, found WSDL operation=' . $this->methodname);
-				$this->appendDebug('opData=' . $this->varDump($this->opData));
+				$this->appendDebugVarDump($this->opData, 'opData=%s');
 			} elseif ($this->opData = $this->wsdl->getOperationDataForSoapAction($this->SOAPAction)) {
 				// Note: hopefully this case will only be used for doc/lit, since rpc services should have wrapper element
 				$this->debug('in invoke_method, found WSDL soapAction=' . $this->SOAPAction . ' for operation=' . $this->opData['name']);
-				$this->appendDebug('opData=' . $this->varDump($this->opData));
+				$this->appendDebugVarDump($this->opData, 'opData=%s');
 				$this->methodname = $this->opData['name'];
 			} else {
 				$this->debug('in invoke_method, no WSDL for operation=' . $this->methodname);
@@ -586,7 +586,7 @@ class NUSOAPServer extends NUSOAPBase {
 
 		// if there are parameters to pass
 		$this->debug('in invoke_method, params:');
-		$this->appendDebug($this->varDump($this->methodparams));
+		$this->appendDebugVarDump($this->methodparams);
 		$this->debug("in invoke_method, calling '$this->methodname'");
 		if (!function_exists('call_user_func_array')) {
 			if ($class == '') {
@@ -636,7 +636,7 @@ class NUSOAPServer extends NUSOAPBase {
 			}
 		}
 		$this->debug('in invoke_method, methodreturn:');
-		$this->appendDebug($this->varDump($this->methodreturn));
+		$this->appendDebugVarDump($this->methodreturn);
 		$this->debug("in invoke_method, called method $this->methodname, received data of type ".gettype($this->methodreturn));
 	}
 
@@ -694,7 +694,7 @@ class NUSOAPServer extends NUSOAPBase {
 			}
 		}
 		$this->debug('return value:');
-		$this->appendDebug($this->varDump($return_val));
+		$this->appendDebugVarDump($return_val);
 
 		$this->debug('serializing response');
 		if ($this->wsdl) {
@@ -851,7 +851,7 @@ class NUSOAPServer extends NUSOAPBase {
 	 */
 	function parseRequest($headers, $data) {
 		$this->debug('Entering parseRequest() for data of length ' . strlen($data) . ' headers:');
-		$this->appendDebug($this->varDump($headers));
+		$this->appendDebugVarDump($headers);
 		if (!isset($headers['content-type'])) {
 			$this->setError('Request not of type text/xml (no content-type header)');
 			return false;

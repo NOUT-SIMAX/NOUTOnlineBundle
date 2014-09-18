@@ -376,6 +376,18 @@ class NUSOAPBase {
 	}
 
 	/**
+	 * adds debug data to the instance debug string with formatting
+	 *
+	 * @param    string $string debug data
+	 * @access   private
+	 */
+	function debugVarDump($data, $format='%s'){
+		if ($this->debugLevel > 0) {
+			$this->appendDebug($this->getmicrotime().' '.get_class($this).': '.sprintf($format, $this->varDump($data))."\n");
+		}
+	}
+
+	/**
 	 * adds debug data to the instance debug string without formatting
 	 *
 	 * @param    string $string debug data
@@ -386,6 +398,20 @@ class NUSOAPBase {
 			// it would be nice to use a memory stream here to use
 			// memory more efficiently
 			$this->debug_str .= $string;
+		}
+	}
+
+	/**
+	 * adds debug data to the instance debug string without formatting
+	 *
+	 * @param    string $string debug data
+	 * @access   public
+	 */
+	function appendDebugVarDump($data, $format='%s'){
+		if ($this->debugLevel > 0) {
+			// it would be nice to use a memory stream here to use
+			// memory more efficiently
+			$this->debug_str .= sprintf($format, $this->varDump($data));
 		}
 	}
 
@@ -503,8 +529,8 @@ class NUSOAPBase {
 	 */
 	function serialize_val($val,$name=false,$type=false,$name_ns=false,$type_ns=false,$attributes=false,$use='encoded',$soapval=false) {
 		$this->debug("in serialize_val: name=$name, type=$type, name_ns=$name_ns, type_ns=$type_ns, use=$use, soapval=$soapval");
-		$this->appendDebug('value=' . $this->varDump($val));
-		$this->appendDebug('attributes=' . $this->varDump($attributes));
+		$this->appendDebugVarDump($val, 'value=%s');
+		$this->appendDebugVarDump($attributes, 'attributes=%s');
 
 		if (is_object($val) && get_class($val) == 'soapval' && (! $soapval)) {
 			$this->debug("serialize_val: serialize soapval");
@@ -774,9 +800,9 @@ class NUSOAPBase {
 
 		$this->debug("In serializeEnvelope length=" . strlen($body) . " body (max 1000 characters)=" . substr($body, 0, 1000) . " style=$style use=$use encodingStyle=$encodingStyle");
 		$this->debug("headers:");
-		$this->appendDebug($this->varDump($headers));
+		$this->appendDebugVarDump($headers);
 		$this->debug("namespaces:");
-		$this->appendDebug($this->varDump($namespaces));
+		$this->appendDebugVarDump($namespaces);
 
 		// serialize namespaces
 		$ns_string = '';

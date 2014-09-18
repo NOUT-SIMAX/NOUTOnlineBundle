@@ -118,7 +118,7 @@ class NUSOAPParser extends NUSOAPBase {
 				$this->setError($err);
 			} else {
 				$this->debug('in NUSOAPParser ctor, message:');
-				$this->appendDebug($this->varDump($this->message));
+				$this->appendDebugVarDump($this->message);
 				$this->debug('parsed successfully, found root struct: '.$this->root_struct.' of name '.$this->root_struct_name);
 				// get final value
 				$this->soapresponse = $this->message[$this->root_struct]['result'];
@@ -615,7 +615,7 @@ class NUSOAPParser extends NUSOAPBase {
 			}
 			$ret = is_array($params) ? $params : array();
 			$this->debug('in buildVal, return:');
-			$this->appendDebug($this->varDump($ret));
+			$this->appendDebugVarDump($ret);
 			return $ret;
 		} else {
 			$this->debug('in buildVal, no children, building scalar');

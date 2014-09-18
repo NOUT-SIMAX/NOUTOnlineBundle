@@ -64,7 +64,7 @@ class SOAPTransportHTTP extends NUSOAPBase {
 	function __construct($url, $curl_options = NULL, $use_curl = false){
 		parent::__construct();
 		$this->debug("ctor url=$url use_curl=$use_curl curl_options:");
-		$this->appendDebug($this->varDump($curl_options));
+		$this->appendDebugVarDump($curl_options);
 		$this->setURL($url);
 		if (is_array($curl_options)) {
 			$this->ch_options = $curl_options;
@@ -83,7 +83,7 @@ class SOAPTransportHTTP extends NUSOAPBase {
 	 */
 	function setCurlOption($option, $value) {
 		$this->debug("setCurlOption option=$option, value=");
-		$this->appendDebug($this->varDump($value));
+		$this->appendDebugVarDump($value);
 		curl_setopt($this->ch, $option, $value);
 	}
 
@@ -287,9 +287,9 @@ class SOAPTransportHTTP extends NUSOAPBase {
 			if (ini_get('safe_mode') || ini_get('open_basedir')) {
 				$this->debug('safe_mode or open_basedir set, so do not set CURLOPT_FOLLOWLOCATION');
 				$this->debug('safe_mode = ');
-				$this->appendDebug($this->varDump(ini_get('safe_mode')));
+				$this->appendDebugVarDump(ini_get('safe_mode'));
 				$this->debug('open_basedir = ');
-				$this->appendDebug($this->varDump(ini_get('open_basedir')));
+				$this->appendDebugVarDump(ini_get('open_basedir'));
 			} else {
 				$this->setCurlOption(CURLOPT_FOLLOWLOCATION, 1);
 			}
@@ -471,9 +471,9 @@ class SOAPTransportHTTP extends NUSOAPBase {
 	 */
 	function setCredentials($username, $password, $authtype = 'basic', $digestRequest = array(), $certRequest = array()) {
 		$this->debug("setCredentials username=$username authtype=$authtype digestRequest=");
-		$this->appendDebug($this->varDump($digestRequest));
+		$this->appendDebugVarDump($digestRequest);
 		$this->debug("certRequest=");
-		$this->appendDebug($this->varDump($certRequest));
+		$this->appendDebugVarDump($certRequest);
 		// cf. RFC 2617
 		if ($authtype == 'basic') {
 			$this->setHeader('Authorization', 'Basic '.base64_encode(str_replace(':','',$username).':'.$password));

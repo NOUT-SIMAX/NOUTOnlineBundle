@@ -112,7 +112,7 @@ class NUSOAPClient extends NUSOAPBase  {
 		$this->portName = $portName;
 
 		$this->debug("ctor wsdl=$wsdl timeout=$timeout response_timeout=$response_timeout");
-		$this->appendDebug('endpoint=' . $this->varDump($endpoint));
+		$this->appendDebugVarDump($endpoint, 'endpoint=%s');
 
 		// make values
 		if($wsdl){
@@ -171,8 +171,8 @@ class NUSOAPClient extends NUSOAPBase  {
 		$this->opData = array();
 
 		$this->debug("call: operation=$operation, namespace=$namespace, soapAction=$soapAction, rpcParams=$rpcParams, style=$style, use=$use, endpointType=$this->endpointType");
-		$this->appendDebug('params=' . $this->varDump($params));
-		$this->appendDebug('headers=' . $this->varDump($headers));
+		$this->appendDebugVarDump($params, 'params=%s');
+		$this->appendDebugVarDump($headers, 'headers=%s');
 		if ($headers) {
 			$this->requestHeaders = $headers;
 		}
@@ -186,7 +186,7 @@ class NUSOAPClient extends NUSOAPBase  {
 			// use WSDL for operation
 			$this->opData = $opData;
 			$this->debug("found operation");
-			$this->appendDebug('opData=' . $this->varDump($opData));
+			$this->appendDebugVarDump($opData, 'opData=%s');
 			if (isset($opData['soapAction'])) {
 				$soapAction = $opData['soapAction'];
 			}
@@ -299,7 +299,7 @@ class NUSOAPClient extends NUSOAPBase  {
 		} else {
 			$this->return = $return;
 			$this->debug('sent message successfully and got a(n) '.gettype($return));
-			$this->appendDebug('return=' . $this->varDump($return));
+			$this->appendDebugVarDump($return, 'return=%s');
 
 			// fault?
 			if(is_array($return) && isset($return['faultcode'])){
@@ -326,7 +326,7 @@ class NUSOAPClient extends NUSOAPBase  {
 					// single 'out' parameter (normally the return value)
 					$return = array_shift($return);
 					$this->debug('return shifted value: ');
-					$this->appendDebug($this->varDump($return));
+					$this->appendDebugVarDump($return);
 					return $return;
 					// nothing returned (ie, echoVoid)
 				} else {
@@ -497,7 +497,7 @@ class NUSOAPClient extends NUSOAPBase  {
 	 */
 	function parseResponse($headers, $data) {
 		$this->debug('Entering parseResponse() for data of length ' . strlen($data) . ' headers:');
-		$this->appendDebug($this->varDump($headers));
+		$this->appendDebugVarDump($headers);
 		if (!isset($headers['content-type'])) {
 			$this->setError('Response not of type text/xml (no content-type header)');
 			return false;
@@ -553,7 +553,7 @@ class NUSOAPClient extends NUSOAPBase  {
 	 */
 	function setCurlOption($option, $value) {
 		$this->debug("setCurlOption option=$option, value=");
-		$this->appendDebug($this->varDump($value));
+		$this->appendDebugVarDump($value);
 		$this->curl_options[$option] = $value;
 	}
 
@@ -576,7 +576,7 @@ class NUSOAPClient extends NUSOAPBase  {
 	 */
 	function setHeaders($headers){
 		$this->debug("setHeaders headers=");
-		$this->appendDebug($this->varDump($headers));
+		$this->appendDebugVarDump($headers);
 		$this->requestHeaders = $headers;
 	}
 
@@ -627,7 +627,7 @@ class NUSOAPClient extends NUSOAPBase  {
 	 */
 	function setCredentials($username, $password, $authtype = 'basic', $certRequest = array()) {
 		$this->debug("setCredentials username=$username authtype=$authtype certRequest=");
-		$this->appendDebug($this->varDump($certRequest));
+		$this->appendDebugVarDump($certRequest);
 		$this->username = $username;
 		$this->password = $password;
 		$this->authtype = $authtype;
@@ -753,7 +753,7 @@ class NUSOAPClient extends NUSOAPBase  {
 	 */
 	function _getProxyClassCode($r) {
 		$this->debug("in getProxy endpointType=$this->endpointType");
-		$this->appendDebug("wsdl=" . $this->varDump($this->wsdl));
+		$this->appendDebugVarDump($this->wsdl, "wsdl=%s");
 		if ($this->endpointType != 'wsdl') {
 			$evalStr = 'A proxy can only be created for a WSDL client';
 			$this->setError($evalStr);

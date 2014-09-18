@@ -564,7 +564,7 @@ class WSDL extends NUSOAPBase {
 	 */
 	function setCredentials($username, $password, $authtype = 'basic', $certRequest = array()) {
 		$this->debug("setCredentials username=$username authtype=$authtype certRequest=");
-		$this->appendDebug($this->varDump($certRequest));
+		$this->appendDebugVarDump($certRequest);
 		$this->username = $username;
 		$this->password = $password;
 		$this->authtype = $authtype;
@@ -603,8 +603,8 @@ class WSDL extends NUSOAPBase {
 				// binding type of port matches parameter
 				if ($portData['bindingType'] == $bindingType) {
 					$this->debug("getOperations found port $port bindingType $bindingType");
-					//$this->debug("port data: " . $this->varDump($portData));
-					//$this->debug("bindings: " . $this->varDump($this->bindings[ $portData['binding'] ]));
+					//$this->debugVarDump($portData, "port data: %s");
+					//$this->debugVarDump($this->bindings[ $portData['binding'] ], "bindings: %s");
 					// merge bindings
 					if (isset($this->bindings[ $portData['binding'] ]['operations'])) {
 						$ops = array_merge ($ops, $this->bindings[ $portData['binding'] ]['operations']);
@@ -727,7 +727,7 @@ class WSDL extends NUSOAPBase {
 						$etype = $this->getTypeDef($uqType, $ns);
 						if ($etype) {
 							$this->debug("found type for [element] $type:");
-							$this->debug($this->varDump($etype));
+							$this->debugVarDump($etype);
 							if (isset($etype['phpType'])) {
 								$t['phpType'] = $etype['phpType'];
 							}
@@ -1031,7 +1031,7 @@ class WSDL extends NUSOAPBase {
 	 */
 	function parametersMatchWrapped($type, &$parameters) {
 		$this->debug("in parametersMatchWrapped type=$type, parameters=");
-		$this->appendDebug($this->varDump($parameters));
+		$this->appendDebugVarDump($parameters);
 
 		// split type into namespace:unqualified-type
 		if (strpos($type, ':')) {
@@ -1056,7 +1056,7 @@ class WSDL extends NUSOAPBase {
 			return false;
 		}
 		$this->debug("in parametersMatchWrapped: found typeDef=");
-		$this->appendDebug($this->varDump($typeDef));
+		$this->appendDebugVarDump($typeDef);
 		if (substr($uqType, -1) == '^') {
 			$uqType = substr($uqType, 0, -1);
 		}
@@ -1114,7 +1114,7 @@ class WSDL extends NUSOAPBase {
 	 */
 	function serializeRPCParameters($operation, $direction, $parameters, $bindingType = 'soap') {
 		$this->debug("in serializeRPCParameters: operation=$operation, direction=$direction, XMLSchemaVersion=$this->XMLSchemaVersion, bindingType=$bindingType");
-		$this->appendDebug('parameters=' . $this->varDump($parameters));
+		$this->appendDebugVarDump($parameters, 'parameters=%s');
 
 		if ($direction != 'input' && $direction != 'output') {
 			$this->debug('The value of the \$direction argument needs to be either "input" or "output"');
@@ -1127,7 +1127,7 @@ class WSDL extends NUSOAPBase {
 			return false;
 		}
 		$this->debug('in serializeRPCParameters: opData:');
-		$this->appendDebug($this->varDump($opData));
+		$this->appendDebugVarDump($opData);
 
 		// Get encoding style for output and set to current
 		$encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/';
@@ -1216,7 +1216,7 @@ class WSDL extends NUSOAPBase {
 	function serializeParameters($operation, $direction, $parameters)
 	{
 		$this->debug("in serializeParameters: operation=$operation, direction=$direction, XMLSchemaVersion=$this->XMLSchemaVersion");
-		$this->appendDebug('parameters=' . $this->varDump($parameters));
+		$this->appendDebugVarDump($parameters, 'parameters=%s');
 
 		if ($direction != 'input' && $direction != 'output') {
 			$this->debug('The value of the \$direction argument needs to be either "input" or "output"');
@@ -1229,7 +1229,7 @@ class WSDL extends NUSOAPBase {
 			return false;
 		}
 		$this->debug('opData:');
-		$this->appendDebug($this->varDump($opData));
+		$this->appendDebugVarDump($opData);
 
 		// Get encoding style for output and set to current
 		$encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/';
@@ -1295,7 +1295,7 @@ class WSDL extends NUSOAPBase {
 	function serializeType($name, $type, $value, $use='encoded', $encodingStyle=false, $unqualified=false)
 	{
 		$this->debug("in serializeType: name=$name, type=$type, use=$use, encodingStyle=$encodingStyle, unqualified=" . ($unqualified ? "unqualified" : "qualified"));
-		$this->appendDebug("value=" . $this->varDump($value));
+		$this->appendDebugVarDump($value, "value=%s");
 		if($use == 'encoded' && $encodingStyle) {
 			$encodingStyle = ' SOAP-ENV:encodingStyle="' . $encodingStyle . '"';
 		}
@@ -1438,7 +1438,7 @@ class WSDL extends NUSOAPBase {
 			return false;
 		} else {
 			$this->debug("in serializeType: found typeDef");
-			$this->appendDebug('typeDef=' . $this->varDump($typeDef));
+			$this->appendDebugVarDump($typeDef, 'typeDef=%s');
 			if (substr($uqType, -1) == '^') {
 				$uqType = substr($uqType, 0, -1);
 			}
