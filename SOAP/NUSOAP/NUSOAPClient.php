@@ -370,6 +370,10 @@ class NUSOAPClient extends NUSOAPBase  {
 		}
 	}
 
+	function _loadWSDLFromCache() { return false; }
+	function _saveWSDLInCache() {}
+
+
 	/**
 	 * instantiate wsdl object and parse wsdl file
 	 *
@@ -377,9 +381,17 @@ class NUSOAPClient extends NUSOAPBase  {
 	 */
 	function loadWSDL() {
 		$this->debug('instantiating wsdl class with doc: '.$this->wsdlFile);
-		$this->wsdl = new WSDL('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
-		$this->wsdl->setCredentials($this->username, $this->password, $this->authtype, $this->certRequest);
-		$this->wsdl->fetchWSDL($this->wsdlFile);
+
+		$this->wsdl = $this->_loadWSDLFromCache();
+		if (!$this->wsdl)
+		{
+			$this->wsdl = new WSDL('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
+			$this->wsdl->setCredentials($this->username, $this->password, $this->authtype, $this->certRequest);
+			$this->wsdl->fetchWSDL($this->wsdlFile);
+
+			$this->_saveWSDLInCache();
+		}
+
 		$this->checkWSDL();
 	}
 
