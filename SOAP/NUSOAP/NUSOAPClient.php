@@ -61,6 +61,7 @@ class NUSOAPClient extends NUSOAPBase  {
 	var $curl_options = array();	// User-specified cURL options
 	var $bindingType = '';			// WSDL operation binding type
 	var $use_curl = false;			// whether to always try to use cURL
+	var $parse_response = true;     // whether to parse the response
 
 	/*
 	 * fault related variables
@@ -370,9 +371,26 @@ class NUSOAPClient extends NUSOAPBase  {
 		}
 	}
 
+	/**
+	 * charge la wsdl depuis le cache si disponible
+	 * @return bool
+	 */
 	function _loadWSDLFromCache() { return false; }
+
+	/**
+	 * sauve la wsdl en cache pour usage futur
+	 */
 	function _saveWSDLInCache() {}
 
+	/**
+	 * Méthode qui marque le début du send
+	 */
+	function __StartSend() {}
+
+	/**
+	 * Méthode qui marque la fin du send
+	 */
+	function __StopSend() {}
 
 	/**
 	 * instantiate wsdl object and parse wsdl file
@@ -455,6 +473,8 @@ class NUSOAPClient extends NUSOAPBase  {
 					$http->setEncoding($this->http_encoding);
 				}
 				$this->debug('sending message, length='.strlen($msg));
+
+				$this->__StartSend();
 				if(preg_match('/^http:/',$this->endpoint)){
 					//if(strpos($this->endpoint,'http:')){
 					$this->responseData = $http->send($msg,$timeout,$response_timeout,$this->cookies);
@@ -469,6 +489,8 @@ class NUSOAPClient extends NUSOAPBase  {
 				} else {
 					$this->setError('no http/s in endpoint url');
 				}
+				$this->__StopSend();
+
 				$this->request = $http->outgoing_payload;
 				$this->response = $http->incoming_payload;
 				$this->appendDebug($http->getDebug());
@@ -508,6 +530,9 @@ class NUSOAPClient extends NUSOAPBase  {
 	 * @access   private
 	 */
 	function parseResponse($headers, $data) {
+		if (!$this->parse_response)
+			return $this->response;
+
 		$this->debug('Entering parseResponse() for data of length ' . strlen($data) . ' headers:');
 		$this->appendDebugVarDump($headers);
 		if (!isset($headers['content-type'])) {

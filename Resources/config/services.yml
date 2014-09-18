@@ -23,10 +23,14 @@ services:
         tags:
             - { name: data_collector, template: "NOUTOnlineBundle:DataCollector:layout.html.twig", id: "NOUTOnline" }
 
+    nout_online.cache:
+        class:  NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache
+        arguments: ["%kernel.cache_dir%/soap"]
+
     #factory pour le service
     nout_online.service_factory:
          class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-         arguments:  [@nout_online.logger]
+         arguments:  [@nout_online.logger, @nout_online.cache]
 
     nout_online.twig.nout_online_extension:
         class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension

@@ -21,6 +21,7 @@ class ConfigurationDialogue {
 	public $m_sProtocolPrefix;
 	public $m_nLangCode;
 	public $m_sAPIUUID;
+	public $m_nDureeSession;
 
 	public function __construct($sEndpoint,$bWsdl = false,$sHost = false,$sPort = false, $sProtocolPrefix = 'http://')
 	{
@@ -32,5 +33,6 @@ class ConfigurationDialogue {
 
 		$this->m_nLangCode=12;
 		$this->m_sAPIUUID='';
+		$this->m_nDureeSession=3600;
 	}
 }

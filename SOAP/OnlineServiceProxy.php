@@ -1,6 +1,7 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 //WSDLEntity utilsé en paramètres
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
@@ -85,11 +86,18 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     private $__aListHeaders = array();
     private $__bCleanHeadersBeforeRequest = true; //sert a savoir si on remet les headers a zero avant une requete
 
-	//classe de configuration
+	/**
+	 * classe de configuration
+	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
+	 */
 	private $__ConfigurationDialogue ;
 
 	//logger symfony
 	private $__clLogger;
+
+	//pour le cache de la wsdl
+	private $__sVersionWSDL;
+	private $__clCache;
 
 
 
@@ -101,20 +109,80 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      * @param $sProxyPort
      * @return unknown_type
      */
-    public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger)
+    public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache)
     {
-        parent::__construct($clConfig->m_sEndPoint,$clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
+        parent::__construct($clConfig->m_sEndPoint, $clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
 
 	    $this->__ConfigurationDialogue = $clConfig;
+	    $this->parse_response = false; //la réponse parsée ne nous interresse pas
 
         $this->forceEndpoint = $clConfig->m_sProtocolPrefix . $clConfig->m_sHost . ':' . $clConfig->m_nPort; //on force l'ip et le port du fichier config
         // on force le timeout a 300s
         $this->timeout = 300;
         $this->response_timeout = 300;
 	    $this->__clLogger = $_clLogger;
+
+	    //il faut lire le début de endpoint pour avoir la version de la wsdl
+	    $this->__clCache = $cache;
+	    if (file_exists($clConfig->m_sEndPoint))
+	    {
+		    $fHandle = fopen($clConfig->m_sEndPoint, "r");
+		    $sDebutWSDL = fgets($fHandle, 250);
+		    fclose($fHandle);
+
+		    $this->__sVersionWSDL = md5($sDebutWSDL, false);
+	    }
     }
 
-    //---
+
+	/**
+	 * Méthode qui marque le début du send
+	 */
+	function __StartSend()
+	{
+		if (isset($this->__clLogger)) //log des requetes
+			$this->__clLogger->startSend();
+
+	}
+
+	/**
+	 * Méthode qui marque la fin du send
+	 */
+	function __StopSend()
+	{
+		if (isset($this->__clLogger)) //log des requetes
+			$this->__clLogger->stopSend();
+	}
+
+	/**
+	 * charge la wsdl depuis le cache si disponible
+	 * @return bool
+	 */
+	function _loadWSDLFromCache()
+	{
+		if (!isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
+			return false;
+
+		if ($this->__clCache->contains($this->__sVersionWSDL))
+			return $this->__clCache->fetch($this->__sVersionWSDL);
+
+		return false;
+	}
+
+	/**
+	 * sauve la wsdl en cache pour usage futur
+	 */
+	function _saveWSDLInCache()
+	{
+		if (!isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
+			return ;
+
+		$this->__clCache->save($this->__sVersionWSDL, $this->wsdl, $this->__ConfigurationDialogue->m_nDureeSession);
+	}
+
+
+
+	//---
 
     //------------------------------------------------------------------------------------------
     // Fonctions de gestion des headers de requete :

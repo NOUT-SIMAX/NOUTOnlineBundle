@@ -142,6 +142,9 @@ class ModifiedNuSoapClient extends SOAPClient
 	* * @see lib/NUSOAPClient#parseResponse
 	*/
     public function parseResponse($headers, $data) {
+	    if (!$this->parse_response)
+		    return $this->response;
+
 		$this->debug('Entering parseResponse() for data of length ' . strlen($data) . ' headers:');
 		$this->appendDebug($this->varDump($headers));
     	if (!isset($headers['content-type'])) {

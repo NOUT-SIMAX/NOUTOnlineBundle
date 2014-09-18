@@ -27,7 +27,6 @@ class Configuration implements ConfigurationInterface
 	    $rootNode
 		    ->children()
 		        ->scalarNode('debug')
-		            ->cannotBeEmpty()
 		            ->defaultValue(false)
 		            ->validate()
 		                ->ifNotInArray(array(true, false))

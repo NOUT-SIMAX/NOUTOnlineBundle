@@ -34,6 +34,12 @@ class NOUTOnlineLogger {
 	public $m_fStart = null;
 
 	/**
+	 * tableau qui contient les temps intermédiaire
+	 * @var array|null
+	 */
+	public $m_fSend = null;
+
+	/**
 	 * @var $m_clMonolog : monolog pour voir les traces
 	 */
 	protected $m_clMonolog;
@@ -55,6 +61,20 @@ class NOUTOnlineLogger {
 		}
 	}
 
+	public function startSend()
+	{
+		if ($this->m_bEnabled) {
+			$this->m_fSend = microtime(true);
+		}
+	}
+
+	public function stopSend()
+	{
+		if ($this->m_bEnabled) {
+			$this->m_fSend = microtime(true) - $this->m_fSend;
+		}
+	}
+
 	/**
 	 * @param $sTo
 	 * @param $sFrom
@@ -66,7 +86,13 @@ class NOUTOnlineLogger {
 			$this->m_clMonolog->debug($sTo);
 			$this->m_clMonolog->debug($sFrom);
 
-			$this->m_TabQueries[] = array('request' => $sTo, 'response'=> $sFrom,'executionMS' => microtime(true) - $this->m_fStart, 'operation'=>$sOperation);
+			$this->m_TabQueries[] = array(
+				'request' => $sTo,
+				'response'=> $sFrom,
+				'executionMS' => microtime(true) - $this->m_fStart,
+				'sendMS' => $this->m_fSend,
+				'operation'=>$sOperation
+			);
 		}
 	}
 } 

@@ -64,7 +64,7 @@
 			<li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ '%0.2f'|format(query.executionMS * 1000) }}" data-target-id="{{ i }}">
 				<div style="margin-top: 4px" id="queryNo-{{ i }}">
 					<div>
-						{{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms
+						{{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms ({{ '%0.2f'|format(query.sendMS * 1000) }} ms)
 					</div>
 					<div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-request-{{ i }}" style="cursor: pointer;">
 						<div>
