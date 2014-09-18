@@ -456,6 +456,19 @@ class NUSOAPBase {
 	}
 
 	/**
+	 * démarre un intervalle de temps
+	 * @param $name
+	 */
+	protected function __StartTpsInt($name)	{	}
+
+	/**
+	 * Arrête un intervalle de temps
+	 * @param $name
+	 */
+	protected function __EndTpsInt($name)	{	}
+
+
+	/**
 	 * expands entities, e.g. changes '<' to '&lt;'.
 	 *
 	 * @param	string	$val	The string in which to expand entities.
