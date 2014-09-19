@@ -32,7 +32,8 @@ class NOUTCache extends CacheProvider
 		else if (extension_loaded('xcache'))
 			$this->m_clPiloteCache = new XcacheCache();
 		else
-			$this->m_clPiloteCache = new FilesystemCache($dir, '.noutcache.data');
+			//$this->m_clPiloteCache = new FilesystemCache($dir, '.noutcache.data');
+			$this->m_clPiloteCache = new NOUTFileCache($dir);
 	}
 
 
