@@ -26,6 +26,7 @@ class ReponseWSParser
 	public $m_MapIDTableau2IDEnreg2Record;
 	public $m_MapColonne2Calcul;
 	public $m_MapRef2Data;
+	public $m_TabEventPlanning;
 
 	public function __construct()
 	{
@@ -33,6 +34,7 @@ class ReponseWSParser
 		$this->m_MapIDTableau2IDEnreg2Record = array();
 		$this->m_MapColonne2Calcul = array();
 		$this->m_MapRef2Data = array();
+		$this->m_TabEventPlanning=array();
 	}
 
 	/**
@@ -269,18 +271,34 @@ class ReponseWSParser
 
 		//on commence par faire un premier tour, pour récuperer les formulaires présent au premier niveau
 		$TabFormPresent=array();
-		foreach($clXML->children() as $ndRecord)
+		foreach($clXML->children() as $clNoeud)
 		{
-			$TabFormPresent[] = str_replace('id_', '', $ndRecord->getName());
+			$sTagName = $clNoeud->getName();
+			if (strncmp($sTagName, 'id_', strlen('id_'))==0)
+				$TabFormPresent[] = str_replace('id_', '', $sTagName);
 		}
 
 
-		foreach($clXML->children() as $ndRecord)
+		foreach($clXML->children() as $clNoeud)
 		{
-			if (strncmp($ndRecord->getName(), 'id_', strlen('id_'))==0)
-				$this->_ParseRecord($ndRecord, $TabFormPresent);
-			else if (strcmp($ndRecord->getName(), 'Data')==0)
-				$this->_ParseData($ndRecord);
+			$sTagName = $clNoeud->getName();
+			if (strncmp($sTagName, 'id_', strlen('id_'))==0)
+			{
+				$this->_ParseRecord($clNoeud, $TabFormPresent);
+				continue;
+			}
+
+			if (strcmp($sTagName, 'event')==0)
+			{
+				$this->_ParseEvent($clNoeud);
+				continue;
+			}
+
+			if (strcmp($sTagName, 'Data')==0)
+			{
+				$this->_ParseData($clNoeud);
+				continue;
+			}
 		}
 	}
 
@@ -309,6 +327,35 @@ class ReponseWSParser
 		$clData->m_sContent = (string)$ndData;
 
 		$this->m_MapRef2Data[$clData->m_nRef]=$clData;
+	}
+
+	protected function _ParseEvent(\SimpleXMLElement $ndEvent)
+	{
+
+		/*
+		<xs:attribute xs:name="simax:uid" xs:use="required" simax:typeElement="xs:string"/>
+<xs:attribute xs:name="simax:startTime" xs:use="required" simax:typeElement="xs:datetime"/>
+<xs:attribute xs:name="simax:endTime" simax:typeElement="xs:datetime"/>
+<xs:attribute xs:name="simax:summary" xs:use="required" simax:typeElement="xs:string"/>
+<xs:attribute xs:name="simax:description" simax:typeElement="xs:string"/>
+<xs:attribute xs:name="simax:resource" xs:use="required" simax:typeElement="xs:string"/>
+<xs:attribute xs:name="simax:typeOfEvent" xs:use="required" simax:typeElement="xs:string"/>
+<xs:attribute xs:name="simax:rrules" simax:typeElement="xs:string"/>
+		*/
+
+		$TabAttrib = $ndEvent->attributes('http://www.nout.fr/XML/');
+
+		$clEvent = new Event();
+		$clEvent->m_sUID = (string)$TabAttrib['uid'];
+		$clEvent->m_sStartTime = (string)$TabAttrib['startTime'];
+		$clEvent->m_sEndTime = (string)$TabAttrib['endTime'];
+		$clEvent->m_sSummary = (string)$TabAttrib['summary'];
+		$clEvent->m_sDescription = (string)$TabAttrib['description'];
+		$clEvent->m_nIDResource = (string)$TabAttrib['resource'];
+		$clEvent->m_nTypeOfEvent = (string)$TabAttrib['typeOfEvent'];
+		$clEvent->m_sRrules = (string)$TabAttrib['rrules'];
+
+		$this->m_TabEventPlanning[$clEvent->m_sUID]=$clEvent;
 	}
 
 	/**
@@ -456,6 +503,42 @@ class ReponseWSParser
 		}
 	}
 
+
+	/**
+	 * @param \SimpleXMLElement $clSchema
+	 *
+	 * le schema a la forme suivante :
+	<xs:schema .... xmlns:simax="http://www.nout.fr/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+	<xs:element xs:name="event">...
+	<simax:layout>
+	<xs:element simax:typeOfEvent="17151" simax:colorRGB="555500"/>
+	...
+	</simax:layout>
+	</xs:element>
+	</xs:schema>
+	</XSDSchema>
+	 * @return array
+	 */
+	protected function _GetTabParseXSD_TypeEvent2Color(\SimpleXMLElement $clSchema)
+	{
+
+		$ndLayout = $clSchema->element
+			->children('http://www.nout.fr/XMLSchema')->layout;
+
+
+		$MapTypeEvent2ColorRGB=array();
+
+		foreach($ndLayout->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+		{
+			if (strcmp($ndFils->getName(), 'element')==0)
+			{
+				$TabAttributes = $ndFils->attributes('http://www.nout.fr/XMLSchema');
+				$MapTypeEvent2ColorRGB[(string)$TabAttributes['typeOfEvent']]=(string)$TabAttributes['colorRGB'];
+			}
+		}
+		return $MapTypeEvent2ColorRGB;
+	}
+
 	/**
 	 * @param $sReturnType
 	 * @param \SimpleXMLElement $clXML
@@ -495,6 +578,20 @@ class ReponseWSParser
 			//après, on fait le XML
 			$this->m_MapIDTableau2IDEnreg2Record = array();
 			$this->_ParseXML($clXML);
+			return ;
+		}
+
+		if ($sReturnType == XMLResponseWS::RETURNTYPE_PLANNING)
+		{
+			$this->m_TabEventPlanning=array();
+			$MapTypeElement2Color = $this->_GetTabParseXSD_TypeEvent2Color($clSchema);
+
+			$this->_ParseXML($clXML);
+
+			//on met à jour les couleurs
+			foreach($this->m_TabEventPlanning as $clEvent)
+				$clEvent->m_sColorRGB=$MapTypeElement2Color[$clEvent->m_nTypeOfEvent];
+
 			return ;
 		}
 	}

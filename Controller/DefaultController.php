@@ -26,6 +26,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
@@ -837,6 +838,37 @@ class DefaultController extends Controller
 	}
 
 
+	/**
+	 * @Route("/get_planning_info/{res}/{host}", name="get_planning_info", defaults={"host"="127.0.0.1:8062"})
+	 * <Resource>36683203627649</Resource><StartTime>20140901000000</StartTime><EndTime>20140907000000</EndTime>
+	 */
+	public function getPlanningInfoAction($res, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		$clPlanningInfo = new GetPlanningInfo();
+		$clPlanningInfo->Resource = $res;
+		$clPlanningInfo->StartTime = '20140901000000';
+		$clPlanningInfo->EndTime = '20140907000000';
+
+		$clReponseXML = $OnlineProxy->getPlanningInfo($clPlanningInfo, $this->_aGetTabHeader($sTokenSession));
+		$this->_VarDumpRes('GetPlanningInfo', $clReponseXML);
+
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
 
 	/**
 	 * Valide la dernière action du contexte
