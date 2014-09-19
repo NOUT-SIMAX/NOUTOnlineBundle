@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -35,6 +36,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
@@ -82,7 +84,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clLogger = new NOUTOnlineLogger(null, false);
 
 		//ici on instancie NOUTOnline
-		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, $clLogger);
+		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, $clLogger, null);
 	}
 
 	/**
@@ -1230,7 +1232,6 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	public function testDelete_OK()
 	{
-
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = '41296233836619'; //formulaire avec liste images
@@ -1245,6 +1246,56 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on valide le contexte
 		$this->_ConfirmResponse($sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
+
+		//on déconnecte
+		$this->testDisconnect_OK($sTokenSession);
+	}
+
+	protected function _sGetPlanningInfo($sTokenSession, $Resource, $StartTime, $EndTime)
+	{
+		$clPlanningInfo = new GetPlanningInfo();
+		$clPlanningInfo->Resource = $Resource;
+		$clPlanningInfo->StartTime = $StartTime;
+		$clPlanningInfo->EndTime = $EndTime;
+
+		$nErreur=0;
+		$nCategorie=0;
+		try
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getPlanningInfo($clPlanningInfo, $this->_aGetTabHeader($sTokenSession));
+		}
+		catch(\Exception $e)
+		{
+			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+
+			$this->assertEquals(true, $clReponseWS->bIsFault());
+			$nErreur = $clReponseWS->getNumError();
+			$nCategorie = $clReponseWS->getCatError();
+		}
+
+
+		$this->assertEquals(false, $clReponseWS->bIsFault());
+		$this->assertEquals(0, $nErreur);
+		$this->assertEquals(0, $nCategorie);
+
+		//vérification du type de retour
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_PLANNING, $clReponseWS->sGetReturnType());
+
+		return $clReponseWS;
+	}
+
+
+	public function testGetPlanningInfo_OK()
+	{
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		//l'action getPlanningInfo
+		$clReponseXML = $this->_sGetPlanningInfo($sTokenSession, '36683203627649', '20140901000000', '20140907000000');
+
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+
+		$this->assertNotEmpty($clReponseWSParser->m_TabEventPlanning);
 
 		//on déconnecte
 		$this->testDisconnect_OK($sTokenSession);

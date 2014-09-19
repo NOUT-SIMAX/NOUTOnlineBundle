@@ -111,7 +111,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      * @param $sProxyPort
      * @return unknown_type
      */
-    public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache)
+    public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache=null)
     {
         parent::__construct($clConfig->m_sEndPoint, $clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
 
@@ -162,7 +162,8 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	 */
 	function _loadWSDLFromCache()
 	{
-		if (!isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
+		if (!isset($this->__clCache) || ($this->__clCache == null)
+			|| !isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
 			return false;
 
 		if ($this->__clCache->contains($this->__sVersionWSDL))
@@ -176,7 +177,8 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	 */
 	function _saveWSDLInCache()
 	{
-		if (!isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
+		if (!isset($this->__clCache) || ($this->__clCache == null)
+			|| !isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
 			return ;
 
 		$this->__clCache->save($this->__sVersionWSDL, $this->wsdl, $this->__ConfigurationDialogue->m_nDureeSession);
