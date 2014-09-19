@@ -368,7 +368,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clData = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
@@ -422,7 +422,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 //on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if (!is_null($clRecord))
@@ -442,7 +442,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 				//et on imprime
 				$clReponseWS=$this->_sPrint($sTokenSession, '41296233836619', $clRecord->m_nIDEnreg);
 				$clReponseWSParser = new ReponseWSParser();
-				$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+				$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 				$clData = $clReponseWSParser->clGetData(0);
 				$html_raw = $clData->sGetRaw();
@@ -501,7 +501,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(XMLResponseWS::RETURNTYPE_PRINTTEMPLATE, $clReponseWSPrint->sGetReturnType());
 
 		$clReponseWSParserPrint = new ReponseWSParser();
-		$clReponseWSParserPrint->InitFromXmlXsd($clReponseWSPrint->sGetReturnType(), $clReponseWSPrint->getNodeXML(), $clReponseWSPrint->getNodeSchema());
+		$clReponseWSParserPrint->InitFromXmlXsd($clReponseWSPrint);
 
 		//il faut vérifier l'existance des enregistrements suivant dans la liste des templates
 		//39234361897596 (Form avec ME Titre Bleu - Vrai)
@@ -522,7 +522,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clReponseWSSelect = $this->_sSelectPrintTemplate($sTokenSession, $clReponseWSPrint->sGetActionContext(), '41291660900316');
 
 		$clReponseWSParserSelect = new ReponseWSParser();
-		$clReponseWSParserSelect->InitFromXmlXsd($clReponseWSSelect->sGetReturnType(), $clReponseWSSelect->getNodeXML(), $clReponseWSSelect->getNodeSchema());
+		$clReponseWSParserSelect->InitFromXmlXsd($clReponseWSSelect);
 		$clData = $clReponseWSParserSelect->clGetData(0);
 		$html_raw = $clData->sGetRaw();
 
@@ -721,7 +721,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le résultat
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
 		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
@@ -797,7 +797,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
 		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
@@ -805,7 +805,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clReponseWSCalcul = $this->_sGetCalculation($sTokenSession, $sActionContexte, $TabIDColonne);
 
 		//il faut parser le résultat pour avoir les calculs de fin de liste
-		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul->sGetReturnType(), $clReponseWSCalcul->getNodeXML(), $clReponseWSCalcul->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul);
 
 		$nCalculCount = (int)$clReponseWSParser->m_MapColonne2Calcul[1171]->GetCalcul('count'); //c'est la colonne pseudo
 		$nCountNbTotal = $clReponseWSList->clGetCount()->m_nNbTotal;
@@ -1049,7 +1049,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$this->assertNotNull($clRecord);
@@ -1121,7 +1121,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML);
 
 		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseXML->clGetForm()->getID());
 
@@ -1180,7 +1180,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$this->assertNotNull($clRecord);
@@ -1293,7 +1293,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clReponseXML = $this->_sGetPlanningInfo($sTokenSession, '36683203627649', '20140901000000', '20140907000000');
 
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML);
 
 		$this->assertNotEmpty($clReponseWSParser->m_TabEventPlanning);
 

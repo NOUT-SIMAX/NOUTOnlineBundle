@@ -9,6 +9,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
@@ -378,13 +381,13 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
 		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
 
 		$clReponseWSCalcul = $this->_sGetCaculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
-		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul->sGetReturnType(), $clReponseWSCalcul->getNodeXML(), $clReponseWSCalcul->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul);
 
 		$this->_VarDumpRes('Calculation', $clReponseWSParser->m_MapColonne2Calcul);
 
@@ -488,7 +491,7 @@ class DefaultController extends Controller
 
 		//on parse le résultat
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWSList->sGetReturnType(), $clReponseWSList->getNodeXML(), $clReponseWSList->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
 		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
@@ -730,7 +733,7 @@ class DefaultController extends Controller
 		//ici il faut faire le display
 		$clReponseWS=$this->_sPrint($OnlineProxy, $sTokenSession, $form, $id);
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clData = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
@@ -780,7 +783,7 @@ class DefaultController extends Controller
 		//sélection du modèle
 		$clReponseWS=$this->_sSelectPrintTemplate($OnlineProxy, $sTokenSession, $clReponseWS->sGetActionContext(), $modele);
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clData = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
@@ -859,7 +862,7 @@ class DefaultController extends Controller
 		$this->_VarDumpRes('GetPlanningInfo', $clReponseXML);
 
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML);
 
 
 		//la deconnexion
@@ -964,7 +967,7 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
@@ -1031,7 +1034,7 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if (!is_null($clRecord))
@@ -1092,7 +1095,7 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if (!is_null($clRecord))
@@ -1110,7 +1113,7 @@ class DefaultController extends Controller
 				//et on imprime
 				$clReponseWS=$this->_sPrint($OnlineProxy, $sTokenSession, $form, $clRecord->m_nIDEnreg);
 				$clReponseWSParser = new ReponseWSParser();
-				$clReponseWSParser->InitFromXmlXsd($clReponseWS->sGetReturnType(), $clReponseWS->getNodeXML(), $clReponseWS->getNodeSchema());
+				$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 				$clData = $clReponseWSParser->clGetData(0);
 				$html_raw = $clData->sGetRaw();
@@ -1156,7 +1159,7 @@ class DefaultController extends Controller
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
-		$clReponseWSParser->InitFromXmlXsd($clReponseXML->sGetReturnType(), $clReponseXML->getNodeXML(), $clReponseXML->getNodeSchema());
+		$clReponseWSParser->InitFromXmlXsd($clReponseXML);
 
 		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseXML->clGetForm()->getID());
 
@@ -1290,6 +1293,98 @@ class DefaultController extends Controller
 		ob_get_clean();
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
+
+	protected function _sEnterReorderListMode(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte)
+	{
+		$clReponseXML = $OnlineProxy->enterReorderListMode($this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('EnterReorderListMode', $clReponseXML);
+
+		return $clReponseXML;
+	}
+
+	protected function _sSetOrderList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nOffset)
+	{
+		$clSetOrderList = new SetOrderList($tabIDEnreg, $nOffset);
+
+		$clReponseXML = $OnlineProxy->setOrderList($clSetOrderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('SetOrderList', $clReponseXML);
+		return $clReponseXML;
+	}
+
+
+	protected function _sReOrderList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nOffset, $nMove)
+	{
+		$clReorderList = new ReorderList($tabIDEnreg, $nOffset, $nMove);
+		$clReponseXML = $OnlineProxy->reorderList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('ReOrderList', $clReponseXML);
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/reorder_list/{host}", name="reorder_list", defaults={"host"="127.0.0.1:8062"})
+	 */
+	public function ReorderListAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//il faut commencer par réordonner la liste
+		$this->_sExecute($OnlineProxy, $sTokenSession, '221569603630667');
+
+		//on affiche la liste
+		$clReponseList = $this->_sList($OnlineProxy, $sTokenSession, '228261139523058');
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseList);
+
+		$tabEnregTableauOrigine = $clReponseWSParser->GetTabEnregTableau();
+
+		$this->_sEnterReorderListMode($OnlineProxy, $sTokenSession, $clReponseList->sGetActionContext());
+
+		$tempOrig=implode('|', array_slice($tabEnregTableauOrigine->GetTabIDEnreg(), 0, 5));
+		var_dump($tempOrig);
+
+		$tabSetOrder = new EnregTableauArray();
+		$tabSetOrder->Add($tabEnregTableauOrigine->nGetIDTableau(3), $tabEnregTableauOrigine->nGetIDEnreg(3));
+		$tabSetOrder->Add($tabEnregTableauOrigine->nGetIDTableau(2), $tabEnregTableauOrigine->nGetIDEnreg(2));
+		$tabSetOrder->Add($tabEnregTableauOrigine->nGetIDTableau(1), $tabEnregTableauOrigine->nGetIDEnreg(1));
+
+		$clReponseSetOrder = $this->_sSetOrderList($OnlineProxy, $sTokenSession, $clReponseList->sGetActionContext(), $tabSetOrder, 1);
+
+		$tabReorder = new EnregTableauArray();
+		$tabReorder->Add($tabEnregTableauOrigine->nGetIDTableau(0), $tabEnregTableauOrigine->nGetIDEnreg(0));
+
+		$clReponseSetOrder = $this->_sReOrderList($OnlineProxy, $sTokenSession, $clReponseList->sGetActionContext(), $tabReorder, 4, ReorderList::MOVE_DOWN);
+
+		//<items>218610348012442|225220302686986|220504428595852|227775829887743</items><offset>0</offset>
+
+/*
+		$sIDEnreg = $this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
+
+		//ici il faut faire le delete
+		$clReponseWS = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $sIDEnreg);
+		$sActionContexte = $clReponseWS->sGetActionContext();
+
+		//on valide
+		if ($clReponseWS->sGetReturnType()==XMLResponseWS::RETURNTYPE_MESSAGEBOX)
+		{
+			//il faut confirmer la réponse
+			$this->_sConfirmResponse($OnlineProxy, $sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
+		}
+*/
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+	}
+
+
 
 	/**
 	 * @param OnlineServiceProxy $OnlineProxy
@@ -1465,7 +1560,7 @@ class DefaultController extends Controller
 
 		$clRecordManager = new ReponseWSParser();
 
-		$clRecordManager->InitFromXmlXsd($clResponseXML->sGetReturnType(), $clResponseXML->getNodeXML(), $clResponseXML->getNodeSchema());
+		$clRecordManager->InitFromXmlXsd($clResponseXML);
 
 
 		var_dump($clRecordManager);

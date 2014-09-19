@@ -206,8 +206,18 @@ class XMLResponseWS
 	 */
 	public function clGetForm()
 	{
-		$clForm = $this->m_ndHeader->children()->Form;
-		return new Form($clForm, $clForm['title']);
+		$ndForm = $this->m_ndHeader->children()->Form;
+		$clForm = new Form($ndForm, $ndForm['title']);
+
+		if (isset($ndForm['withBtnOrderPossible']))
+			$clForm->m_bWithBtnOrderPossible=true;
+
+		for ($n=1 ; $n<=3 ; $n++)
+		{
+			if (isset($ndForm['sort'.$n]))
+				$clForm->m_TabSort[]=new ListSort($ndForm['sort'.$n], isset($ndForm['sort'.$n.'asc']) ? $ndForm['sort'.$n.'asc'] : 1 );
+		}
+		return $clForm;
 	}
 
 	/**

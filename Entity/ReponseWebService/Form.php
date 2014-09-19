@@ -10,17 +10,38 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class Form
 {
-	protected $m_nID;
-	protected $m_sTitle;
+	/**
+	 * @var string
+	 * identifiant du formulaire
+	 */
+	public $m_nID;
+
+	/**
+	 * @var string
+	 * titre du formulaire
+	 */
+	public $m_sTitle;
+	/**
+	 * @var bool
+	 * si il est possible d'ordonner la liste
+	 */
+	public $m_bWithBtnOrderPossible;
+	/**
+	 * @var array
+	 * tableau des tris appliqués à la liste
+	 */
+	public $m_TabSort;
 
 	public function __construct($nID, $sTitle)
 	{
 		$this->m_nID = (string)$nID;
 		$this->m_sTitle = (string)$sTitle;
+		$this->m_bWithBtnOrderPossible = false;
+		$this->m_TabSort=array();
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getTitle()
 	{
@@ -28,7 +49,7 @@ class Form
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getID()
 	{

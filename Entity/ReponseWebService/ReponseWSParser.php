@@ -10,6 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableau;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
@@ -22,16 +23,43 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
  */
 class ReponseWSParser
 {
+	/**
+	 * @var array
+	 * map qui contient la structure des formulaires
+	 */
 	public $m_MapIDTableau2Niv2StructureElement;
+	/**
+	 * @var array
+	 * map qui contient l'association IDTableau=>IDEnreg=>Objet Record
+	 */
 	public $m_MapIDTableau2IDEnreg2Record;
+	/**
+	 * @var array;
+	 * tableau qui contient l'ordre des enregistrements avec conservation de l'ordre de la réponse
+	 */
+	public $m_TabEnregTableau;
+	/**
+	 * @var array
+	 * map qui associe une colonne à un calcul de fin de liste
+	 */
 	public $m_MapColonne2Calcul;
+	/**
+	 * @var array
+	 * map qui associe une référence au data qui correspond
+	 */
 	public $m_MapRef2Data;
+
+	/**
+	 * @var array
+	 * tableau qui contient les événements du planning
+	 */
 	public $m_TabEventPlanning;
 
 	public function __construct()
 	{
 		$this->m_MapIDTableau2Niv2StructureElement = array();
 		$this->m_MapIDTableau2IDEnreg2Record = array();
+		$this->m_TabEnregTableau = new EnregTableauArray();
 		$this->m_MapColonne2Calcul = array();
 		$this->m_MapRef2Data = array();
 		$this->m_TabEventPlanning=array();
@@ -96,17 +124,7 @@ class ReponseWSParser
 	 */
 	public function GetTabEnregTableau()
 	{
-		if (!isset($this->m_MapIDTableau2IDEnreg2Record))
-			return array();
-
-		$TabEnregTableau = new EnregTableauArray();
-		foreach($this->m_MapIDTableau2IDEnreg2Record as $nIDTableau=>$TabIDEnreg)
-		{
-			foreach($TabIDEnreg as $nIDEnreg)
-				$TabEnregTableau->Add($nIDTableau, $nIDEnreg);
-		}
-
-		return $TabEnregTableau;
+		return $this->m_TabEnregTableau;
 	}
 
 	/**
@@ -262,7 +280,7 @@ class ReponseWSParser
 	/**
 	 * @param \SimpleXMLElement $clXML
 	 */
-	protected function _ParseXML(\SimpleXMLElement $clXML)
+	protected function _ParseXML(\SimpleXMLElement $clXML, $sIDForm)
 	{
 		/*
 		 * xmlns:simax="http://www.nout.fr/XML/"
@@ -284,7 +302,7 @@ class ReponseWSParser
 			$sTagName = $clNoeud->getName();
 			if (strncmp($sTagName, 'id_', strlen('id_'))==0)
 			{
-				$this->_ParseRecord($clNoeud, $TabFormPresent);
+				$this->_ParseRecord($clNoeud, $TabFormPresent, $sIDForm);
 				continue;
 			}
 
@@ -363,7 +381,7 @@ class ReponseWSParser
 	 * @param \SimpleXMLElement $clXML
 	 * @param $TabFormPresent
 	 */
-	protected function _ParseRecord(\SimpleXMLElement $clXML, $TabFormPresent)
+	protected function _ParseRecord(\SimpleXMLElement $clXML, $TabFormPresent, $sIDForm)
 	{
 		//<id_47909919412330 simax:id="33475861129246" simax:title="Janvier">
 
@@ -371,6 +389,9 @@ class ReponseWSParser
 
 		$sIDTableau = str_replace('id_', '', $clXML->getName());
 		$sIDEnreg = (string)$TabAttrib['id'];
+
+		if (isset($sIDForm) && ($sIDForm != null) && ($sIDForm==$sIDTableau))
+			$this->m_TabEnregTableau->Add($sIDTableau, $sIDEnreg);
 
 		if (!isset($this->m_MapIDTableau2IDEnreg2Record[$sIDTableau]))
 			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau] = array();
@@ -544,24 +565,29 @@ class ReponseWSParser
 	 * @param \SimpleXMLElement $clXML
 	 * @param \SimpleXMLElement $clSchema
 	 */
-	public function InitFromXmlXsd($sReturnType, \SimpleXMLElement $clXML, \SimpleXMLElement $clSchema = null)
+	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS)
 	{
+		$sReturnType = $clXMLReponseWS->sGetReturnType();
+		$ndXML = $clXMLReponseWS->getNodeXML();
+		$ndSchema = $clXMLReponseWS->getNodeSchema();
+
 		//on commence par les schemas
 		if (    ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_LIST)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_PRINTTEMPLATE))
 		{
-			if (!is_null($clSchema))
+			if (!is_null($ndSchema))
 			{
 				$this->m_MapIDTableau2Niv2StructureElement = array();
 				$nNiveau = ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD) ? StructureElement::NV_XSD_Enreg : StructureElement::NV_XSD_List;
-				$this->_ParseXSD($nNiveau, $clSchema);
+				$this->_ParseXSD($nNiveau, $ndSchema);
 			}
 
 			//après, on fait le XML
 			$this->m_MapIDTableau2IDEnreg2Record = array();
-			$this->_ParseXML($clXML);
+			$this->m_TabEnregTableau->RemoveAll();
+			$this->_ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID());
 
 			return ;
 		}
@@ -569,7 +595,7 @@ class ReponseWSParser
 		if ($sReturnType == XMLResponseWS::RETURNTYPE_LISTCALCULATION)
 		{
 			//on a un retour de GetCalculation
-			$this->_ParseListCaculation($clXML);
+			$this->_ParseListCaculation($ndXML);
 			return ;
 		}
 
@@ -577,16 +603,17 @@ class ReponseWSParser
 		{
 			//après, on fait le XML
 			$this->m_MapIDTableau2IDEnreg2Record = array();
-			$this->_ParseXML($clXML);
+			$this->m_TabEnregTableau->RemoveAll();
+			$this->_ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID());
 			return ;
 		}
 
 		if ($sReturnType == XMLResponseWS::RETURNTYPE_PLANNING)
 		{
 			$this->m_TabEventPlanning=array();
-			$MapTypeElement2Color = $this->_GetTabParseXSD_TypeEvent2Color($clSchema);
+			$MapTypeElement2Color = $this->_GetTabParseXSD_TypeEvent2Color($ndSchema);
 
-			$this->_ParseXML($clXML);
+			$this->_ParseXML($ndXML, null);
 
 			//on met à jour les couleurs
 			foreach($this->m_TabEventPlanning as $clEvent)

@@ -51,7 +51,7 @@ class EnregTableauArray implements \Iterator
 		$aRet = array();
 		foreach($this->m_Tab as $clEnreg)
 		{
-			if ($clEnreg->m_nIDEnreg == $nIDTableau)
+			if (($clEnreg->m_nIDTableau == $nIDTableau) || !isset($nIDTableau) || ($nIDTableau==null))
 				$aRet[]=$clEnreg->m_nIDEnreg;
 			else if ($bMemeTaille)
 				$aRet[]=null;
@@ -329,6 +329,15 @@ class EnregTableauArray implements \Iterator
 		}
 
 		return $this;
+	}
+
+	/**
+	 * @param $nIndice
+	 * @return EnregTableau
+	 */
+	public function GetAt($nIndice)
+	{
+		return $this->m_Tab[$nIndice];
 	}
 
 	public function SetAt($nIndice, $nIDTableau, $nIDEnreg)

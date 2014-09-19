@@ -769,14 +769,13 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : EnterReorderListMode
      *
-     * @param Display EnterReorderListMode
      * @param array $aHeaders tableau d'headers a ajouter a la requete
      * @return XMLResponseWS
      * @access public
      */
-    public function enterReorderListMode(EnterReorderListMode $clWsdlType_EnterReorderListMode, $aHeaders = array())
+    public function enterReorderListMode($aHeaders = array())
     {
-	    return $this->call('EnterReorderListMode', array($clWsdlType_EnterReorderListMode) ,  null, null , $aHeaders);
+	    return $this->call('EnterReorderListMode', array() ,  null, null , $aHeaders);
     }
     //---
 
