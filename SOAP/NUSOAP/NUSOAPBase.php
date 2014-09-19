@@ -208,13 +208,7 @@ class NUSOAPBase {
 	 * @access private
 	 */
 	var $error_str = '';
-	/**
-	 * Current debug string (manipulated by debug/appendDebug/clearDebug/getDebug/getDebugAsXMLComment)
-	 *
-	 * @var string
-	 * @access private
-	 */
-	var $debug_str = '';
+
 	/**
 	 * toggles automatic encoding of special characters as entities
 	 * (should always be true, I think)
@@ -223,13 +217,6 @@ class NUSOAPBase {
 	 * @access private
 	 */
 	var $charencoding = true;
-	/**
-	 * the debug level for this instance
-	 *
-	 * @var	integer
-	 * @access private
-	 */
-	var $debugLevel;
 
 	/**
 	 * set schema version
@@ -320,140 +307,8 @@ class NUSOAPBase {
 	 * @access	public
 	 */
 	function __construct() {
-		$this->debugLevel = $GLOBALS['_transient']['static']['nusoap_base']['globalDebugLevel'];
 	}
 
-	/**
-	 * gets the global debug level, which applies to future instances
-	 *
-	 * @return	integer	Debug level 0-9, where 0 turns off
-	 * @access	public
-	 */
-	function getGlobalDebugLevel() {
-		return $GLOBALS['_transient']['static']['nusoap_base']['globalDebugLevel'];
-	}
-
-	/**
-	 * sets the global debug level, which applies to future instances
-	 *
-	 * @param	int	$level	Debug level 0-9, where 0 turns off
-	 * @access	public
-	 */
-	function setGlobalDebugLevel($level) {
-		$GLOBALS['_transient']['static']['nusoap_base']['globalDebugLevel'] = $level;
-	}
-
-	/**
-	 * gets the debug level for this instance
-	 *
-	 * @return	int	Debug level 0-9, where 0 turns off
-	 * @access	public
-	 */
-	function getDebugLevel() {
-		return $this->debugLevel;
-	}
-
-	/**
-	 * sets the debug level for this instance
-	 *
-	 * @param	int	$level	Debug level 0-9, where 0 turns off
-	 * @access	public
-	 */
-	function setDebugLevel($level) {
-		$this->debugLevel = $level;
-	}
-
-	/**
-	 * adds debug data to the instance debug string with formatting
-	 *
-	 * @param    string $string debug data
-	 * @access   private
-	 */
-	function debug($string){
-		if ($this->debugLevel > 0) {
-			$this->appendDebug($this->getmicrotime().' '.get_class($this).": $string\n");
-		}
-	}
-
-	/**
-	 * adds debug data to the instance debug string with formatting
-	 *
-	 * @param    string $string debug data
-	 * @access   private
-	 */
-	function debugVarDump($data, $format='%s'){
-		if ($this->debugLevel > 0) {
-			$this->appendDebug($this->getmicrotime().' '.get_class($this).': '.sprintf($format, $this->varDump($data))."\n");
-		}
-	}
-
-	/**
-	 * adds debug data to the instance debug string without formatting
-	 *
-	 * @param    string $string debug data
-	 * @access   public
-	 */
-	function appendDebug($string){
-		if ($this->debugLevel > 0) {
-			// it would be nice to use a memory stream here to use
-			// memory more efficiently
-			$this->debug_str .= $string;
-		}
-	}
-
-	/**
-	 * adds debug data to the instance debug string without formatting
-	 *
-	 * @param    string $string debug data
-	 * @access   public
-	 */
-	function appendDebugVarDump($data, $format='%s'){
-		if ($this->debugLevel > 0) {
-			// it would be nice to use a memory stream here to use
-			// memory more efficiently
-			$this->debug_str .= sprintf($format, $this->varDump($data));
-		}
-	}
-
-	/**
-	 * clears the current debug data for this instance
-	 *
-	 * @access   public
-	 */
-	function clearDebug() {
-		// it would be nice to use a memory stream here to use
-		// memory more efficiently
-		$this->debug_str = '';
-	}
-
-	/**
-	 * gets the current debug data for this instance
-	 *
-	 * @return   debug data
-	 * @access   public
-	 */
-	function &getDebug() {
-		// it would be nice to use a memory stream here to use
-		// memory more efficiently
-		return $this->debug_str;
-	}
-
-	/**
-	 * gets the current debug data for this instance as an XML comment
-	 * this may change the contents of the debug data
-	 *
-	 * @return   debug data as an XML comment
-	 * @access   public
-	 */
-	function &getDebugAsXMLComment() {
-		// it would be nice to use a memory stream here to use
-		// memory more efficiently
-		while (strpos($this->debug_str, '--')) {
-			$this->debug_str = str_replace('--', '- -', $this->debug_str);
-		}
-		$ret = "<!--\n" . $this->debug_str . "\n-->";
-		return $ret;
-	}
 
 	/**
 	 * expands entities, e.g. changes '<' to '&lt;'.
@@ -528,16 +383,9 @@ class NUSOAPBase {
 	 * @access	public
 	 */
 	function serialize_val($val,$name=false,$type=false,$name_ns=false,$type_ns=false,$attributes=false,$use='encoded',$soapval=false) {
-		$this->debug("in serialize_val: name=$name, type=$type, name_ns=$name_ns, type_ns=$type_ns, use=$use, soapval=$soapval");
-		$this->appendDebugVarDump($val, 'value=%s');
-		$this->appendDebugVarDump($attributes, 'attributes=%s');
 
 		if (is_object($val) && get_class($val) == 'soapval' && (! $soapval)) {
-			$this->debug("serialize_val: serialize soapval");
 			$xml = $val->serialize($use);
-			$this->appendDebug($val->getDebug());
-			$val->clearDebug();
-			$this->debug("serialize_val of soapval returning $xml");
 			return $xml;
 		}
 		// force valid name if necessary
@@ -571,11 +419,9 @@ class NUSOAPBase {
 		}
 		// serialize null value
 		if (is_null($val)) {
-			$this->debug("serialize_val: serialize null");
 			if ($use == 'literal') {
 				// TODO: depends on minOccurs
 				$xml = "<$name$xmlns$atts/>";
-				$this->debug("serialize_val returning $xml");
 				return $xml;
 			} else {
 				if (isset($type) && isset($type_prefix)) {
@@ -584,13 +430,11 @@ class NUSOAPBase {
 					$type_str = '';
 				}
 				$xml = "<$name$xmlns$type_str$atts xsi:nil=\"true\"/>";
-				$this->debug("serialize_val returning $xml");
 				return $xml;
 			}
 		}
 		// serialize if an xsd built-in primitive type
 		if($type != '' && isset($this->typemap[$this->XMLSchemaVersion][$type])){
-			$this->debug("serialize_val: serialize xsd built-in primitive type");
 			if (is_bool($val)) {
 				if ($type == 'boolean') {
 					$val = $val ? 'true' : 'false';
@@ -602,11 +446,9 @@ class NUSOAPBase {
 			}
 			if ($use == 'literal') {
 				$xml = "<$name$xmlns$atts>$val</$name>";
-				$this->debug("serialize_val returning $xml");
 				return $xml;
 			} else {
 				$xml = "<$name$xmlns xsi:type=\"xsd:$type\"$atts>$val</$name>";
-				$this->debug("serialize_val returning $xml");
 				return $xml;
 			}
 		}
@@ -614,7 +456,6 @@ class NUSOAPBase {
 		$xml = '';
 		switch(true) {
 			case (is_bool($val) || $type == 'boolean'):
-				$this->debug("serialize_val: serialize boolean");
 				if ($type == 'boolean') {
 					$val = $val ? 'true' : 'false';
 				} elseif (! $val) {
@@ -627,7 +468,6 @@ class NUSOAPBase {
 				}
 				break;
 			case (is_int($val) || is_long($val) || $type == 'int'):
-				$this->debug("serialize_val: serialize int");
 				if ($use == 'literal') {
 					$xml .= "<$name$xmlns$atts>$val</$name>";
 				} else {
@@ -635,7 +475,6 @@ class NUSOAPBase {
 				}
 				break;
 			case (is_float($val)|| is_double($val) || $type == 'float'):
-				$this->debug("serialize_val: serialize float");
 				if ($use == 'literal') {
 					$xml .= "<$name$xmlns$atts>$val</$name>";
 				} else {
@@ -643,7 +482,6 @@ class NUSOAPBase {
 				}
 				break;
 			case (is_string($val) || $type == 'string'):
-				$this->debug("serialize_val: serialize string");
 				$val = $this->expandEntities($val);
 				if ($use == 'literal') {
 					$xml .= "<$name$xmlns$atts>$val</$name>";
@@ -652,18 +490,11 @@ class NUSOAPBase {
 				}
 				break;
 			case is_object($val):
-				$this->debug("serialize_val: serialize object");
 				if (get_class($val) == 'soapval') {
-					$this->debug("serialize_val: serialize soapval object");
 					$pXml = $val->serialize($use);
-					$this->appendDebug($val->getDebug());
-					$val->clearDebug();
 				} else {
 					if (! $name) {
 						$name = get_class($val);
-						$this->debug("In serialize_val, used class name $name as element name");
-					} else {
-						$this->debug("In serialize_val, do not override name $name for element name for class " . get_class($val));
 					}
 					foreach(get_object_vars($val) as $k => $v){
 						$pXml = isset($pXml) ? $pXml.$this->serialize_val($v,$k,false,false,false,false,$use) : $this->serialize_val($v,$k,false,false,false,false,$use);
@@ -680,12 +511,10 @@ class NUSOAPBase {
 					$xml .= "<$name$xmlns$type_str$atts>$pXml</$name>";
 				}
 				break;
-				break;
 			case (is_array($val) || $type):
 				// detect if struct or array
 				$valueType = $this->isArraySimpleOrStruct($val);
 				if($valueType=='arraySimple' || preg_match('/^ArrayOf/',$type)){
-					$this->debug("serialize_val: serialize array");
 					$i = 0;
 					if(is_array($val) && count($val)> 0){
 						foreach($val as $v){
@@ -747,7 +576,6 @@ class NUSOAPBase {
 					$xml = "<$name$xmlns$type_str$atts>".$xml."</$name>";
 				} else {
 					// got a struct
-					$this->debug("serialize_val: serialize struct");
 					if(isset($type) && isset($type_prefix)){
 						$type_str = " xsi:type=\"$type_prefix:$type\"";
 					} else {
@@ -773,11 +601,9 @@ class NUSOAPBase {
 				}
 				break;
 			default:
-				$this->debug("serialize_val: serialize unknown");
 				$xml .= 'not detected, got '.gettype($val).' for '.$val;
 				break;
 		}
-		$this->debug("serialize_val returning $xml");
 		return $xml;
 	}
 
@@ -797,12 +623,6 @@ class NUSOAPBase {
 		// TODO: add an option to automatically run utf8_encode on $body and $headers
 		// if $this->soap_defencoding is UTF-8.  Not doing this automatically allows
 		// one to send arbitrary UTF-8 characters, not just characters that map to ISO-8859-1
-
-		$this->debug("In serializeEnvelope length=" . strlen($body) . " body (max 1000 characters)=" . substr($body, 0, 1000) . " style=$style use=$use encodingStyle=$encodingStyle");
-		$this->debug("headers:");
-		$this->appendDebugVarDump($headers);
-		$this->debug("namespaces:");
-		$this->appendDebugVarDump($namespaces);
 
 		// serialize namespaces
 		$ns_string = '';
@@ -825,7 +645,6 @@ class NUSOAPBase {
 					}
 				}
 				$headers = $xml;
-				$this->debug("In serializeEnvelope, serialized array of headers to $headers");
 			}
 			$headers = "<SOAP-ENV:Header>".$headers."</SOAP-ENV:Header>";
 		}
@@ -862,7 +681,6 @@ class NUSOAPBase {
 	 */
 	function contractQname($qname){
 		// get element namespace
-		//$this->xdebug("Contract $qname");
 		if (strrpos($qname, ':')) {
 			// get unqualified name
 			$name = substr($qname, strrpos($qname, ':') + 1);
