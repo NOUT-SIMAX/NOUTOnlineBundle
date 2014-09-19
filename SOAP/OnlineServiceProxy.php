@@ -6,6 +6,7 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Exception\NOUTOnlineException;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelFolder;
@@ -180,6 +181,109 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 		$this->__clCache->save($this->__sVersionWSDL, $this->wsdl, $this->__ConfigurationDialogue->m_nDureeSession);
 	}
 
+	/**
+	 * instantiate wsdl object and parse wsdl file,
+	 * charge la wsdl depuis le cache s'il existe
+	 *
+	 * @access	public
+	 */
+	function loadWSDL() {
+		$this->wsdl = $this->_loadWSDLFromCache();
+		if (!$this->wsdl)
+		{
+			$this->wsdl = new WSDL('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
+			$this->wsdl->setCredentials($this->username, $this->password, $this->authtype, $this->certRequest);
+			$this->wsdl->fetchWSDL($this->wsdlFile);
+
+			$this->_saveWSDLInCache();
+		}
+
+		$this->checkWSDL();
+	}
+
+	/**
+	 * send the SOAP message
+	 *
+	 * Note: if the operation has multiple return values
+	 * the return value of this method will be an array
+	 * of those values.
+	 *
+	 * @param    string $msg a SOAPx4 soapmsg object
+	 * @param    string $soapaction SOAPAction value
+	 * @param    integer $timeout set connection timeout in seconds
+	 * @param	integer $response_timeout set response timeout in seconds
+	 * @return	mixed native PHP types.
+	 * @access   private
+	 */
+	function send($msg, $soapaction = '', $timeout=0, $response_timeout=30) {
+		$this->checkCookies();
+		// detect transport
+		switch(true){
+			// http(s)
+			case preg_match('/^http/',$this->endpoint):
+				if($this->persistentConnection == true && is_object($this->persistentConnection)){
+					$http =& $this->persistentConnection;
+				} else {
+					$http = new SOAPTransportHTTP($this->endpoint, $this->curl_options, $this->use_curl);
+					if ($this->persistentConnection) {
+						$http->usePersistentConnection();
+					}
+				}
+				$http->setContentType($this->getHTTPContentType(), $this->getHTTPContentTypeCharset());
+				$http->setSOAPAction($soapaction);
+				if($this->proxyhost && $this->proxyport){
+					$http->setProxy($this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword);
+				}
+				if($this->authtype != '') {
+					$http->setCredentials($this->username, $this->password, $this->authtype, array(), $this->certRequest);
+				}
+				if($this->http_encoding != ''){
+					$http->setEncoding($this->http_encoding);
+				}
+
+				$this->__StartSend();
+				if(preg_match('/^http:/',$this->endpoint)){
+					//if(strpos($this->endpoint,'http:')){
+					$this->responseData = $http->send($msg,$timeout,$response_timeout,$this->cookies);
+				} elseif(preg_match('/^https/',$this->endpoint)){
+					//} elseif(strpos($this->endpoint,'https:')){
+					//if(phpversion() == '4.3.0-dev'){
+					//$response = $http->send($msg,$timeout,$response_timeout);
+					//$this->request = $http->outgoing_payload;
+					//$this->response = $http->incoming_payload;
+					//} else
+					$this->responseData = $http->sendHTTPS($msg,$timeout,$response_timeout,$this->cookies);
+				} else {
+					$this->setError('no http/s in endpoint url');
+				}
+				$this->__StopSend();
+
+				$this->request = $http->outgoing_payload;
+				$this->response = $http->incoming_payload;
+				$this->UpdateCookies($http->incoming_cookies);
+
+				// save transport object if using persistent connections
+				if ($this->persistentConnection) {
+					if (!is_object($this->persistentConnection)) {
+						$this->persistentConnection = $http;
+					}
+				}
+
+				if($err = $http->getError()){
+					$this->setError('HTTP Error: '.$err);
+					return false;
+				} elseif($this->getError()){
+					return false;
+				} else {
+					return $this->parseResponse($http->incoming_headers, $this->responseData);
+				}
+				break;
+			default:
+				$this->setError('no transport found, or selected transport is not yet supported!');
+				return false;
+				break;
+		}
+	}
 
 
 	//---

@@ -321,26 +321,6 @@ class NUSOAPClient extends NUSOAPBase  {
 		}
 	}
 
-	/**
-	 * charge la wsdl depuis le cache si disponible
-	 * @return bool
-	 */
-	function _loadWSDLFromCache() { return false; }
-
-	/**
-	 * sauve la wsdl en cache pour usage futur
-	 */
-	function _saveWSDLInCache() {}
-
-	/**
-	 * Méthode qui marque le début du send
-	 */
-	function __StartSend() {}
-
-	/**
-	 * Méthode qui marque la fin du send
-	 */
-	function __StopSend() {}
 
 	/**
 	 * instantiate wsdl object and parse wsdl file
@@ -348,16 +328,9 @@ class NUSOAPClient extends NUSOAPBase  {
 	 * @access	public
 	 */
 	function loadWSDL() {
-		$this->wsdl = $this->_loadWSDLFromCache();
-		if (!$this->wsdl)
-		{
-			$this->wsdl = new WSDL('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
-			$this->wsdl->setCredentials($this->username, $this->password, $this->authtype, $this->certRequest);
-			$this->wsdl->fetchWSDL($this->wsdlFile);
-
-			$this->_saveWSDLInCache();
-		}
-
+		$this->wsdl = new WSDL('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
+		$this->wsdl->setCredentials($this->username, $this->password, $this->authtype, $this->certRequest);
+		$this->wsdl->fetchWSDL($this->wsdlFile);
 		$this->checkWSDL();
 	}
 
@@ -419,7 +392,6 @@ class NUSOAPClient extends NUSOAPBase  {
 					$http->setEncoding($this->http_encoding);
 				}
 
-				$this->__StartSend();
 				if(preg_match('/^http:/',$this->endpoint)){
 					//if(strpos($this->endpoint,'http:')){
 					$this->responseData = $http->send($msg,$timeout,$response_timeout,$this->cookies);
@@ -434,7 +406,6 @@ class NUSOAPClient extends NUSOAPBase  {
 				} else {
 					$this->setError('no http/s in endpoint url');
 				}
-				$this->__StopSend();
 
 				$this->request = $http->outgoing_payload;
 				$this->response = $http->incoming_payload;
