@@ -61,7 +61,6 @@ class NUSOAPClient extends NUSOAPBase  {
 	var $curl_options = array();	// User-specified cURL options
 	var $bindingType = '';			// WSDL operation binding type
 	var $use_curl = false;			// whether to always try to use cURL
-	var $parse_response = true;     // whether to parse the response
 
 	/*
 	 * fault related variables
@@ -434,37 +433,8 @@ class NUSOAPClient extends NUSOAPBase  {
 		}
 	}
 
-	/**
-	 * processes SOAP message returned from server
-	 *
-	 * @param	array	$headers	The HTTP headers
-	 * @param	string	$data		unprocessed response data from server
-	 * @return	mixed	value of the message, decoded into a PHP type
-	 * @access   private
-	 */
-	function parseResponse($headers, $data) {
-		if (!$this->parse_response)
-			return $this->response;
-
-		if (!isset($headers['content-type'])) {
-			$this->setError('Response not of type text/xml (no content-type header)');
-			return false;
-		}
-		if (!strstr($headers['content-type'], 'text/xml')) {
-			$this->setError('Response not of type text/xml: ' . $headers['content-type']);
-			return false;
-		}
-		if (strpos($headers['content-type'], '=')) {
-			$enc = str_replace('"', '', substr(strstr($headers["content-type"], '='), 1));
-			if(preg_match('/^(ISO-8859-1|US-ASCII|UTF-8)$/i',$enc)){
-				$this->xml_encoding = strtoupper($enc);
-			} else {
-				$this->xml_encoding = 'US-ASCII';
-			}
-		} else {
-			// should be US-ASCII for HTTP 1.0 or ISO-8859-1 for HTTP 1.1
-			$this->xml_encoding = 'ISO-8859-1';
-		}
+	protected function parseData($data)
+	{
 		$parser = new NUSOAPParser($data,$this->xml_encoding,$this->operation,$this->decode_utf8);
 		// if parse errors
 		if($errstr = $parser->getError()){
@@ -486,6 +456,38 @@ class NUSOAPClient extends NUSOAPBase  {
 			// return decode message
 			return $return;
 		}
+	}
+
+	/**
+	 * processes SOAP message returned from server
+	 *
+	 * @param	array	$headers	The HTTP headers
+	 * @param	string	$data		unprocessed response data from server
+	 * @return	mixed	value of the message, decoded into a PHP type
+	 * @access   private
+	 */
+	function parseResponse($headers, $data) {
+		if (!isset($headers['content-type'])) {
+			$this->setError('Response not of type text/xml (no content-type header)');
+			return false;
+		}
+		if (!strstr($headers['content-type'], 'text/xml')) {
+			$this->setError('Response not of type text/xml: ' . $headers['content-type']);
+			return false;
+		}
+		if (strpos($headers['content-type'], '=')) {
+			$enc = str_replace('"', '', substr(strstr($headers["content-type"], '='), 1));
+			if(preg_match('/^(ISO-8859-1|US-ASCII|UTF-8)$/i',$enc)){
+				$this->xml_encoding = strtoupper($enc);
+			} else {
+				$this->xml_encoding = 'US-ASCII';
+			}
+		} else {
+			// should be US-ASCII for HTTP 1.0 or ISO-8859-1 for HTTP 1.1
+			$this->xml_encoding = 'ISO-8859-1';
+		}
+
+		return $this->parseData($data);
 	}
 
 	/**

@@ -83,7 +83,6 @@ class ModifiedNuSoapClient extends SOAPClient
 		//http://www.w3.org/2002/07/soap-translation/soap12-part1.html#soapfault
 		if(is_array($mReturn) && isset($mReturn['Code']) && isset($mReturn['Reason']))
 		{
-			$this->debug('got fault');
 			$this->fault = true;
 
 			$sErrCode = -1;
@@ -127,37 +126,30 @@ class ModifiedNuSoapClient extends SOAPClient
 		return $mReturn;
 	}
     //---
-	
-	
-	/**
-	* Surchargé pour modification des content type de retour "application/soap+xml"
-	* 
-	* processes SOAP message returned from server
-	*
-	* @param	array	$headers	The HTTP headers
-	* @param	string	$data		unprocessed response data from server
-	* @return	mixed	value of the message, decoded into a PHP type
-	* @access   public
-	* 
-	* * @see lib/NUSOAPClient#parseResponse
-	*/
-    public function parseResponse($headers, $data) {
-	    if (!$this->parse_response)
-		    return $this->response;
 
-		$this->debug('Entering parseResponse() for data of length ' . strlen($data) . ' headers:');
-		$this->appendDebug($this->varDump($headers));
-    	if (!isset($headers['content-type'])) {
+	/**
+	 * Surchargé pour modification des content type de retour "application/soap+xml"
+	 *
+	 * processes SOAP message returned from server
+	 *
+	 * @param	array	$headers	The HTTP headers
+	 * @param	string	$data		unprocessed response data from server
+	 * @return	mixed	value of the message, decoded into a PHP type
+	 * @access   public
+	 *
+	 * * @see lib/NUSOAPClient#parseResponse
+	 */
+	public function parseResponse($headers, $data) {
+		if (!isset($headers['content-type'])) {
 			$this->setError('Response not of type text/xml (no content-type header)');
 			return false;
-    	}
-		if (!strstr($headers['content-type'], 'text/xml') &&  !strstr($headers['content-type'], 'application/soap+xml')) {
+		}
+		if (!strstr($headers['content-type'], 'text/xml') && !strstr($headers['content-type'], 'application/soap+xml')) {
 			$this->setError('Response not of type text/xml: ' . $headers['content-type']);
 			return false;
 		}
 		if (strpos($headers['content-type'], '=')) {
 			$enc = str_replace('"', '', substr(strstr($headers["content-type"], '='), 1));
-			$this->debug('Got response encoding: ' . $enc);
 			if(preg_match('/^(ISO-8859-1|US-ASCII|UTF-8)$/i',$enc)){
 				$this->xml_encoding = strtoupper($enc);
 			} else {
@@ -167,31 +159,9 @@ class ModifiedNuSoapClient extends SOAPClient
 			// should be US-ASCII for HTTP 1.0 or ISO-8859-1 for HTTP 1.1
 			$this->xml_encoding = 'ISO-8859-1';
 		}
-		$this->debug('Use encoding: ' . $this->xml_encoding . ' when creating NUSOAPParser');
-		$parser = new NUSOAPParser($data,$this->xml_encoding,$this->operation,$this->decode_utf8);
-		// add parser debug data to our debug
-		$this->appendDebug($parser->getDebug());
-		// if parse errors
-		if($errstr = $parser->getError()){
-			$this->setError( $errstr);
-			// destroy the parser object
-			unset($parser);
-			return false;
-		} else {
-			// get SOAP headers
-			$this->responseHeaders = $parser->getHeaders();
-			// get SOAP headers
-			$this->responseHeader = $parser->get_soapheader();
-			// get decoded message
-			$return = $parser->get_soapbody();
-            // add document for doclit support
-            $this->document = $parser->document;
-			// destroy the parser object
-			unset($parser);
-			// return decode message
-			return $return;
-		}
-	 }
-    //---
+
+		return $this->parseData($data);
+	}
+	//---
 }
 //****

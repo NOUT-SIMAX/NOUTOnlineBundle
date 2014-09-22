@@ -101,8 +101,6 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	private $__sVersionWSDL;
 	private $__clCache;
 
-
-
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
      * @param $sEndpoint
@@ -116,7 +114,6 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
         parent::__construct($clConfig->m_sEndPoint, $clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
 
 	    $this->__ConfigurationDialogue = $clConfig;
-	    $this->parse_response = false; //la réponse parsée ne nous interresse pas
 
         $this->forceEndpoint = $clConfig->m_sProtocolPrefix . $clConfig->m_sHost . ':' . $clConfig->m_nPort; //on force l'ip et le port du fichier config
         // on force le timeout a 300s
@@ -278,7 +275,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 				} elseif($this->getError()){
 					return false;
 				} else {
-					return $this->parseResponse($http->incoming_headers, $this->responseData);
+					return $this->_parseResponse($http->incoming_headers, $this->responseData, $http->response_status_line);
 				}
 				break;
 			default:
@@ -287,6 +284,27 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 				break;
 		}
 	}
+
+	/**
+	 * Surchargé pour modification des content type de retour "application/soap+xml"
+	 *
+	 * processes SOAP message returned from server
+	 *
+	 * @param	array	$headers	The HTTP headers
+	 * @param	string	$data		unprocessed response data from server
+	 * @return	mixed	value of the message, decoded into a PHP type
+	 * @access   public
+	 *
+	 * * @see lib/NUSOAPClient#parseResponse
+	 */
+	public function _parseResponse($headers, $data, $response_status_line) {
+		if (strncmp($response_status_line, 'HTTP/1.1 500 ', strlen('HTTP/1.1 500 '))!=0)
+			return $this->response;
+
+		return parent::parseResponse($headers, $data);
+	}
+	//---
+
 
 
 	//---
