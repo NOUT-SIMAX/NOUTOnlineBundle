@@ -221,6 +221,9 @@ class DefaultController extends Controller
 			$this->_VarDumpRes('GetTokenSession', $clReponseXML);
 			$this->_VarDumpRes('GetTokenSession', $clReponseXML->bIsFault());
 			$this->_VarDumpRes('GetTokenSession', $clReponseXML->getTabError());
+
+			$this->_VarDumpRes('GetTokenSession', $clReponseXML->getNumError());
+			$this->_VarDumpRes('GetTokenSession', $clReponseXML->getCatError());
 		}
 
 

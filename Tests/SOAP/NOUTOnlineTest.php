@@ -62,10 +62,14 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected $m_clConfig;
 	protected $m_clNOUTOnline;
 
+	protected $m_sService='127.0.0.1';
+	protected $m_sPlagePort='806';
+
+
 	public function __construct()
 	{
 		//on instancie la configuration de NOUTOnline
-		$sService = 'http://127.0.0.1:8062';
+		$sService = 'http://'.$this->m_sService.':'.$this->m_sPlagePort.'2';
 		//on récupére le prefixe (http | https);
 		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
 		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
@@ -86,6 +90,25 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//ici on instancie NOUTOnline
 		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, $clLogger, null);
 	}
+
+	protected function _nGetNbSessionEnCours()
+	{
+		$opts = array(
+			'http'=>array(
+				'method'=>"GET",
+				'header'=>"Authorization:	Basic YWRtaW46YWRtaW4=\r\n"
+			)
+		);
+
+		$context = stream_context_create($opts);
+		$sRequete = 'http://'.$this->m_sService.':'.$this->m_sPlagePort.'0/parametre/etat/session/liste/get';
+
+		$json = file_get_contents($sRequete, false, $context);
+		$Tab = json_decode($json);
+
+		return count($Tab);
+	}
+
 
 	/**
 	 * renvoi le username token avec les bonnes infomations pour la connexion
@@ -167,15 +190,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		return $sTokenSession;
 	}
 
-
-	/**
-	 * Test de la fermeture d'une session
-	 * @return boolean
-	 */
-	public function testDisconnect_OK()
+	protected function _Disconnect($sTokenSession, $nNbSession)
 	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
 		//mot de passe faux
 		$nExceptionCode=0;
 		try{
@@ -186,22 +202,35 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 			$nExceptionCode=$e->getCode();
 		}
 		$this->assertEquals(0, $nExceptionCode);
+		$this->assertEquals(false, $this->m_clNOUTOnline->getXMLResponseWS()->bIsFault());
 
-		return !$this->m_clNOUTOnline->getXMLResponseWS()->bIsFault();
+		$this->assertEquals($nNbSession, $this->_nGetNbSessionEnCours(), "Session $sTokenSession non fermee");
 	}
 
+
 	/**
-	 * Valide la dernière action du contexte
-	 * @param $sTokenSession
-	 * @param $nIDContexteAction
+	 * Test de la fermeture d'une session
+	 * @return boolean
 	 */
-	protected function _Validate($sTokenSession, $nIDContexteAction)
+	public function testDisconnect_OK()
+	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$this->_Disconnect($sTokenSession, $nNbSession);
+	}
+
+
+	protected function __CallProxyFunction($function, $Param, $sTokenSession, $sContexteAction, $bTestContexte, $sReturnType)
 	{
 		$nErreur=0;
 		$nCategorie=0;
 		try
 		{
-			$clReponseWS = $this->m_clNOUTOnline->validate($this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
+			if (is_null($Param))
+				$clReponseWS = $this->m_clNOUTOnline->$function($this->_aGetTabHeader($sTokenSession, $sContexteAction));
+			else
+				$clReponseWS = $this->m_clNOUTOnline->$function($Param, $this->_aGetTabHeader($sTokenSession, $sContexteAction));
 		}
 		catch(\Exception $e)
 		{
@@ -210,11 +239,32 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 			$this->assertEquals(true, $clReponseWS->bIsFault());
 			$nErreur = $clReponseWS->getNumError();
 			$nCategorie = $clReponseWS->getCatError();
+
+			echo $clReponseWS->sGetXML();
 		}
 
 		$this->assertEquals(false, $clReponseWS->bIsFault());
 		$this->assertEquals(0, $nErreur);
 		$this->assertEquals(0, $nCategorie);
+
+		if ($bTestContexte)
+			$this->assertNotEquals('', $clReponseWS->sGetActionContext());
+
+		if (!is_null($sReturnType))
+			$this->assertEquals($sReturnType, $clReponseWS->sGetReturnType());
+
+		return $clReponseWS;
+	}
+
+
+	/**
+	 * Valide la dernière action du contexte
+	 * @param $sTokenSession
+	 * @param $nIDContexteAction
+	 */
+	protected function _Validate($sTokenSession, $nIDContexteAction)
+	{
+		return $this->__CallProxyFunction('validate', null, $sTokenSession, $nIDContexteAction, false, null);
 	}
 
 	/**
@@ -227,24 +277,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clConfirm = new ConfirmResponse();
 		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->ConfirmResponse($clConfirm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
+		return $this->__CallProxyFunction('ConfirmResponse', $clConfirm, $sTokenSession, $sActionContexte, false, null);
 	}
 
 
@@ -254,30 +287,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 * @param $nIDContexteAction
 	 * @param $bTout
 	 */
-	protected function _Cancel($sTokenSession, $nIDContexteAction, $bTout)
+	protected function _sCancel($sTokenSession, $sActionContexte, $bTout)
 	{
 		$clCancel = new Cancel();
 		$clCancel->ByUser=1;
 		$clCancel->Context=$bTout ? 1 : 0;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->cancel($clCancel, $this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
+		return $this->__CallProxyFunction('cancel', $clCancel, $sTokenSession, $sActionContexte, false, null);
 	}
 
 
@@ -286,6 +302,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testDisplay_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = 'utilisateur';
@@ -295,34 +312,14 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamDisplay->Table = $form;
 		$clParamDisplay->ParamXML = '<'.$form.'>'.$id.'</'.$form.'>';
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->display($clParamDisplay, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
+		$clReponseWS = $this->__CallProxyFunction('display', $clParamDisplay, $sTokenSession, '', true, XMLResponseWS::RETURNTYPE_RECORD);
 		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	/**
@@ -337,35 +334,15 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamPrint->Table = $form;
 		$clParamPrint->ParamXML = '<id_'.$form.'>'.$id.'</id_'.$form.'>';
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->printAction($clParamPrint, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		$this->assertNotEquals('', $clReponseWS->sGetActionContext());
-		return $clReponseWS;
+		return $this->__CallProxyFunction('printAction', $clParamPrint, $sTokenSession, '', true, null);
 	}
 
 	public function testPrint_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$clReponseWS = $this->_sPrint($sTokenSession, 'utilisateur', 2);
-
+		$clReponseWS = $this->_sPrint($sTokenSession, '1169', 2);
 
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
@@ -373,12 +350,12 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clData = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
 
-		$sXML = file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/utilisateur_2.html');
+		$sXML = utf8_encode(file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/utilisateur_2.html'));
+		$sXML=utf8_decode(str_replace('§§DateDuJour§§', date('d/m/Y') , $sXML));
 
 		$this->assertEquals(str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$sXML), str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$html_raw));
 
-		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	/**
@@ -388,36 +365,16 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _sHasChanged($sTokenSession, $sContexteAction)
 	{
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->hasChanged($this->_aGetTabHeader($sTokenSession, $sContexteAction));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_VALUE, $clReponseWS->sGetReturnType());
-
-		$this->assertNotEquals('', $clReponseWS->sGetActionContext());
-		return $clReponseWS;
+		return $this->__CallProxyFunction('hasChanged', null, $sTokenSession, $sContexteAction, true, XMLResponseWS::RETURNTYPE_VALUE);
 	}
 
 
 	public function testHasChanged_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$clReponseWS = $this->__sCreate($sTokenSession, '41296233836619');
+		$clReponseWS = $this->__sCreate($sTokenSession, '41296233836619',  XMLResponseWS::RETURNTYPE_RECORD);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 //on parse le XML pour avoir les enregistrement
@@ -455,7 +412,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$sXML), str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$html_raw));
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 
 	}
 
@@ -468,30 +425,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamSelectPrintTemplate = new SelectPrintTemplate();
 		$clParamSelectPrintTemplate->Template = $modele;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->selectPrintTemplate($clParamSelectPrintTemplate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		return $clReponseWS;
+		return $this->__CallProxyFunction('selectPrintTemplate', $clParamSelectPrintTemplate, $sTokenSession, $sActionContexte, false, null);
 	}
 
 
 	public function testSelectPrintTemplate_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		//GUID : "1DJVR37SET", 50165053649373 [F_TABLEAU]
@@ -526,11 +466,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clData = $clReponseWSParserSelect->clGetData(0);
 		$html_raw = $clData->sGetRaw();
 
-		$sXML = file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/form avec me.html');
+		$sXML = utf8_encode(file_get_contents('./src/NOUT/Bundle/NOUTOnlineBundle/Resources/public/test/print/form avec me.html'));
+		$sXML=utf8_decode(str_replace('§§DateDuJour§§', date('d/m/Y') , $sXML));
+
 		$this->assertEquals(str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$sXML), str_replace(array(' ', "\t", "\r", "\n"), array("", "", "", ""),$html_raw));
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	/**
@@ -538,6 +480,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGetColInRecord_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$clParamGCR = new GetColInRecord();
@@ -545,35 +488,17 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamGCR->Record = 2;
 		$clParamGCR->WantContent = 1;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getColInRecord($clParamGCR, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
 
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
+		$clReponseWS = $this->__CallProxyFunction('getColInRecord', $clParamGCR, $sTokenSession, '', true, null);
 
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sExecute($sTokenSession, $sSentence)
@@ -581,29 +506,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamExecute = new Execute();
 		$clParamExecute->Sentence = $sSentence;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->Execute($clParamExecute, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
-		$this->assertNotEquals('', $clReponseWS->sGetActionContext());
-
-		return $clReponseWS;
+		return $this->__CallProxyFunction('Execute', $clParamExecute, $sTokenSession, '', true, null);
 	}
 
 	/**
@@ -611,6 +514,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testExecute_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$clReponseWS = $this->_sExecute($sTokenSession, 'liste utilisateur');
@@ -619,7 +523,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Validate($sTokenSession, $clReponseWS->sGetActionContext());
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	/**
@@ -632,27 +536,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->listAction($clParamList, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		return $clReponseWS;
+		return $this->__CallProxyFunction('listAction', $clParamList, $sTokenSession, '', true, null);
 	}
 
 	/**
@@ -660,6 +544,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testList_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = 'utilisateur';
@@ -668,13 +553,12 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sDrillThrough($sTokenSession, $sActionContext, $sColonne, $sEnreg)
@@ -683,24 +567,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamDrillThrough->Record = $sEnreg;
 		$clParamDrillThrough->Column = $sColonne;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->drillThrough($clParamDrillThrough, $this->_aGetTabHeader($sTokenSession, $sActionContext));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
+		$clReponseWS =  $this->__CallProxyFunction('drillThrough', $clParamDrillThrough, $sTokenSession, $sActionContext, true, null);
 
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
 		$this->assertEquals(XMLResponseWS::RETURNTYPE_RECORD, $clReponseWS->sGetReturnType());
 
 		return $clReponseWS;
@@ -711,8 +579,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	public function testDrillThrough_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
-
 
 		//execute
 		$clReponseWSList = $this->_sExecute($sTokenSession, 'Afficher Nb Jour d\'absence par contact');
@@ -734,13 +602,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexteDrill = $clReponseWSDrill->sGetActionContext();
 
 		//annulation de la liste
-		$this->_sCancel($sTokenSession, $sActionContexte);
+		$this->_sCancel($sTokenSession, $sActionContexte, false);
 
 		if ($sActionContexte != $sActionContexteDrill)
-			$this->_sCancel($sTokenSession, $sActionContexteDrill);
+			$this->_sCancel($sTokenSession, $sActionContexteDrill, false);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 
 	}
 
@@ -759,25 +627,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		)
 		;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWSCalcul = $this->m_clNOUTOnline->getCalculation($clParamGetCalculation, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWSCalcul = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWSCalcul->bIsFault());
-			$nErreur = $clReponseWSCalcul->getNumError();
-			$nCategorie = $clReponseWSCalcul->getCatError();
-		}
-		$this->assertEquals(false, $clReponseWSCalcul->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		return $clReponseWSCalcul;
+		return  $this->__CallProxyFunction('getCalculation', $clParamGetCalculation, $sTokenSession, $sActionContexte, true, null);
 	}
 
 	/**
@@ -785,6 +635,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGetCalculation_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = 'utilisateur';
@@ -815,7 +666,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sRequest($sTokenSession, $table, $sCondList)
@@ -824,32 +675,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamRequest->CondList = $sCondList;
 		$clParamRequest->Table = $table;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->request($clParamRequest, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_LIST, $clReponseWS->sGetReturnType());
-
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('request', $clParamRequest, $sTokenSession, '', false, XMLResponseWS::RETURNTYPE_LIST);
 	}
 
 	/**
@@ -857,6 +683,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testRequest_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$clFileNPI = new ConditionFileNPI();
@@ -873,7 +700,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sRequestParam($sTokenSession, $table, $sCondList)
@@ -882,33 +709,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamRequest->CondList = $sCondList;
 		$clParamRequest->Table = $table;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->requestParam($clParamRequest, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_LIST, $clReponseWS->sGetReturnType());
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('requestParam', $clParamRequest, $sTokenSession, '', false, XMLResponseWS::RETURNTYPE_LIST);
 	}
 
 
 	public function testRequestParam_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$clFileNPI = new ConditionFileNPI();
@@ -924,7 +731,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sSearch($sTokenSession, $form)
@@ -932,35 +739,12 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamSearch = new Search();
 		$clParamSearch->Table = $form;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->listAction($clParamSearch, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('search', $clParamSearch, $sTokenSession, '', true, XMLResponseWS::RETURNTYPE_LIST);
 	}
 
 	public function testSearch_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = 'utilisateur';
@@ -969,38 +753,19 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on valide le contexte
-		$this->_Cancel($sTokenSession, $sActionContexte, false);
+		$this->_sCancel($sTokenSession, $sActionContexte, false);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
-	protected function __sCreate($sTokenSession, $form)
+	protected function __sCreate($sTokenSession, $form, $sTypeRetourAttendu)
 	{
 		//l'action create
 		$clParamCreate = new Create();
 		$clParamCreate->Table = $form;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->create($clParamCreate, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('create', $clParamCreate, $sTokenSession, '', true, $sTypeRetourAttendu);
 	}
 
 
@@ -1016,31 +781,12 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$clParamUpdate->UpdateData.="</id_$form></xml>";
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('update', $clParamUpdate, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_RECORD);
 	}
 
 	protected function _sCreate($sTokenSession, $form, $colonne)
 	{
-		$clReponseWS = $this->__sCreate( $sTokenSession, $form);
+		$clReponseWS = $this->__sCreate( $sTokenSession, $form, XMLResponseWS::RETURNTYPE_RECORD);
 
 
 		//vérification du contexte d'action
@@ -1068,6 +814,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	public function testCreate_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = '41296233836619'; //formulaire avec liste images
@@ -1076,9 +823,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sIDEnreg = $this->_sCreate($sTokenSession, $form, $colonne);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
-
-		return $sIDEnreg;
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sSelectForm($sTokenSession, $sActionContexte, $form)
@@ -1086,38 +831,18 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamSelectForm = new SelectForm();
 		$clParamSelectForm->Form = $form;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->selectForm($clParamSelectForm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_RECORD, $clReponseWS->sGetReturnType());
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('selectForm', $clParamSelectForm, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_RECORD);
 	}
 
 	public function testSelectForm_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = '48918773563102';
 
-		$clReponseXML = $this->__sCreate($sTokenSession, $form);
+		$clReponseXML = $this->__sCreate($sTokenSession, $form, XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION);
 		$sActionContexte = $clReponseXML->sGetActionContext();
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION, $clReponseXML->sGetReturnType());
 
 		//on parse le XML pour avoir les enregistrement
 		$clReponseWSParser = new ReponseWSParser();
@@ -1129,7 +854,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_sSelectForm($sTokenSession, $sActionContexte, $TabIDEnreg[0]);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sModify($sTokenSession, $form, $id)
@@ -1138,35 +863,12 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamModify->Table = $form;
 		$clParamModify->ParamXML = "<id_$form>$id</id_$form>";
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->modify($clParamModify, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('modify', $clParamModify, $sTokenSession, '', true, XMLResponseWS::RETURNTYPE_RECORD);
 	}
 
 	public function testModify_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = '41296233836619'; //formulaire avec liste images
@@ -1194,7 +896,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Validate($sTokenSession, $sActionContexte);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	protected function _sDelete($sTokenSession, $form, $id)
@@ -1203,53 +905,90 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clParamDelete->Table = $form;
 		$clParamDelete->ParamXML="<id_$form>".$id."</id_$form>";
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->delete($clParamDelete, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('delete', $clParamDelete, $sTokenSession, '', true, XMLResponseWS::RETURNTYPE_MESSAGEBOX);
 	}
 
 	public function testDelete_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$form = '41296233836619'; //formulaire avec liste images
 		$colonne = '45208949043557';
-		$sIDEnreg = $this->_sCreate($form, $colonne, $sTokenSession);
+		$sIDEnreg = $this->_sCreate($sTokenSession, $form, $colonne);
 
 		//l'action delete
 		$clReponseWS = $this->_sDelete($sTokenSession, $form, $sIDEnreg);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_MESSAGEBOX, $clReponseWS->sGetReturnType());
-
 		//on valide le contexte
 		$this->_ConfirmResponse($sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
+
+	protected function _sEnterReorderListMode($sTokenSession, $sActionContexte)
+	{
+		return  $this->__CallProxyFunction('enterReorderListMode', null, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_VALUE);
+	}
+
+
+	public function testOrderList_OK()
+	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		//il faut commencer par réordonner la liste
+		$this->_sExecute($sTokenSession, '221569603630667');
+/*
+		//on affiche la liste
+		$clReponseList = $this->_sList($sTokenSession, '228261139523058');
+		//on parse le XML pour avoir les enregistrement
+		$clReponseWSParser = new ReponseWSParser();
+		$clReponseWSParser->InitFromXmlXsd($clReponseList);
+		$tabEnregTableauOrigine = $clReponseWSParser->GetTabEnregTableau();
+		$ListeEnregOrig=implode('|', array_slice($tabEnregTableauOrigine->GetTabIDEnreg(), 0, 5));
+
+
+		$clReponseEnter = $this->_sEnterReorderListMode($sTokenSession, $clReponseList->sGetActionContext());
+		$this->assertEquals(1, $clReponseEnter->getValue());
+
+
+		$tabSetOrder = new EnregTableauArray();
+		$tabSetOrder->Add($tabEnregTableauOrigine->nGetIDTableau(3), $tabEnregTableauOrigine->nGetIDEnreg(3));
+		$tabSetOrder->Add($tabEnregTableauOrigine->nGetIDTableau(2), $tabEnregTableauOrigine->nGetIDEnreg(2));
+		$tabSetOrder->Add($tabEnregTableauOrigine->nGetIDTableau(1), $tabEnregTableauOrigine->nGetIDEnreg(1));
+
+		$clReponseSetOrder = $this->_sSetOrderList($sTokenSession, $clReponseList->sGetActionContext(), $tabSetOrder, 1);
+
+		$tabReorder = new EnregTableauArray();
+		$tabReorder->Add($tabEnregTableauOrigine->nGetIDTableau(0), $tabEnregTableauOrigine->nGetIDEnreg(0));
+
+		$clReponseSetOrder = $this->_sReOrderList($sTokenSession, $clReponseList->sGetActionContext(), $tabReorder, 4, ReorderList::MOVE_DOWN);
+
+		//<items>218610348012442|225220302686986|220504428595852|227775829887743</items><offset>0</offset>
+*/
+		/*
+				$sIDEnreg = $this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
+
+				//ici il faut faire le delete
+				$clReponseWS = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $sIDEnreg);
+				$sActionContexte = $clReponseWS->sGetActionContext();
+
+				//on valide
+				if ($clReponseWS->sGetReturnType()==XMLResponseWS::RETURNTYPE_MESSAGEBOX)
+				{
+					//il faut confirmer la réponse
+					$this->_sConfirmResponse($OnlineProxy, $sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
+				}
+		*/
+
+
+		//on déconnecte
+		$this->_Disconnect($sTokenSession, $nNbSession);
+	}
+
 
 	protected function _sGetPlanningInfo($sTokenSession, $Resource, $StartTime, $EndTime)
 	{
@@ -1258,35 +997,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clPlanningInfo->StartTime = $StartTime;
 		$clPlanningInfo->EndTime = $EndTime;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getPlanningInfo($clPlanningInfo, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du type de retour
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_PLANNING, $clReponseWS->sGetReturnType());
-
-		return $clReponseWS;
+		return  $this->__CallProxyFunction('getPlanningInfo', $clPlanningInfo, $sTokenSession, '', false, XMLResponseWS::RETURNTYPE_PLANNING);
 	}
 
 
 	public function testGetPlanningInfo_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		//l'action getPlanningInfo
@@ -1298,99 +1015,54 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertNotEmpty($clReponseWSParser->m_TabEventPlanning);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 
 	public function testGetStartAutomatism_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-
-		$clParamStart = new GetStartAutomatism();
-
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getStartAutomatism($clParamStart, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
+		$clReponseWS = $this->__CallProxyFunction('getStartAutomatism', new GetStartAutomatism(), $sTokenSession, '', true, null);
 
 		//on valide le contexte
-		$this->_Cancel($sTokenSession, $sActionContexte, false);
+		$this->_sCancel($sTokenSession, $clReponseWS->sGetActionContext(), false);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
+
+	public function testGetEndAutomatism_OK()
+	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$clReponseWS = $this->__CallProxyFunction('getEndAutomatism', new GetEndAutomatism(), $sTokenSession, '', true, null);
+
+		//on valide le contexte
+		$this->_sCancel($sTokenSession, $clReponseWS->sGetActionContext(), false);
+
+		//on déconnecte
+		$this->_Disconnect($sTokenSession, $nNbSession);
+	}
+
 
 
 	public function testGetTemporalAutomatism_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getTemporalAutomatism($this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_EMPTY, $clReponseWS->sGetReturnType());
+		$this->__CallProxyFunction('getTemporalAutomatism', null, $sTokenSession, '', false, XMLResponseWS::RETURNTYPE_EMPTY);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 	public function testGetLanguages_OK()
 	{
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getLanguages($this->_aGetTabHeader(''));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_EXCEPTION, $clReponseWS->sGetReturnType());
+		$clReponseWS = $this->__CallProxyFunction('getLanguages', null, '', '', false, XMLResponseWS::RETURNTYPE_EXCEPTION);
 
 		$tabLanguages = $clReponseWS->GetTabLanguages();
 		sort($tabLanguages);
@@ -1408,77 +1080,21 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetTableChild_OK()
 	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
-
 
 		$clTableChildParam = new GetTableChild();
 		$clTableChildParam->Table = '48918773563102';
 		$clTableChildParam->Recursive = 1;
 		$clTableChildParam->ReadOnly = 1;
 
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getTableChild($clTableChildParam, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-		$this->assertEquals(XMLResponseWS::RETURNTYPE_LIST, $clReponseWS->sGetReturnType());
+		$this->__CallProxyFunction('getTableChild', $clTableChildParam, $sTokenSession, '', false, XMLResponseWS::RETURNTYPE_LIST);
 
 		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
+		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
 
-
-	public function testGetEndAutomatism_OK()
-	{
-		$sTokenSession = $this->testGetTokenSession_OK();
-
-
-		$clParamEnd = new GetEndAutomatism();
-
-		$nErreur=0;
-		$nCategorie=0;
-		try
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getEndAutomatism($clParamEnd, $this->_aGetTabHeader($sTokenSession));
-		}
-		catch(\Exception $e)
-		{
-			$clReponseWS = $this->m_clNOUTOnline->getXMLResponseWS();
-
-			$this->assertEquals(true, $clReponseWS->bIsFault());
-			$nErreur = $clReponseWS->getNumError();
-			$nCategorie = $clReponseWS->getCatError();
-		}
-
-
-		$this->assertEquals(false, $clReponseWS->bIsFault());
-		$this->assertEquals(0, $nErreur);
-		$this->assertEquals(0, $nCategorie);
-
-		//vérification du contexte d'action
-		$sActionContexte = $clReponseWS->sGetActionContext();
-		$this->assertNotEquals('', $sActionContexte);
-
-		//on valide le contexte
-		$this->_Cancel($sTokenSession, $sActionContexte, false);
-
-		//on déconnecte
-		$this->testDisconnect_OK($sTokenSession);
-	}
 
 
 

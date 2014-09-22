@@ -10,8 +10,14 @@ class DefaultControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/hello/Fabien');
+        $crawler = $client->request('GET', 'app.php/online/test');
 
-        $this->assertTrue($crawler->filter('html:contains("Hello Fabien")')->count() > 0);
+	    //echo $crawler->html();
+
+	    $nNb = $crawler->filter('html:contains("NOUTOnline")')->count();
+	    echo "\n\nNb NOUTOnline = ".$nNb;
+
+        $this->assertTrue($nNb > 0);
+
     }
 }
