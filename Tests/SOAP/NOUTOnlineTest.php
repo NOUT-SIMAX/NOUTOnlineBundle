@@ -95,7 +95,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$monologger->pushHandler(new StreamHandler(__DIR__.'/phpunit.log', Logger::DEBUG));
 
 		//le logger
-		$clLogger = new NOUTOnlineLogger($monologger, true);
+		$clLogger = new NOUTOnlineLogger($monologger, false);
 
 		//ici on instancie NOUTOnline
 		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, $clLogger, null);
