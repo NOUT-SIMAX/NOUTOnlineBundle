@@ -1364,20 +1364,6 @@ class DefaultController extends Controller
 
 		//<items>218610348012442|225220302686986|220504428595852|227775829887743</items><offset>0</offset>
 
-/*
-		$sIDEnreg = $this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
-
-		//ici il faut faire le delete
-		$clReponseWS = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $sIDEnreg);
-		$sActionContexte = $clReponseWS->sGetActionContext();
-
-		//on valide
-		if ($clReponseWS->sGetReturnType()==XMLResponseWS::RETURNTYPE_MESSAGEBOX)
-		{
-			//il faut confirmer la réponse
-			$this->_sConfirmResponse($OnlineProxy, $sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
-		}
-*/
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
 

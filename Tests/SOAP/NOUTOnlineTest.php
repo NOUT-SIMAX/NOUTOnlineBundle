@@ -9,6 +9,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
@@ -17,6 +19,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
@@ -84,8 +89,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$this->m_clConfig = new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix);
 
+		// Create the logger
+		$monologger = new Logger('phpunit_log');
+		// Now add some handlers
+		$monologger->pushHandler(new StreamHandler(__DIR__.'/phpunit.log', Logger::DEBUG));
+
 		//le logger
-		$clLogger = new NOUTOnlineLogger(null, false);
+		$clLogger = new NOUTOnlineLogger($monologger, true);
 
 		//ici on instancie NOUTOnline
 		$this->m_clNOUTOnline = new OnlineServiceProxy($this->m_clConfig, $clLogger, null);
@@ -501,12 +511,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
-	protected function _sExecute($sTokenSession, $sSentence)
+	protected function _sExecute($sTokenSession, $sSentence, $nIDAction, $bTestContexte)
 	{
 		$clParamExecute = new Execute();
 		$clParamExecute->Sentence = $sSentence;
+		$clParamExecute->ID = $nIDAction;
 
-		return $this->__CallProxyFunction('Execute', $clParamExecute, $sTokenSession, '', true, null);
+		return $this->__CallProxyFunction('Execute', $clParamExecute, $sTokenSession, '', $bTestContexte, null);
 	}
 
 	/**
@@ -517,7 +528,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$clReponseWS = $this->_sExecute($sTokenSession, 'liste utilisateur');
+		$clReponseWS = $this->_sExecute($sTokenSession, 'liste utilisateur', '', true);
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $clReponseWS->sGetActionContext());
@@ -531,7 +542,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 * @param $form
 	 * @return XMLResponseWS |\NOUT\Bundle\NOUTOnlineBundle\SOAP\ListResponse
 	 */
-	protected function _sTestList($sTokenSession, $form)
+	protected function _sList($sTokenSession, $form)
 	{
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
@@ -549,7 +560,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$form = 'utilisateur';
 
-		$clReponseWS = $this->_sTestList($sTokenSession, $form);
+		$clReponseWS = $this->_sList($sTokenSession, $form);
 
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
@@ -583,7 +594,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		//execute
-		$clReponseWSList = $this->_sExecute($sTokenSession, 'Afficher Nb Jour d\'absence par contact');
+		$clReponseWSList = $this->_sExecute($sTokenSession, 'Afficher Nb Jour d\'absence par contact', '', true);
 
 		$sActionContexte = $clReponseWSList->sGetActionContext();
 
@@ -640,7 +651,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$form = 'utilisateur';
 
-		$clReponseWSList = $this->_sTestList($sTokenSession, $form);
+		$clReponseWSList = $this->_sList($sTokenSession, $form);
 
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWSList->sGetActionContext();
@@ -933,6 +944,17 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		return  $this->__CallProxyFunction('enterReorderListMode', null, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_VALUE);
 	}
 
+	protected function _sSetOrderList($sTokenSession, $sActionContexte, $TabIDEnreg, $nOffset)
+	{
+		$clSetOrderList = new SetOrderList($TabIDEnreg, $nOffset);
+		return  $this->__CallProxyFunction('setOrderList', $clSetOrderList, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_VALUE);
+	}
+
+	protected function _sReOrderList($sTokenSession, $sActionContexte, $TabIDEnreg, $nScale, $nTypeMove)
+	{
+		$clReorderList = new ReorderList($TabIDEnreg, $nScale, $nTypeMove);
+		return  $this->__CallProxyFunction('reorderList', $clReorderList, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_VALUE);
+	}
 
 	public function testOrderList_OK()
 	{
@@ -940,8 +962,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		//il faut commencer par réordonner la liste
-		$this->_sExecute($sTokenSession, '221569603630667');
-/*
+		$this->_sExecute($sTokenSession, '', '221569603630667', false);
+
 		//on affiche la liste
 		$clReponseList = $this->_sList($sTokenSession, '228261139523058');
 		//on parse le XML pour avoir les enregistrement
@@ -949,6 +971,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clReponseWSParser->InitFromXmlXsd($clReponseList);
 		$tabEnregTableauOrigine = $clReponseWSParser->GetTabEnregTableau();
 		$ListeEnregOrig=implode('|', array_slice($tabEnregTableauOrigine->GetTabIDEnreg(), 0, 5));
+		$this->assertEquals('218610348012442|220504428595852|225220302686986|227775829887743|212747717663291', $ListeEnregOrig);
 
 
 		$clReponseEnter = $this->_sEnterReorderListMode($sTokenSession, $clReponseList->sGetActionContext());
@@ -961,29 +984,15 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$tabSetOrder->Add($tabEnregTableauOrigine->nGetIDTableau(1), $tabEnregTableauOrigine->nGetIDEnreg(1));
 
 		$clReponseSetOrder = $this->_sSetOrderList($sTokenSession, $clReponseList->sGetActionContext(), $tabSetOrder, 1);
+		$ListeIntermediaire = implode('|', array_slice(explode('|', $clReponseSetOrder->getValue()),0,5));
+		$this->assertEquals('218610348012442|227775829887743|225220302686986|220504428595852|212747717663291', $ListeIntermediaire);
 
 		$tabReorder = new EnregTableauArray();
 		$tabReorder->Add($tabEnregTableauOrigine->nGetIDTableau(0), $tabEnregTableauOrigine->nGetIDEnreg(0));
 
-		$clReponseSetOrder = $this->_sReOrderList($sTokenSession, $clReponseList->sGetActionContext(), $tabReorder, 4, ReorderList::MOVE_DOWN);
-
-		//<items>218610348012442|225220302686986|220504428595852|227775829887743</items><offset>0</offset>
-*/
-		/*
-				$sIDEnreg = $this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
-
-				//ici il faut faire le delete
-				$clReponseWS = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $sIDEnreg);
-				$sActionContexte = $clReponseWS->sGetActionContext();
-
-				//on valide
-				if ($clReponseWS->sGetReturnType()==XMLResponseWS::RETURNTYPE_MESSAGEBOX)
-				{
-					//il faut confirmer la réponse
-					$this->_sConfirmResponse($OnlineProxy, $sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
-				}
-		*/
-
+		$clReponseReOrder = $this->_sReOrderList($sTokenSession, $clReponseList->sGetActionContext(), $tabReorder, 4, ReorderList::MOVE_DOWN);
+		$ListeIntermediaireFinal = implode('|', array_slice(explode('|', $clReponseReOrder->getValue()),0,5));
+		$this->assertEquals('227775829887743|225220302686986|220504428595852|212747717663291|218610348012442', $ListeIntermediaireFinal);
 
 		//on déconnecte
 		$this->_Disconnect($sTokenSession, $nNbSession);

@@ -21,10 +21,10 @@ class ReorderList extends WSDLReorderList
 
 
 
-	public function __construct($TabIDEnreg, $nOffset, $sMove)
+	public function __construct($TabIDEnreg, $nScale, $sTypeMove)
 	{
-		$this->moveType = $sMove;
-		$this->scale = $nOffset;
+		$this->moveType = $sTypeMove;
+		$this->scale = $nScale;
 		$this->items='';
 
 		foreach($TabIDEnreg as $IDEnreg)
