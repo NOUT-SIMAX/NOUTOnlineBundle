@@ -10,7 +10,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
@@ -1318,9 +1320,9 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sReOrderList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nOffset, $nMove)
+	protected function _sReOrderList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nScale, $nMove)
 	{
-		$clReorderList = new ReorderList($tabIDEnreg, $nOffset, $nMove);
+		$clReorderList = new ReorderList($tabIDEnreg, $nScale, $nMove);
 		$clReponseXML = $OnlineProxy->reorderList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('ReOrderList', $clReponseXML);
 		return $clReponseXML;
@@ -1377,6 +1379,89 @@ class DefaultController extends Controller
 	}
 
 
+
+	protected function _sSetOrderSubList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nOffset)
+	{
+		$clSetOrderList = new SetOrderSubList($nIDColonne, $tabIDEnreg, $nOffset);
+
+		$clReponseXML = $OnlineProxy->setOrderSubList($clSetOrderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('SetOrderSubList', $clReponseXML);
+		return $clReponseXML;
+	}
+
+
+	protected function _sReOrderSubList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nScale, $nMove)
+	{
+		$clReorderList = new ReorderSubList($nIDColonne, $tabIDEnreg, $nScale, $nMove);
+		$clReponseXML = $OnlineProxy->reorderSubList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$this->_VarDumpRes('ReOrderSubList', $clReponseXML);
+		return $clReponseXML;
+	}
+
+	/**
+	 * @Route("/reorder_sublist/{host}", name="reorder_sublist", defaults={"host"=""})
+	 */
+	public function ReorderSubListAction($host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//modification d'enregistrement
+		$clReponseModify = $this->_sModify($OnlineProxy, $sTokenSession, '228261139523058', '218610348012442');
+		$sActionContexte = $clReponseModify->sGetActionContext();
+
+		//on parse le XML pour avoir les enregistrement
+		$clParserModify = new ReponseWSParser();
+		$clParserModify->InitFromXmlXsd($clReponseModify);
+		$clRecord = $clParserModify->clGetRecord($clReponseModify->clGetForm(), $clReponseModify->clGetElement());
+		if (!is_null($clRecord))
+		{
+			$TabValColOrig = $clRecord->sGetValCol('221655479824831');
+			$this->_VarDumpRes('valcol', implode('|', $TabValColOrig));
+
+			$TabSetOrder = $TabValColOrig;
+			$sTemp = $TabSetOrder[0];
+			$TabSetOrder[0]=$TabSetOrder[3];
+			$TabSetOrder[3]=$sTemp;
+
+			$clReponseSetOrder = $this->_sSetOrderSubList($OnlineProxy, $sTokenSession, $sActionContexte, '221655479824831', $TabSetOrder, 0);
+			$tabSetOrderRes = new EnregTableauArray();
+			$tabSetOrderRes->AddFromListeStr('', $clReponseSetOrder->getValue());
+
+			$tabIDEnreg = array($tabSetOrderRes->nGetIDEnreg(1), $tabSetOrderRes->nGetIDEnreg(3));
+
+			$clReponseReOrder = $this->_sReOrderSubList($OnlineProxy, $sTokenSession, $sActionContexte, '221655479824831', $tabIDEnreg, 1, ReorderList::MOVE_DOWN);
+
+			//on valide
+			$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+
+			//on vérifie
+			$clReponseGCIR = $this->_sGetColInRecord($OnlineProxy, $sTokenSession, '221655479824831', '218610348012442', 1);
+			$this->_sCancel($OnlineProxy, $sTokenSession, $clReponseGCIR->sGetActionContext());
+
+
+			$clParserGCIR = new ReponseWSParser();
+			$clParserGCIR->InitFromXmlXsd($clReponseGCIR);
+			$clData = $clParserGCIR->clGetData(0);
+
+			var_dump($clData->m_sContent, $clReponseReOrder->getValue());
+		}
+		else
+		{
+			echo '<p>On n\'a pas l\'enregistrement</p>';
+		}
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+	}
 
 	/**
 	 * @param OnlineServiceProxy $OnlineProxy

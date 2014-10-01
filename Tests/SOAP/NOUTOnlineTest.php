@@ -20,7 +20,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
@@ -68,13 +70,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected $m_clNOUTOnline;
 
 	protected $m_sService='127.0.0.1';
-	protected $m_sPlagePort='806';
+	protected $m_sPlagePort='6';
 
 
 	public function __construct()
 	{
 		//on instancie la configuration de NOUTOnline
-		$sService = 'http://'.$this->m_sService.':'.$this->m_sPlagePort.'2';
+		$sService = 'http://'.$this->m_sService.':80'.$this->m_sPlagePort.'2';
 		//on récupére le prefixe (http | https);
 		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
 		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
@@ -111,7 +113,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		);
 
 		$context = stream_context_create($opts);
-		$sRequete = 'http://'.$this->m_sService.':'.$this->m_sPlagePort.'0/parametre/etat/session/liste/get';
+		$sRequete = 'http://'.$this->m_sService.':80'.$this->m_sPlagePort.'0/parametre/etat/session/liste/get';
 
 		$json = file_get_contents($sRequete, false, $context);
 		$Tab = json_decode($json);
@@ -214,6 +216,8 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(0, $nExceptionCode);
 		$this->assertEquals(false, $this->m_clNOUTOnline->getXMLResponseWS()->bIsFault());
 
+
+		sleep(20);
 		$this->assertEquals($nNbSession, $this->_nGetNbSessionEnCours(), "Session $sTokenSession non fermee");
 	}
 
@@ -485,6 +489,17 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
 
+	protected function _sGetColInRecord($sTokenSession, $sColonne, $sRecord, $bWantContent)
+	{
+		$clParamGCR = new GetColInRecord();
+		$clParamGCR->Column = $sColonne;
+		$clParamGCR->Record = $sRecord;
+		$clParamGCR->WantContent = $bWantContent;
+
+		return $this->__CallProxyFunction('getColInRecord', $clParamGCR, $sTokenSession, '', true, null);
+
+	}
+
 	/**
 	 * Test la méthode de récupération d'une valeur d'une colonne d'un enregistrement particulier
 	 */
@@ -493,13 +508,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$nNbSession = $this->_nGetNbSessionEnCours();
 		$sTokenSession = $this->testGetTokenSession_OK();
 
-		$clParamGCR = new GetColInRecord();
-		$clParamGCR->Column = 'photo utilisateur';
-		$clParamGCR->Record = 2;
-		$clParamGCR->WantContent = 1;
-
-
-		$clReponseWS = $this->__CallProxyFunction('getColInRecord', $clParamGCR, $sTokenSession, '', true, null);
+		$clReponseWS = $this->_sGetColInRecord($sTokenSession, 'photo utilisateur', 2, 1);
 
 		//vérification du contexte d'action
 		$sActionContexte = $clReponseWS->sGetActionContext();
@@ -997,6 +1006,81 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//on déconnecte
 		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
+
+	protected function _sSetOrderSubList($sTokenSession, $sActionContexte, $nIDColonne, $TabIDEnreg, $nOffset)
+	{
+		$clSetOrderList = new SetOrderSubList($nIDColonne, $TabIDEnreg, $nOffset);
+		return  $this->__CallProxyFunction('setOrderSubList', $clSetOrderList, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_VALUE);
+	}
+
+	protected function _sReOrderSubList($sTokenSession, $sActionContexte, $nIDColonne, $TabIDEnreg, $nScale, $nTypeMove)
+	{
+		$clReorderList = new ReorderSubList($nIDColonne, $TabIDEnreg, $nScale, $nTypeMove);
+		return  $this->__CallProxyFunction('reorderSubList', $clReorderList, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_VALUE);
+	}
+
+	public function testOrderSubList_OK()
+	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		//modification d'enregistrement
+		$clReponseModify = $this->_sModify($sTokenSession, '228261139523058', '218610348012442');
+		$sActionContexte = $clReponseModify->sGetActionContext();
+
+		//on parse le XML pour avoir les enregistrement
+		$clParserModify = new ReponseWSParser();
+		$clParserModify->InitFromXmlXsd($clReponseModify);
+		$clRecord = $clParserModify->clGetRecord($clReponseModify->clGetForm(), $clReponseModify->clGetElement());
+		$this->assertNotNull($clRecord);
+
+		$TabValColOrig = $clRecord->sGetValCol('221655479824831');
+
+		$TabSetOrder = $TabValColOrig;
+		$sTemp = $TabSetOrder[0];
+		$TabSetOrder[0]=$TabSetOrder[3];
+		$TabSetOrder[3]=$sTemp;
+
+		$clReponseSetOrder = $this->_sSetOrderSubList($sTokenSession, $sActionContexte, '221655479824831', $TabSetOrder, 0);
+		$this->assertEquals(trim(implode('|', $TabSetOrder),'|'), trim($clReponseSetOrder->getValue(), '|'));
+
+		$tabSetOrderRes = new EnregTableauArray();
+		$tabSetOrderRes->AddFromListeStr('', $clReponseSetOrder->getValue());
+		$tabIDEnreg = array($tabSetOrderRes->nGetIDEnreg(1), $tabSetOrderRes->nGetIDEnreg(3));
+
+		$clReponseReOrder = $this->_sReOrderSubList($sTokenSession, $sActionContexte, '221655479824831', $tabIDEnreg, 1, ReorderList::MOVE_DOWN);
+
+		$TabTemp = $tabSetOrderRes->GetTabIDEnreg();
+		$sTemp = $TabTemp[2];
+		$TabTemp[2] = $TabTemp[1];
+		$TabTemp[1]=$sTemp;
+
+		$sTemp = $TabTemp[4];
+		$TabTemp[4] = $TabTemp[3];
+		$TabTemp[3]=$sTemp;
+
+		$this->assertEquals(trim(implode('|', $TabTemp),'|'), trim($clReponseReOrder->getValue(), '|'));
+
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//vérification
+		$clReponseGCIR = $this->_sGetColInRecord($sTokenSession, '221655479824831', '218610348012442', 1);
+		$this->_sCancel($sTokenSession, $clReponseGCIR->sGetActionContext(), 1);
+
+		$clParserGCIR = new ReponseWSParser();
+		$clParserGCIR->InitFromXmlXsd($clReponseGCIR);
+		$clData = $clParserGCIR->clGetData(0);
+
+		$this->assertEquals($clData->m_sContent, $clReponseReOrder->getValue());
+
+		//on déconnecte
+		$this->_Disconnect($sTokenSession, $nNbSession);
+	}
+
+
+
+
+
 
 
 	protected function _sGetPlanningInfo($sTokenSession, $Resource, $StartTime, $EndTime)
