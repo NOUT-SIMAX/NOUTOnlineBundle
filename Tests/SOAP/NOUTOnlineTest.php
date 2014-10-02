@@ -57,6 +57,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
@@ -943,7 +944,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		return  $this->__CallProxyFunction('update', $clParamUpdate, $sTokenSession, $sActionContexte, true, XMLResponseWS::RETURNTYPE_RECORD);
 	}
 
-	protected function _sCreate($sTokenSession, $form, $colonne)
+	protected function _sCreate($sTokenSession, $form, $colonne, $valeur)
 	{
 		$clReponseWS = $this->__sCreate( $sTokenSession, $form, XMLResponseWS::RETURNTYPE_RECORD);
 
@@ -963,7 +964,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sIDEnreg = $clReponseWS->clGetElement()->getID();
 
 		//l'update
-		$this->_sUpdate($sTokenSession, $sActionContexte, $form, $sIDEnreg, array($colonne=>'phpUnit Test Create'));
+		$this->_sUpdate($sTokenSession, $sActionContexte, $form, $sIDEnreg, array($colonne=>$valeur));
 
 		//on valide le contexte
 		$this->_Validate($sTokenSession, $sActionContexte);
@@ -979,11 +980,57 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$form = '41296233836619'; //formulaire avec liste images
 		$colonne = '45208949043557'; //libelle
 
-		$sIDEnreg = $this->_sCreate($sTokenSession, $form, $colonne);
+		$sIDEnreg = $this->_sCreate($sTokenSession, $form, $colonne, 'phpUnit Test Create');
 
 		//on déconnecte
 		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
+
+
+	/**
+	 * @param $sTokenSession
+	 * @return XMLResponseWS
+	 */
+	protected function _sTransformInto($sTokenSession, $formDest, $formSrc, $elemSrc)
+	{
+		$clParamTransformInto = new TransformInto();
+		$clParamTransformInto->Table=$formDest;
+		$clParamTransformInto->TableSrc = $formSrc;
+		$clParamTransformInto->ElemSrc = $elemSrc;
+
+		return  $this->__CallProxyFunction('transformInto', $clParamTransformInto, $sTokenSession, '', true, XMLResponseWS::RETURNTYPE_RECORD);
+	}
+
+
+
+	/**
+	 * @Route("/transform_into/{formSrc}/{formDest}/{colonne}/{valeur}/{host}", name="transform_into", defaults={"host"=""})
+	 *
+	 * exemple GUID : /transform_into/51346223489588/40810668714136/40896568059607/trois
+	 */
+	public function testTransformInto_OK()
+	{
+		//la connexion
+		$nNbSession = $this->_nGetNbSessionEnCours();
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$formSrc = '51346223489588'; //Creation - Fils 1
+		$formDest = '40810668714136'; //Creation - Fils 2
+
+		$sIDEnreg = $this->_sCreate($sTokenSession, '51346223489588', '40896568059607', 'phpUnit Test Transformer En');
+
+		//et on le transforme en formulaire 2
+		$clReponseWS = $this->_sTransformInto($sTokenSession, $formDest, $formSrc, $sIDEnreg);
+		$this->assertEquals($formDest, $clReponseWS->clGetForm()->getID());
+
+		$this->_Validate($sTokenSession, $clReponseWS->sGetActionContext());
+
+		//on déconnecte
+		$this->_Disconnect($sTokenSession, $nNbSession);
+	}
+
+
+
 
 	protected function _sSelectForm($sTokenSession, $sActionContexte, $form)
 	{
@@ -1074,7 +1121,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$form = '41296233836619'; //formulaire avec liste images
 		$colonne = '45208949043557';
-		$sIDEnreg = $this->_sCreate($sTokenSession, $form, $colonne);
+		$sIDEnreg = $this->_sCreate($sTokenSession, $form, $colonne, 'phpUnit Test Delete');
 
 		//l'action delete
 		$clReponseWS = $this->_sDelete($sTokenSession, $form, $sIDEnreg);

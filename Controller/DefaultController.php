@@ -45,6 +45,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 
@@ -1168,6 +1169,58 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		$this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $form
+	 *
+	 * @return XMLResponseWS
+	 */
+	protected function _sTransformInto(OnlineServiceProxy $OnlineProxy, $sTokenSession, $formDest, $formSrc, $elemSrc)
+	{
+		$clParamTransformInto = new TransformInto();
+		$clParamTransformInto->Table=$formDest;
+		$clParamTransformInto->TableSrc = $formSrc;
+		$clParamTransformInto->ElemSrc = $elemSrc;
+
+		$clReponseXML = $OnlineProxy->transformInto($clParamTransformInto, $this->_aGetTabHeader($sTokenSession));
+		$this->_VarDumpRes('TransformInto', $clReponseXML);
+
+		return $clReponseXML;
+	}
+
+
+
+	/**
+	 * @Route("/transform_into/{formSrc}/{formDest}/{colonne}/{valeur}/{host}", name="transform_into", defaults={"host"=""})
+	 *
+	 * exemple GUID : /transform_into/51346223489588/40810668714136/40896568059607/trois
+	 */
+	public function transformIntoAction($formSrc, $formDest, $colonne, $valeur, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//on commance par creer un enregistrement de type formulaire 1
+		$sIDEnreg = $this->_sCreate($OnlineProxy, $sTokenSession, $formSrc, $colonne, $valeur);
+
+		//et on le transforme en formulaire 2
+		$clReponseWS = $this->_sTransformInto($OnlineProxy, $sTokenSession, $formDest, $formSrc, $sIDEnreg);
+		$this->_Validate($OnlineProxy, $sTokenSession, $clReponseWS->sGetActionContext());
+
+		$this->_sDisplay($OnlineProxy, $sTokenSession, $formDest, $sIDEnreg);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
