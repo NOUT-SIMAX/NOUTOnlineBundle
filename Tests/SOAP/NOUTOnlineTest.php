@@ -41,6 +41,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetChart;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
@@ -62,7 +63,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
  * classe pour tester NOUTOnline en mode Intranet
  * @package NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP
  *
- * phpunit -c app --filter testCreate_OK
+ * bin\phpunit -c app --filter testCreate_OK
  */
 class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 {
@@ -551,12 +552,13 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 * @param $form
 	 * @return XMLResponseWS |\NOUT\Bundle\NOUTOnlineBundle\SOAP\ListResponse
 	 */
-	protected function _sList($sTokenSession, $form)
+	protected function _sList($sTokenSession, $form, $sActionContexte='', $displayMode=XMLResponseWS::DISPLAYMODE_LISTE)
 	{
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
+		$clParamList->DisplayMode = $displayMode;
 
-		return $this->__CallProxyFunction('listAction', $clParamList, $sTokenSession, '', true, null);
+		return $this->__CallProxyFunction('listAction', $clParamList, $sTokenSession, $sActionContexte, true, null);
 	}
 
 	/**
@@ -688,6 +690,121 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		//on déconnecte
 		$this->_Disconnect($sTokenSession, $nNbSession);
 	}
+
+
+
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $sIDActionContexte
+	 * @return XMLResponseWS
+	 */
+	protected function _sGetChart($sTokenSession, $sIDActionContexte, $form, $index)
+	{
+		$clParamChart = new GetChart();
+		$clParamChart->Height = 500;
+		$clParamChart->Width = 700;
+		$clParamChart->DPI = 72;
+		$clParamChart->Index = $index;
+		$clParamChart->Table = $form;
+
+		return  $this->__CallProxyFunction('getChart', $clParamChart, $sTokenSession, $sIDActionContexte, true, null);
+	}
+
+
+	/**
+	 * Test de la méthode pour récupérer les caculs de fin de liste
+	 */
+	public function testGetChart_OK()
+	{
+		$nNbSession = $this->_nGetNbSessionEnCours();
+		$sTokenSession = $this->testGetTokenSession_OK();
+
+		$form = '42704702455450';
+
+		$clReponseWSList = $this->_sList($sTokenSession, $form);
+
+		//vérification du contexte d'action
+		$sActionContexte = $clReponseWSList->sGetActionContext();
+		$this->assertNotEquals('', $sActionContexte);
+
+		//on vérifie que le mode graphe est disponible
+		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
+		$this->assertContains(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM);
+
+		$clReponseWSGraphe = $this->_sList($sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
+		$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
+		$this->assertNotEquals(0, $nNbChart);
+
+
+		$clReponseWSChart = $this->_sGetChart($sTokenSession, $sActionContexte, $form, 1);
+		$clParser = new ReponseWSParser();
+		$clParser->InitFromXmlXsd($clReponseWSChart);
+
+		$this->assertNotNull($clParser->m_clChart);
+		$this->assertNotEquals('', $clParser->m_clChart->m_sType);
+		$this->assertNotEquals('', $clParser->m_clChart->m_sTitre);
+		$this->assertNotEmpty($clParser->m_clChart->m_TabAxes);
+		$this->assertNotEmpty($clParser->m_clChart->m_TabSeries);
+
+		//on valide le contexte
+		$this->_Validate($sTokenSession, $sActionContexte);
+
+		//on déconnecte
+		$this->_Disconnect($sTokenSession, $nNbSession);
+	}
+
+
+
+
+
+	/**
+	 * @Route("/chart/{form}/{host}", name="chart", defaults={"host"=""})
+	 */
+	public function chartAction($form, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWSList = $this->_sList($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseWSList->sGetActionContext();
+
+		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
+		if (in_array(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM))
+		{
+			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
+			$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
+
+			for ($i=0 ; $i<$nNbChart ; $i++)
+			{
+				$clReponseWSChart = $this->_sGetChart($OnlineProxy, $sTokenSession, $sActionContexte, $form, $i+1);
+				$clParser = new ReponseWSParser();
+				$clParser->InitFromXmlXsd($clReponseWSChart);
+				$this->_VarDumpRes('Chart', $clParser->m_clChart);
+			}
+		}
+		else
+		{
+			echo '<pre>Affichage des graphes non possible</pre>';
+		}
+
+		//annulation de la liste
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+
 
 	protected function _sRequest($sTokenSession, $table, $sCondList)
 	{

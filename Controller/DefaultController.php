@@ -29,6 +29,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetChart;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
@@ -334,13 +335,13 @@ class DefaultController extends Controller
 	 * @param $form
 	 * @return XMLResponseWS
 	 */
-	protected function _sList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
+	protected function _sList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte='', $displayMode=XMLResponseWS::DISPLAYMODE_LISTE)
 	{
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
-		$clReponseXML = $OnlineProxy->listAction($clParamList, $this->_aGetTabHeader($sTokenSession));
+		$clParamList->DisplayMode = $displayMode;
+		$clReponseXML = $OnlineProxy->listAction($clParamList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('List', $clReponseXML);
-
 
 		return $clReponseXML;
 	}
@@ -352,7 +353,7 @@ class DefaultController extends Controller
 	 * @param $TabIDColonne
 	 * @return XMLResponseWS
 	 */
-	protected function _sGetCaculation(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabIDColonne)
+	protected function _sGetCalculation(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabIDColonne)
 	{
 		$clParamGetCalculation = new GetCalculation();
 		$clParamGetCalculation->ColList=new ColListType($TabIDColonne);
@@ -394,10 +395,77 @@ class DefaultController extends Controller
 		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
 
-		$clReponseWSCalcul = $this->_sGetCaculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
+		$clReponseWSCalcul = $this->_sGetCalculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul);
 
 		$this->_VarDumpRes('Calculation', $clReponseWSParser->m_MapColonne2Calcul);
+
+		//annulation de la liste
+		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
+
+		//la deconnexion
+		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $sIDActionContexte
+	 * @return XMLResponseWS
+	 */
+	protected function _sGetChart(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $form, $index)
+	{
+		$clParamChart = new GetChart();
+		$clParamChart->Height = 500;
+		$clParamChart->Width = 700;
+		$clParamChart->DPI = 72;
+		$clParamChart->Index = $index;
+		$clParamChart->Table = $form;
+
+		$clReponseXML = $OnlineProxy->getChart($clParamChart, $this->_aGetTabHeader($sTokenSession, $sIDActionContexte));
+		$this->_VarDumpRes('GetChart', $clReponseXML);
+		return $clReponseXML;
+	}
+
+
+	/**
+	 * @Route("/chart/{form}/{host}", name="chart", defaults={"host"=""})
+	 */
+	public function chartAction($form, $host)
+	{
+		ob_start();
+		$OnlineProxy = $this->_clGetOnlineProxy($host);
+
+		//la connexion
+		$sTokenSession = $this->_sConnexion($OnlineProxy);
+
+		//la liste
+		$clReponseWSList = $this->_sList($OnlineProxy, $sTokenSession, $form);
+		$sActionContexte = $clReponseWSList->sGetActionContext();
+
+		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
+		if (in_array(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM))
+		{
+			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
+			$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
+
+			for ($i=0 ; $i<$nNbChart ; $i++)
+			{
+				$clReponseWSChart = $this->_sGetChart($OnlineProxy, $sTokenSession, $sActionContexte, $form, $i+1);
+				$clParser = new ReponseWSParser();
+				$clParser->InitFromXmlXsd($clReponseWSChart);
+				$this->_VarDumpRes('Chart', $clParser->m_clChart);
+			}
+		}
+		else
+		{
+			echo '<pre>Affichage des graphes non possible</pre>';
+		}
 
 		//annulation de la liste
 		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);

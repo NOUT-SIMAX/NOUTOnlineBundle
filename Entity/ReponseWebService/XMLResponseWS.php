@@ -52,6 +52,18 @@ class XMLResponseWS
 	const RETURNTYPE_WITHAUTOMATICRESPONSE = 'WithAutomaticResponse';
 
 
+
+	//type d'affichage
+	const DISPLAYMODE_LISTE = 'List';
+	const DISPLAYMODE_GRAPHE = 'Chart';
+	const DISPLAYMODE_LISTEIMAGE = 'Thumbnail';
+	const DISPLAYMODE_PLANNING = 'Planning';
+	const DISPLAYMODE_PLAN = 'Map';
+	const DISPLAYMODE_GANTT = 'Gantt';
+	const DISPLAYMODE_ORGANIGRAMME = 'FlowChart';
+	//const DISPLAYMODE_DATA = 'Data';
+	//const DISPLAYMODE_CHARTPICTURE = 'ChartPicture';
+
 	//noeud particulier
 	protected $m_ndBody;
 	protected $m_ndHeader;
@@ -251,6 +263,31 @@ class XMLResponseWS
 	}
 
 	/**
+	 * @return null|array
+	 */
+	public function GetTabPossibleDisplayMode()
+	{
+		$ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
+		if (!isset($ndPossibleDM))
+			return null;
+
+		return explode('|', (string)$ndPossibleDM);
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function sGetDefaultDisplayMode()
+	{
+		$ndDefaultDM = $this->m_ndHeader->children()->DefaultDisplayMode;
+		if (!isset($ndDefaultDM))
+			return null;
+
+		return (string)$ndDefaultDM;
+	}
+
+
+	/**
 	 * retourne le noeud reponse de l'operation
 	 * @param $sOperation
 	 * @return \SimpleXMLElement
@@ -307,6 +344,18 @@ class XMLResponseWS
 			return (string)$clNodeResponse->SessionToken;
 
 		return '';
+	}
+
+	/**
+	 * @return int
+	 */
+	public function nGetNumberOfChart()
+	{
+		$ndXML = $this->getNodeXML();
+		if (is_null($ndXML))
+			return 0;
+
+		return (int)$ndXML->numberOfChart;
 	}
 
 	/**

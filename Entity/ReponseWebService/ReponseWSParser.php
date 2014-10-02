@@ -55,6 +55,12 @@ class ReponseWSParser
 	 */
 	public $m_TabEventPlanning;
 
+	/**
+	 * @var Chart
+	 * membre qui contient le graphe
+	 */
+	public $m_clChart;
+
 	public function __construct()
 	{
 		$this->m_MapIDTableau2Niv2StructureElement = array();
@@ -63,6 +69,7 @@ class ReponseWSParser
 		$this->m_MapColonne2Calcul = array();
 		$this->m_MapRef2Data = array();
 		$this->m_TabEventPlanning=array();
+		$this->m_clChart = null;
 	}
 
 	/**
@@ -560,6 +567,38 @@ class ReponseWSParser
 		return $MapTypeEvent2ColorRGB;
 	}
 
+
+	protected function _ParseChart($ndXML)
+	{
+		$ndChart = $ndXML->chart;
+
+		$this->m_clChart->m_sTitre = (string)$ndChart->title;
+		$this->m_clChart->m_sType = (string)$ndChart->chartType;
+
+		foreach($ndChart->axes->axis as $ndAxis)
+		{
+			$TabAttributes = $ndAxis->attributes('http://www.nout.fr/XML/');
+			$sID = (string)$TabAttributes['id'];
+			$bCalculation = isset($TabAttributes['isCalculation']) ? ((int)$TabAttributes['isCalculation'] != 0) : false;
+			$this->m_clChart->m_TabAxes[$sID]=new ChartAxis($sID, (string)$TabAttributes['label'], $bCalculation);
+		}
+
+		foreach($ndChart->serie->tuple as $ndTuple)
+		{
+			$clTuple = new ChartTuple();
+			foreach($ndTuple->children() as $ndFils)
+			{
+				$sTagName = $ndFils->getName();
+				if (strncmp($sTagName, 'id_', strlen('id_'))==0)
+				{
+					$sID = str_replace('id_', '', $sTagName);
+					$clTuple->Add($sID, (string)$ndFils->data, (string)$ndFils->displayValue);
+				}
+			}
+			$this->m_clChart->m_TabSeries[]=$clTuple;
+		}
+	}
+
 	/**
 	 * @param $sReturnType
 	 * @param \SimpleXMLElement $clXML
@@ -619,6 +658,13 @@ class ReponseWSParser
 			foreach($this->m_TabEventPlanning as $clEvent)
 				$clEvent->m_sColorRGB=$MapTypeElement2Color[$clEvent->m_nTypeOfEvent];
 
+			return ;
+		}
+
+		if ($sReturnType == XMLResponseWS::RETURNTYPE_CHART)
+		{
+			$this->m_clChart = new Chart();
+			$this->_ParseChart($ndXML);
 			return ;
 		}
 	}
