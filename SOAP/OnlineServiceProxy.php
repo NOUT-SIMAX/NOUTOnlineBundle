@@ -1251,7 +1251,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function selectItems(SelectItems $clWsdlType_SelectItems, $aHeaders = array())
     {
-	    return $this->call('SelectForm', array($clWsdlType_SelectItems) ,  null, null , $aHeaders);
+	    return $this->call('SelectItems', array($clWsdlType_SelectItems) ,  null, null , $aHeaders);
     }
     //---
 

@@ -43,6 +43,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestParam;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
@@ -416,6 +417,8 @@ class DefaultController extends Controller
 	 * @param OnlineServiceProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sIDActionContexte
+	 * @param $form
+	 * @param $index
 	 * @return XMLResponseWS
 	 */
 	protected function _sGetChart(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $form, $index)
@@ -429,6 +432,24 @@ class DefaultController extends Controller
 
 		$clReponseXML = $OnlineProxy->getChart($clParamChart, $this->_aGetTabHeader($sTokenSession, $sIDActionContexte));
 		$this->_VarDumpRes('GetChart', $clReponseXML);
+		return $clReponseXML;
+	}
+
+	/**
+	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param $sTokenSession
+	 * @param $sIDActionContexte
+	 * @param $form
+	 * @param $index
+	 * @return XMLResponseWS
+	 */
+	protected function _sSelectItems(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabSelection)
+	{
+		$clParamSelectItems = new SelectItems();
+		$clParamSelectItems->items = implode('|',$TabSelection);
+
+		$clReponseXML = $OnlineProxy->selectItems($clParamSelectItems, $this->_aGetTabHeader($sTokenSession, $sIDActionContexte));
+		$this->_VarDumpRes('SelectItems', $clReponseXML);
 		return $clReponseXML;
 	}
 
@@ -451,6 +472,12 @@ class DefaultController extends Controller
 		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
 		if (in_array(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM))
 		{
+			$clParserList = new ReponseWSParser();
+			$clParserList->InitFromXmlXsd($clReponseWSList);
+
+			$TabIDEnreg = array_slice($clParserList->GetTabEnregTableau()->GetTabIDEnreg($clReponseWSList->clGetForm()->getID()), 0, 5);
+			$this->_sSelectItems($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDEnreg);
+
 			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
 			$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
 

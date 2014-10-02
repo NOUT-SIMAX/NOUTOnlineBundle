@@ -55,6 +55,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestParam;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
@@ -694,6 +695,21 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 
 	/**
+	 * @param $sTokenSession
+	 * @param $sIDActionContexte
+	 * @param $form
+	 * @param $index
+	 * @return XMLResponseWS
+	 */
+	protected function _sSelectItems($sTokenSession, $sIDActionContexte, $TabSelection)
+	{
+		$clParamSelectItems = new SelectItems();
+		$clParamSelectItems->items = implode('|',$TabSelection);
+
+		return  $this->__CallProxyFunction('selectItems', $clParamSelectItems, $sTokenSession, $sIDActionContexte, true, null);
+	}
+
+	/**
 	 * @param OnlineServiceProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sIDActionContexte
@@ -732,10 +748,16 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
 		$this->assertContains(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM);
 
+		$clParserList = new ReponseWSParser();
+		$clParserList->InitFromXmlXsd($clReponseWSList);
+
+		$TabIDEnreg = array_slice($clParserList->GetTabEnregTableau()->GetTabIDEnreg($clReponseWSList->clGetForm()->getID()), 0, 5);
+		$clReponseWSSelectItems = $this->_sSelectItems($sTokenSession, $sActionContexte, $TabIDEnreg);
+		$this->assertEquals(XMLResponseWS::RETURNTYPE_EMPTY, $clReponseWSSelectItems->sGetReturnType());
+
 		$clReponseWSGraphe = $this->_sList($sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
 		$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
 		$this->assertNotEquals(0, $nNbChart);
-
 
 		$clReponseWSChart = $this->_sGetChart($sTokenSession, $sActionContexte, $form, 1);
 		$clParser = new ReponseWSParser();
