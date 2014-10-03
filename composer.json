@@ -1,8 +1,8 @@
 {
-    "name": "NOUT/SessionBundle",
+    "name": "NOUT/ContextesBundle",
 	"type": "symfony-bundle",
     "require": {
             "php": ">=5.3.0"
     },
-	"target-dir": "NOUT/Bundle/SessionBundle",
+	"target-dir": "NOUT/Bundle/ContextesBundle",
 } 
