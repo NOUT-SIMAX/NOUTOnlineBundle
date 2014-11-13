@@ -1,0 +1,7 @@
+parameters:
+#    nout_contextes.example.class: NOUT\Bundle\ContextesBundle\Example
+
+services:
+#    nout_contextes.example:
+#        class: %nout_contextes.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
