@@ -13,6 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderSubList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
@@ -35,7 +36,6 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
@@ -86,6 +86,14 @@ class DefaultController extends Controller
 		return $clConfiguration;
 	}
 
+	/**
+	 * @param $host
+	 * @return OnlineServiceProxy
+	 */
+	protected function _clGetOnlineProxy($host)
+	{
+		return $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+	}
 
 	protected function _VarDumpRes($sOperation, $ret)
 	{
@@ -124,14 +132,6 @@ class DefaultController extends Controller
 		return $clOptionDialogue;
 	}
 
-	/**
-	 * @param $host
-	 * @return OnlineServiceProxy
-	 */
-	protected function _clGetOnlineProxy($host)
-	{
-		return $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
-	}
 
 	protected function _aGetTabHeader($sTokenSession, $nIDContexteAction=null)
 	{

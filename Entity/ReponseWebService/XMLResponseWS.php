@@ -163,6 +163,13 @@ class XMLResponseWS
 
 		return $this->m_TabError[0]->getCategorie();
 	}
+	public function getMessError()
+	{
+		if (!isset($this->m_TabError))
+			return false;
+
+		return $this->m_TabError[0]->getMessage();
+	}
 
 	/**
 	 * renvoi le type de retour

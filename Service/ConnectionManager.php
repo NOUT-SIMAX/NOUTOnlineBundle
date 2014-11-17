@@ -10,7 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 
 class ConnectionManager {
 
@@ -33,7 +33,6 @@ class ConnectionManager {
 
 		//il faut retourner les paramètres pour la connexion
 		$clGetTokenSession = new GetTokenSession();
-		$clGetTokenSession->DefaultClientLanguageCode=12;
 		switch($nErreur)
 		{
 			default:
@@ -47,8 +46,6 @@ class ConnectionManager {
 				$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', 'aze');
 				break;
 		}
-		$clGetTokenSession->ExtranetUser = null;
-
 		return $clGetTokenSession;
 	}
 
