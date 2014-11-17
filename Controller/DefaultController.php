@@ -76,18 +76,13 @@ class DefaultController extends Controller
 
 	protected function _clGetConfiguration($host)
 	{
-		if (!isset($host) || is_null($host) || (strlen($host)==0))
-			$host='127.0.0.1:8062';
+		$clConfiguration = $this->get('nout_online.configuration_dialogue');
+		if (isset($host) && !is_null($host) && (strlen($host)!=0))
+		{
+			list($sAddress,$sPort) = explode(':', $host );
+			$clConfiguration->SetHost($sAddress, $sPort);
+		}
 
-		$sEndPoint = './bundles/noutonline/Service.wsdl';
-		$sService = 'http://'.$host;
-
-		//on récupére le prefixe (http | https);
-		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
-
-		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
-
-		$clConfiguration = new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix);
 		return $clConfiguration;
 	}
 

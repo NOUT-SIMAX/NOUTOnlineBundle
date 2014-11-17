@@ -4,6 +4,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Translation\Translator;
 
 /**
  * This is the class that validates and merges configuration from your app/config files
@@ -12,6 +14,12 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+
+	public function __construct()
+	{
+	}
+
+
     /**
      * {@inheritDoc}
      */
@@ -23,16 +31,26 @@ class Configuration implements ConfigurationInterface
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
-
 	    $rootNode
+		    ->addDefaultsIfNotSet()
 		    ->children()
-		        ->scalarNode('debug')
-		            ->defaultValue(false)
-		            ->validate()
-		                ->ifNotInArray(array(true, false))
-		                ->thenInvalid('la valeur "%s" n\'est pas valide, les valeurs acceptées sont : true, false')
-		            ->end()
-		        ->end()
+		        ->booleanNode('debug')->end()
+			    ->enumNode('protocole')
+	                ->values(array('http://', 'https://'))
+				    ->defaultValue('http://')
+			    ->end()
+			    ->scalarNode('address')
+				    ->defaultValue('127.0.0.1')
+	                ->cannotBeEmpty()
+				    ->validate()
+					    ->ifTrue(function ($ip) { return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6); })
+					    ->thenInvalid('%s should be an IPv4 or IPv6 address') //la valeur "%s" n'est pas valide pour le paramètre address, la valeur doit être une adresse IPv4 ou IPv6
+				    ->end()
+			    ->end()
+			    ->integerNode('port')
+		            ->cannotBeEmpty()
+				    ->defaultValue('8052')
+			    ->end()
 		    ->end()
 	    ;
 
@@ -40,11 +58,5 @@ class Configuration implements ConfigurationInterface
 	    // configure your bundle. See the documentation linked above for
 	    // more information on that topic.
 	    return $treeBuilder;
-
-
-
-
-
-        return $treeBuilder;
     }
 }

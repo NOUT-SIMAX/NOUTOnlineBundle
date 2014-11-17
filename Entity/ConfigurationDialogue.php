@@ -12,7 +12,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
  * Class ConfigurationDialogue permet de transporter les informations configurée pour le dialogue avec NOUTOnline
  * @package NOUT\Bundle\NOUTOnlineBundle\Entity
  */
-class ConfigurationDialogue {
+class ConfigurationDialogue
+{
 
 	public $m_sEndPoint;
 	public $m_bWsdl;
@@ -23,10 +24,10 @@ class ConfigurationDialogue {
 	public $m_sAPIUUID;
 	public $m_nDureeSession;
 
-	public function __construct($sEndpoint,$bWsdl = false,$sHost = false,$sPort = false, $sProtocolPrefix = 'http://')
+	public function __construct($sHost = false, $sPort = false, $sProtocolPrefix = 'http://')
 	{
-		$this->m_sEndPoint=$sEndpoint;
-		$this->m_bWsdl=$bWsdl;
+		$this->m_sEndPoint=$sProtocolPrefix.$sHost.':'.$sPort.'/getwsdl';
+		$this->m_bWsdl=true;
 		$this->m_sHost=$sHost;
 		$this->m_nPort=$sPort;
 		$this->m_sProtocolPrefix=$sProtocolPrefix;
@@ -34,5 +35,21 @@ class ConfigurationDialogue {
 		$this->m_nLangCode=12;
 		$this->m_sAPIUUID='';
 		$this->m_nDureeSession=3600;
+	}
+
+	public function SetHost($sAddress, $sPort)
+	{
+		$this->m_sHost=$sAddress;
+		$this->m_nPort=$sPort;
+		$this->m_sEndPoint=$this->m_sProtocolPrefix.$sAddress.':'.$sPort.'/getwsdl';
+	}
+
+	public function Init($sEndpoint,$bWsdl = false,$sHost = false,$sPort = false, $sProtocolPrefix = 'http://')
+	{
+		$this->m_sEndPoint=$sEndpoint;
+		$this->m_bWsdl=$bWsdl;
+		$this->m_sHost=$sHost;
+		$this->m_nPort=$sPort;
+		$this->m_sProtocolPrefix=$sProtocolPrefix;
 	}
 }

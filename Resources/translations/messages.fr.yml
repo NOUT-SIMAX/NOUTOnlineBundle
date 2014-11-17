@@ -1,0 +1,4 @@
+configuration:
+    debug: la valeur "%s" n'est pas valide pour le paramètre debug, les valeurs acceptées sont : true, false
+    protocole: la valeur "%s" n'est pas valide pour le paramètre protocole, les valeurs acceptées sont : http://, https://
+    address: la valeur "%s" n'est pas valide pour le paramètre address, la valeur doit être une adresse IPv4 ou IPv6

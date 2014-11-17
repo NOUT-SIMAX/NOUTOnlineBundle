@@ -7,15 +7,15 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
 
     nout_online.connection_manager:
-          class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager
-          arguments:  []
+        class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager
+        arguments:  []
 
     # pour la barre de debug
     nout_online.logger:
-         class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger
-         arguments:  [@logger, "%nout_online.debug%"]
-         tags:
-             - { name: monolog.logger, channel: noutonline }
+        class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger
+        arguments:  [@logger, "%nout_online.debug%"]
+        tags:
+            - { name: monolog.logger, channel: noutonline }
 
     nout_online.datacollector:
         class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector
@@ -27,13 +27,17 @@ services:
         class:  NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache
         arguments: ["%kernel.cache_dir%/soap"]
 
+    nout_online.configuration_dialogue:
+        class:      NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
+        arguments:  ['%nout_online.address%', '%nout_online.port%', '%nout_online.protocole%']
+
     #factory pour le service
     nout_online.service_factory:
-         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-         arguments:  [@nout_online.logger, @nout_online.cache]
+        class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
+        arguments:  [@nout_online.logger, @nout_online.cache]
 
     nout_online.twig.nout_online_extension:
         class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension
         tags:
-          - { name: twig.extension }
+            - { name: twig.extension }
 

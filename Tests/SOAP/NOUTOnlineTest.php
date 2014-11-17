@@ -79,20 +79,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	public function __construct()
 	{
 		//on instancie la configuration de NOUTOnline
-		$sService = 'http://'.$this->m_sService.':80'.$this->m_sPlagePort.'2';
-		//on récupére le prefixe (http | https);
-		$sProtocolPrefix = substr($sService,0,strpos($sService,'//')+2 );
-		list($sHost,$sPort) = explode(':', str_replace($sProtocolPrefix,'',$sService) );
-
-		//il faut récupérer la wsdl depuis le service
-		//adresse de la wsdl :  /getwsdl?
-		$sHttpWSDL = $sService.'/GetWSDL?';
-		$sWSDL = file_get_contents($sHttpWSDL);
-
-		$sEndPoint = './Service.wsdl';
-		file_put_contents($sEndPoint, $sWSDL);
-
-		$this->m_clConfig = new ConfigurationDialogue($sEndPoint, true, $sHost, $sPort,$sProtocolPrefix);
+		$this->m_clConfig = new ConfigurationDialogue($this->m_sService, '80'.$this->m_sPlagePort.'2','http://');
 
 		// Create the logger
 		$monologger = new Logger('phpunit_log');
