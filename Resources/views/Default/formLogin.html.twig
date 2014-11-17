@@ -5,4 +5,9 @@
     <div class="formLogin">
         {{ form(form) }}
     </div>
+	{% if error is defined and error is not null %}
+		<div>
+			{{ error }}
+		</div>
+	{% endif %}
 {% endblock %}
