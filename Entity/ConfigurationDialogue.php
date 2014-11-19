@@ -15,7 +15,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 class ConfigurationDialogue
 {
 
-	public $m_sEndPoint;
+	public $m_sWSDLUri;
 	public $m_bWsdl;
 	public $m_sHost;
 	public $m_nPort;
@@ -23,10 +23,12 @@ class ConfigurationDialogue
 	public $m_nLangCode;
 	public $m_sAPIUUID;
 	public $m_nDureeSession;
+	public $m_sServiceAddress;
 
 	public function __construct($sHost = false, $sPort = false, $sProtocolPrefix = 'http://')
 	{
-		$this->m_sEndPoint=$sProtocolPrefix.$sHost.':'.$sPort.'/getwsdl';
+		$this->m_sServiceAddress=$sProtocolPrefix.$sHost.':'.$sPort.'/';
+		$this->m_sWSDLUri=$this->m_sServiceAddress.'getwsdl';
 		$this->m_bWsdl=true;
 		$this->m_sHost=$sHost;
 		$this->m_nPort=$sPort;
@@ -41,15 +43,17 @@ class ConfigurationDialogue
 	{
 		$this->m_sHost=$sAddress;
 		$this->m_nPort=$sPort;
-		$this->m_sEndPoint=$this->m_sProtocolPrefix.$sAddress.':'.$sPort.'/getwsdl';
+		$this->m_sServiceAddress=$this->m_sProtocolPrefix.$sAddress.':'.$sPort.'/';
+		$this->m_sWSDLUri=$this->m_sServiceAddress.'getwsdl';
 	}
 
-	public function Init($sEndpoint,$bWsdl = false,$sHost = false,$sPort = false, $sProtocolPrefix = 'http://')
+	public function Init($sWSDLUri,$bWsdl = false,$sHost = false,$sPort = false, $sProtocolPrefix = 'http://')
 	{
-		$this->m_sEndPoint=$sEndpoint;
+		$this->m_sWSDLUri=$sWSDLUri;
 		$this->m_bWsdl=$bWsdl;
 		$this->m_sHost=$sHost;
 		$this->m_nPort=$sPort;
 		$this->m_sProtocolPrefix=$sProtocolPrefix;
+		$this->m_sServiceAddress=$sProtocolPrefix.$sHost.':'.$sPort.'/';
 	}
 }

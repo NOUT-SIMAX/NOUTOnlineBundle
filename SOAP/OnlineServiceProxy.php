@@ -103,15 +103,14 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
-     * @param $sEndpoint
-     * @param $bWsdl
-     * @param $sProxyHost
-     * @param $sProxyPort
+     * @param $clConfig
+     * @param $_clLogger
+     * @param $cache
      * @return unknown_type
      */
     public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache=null)
     {
-        parent::__construct($clConfig->m_sEndPoint, $clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
+        parent::__construct($clConfig->m_sWSDLUri, $clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
 
 	    $this->__ConfigurationDialogue = $clConfig;
 
@@ -123,9 +122,9 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 
 	    //il faut lire le début de endpoint pour avoir la version de la wsdl
 	    $this->__clCache = $cache;
-	    if (file_exists($clConfig->m_sEndPoint))
+	    if (file_exists($clConfig->m_sWSDLUri))
 	    {
-		    $fHandle = fopen($clConfig->m_sEndPoint, "r");
+		    $fHandle = fopen($clConfig->m_sWSDLUri, "r");
 		    $sDebutWSDL = fgets($fHandle, 250);
 		    fclose($fHandle);
 

@@ -20,7 +20,8 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
@@ -88,11 +89,19 @@ class DefaultController extends Controller
 
 	/**
 	 * @param $host
-	 * @return OnlineServiceProxy
+	 * @return SOAPProxy
 	 */
-	protected function _clGetOnlineProxy($host)
+	protected function _clGetSOAPProxy($host)
 	{
-		return $this->get('nout_online.service_factory')->clGetServiceProxy($this->_clGetConfiguration($host));
+		return $this->get('nout_online.service_factory')->clGetSOAPProxy($this->_clGetConfiguration($host));
+	}
+	/**
+	 * @param $host
+	 * @return RESTProxy
+	 */
+	protected function _clGetRESTProxy($host)
+	{
+		return $this->get('nout_online.service_factory')->clGetRESTProxy($this->_clGetConfiguration($host));
 	}
 
 	protected function _VarDumpRes($sOperation, $ret)
@@ -105,10 +114,10 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @return string
 	 */
-	protected function _sConnexion(OnlineServiceProxy $OnlineProxy)
+	protected function _sConnexion(SOAPProxy $OnlineProxy)
 	{
 		//GetTokenSession
 		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession();
@@ -122,7 +131,7 @@ class DefaultController extends Controller
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
-		$clOptionDialogue->DisplayValue = OnlineServiceProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;;
+		$clOptionDialogue->DisplayValue = SOAPProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;;
 		$clOptionDialogue->Readable = 0;
 		$clOptionDialogue->EncodingOutput = 0;
 		$clOptionDialogue->LanguageCode = 12;
@@ -144,7 +153,7 @@ class DefaultController extends Controller
 		return $TabHeader;
 	}
 
-	protected function _bDeconnexion(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	protected function _bDeconnexion(SOAPProxy $OnlineProxy, $sTokenSession)
 	{
 		//récupération des headers
 		$TabHeader = $this->_aGetTabHeader($sTokenSession);
@@ -163,7 +172,7 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -185,7 +194,7 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//GetTokenSession
 		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
@@ -207,7 +216,7 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 		//GetTokenSession
 		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
 
@@ -327,12 +336,12 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @return XMLResponseWS
 	 */
-	protected function _sList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte='', $displayMode=XMLResponseWS::DISPLAYMODE_LISTE)
+	protected function _sList(SOAPProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte='', $displayMode=XMLResponseWS::DISPLAYMODE_LISTE)
 	{
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
@@ -344,13 +353,13 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sIDActionContexte
 	 * @param $TabIDColonne
 	 * @return XMLResponseWS
 	 */
-	protected function _sGetCalculation(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabIDColonne)
+	protected function _sGetCalculation(SOAPProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabIDColonne)
 	{
 		$clParamGetCalculation = new GetCalculation();
 		$clParamGetCalculation->ColList=new ColListType($TabIDColonne);
@@ -376,7 +385,7 @@ class DefaultController extends Controller
 	public function listAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -410,14 +419,14 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sIDActionContexte
 	 * @param $form
 	 * @param $index
 	 * @return XMLResponseWS
 	 */
-	protected function _sGetChart(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $form, $index)
+	protected function _sGetChart(SOAPProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $form, $index)
 	{
 		$clParamChart = new GetChart();
 		$clParamChart->Height = 500;
@@ -432,14 +441,14 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sIDActionContexte
 	 * @param $form
 	 * @param $index
 	 * @return XMLResponseWS
 	 */
-	protected function _sSelectItems(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabSelection)
+	protected function _sSelectItems(SOAPProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabSelection)
 	{
 		$clParamSelectItems = new SelectItems();
 		$clParamSelectItems->items = implode('|',$TabSelection);
@@ -456,7 +465,7 @@ class DefaultController extends Controller
 	public function chartAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -503,12 +512,12 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $action
 	 * @return XMLResponseWS
 	 */
-	protected function _sExecute(OnlineServiceProxy $OnlineProxy, $sTokenSession, $action)
+	protected function _sExecute(SOAPProxy $OnlineProxy, $sTokenSession, $action)
 	{
 		$clParamExecute = new Execute();
 
@@ -530,7 +539,7 @@ class DefaultController extends Controller
 	public function executeAction($action, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -551,7 +560,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sActionContexte
 	 * @param $colonne
@@ -559,7 +568,7 @@ class DefaultController extends Controller
 	 *
 	 * @return XMLResponseWS
 	 */
-	protected function _sDrillthrought(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $colonne, $enreg)
+	protected function _sDrillthrought(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $colonne, $enreg)
 	{
 		$clParamDrillThrough = new DrillThrough();
 		$clParamDrillThrough->Record = $enreg;
@@ -578,7 +587,7 @@ class DefaultController extends Controller
 	public function drillthroughtAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -614,14 +623,14 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $colonne
 	 * @param $valeur
 	 * @return XMLResponseWS
 	 */
-	protected function _sRequest(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
+	protected function _sRequest(SOAPProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
 	{
 		$clFileNPI = new ConditionFileNPI();
 		$clFileNPI->EmpileCondition($colonne, ConditionColonne::COND_EQUAL, $valeur);
@@ -644,7 +653,7 @@ class DefaultController extends Controller
 	public function requestAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -675,7 +684,7 @@ class DefaultController extends Controller
 	public function requestParamAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -703,12 +712,12 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @return XMLResponseWS
 	 */
-	protected function _sSearch(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
+	protected function _sSearch(SOAPProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamSearch = new Search();
 		$clParamSearch->Table = $form;
@@ -725,7 +734,7 @@ class DefaultController extends Controller
 	public function searchAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -747,13 +756,13 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $id
 	 * @return XMLResponseWS
 	 */
-	protected function _sDisplay(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $id)
+	protected function _sDisplay(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
 		$clParamDisplay = new Display();
 		$clParamDisplay->Table = $form;
@@ -775,7 +784,7 @@ class DefaultController extends Controller
 	public function displayAction($form, $id, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -797,13 +806,13 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $id
 	 * @return XMLResponseWS
 	 */
-	protected function _sPrint(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $id)
+	protected function _sPrint(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
 		$clParamPrint = new PrintParams();
 		$clParamPrint->Table = $form;
@@ -824,7 +833,7 @@ class DefaultController extends Controller
 	public function printAction($form, $id, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -846,13 +855,13 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $id
 	 * @return XMLResponseWS
 	 */
-	protected function _sSelectPrintTemplate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $modele)
+	protected function _sSelectPrintTemplate(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $modele)
 	{
 		$clParamSelectPrintTemplate = new SelectPrintTemplate();
 		$clParamSelectPrintTemplate->Template = $modele;
@@ -871,7 +880,7 @@ class DefaultController extends Controller
 	public function selectPrintTemplateAction($form, $id, $host, $modele)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -897,7 +906,7 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sGetColInRecord(OnlineServiceProxy $OnlineProxy, $sTokenSession, $colonne, $id, $content)
+	protected function _sGetColInRecord(SOAPProxy $OnlineProxy, $sTokenSession, $colonne, $id, $content)
 	{
 		$clParamGCR = new GetColInRecord();
 		$clParamGCR->Column = $colonne;
@@ -919,7 +928,7 @@ class DefaultController extends Controller
 	public function getColInRecordAction($colonne, $id, $host, $content)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -947,7 +956,7 @@ class DefaultController extends Controller
 	public function getPlanningInfoAction($res, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -977,7 +986,7 @@ class DefaultController extends Controller
 	 * @param $sTokenSession
 	 * @param $nIDContexteAction
 	 */
-	protected function _Validate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
+	protected function _Validate(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
 	{
 		$clReponseWS = $OnlineProxy->validate($this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
 
@@ -993,7 +1002,7 @@ class DefaultController extends Controller
 	 * @param $nIDContexteAction
 	 * @return XMLResponseWS
 	 */
-	protected function _sCancel(OnlineServiceProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
+	protected function _sCancel(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
 	{
 		$clParamCancel = new Cancel();
 		$clParamCancel->ByUser = 1;
@@ -1007,14 +1016,14 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $id
 	 *
 	 * @return XMLResponseWS
 	 */
-	protected function _sModify(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $id)
+	protected function _sModify(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
 		$clParamModify = new Modify();
 		$clParamModify->Table = $form;
@@ -1030,7 +1039,7 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sUpdate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $nIDContexteAction, $form, $id, $colonne, $valeur)
+	protected function _sUpdate(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction, $form, $id, $colonne, $valeur)
 	{
 		$clParamUpdate = new Update();
 		$clParamUpdate->Table = $form;
@@ -1055,7 +1064,7 @@ class DefaultController extends Controller
 	public function modifyAction($form, $id, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1092,13 +1101,13 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 *
 	 * @return XMLResponseWS
 	 */
-	protected function __sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form)
+	protected function __sCreate(SOAPProxy $OnlineProxy, $sTokenSession, $form)
 	{
 		$clParamCreate = new Create();
 		$clParamCreate->Table = $form;
@@ -1109,7 +1118,7 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
-	protected function _sHasChanged(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sContexteAction)
+	protected function _sHasChanged(SOAPProxy $OnlineProxy, $sTokenSession, $sContexteAction)
 	{
 		$clReponseXML = $OnlineProxy->hasChanged($this->_aGetTabHeader($sTokenSession, $sContexteAction));
 		$this->_VarDumpRes('HasChanged', $clReponseXML);
@@ -1118,14 +1127,14 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $colonne
 	 * @param $valeur
 	 * @return null|string
 	 */
-	protected function _sCreate(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
+	protected function _sCreate(SOAPProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
 	{
 		//ici il faut faire le modify
 		$clReponseWS = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
@@ -1158,7 +1167,7 @@ class DefaultController extends Controller
 	public function createAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1174,13 +1183,13 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 *
 	 * @return XMLResponseWS
 	 */
-	protected function _sTransformInto(OnlineServiceProxy $OnlineProxy, $sTokenSession, $formDest, $formSrc, $elemSrc)
+	protected function _sTransformInto(SOAPProxy $OnlineProxy, $sTokenSession, $formDest, $formSrc, $elemSrc)
 	{
 		$clParamTransformInto = new TransformInto();
 		$clParamTransformInto->Table=$formDest;
@@ -1203,7 +1212,7 @@ class DefaultController extends Controller
 	public function transformIntoAction($formSrc, $formDest, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1234,7 +1243,7 @@ class DefaultController extends Controller
 	public function hasChangedAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1281,7 +1290,7 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sSelectForm(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $form)
+	protected function _sSelectForm(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $form)
 	{
 		$clParamSelectForm = new SelectForm();
 		$clParamSelectForm->Form = $form;
@@ -1300,7 +1309,7 @@ class DefaultController extends Controller
 	public function selectFormAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1327,13 +1336,13 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $origine
 	 * @return XMLResponseWS
 	 */
-	protected function _sCreateFrom(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $origine)
+	protected function _sCreateFrom(SOAPProxy $OnlineProxy, $sTokenSession, $form, $origine)
 	{
 		$clParamCreateFrom = new CreateFrom();
 		$clParamCreateFrom->Table = $form;
@@ -1355,7 +1364,7 @@ class DefaultController extends Controller
 	public function createFromAction($form, $origine, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1377,7 +1386,7 @@ class DefaultController extends Controller
 
 
 
-	protected function _sDelete(OnlineServiceProxy $OnlineProxy, $sTokenSession, $form, $id)
+	protected function _sDelete(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
 		$clParamDelete = new Delete();
 		$clParamDelete->Table = $form;
@@ -1393,14 +1402,14 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sActionContexte
 	 * @param MessageBox $clMessageBox
 	 *
 	 * @return XMLResponseWS
 	 */
-	protected function _sConfirmResponse(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, MessageBox $clMessageBox)
+	protected function _sConfirmResponse(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, MessageBox $clMessageBox)
 	{
 		$clConfirm = new ConfirmResponse();
 		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
@@ -1419,7 +1428,7 @@ class DefaultController extends Controller
 	public function deleteAction($form, $colonne, $valeur, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1445,7 +1454,7 @@ class DefaultController extends Controller
 		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 	}
 
-	protected function _sEnterReorderListMode(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte)
+	protected function _sEnterReorderListMode(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte)
 	{
 		$clReponseXML = $OnlineProxy->enterReorderListMode($this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('EnterReorderListMode', $clReponseXML);
@@ -1453,7 +1462,7 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 
-	protected function _sSetOrderList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nOffset)
+	protected function _sSetOrderList(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nOffset)
 	{
 		$clSetOrderList = new SetOrderList($tabIDEnreg, $nOffset);
 
@@ -1463,7 +1472,7 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sReOrderList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nScale, $nMove)
+	protected function _sReOrderList(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nScale, $nMove)
 	{
 		$clReorderList = new ReorderList($tabIDEnreg, $nScale, $nMove);
 		$clReponseXML = $OnlineProxy->reorderList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
@@ -1477,7 +1486,7 @@ class DefaultController extends Controller
 	public function ReorderListAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1523,7 +1532,7 @@ class DefaultController extends Controller
 
 
 
-	protected function _sSetOrderSubList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nOffset)
+	protected function _sSetOrderSubList(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nOffset)
 	{
 		$clSetOrderList = new SetOrderSubList($nIDColonne, $tabIDEnreg, $nOffset);
 
@@ -1533,7 +1542,7 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sReOrderSubList(OnlineServiceProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nScale, $nMove)
+	protected function _sReOrderSubList(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nScale, $nMove)
 	{
 		$clReorderList = new ReorderSubList($nIDColonne, $tabIDEnreg, $nScale, $nMove);
 		$clReponseXML = $OnlineProxy->reorderSubList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
@@ -1547,7 +1556,7 @@ class DefaultController extends Controller
 	public function ReorderSubListAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1607,11 +1616,11 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @return XMLResponseWS
 	 */
-	protected function _sGetStartAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	protected function _sGetStartAutomatism(SOAPProxy $OnlineProxy, $sTokenSession)
 	{
 		$clParamStartAutomatism = new GetStartAutomatism();
 
@@ -1628,7 +1637,7 @@ class DefaultController extends Controller
 	public function getStartAutomatismAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1649,11 +1658,11 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @param OnlineServiceProxy $OnlineProxy
+	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @return XMLResponseWS
 	 */
-	protected function _sGetTemporalAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	protected function _sGetTemporalAutomatism(SOAPProxy $OnlineProxy, $sTokenSession)
 	{
 		$clReponseXML = $OnlineProxy->getTemporalAutomatism($this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('GetTemporalAutomatism', $clReponseXML);
@@ -1666,7 +1675,7 @@ class DefaultController extends Controller
 	public function getTemporalAutomatismAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1683,7 +1692,7 @@ class DefaultController extends Controller
 	}
 
 
-	protected function _sGetEndAutomatism(OnlineServiceProxy $OnlineProxy, $sTokenSession)
+	protected function _sGetEndAutomatism(SOAPProxy $OnlineProxy, $sTokenSession)
 	{
 		$clParamEndAutomatism = new GetEndAutomatism();
 
@@ -1700,7 +1709,7 @@ class DefaultController extends Controller
 	public function getEndAutomatismAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1726,7 +1735,7 @@ class DefaultController extends Controller
 	public function getLanguagesAction($host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//récupération des langues
 		$clReponseXML = $OnlineProxy->getLanguages($this->_aGetTabHeader(''));
@@ -1743,7 +1752,7 @@ class DefaultController extends Controller
 	public function getTableChildAction($form, $host)
 	{
 		ob_start();
-		$OnlineProxy = $this->_clGetOnlineProxy($host);
+		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
@@ -1926,6 +1935,28 @@ RESULTAT;
 		var_dump($sSoap);
 		var_dump(str_replace(array("\t", "\n", "\r"), array("","",""), $sResultatAttendu));
 		var_dump(str_replace(array("\t", "\n", "\r"), array("","",""), $sResultatAttendu)==$sSoap);
+
+		$containt = ob_get_contents();
+		ob_get_clean();
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+	}
+
+
+
+	/**
+	 * @Route("/rest_test/{host}", name="rest_test", defaults={"host"=""})
+	 *
+	 */
+	public function restTestAction($host)
+	{
+		ob_start();
+
+		$OnlineProxy = $this->_clGetRESTProxy($host);
+		//$OnlineProxy->bGetUserExists('ninon');
+
+		$sXML = file_get_contents('./bundles/noutonline/test/small-mario.png', null, null, 0, 20);
+		echo $sXML;
+
 
 		$containt = ob_get_contents();
 		ob_get_clean();

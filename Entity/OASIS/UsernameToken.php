@@ -16,7 +16,14 @@ class UsernameToken extends WSDLUsernameToken
 		$this->Username = $sUsername;
 		$this->m_sClearPassword = $sPassword;
 		$this->Password = $this->_getCryptedPassword($sPassword);
-			
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function bIsValid()
+	{
+		return strlen($this->Username)>0;
 	}
 
 	/**

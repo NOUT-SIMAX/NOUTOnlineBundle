@@ -12,7 +12,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
 class OnlineServiceFactory
 {
@@ -33,11 +34,23 @@ class OnlineServiceFactory
 		$this->m_clCache = $cache;
 	}
 
-
-
-	public function clGetServiceProxy(ConfigurationDialogue $clConfiguration)
+	/**
+	 * @param ConfigurationDialogue $clConfiguration
+	 * @return SOAPProxy
+	 */
+	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration)
 	{
-		$OnlineService = new OnlineServiceProxy($clConfiguration, $this->m_clLogger, $this->m_clCache);
+		$OnlineService = new SOAPProxy($clConfiguration, $this->m_clLogger, $this->m_clCache);
+		return $OnlineService;
+	}
+
+	/**
+	 * @param ConfigurationDialogue $clConfiguration
+	 * @return RESTProxy
+	 */
+	public function clGetRESTProxy(ConfigurationDialogue $clConfiguration)
+	{
+		$OnlineService = new RESTProxy($clConfiguration, $this->m_clLogger);
 		return $OnlineService;
 	}
 } 
