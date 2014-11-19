@@ -23,7 +23,7 @@ class DefaultController extends Controller
 	protected function _clGetOnlineProxy()
 	{
 		$clConfiguration = $this->get('nout_online.configuration_dialogue');
-		return $this->get('nout_online.service_factory')->clGetServiceProxy($clConfiguration);
+		return $this->get('nout_online.service_factory')->clGetSOAPProxy($clConfiguration);
 	}
 
 	/**
@@ -68,21 +68,62 @@ class DefaultController extends Controller
     /**
      *  Route de génération du formulaire de connexion
      *
-     * @Route("/connectForm/", name="connectForm")
+     * @Route("/login/", name="login")
      */
-    public function connectForm()
+    public function loginAction()
     {
-        $bConnected = false;
+	    $request = $this->get('request');
+	    $session = $request->getSession();
 
-        //si on a soumission du formulaire, on appelle le controleur fait pour cela
-	    $sLogin = $this->get('request')->get('form')['m_sLogin'];
-        if($sLogin)
-        {
-           return $this->__tryConnect();
-        }
+	    // get the login error if there is one
+	    if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR))
+	    {
+		    $error = $request->attributes->get(SecurityContext::AUTHENTICATION_ERROR);
+	    }
+	    else
+	    {
+		    $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
+		    $session->remove(SecurityContext::AUTHENTICATION_ERROR);
+	    }
+
+	    /*
+	     return $this->render('AcmeSecurityBundle:Security:login.html.twig', array(
+            // last username entered by the user
+            'last_username' => $session->get(SecurityContext::LAST_USERNAME),
+            'error'         => $error,
+        ));
+	     */
 
 	    return $this->_renderConnectForm(null);
+
+
+
     }
+
+	/**
+	 *  Route de génération du formulaire de connexion
+	 *
+	 * @Route("/login_check/", name="login_check")
+	 */
+	public function loginCheckAction()
+	{
+		//si on a soumission du formulaire, on appelle le controleur fait pour cela
+		$sLogin = $this->get('request')->get('form')['m_sLogin'];
+		if($sLogin)
+		{
+			return $this->__tryConnect();
+		}
+	}
+
+	/**
+	 *  Route de génération du formulaire de connexion
+	 *
+	 * @Route("/logout/", name="logout")
+	 */
+	public function logoutAction()
+	{
+
+	}
 
 
     /**
