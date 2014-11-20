@@ -17,6 +17,10 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 
 class OnlineServiceProxy
 {
+	const TYPEUTIL_NONE = 0;
+	const TYPEUTIL_UTILISATEUR = 1;
+	const TYPEUTIL_SUPERVISEUR = 2;
+
 	/**
 	 * classe de configuration
 	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
@@ -107,12 +111,15 @@ class OnlineServiceProxy
 	}
 
 
-
-	public function bGetUserExists($login)
+	/**
+	 * @param $login
+	 * @return int
+	 */
+	public function nGetUserExists($login)
 	{
 		$sURI = $this->_sCreateRequest('GetUserExists', array('login'=>$login), array(), new UsernameToken('',''), '', '');
 
-		return $this->_sExecute('GetUserExists', $sURI, '');
+		return (int)$this->_sExecute('GetUserExists', $sURI, '');
 	}
 
 	protected function _sExecute($sAction, $sURI, $sDestination)
