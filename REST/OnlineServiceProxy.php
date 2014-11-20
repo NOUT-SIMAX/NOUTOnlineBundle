@@ -112,7 +112,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetUserExists', array('login'=>$login), array(), new UsernameToken('',''), '', '');
 
-		$sRet = $this->_sExecute('GetUserExists', $sURI, '');
+		return $this->_sExecute('GetUserExists', $sURI, '');
 	}
 
 	protected function _sExecute($sAction, $sURI, $sDestination)

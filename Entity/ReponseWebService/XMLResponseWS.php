@@ -149,24 +149,35 @@ class XMLResponseWS
 		return $this->m_TabError;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getNumError()
 	{
 		if (!isset($this->m_TabError))
-			return false;
+			return 0;
 
 		return $this->m_TabError[0]->getErreur();
 	}
+
+	/**
+	 * @return int
+	 */
 	public function getCatError()
 	{
 		if (!isset($this->m_TabError))
-			return false;
+			return 0;
 
 		return $this->m_TabError[0]->getCategorie();
 	}
+
+	/**
+	 * @return string
+	 */
 	public function getMessError()
 	{
 		if (!isset($this->m_TabError))
-			return false;
+			return '';
 
 		return $this->m_TabError[0]->getMessage();
 	}
