@@ -1,1 +1,7 @@
-Hello {{ name }}!
+{% extends "NOUTOnlineBundle::layout.html.twig" %}
+
+{% block containt %}
+	<h1>Bonjour {{ username }}</h1>
+	<p>Token de session : {{ tokensession }}</p>
+	<p><a href="{{ path('logout') }}">Se déconnecter</a></p>
+{% endblock %}

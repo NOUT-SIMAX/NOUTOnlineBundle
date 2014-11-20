@@ -43,6 +43,7 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 			// Set some fields
 			$user = new User();
 			$user->setUsername($username);
+			$user->addRole('ROLE_USER');
 			return $user;
 		}
 

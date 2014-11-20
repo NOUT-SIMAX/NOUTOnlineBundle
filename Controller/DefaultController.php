@@ -11,6 +11,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTSessionManagerBundle\Entity\ConnectionInfos;
+use Symfony\Component\Security\Core\SecurityContext;
 
 
 class DefaultController extends Controller
@@ -72,6 +73,23 @@ class DefaultController extends Controller
      */
     public function loginAction()
     {
+
+	    $request = $this->get('request');
+	    $session = $request->getSession();
+	    // get the login error if there is one
+	    if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR)) {
+		    $error = $request->attributes->get(SecurityContext::AUTHENTICATION_ERROR);
+	    } else {
+		    $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
+		    $session->remove(SecurityContext::AUTHENTICATION_ERROR);
+	    }
+	    return $this->render('NOUTSessionManagerBundle:Security:login.html.twig', array(
+		    // last username entered by the user
+		    'last_username' => $session->get(SecurityContext::LAST_USERNAME),
+		    'error'         => $error,
+	    ));
+
+	    /*
 	    $request = $this->get('request');
 	    $session = $request->getSession();
 
@@ -94,7 +112,8 @@ class DefaultController extends Controller
         ));
 	     */
 
-	    return $this->_renderConnectForm(null);
+	    //return $this->_renderConnectForm(null);
+
 
 
 
@@ -103,26 +122,17 @@ class DefaultController extends Controller
 	/**
 	 *  Route de génération du formulaire de connexion
 	 *
-	 * @Route("/login_check/", name="login_check")
+	 * @Route("/", name="session_index")
 	 */
-	public function loginCheckAction()
+	public function indexAction()
 	{
-		//si on a soumission du formulaire, on appelle le controleur fait pour cela
-		$sLogin = $this->get('request')->get('form')['m_sLogin'];
-		if($sLogin)
-		{
-			return $this->__tryConnect();
-		}
-	}
+		$oUser = $this->get('security.context')->getToken()->getUser();
 
-	/**
-	 *  Route de génération du formulaire de connexion
-	 *
-	 * @Route("/logout/", name="logout")
-	 */
-	public function logoutAction()
-	{
-
+		//page d'index
+		return $this->render(
+			'NOUTSessionManagerBundle:Default:index.html.twig',
+			array('username'=>$oUser->getUsername(), 'tokensession'=>$oUser->getTokenSession())
+		);
 	}
 
 

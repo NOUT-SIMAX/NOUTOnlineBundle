@@ -2,10 +2,7 @@ parameters:
 #    noutnout_online.example.class: NOUT\Bundle\NOUTOnlineBundle\Example
 
 services:
-#    noutnout_online.example:
-#        class: %noutnout_online.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
-
+    #http://blog.vandenbrand.org/2012/06/19/symfony2-authentication-provider-authenticate-against-webservice/
     nout_online.user_provider:
         class:      NOUT\Bundle\NOUTSessionManagerBundle\Security\Core\User\NOUTOnlineUserProvider
         arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue]

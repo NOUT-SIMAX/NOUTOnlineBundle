@@ -8,6 +8,9 @@
 
 namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
@@ -72,15 +75,33 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 		}
 		else
 		{
-			if (!$presentedPassword = $token->getCredentials())
+			$presentedPassword = $token->getCredentials();
+
+			$oTokenSession = new GetTokenSession();
+			$oTokenSession->UsernameToken = new UsernameToken($user->getUsername(), $presentedPassword);
+
+
+			try
 			{
-				throw new BadCredentialsException('The presented password cannot be empty.');
+				$clReponseXML = $this->m_clSOAPProxy->getTokenSession($oTokenSession);
+			}
+			catch(\Exception $e)
+			{
+				//erreur à la connexion
+				$clReponseXML = $this->m_clSOAPProxy->getXMLResponseWS();
+				if ($clReponseXML instanceof XMLResponseWS)
+				{
+					throw new BadCredentialsException($clReponseXML->getMessError());
+				}
+				else
+				{
+					throw new BadCredentialsException('The presented password is invalid.');
+				}
+
 			}
 
-			if (! $this->service->authenticate($token->getUser(), $presentedPassword))
-			{
-				throw new BadCredentialsException('The presented password is invalid.');
-			}
+			$user->setPassword($presentedPassword);
+			$user->setTokenSession($clReponseXML->sGetTokenSession());
 		}
 	}
 

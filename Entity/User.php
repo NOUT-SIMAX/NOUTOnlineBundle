@@ -9,26 +9,115 @@
 namespace NOUT\Bundle\NOUTSessionManagerBundle\Entity;
 
 
-class User
+use Symfony\Component\Security\Core\User\UserInterface;
+
+class User implements UserInterface
 {
-	public $username;
+	/**
+	 * @var string
+	 */
+	protected $m_sUsername;
+	/**
+	 * @var string
+	 */
+	protected $m_sPassword;
+	/**
+	 * @var array
+	 */
+	protected $m_TabRoles;
+
+	/**
+	 * @var string
+	 */
+	protected $m_sTokenSession;
+
+
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getRoles()
+	{
+		return $this->m_TabRoles;
+	}
+
+	/**
+	 * @param $sRole
+	 * @return $this
+	 */
+	public function addRole($sRole)
+	{
+		$this->m_TabRoles[]=$sRole;
+		return $this;
+	}
+
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getPassword()
+	{
+		return $this->m_sPassword;
+	}
+
+	/**
+	 * @param $sPass
+	 * @return $this
+	 */
+	public function setPassword($sPass)
+	{
+		$this->m_sPassword=$sPass; return $this;
+	}
+
+	/**
+	 * Returns the salt that was originally used to encode the password.
+	 *
+	 * This can return null if the password was not encoded using a salt.
+	 *
+	 * @return string|null The salt
+	 */
+	public function getSalt() { return null; }
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getUsername()
+	{
+		return $this->m_sUsername;
+	}
 
 	/**
 	 * @param mixed $username
 	 */
 	public function setUsername($username)
 	{
-		$this->username = $username;
+		$this->m_sUsername = $username;
 		return $this;
 	}
 
 	/**
-	 * @return mixed
+	 * Removes sensitive data from the user.
+	 *
+	 * This is important if, at any given point, sensitive information like
+	 * the plain-text password is stored on this object.
 	 */
-	public function getUsername()
+	public function eraseCredentials() {}
+
+	/**
+	 * @param string $m_sTokenSession
+	 */
+	public function setTokenSession($sTokenSession)
 	{
-		return $this->username;
+		$this->m_sTokenSession = $sTokenSession;
+		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getTokenSession()
+	{
+		return $this->m_sTokenSession;
+	}
 
 } 

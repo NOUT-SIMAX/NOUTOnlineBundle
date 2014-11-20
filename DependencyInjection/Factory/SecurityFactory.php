@@ -18,7 +18,7 @@ class SecurityFactory extends FormLoginFactory
 {
 	public function getKey()
 	{
-		return 'noutonline-login';
+		return 'noutonline_login';
 	}
 
 	protected function getListenerId()
