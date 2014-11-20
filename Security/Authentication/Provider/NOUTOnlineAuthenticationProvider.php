@@ -11,6 +11,12 @@ namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+
+use Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
@@ -19,13 +25,16 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Authentication\Provider\UserAuthenticationProvider;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 
-class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
+/**
+ * classe basée sur Symfony\Component\Security\Core\Authentication\Provider\UserAuthenticationProvider
+ *
+ *
+ * Class NOUTOnlineAuthenticationProvider
+ * @package NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider
+ */
+class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 {
 	/**
 	 * @var \Symfony\Component\Security\Core\User\UserProviderInterface
@@ -35,6 +44,10 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 	 * @var \Symfony\Component\Security\Core\Encoder\EncoderFactory
 	 */
 	private $encoderFactory;
+
+	private $hideUserNotFoundExceptions;
+	private $userChecker;
+	private $providerKey;
 
 	/**
 	 * @var SOAPProxy
@@ -52,7 +65,17 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 	 */
 	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, EncoderFactoryInterface $encoderFactory, $hideUserNotFoundExceptions = true )
 	{
-		parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
+		if (empty($providerKey))
+		{
+			throw new \InvalidArgumentException('$providerKey must not be empty.');
+		}
+
+		$this->userChecker = $userChecker;
+		$this->providerKey = $providerKey;
+		$this->hideUserNotFoundExceptions = $hideUserNotFoundExceptions;
+
+
+
 		$this->userProvider   = $userProvider;
 		$this->encoderFactory = $encoderFactory; // usually this is responsible for validating passwords
 
@@ -62,7 +85,69 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function checkAuthentication(UserInterface $user, UsernamePasswordToken $token)
+	public function authenticate(TokenInterface $token)
+	{
+		if (!$this->supports($token))
+			return;
+
+		$username = $token->getUsername();
+		if (empty($username))
+			$username = 'NONE_PROVIDED';
+
+		try
+		{
+			$user = $this->_RetrieveUser($username, $token);
+		}
+		catch (UsernameNotFoundException $notFound)
+		{
+			if ($this->hideUserNotFoundExceptions)
+			{
+				throw new BadCredentialsException('Bad credentials', 0, $notFound);
+			}
+			$notFound->setUsername($username);
+			throw $notFound;
+		}
+
+		if (!$user instanceof UserInterface)
+		{
+			throw new AuthenticationServiceException('retrieveUser() must return a UserInterface.');
+		}
+
+		try
+		{
+			$this->userChecker->checkPreAuth($user);
+			$sTokenSession = $this->_CheckAuthentication($user, $token);
+			$this->userChecker->checkPostAuth($user);
+		}
+		catch (BadCredentialsException $e)
+		{
+			if ($this->hideUserNotFoundExceptions)
+			{
+				throw new BadCredentialsException('Bad credentials', 0, $e);
+			}
+
+			throw $e;
+		}
+
+		$authenticatedToken = new NOUTToken($user, $token->getCredentials(), $this->providerKey, $this->_aGetRoles($user, $token));
+		$authenticatedToken->setAttributes($token->getAttributes());
+		$authenticatedToken->setSessionToken($sTokenSession);
+
+		return $authenticatedToken;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function supports(TokenInterface $token)
+	{
+		return ($token instanceof UsernamePasswordToken) && ($this->providerKey === $token->getProviderKey());
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function _CheckAuthentication(UserInterface $user, UsernamePasswordToken $token)
 	{
 		$currentUser = $token->getUser();
 
@@ -72,6 +157,12 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 			{
 				throw new BadCredentialsException('The credentials were changed from another session.');
 			}
+
+			if (strlen($token->getSessionToken())==0)
+			{
+				throw new BadCredentialsException('The session token is empty.');
+			}
+			return $token->getSessionToken();
 		}
 		else
 		{
@@ -79,7 +170,6 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 
 			$oTokenSession = new GetTokenSession();
 			$oTokenSession->UsernameToken = new UsernameToken($user->getUsername(), $presentedPassword);
-
 
 			try
 			{
@@ -101,14 +191,14 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 			}
 
 			$user->setPassword($presentedPassword);
-			$user->setTokenSession($clReponseXML->sGetTokenSession());
+			return $clReponseXML->sGetTokenSession();
 		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function retrieveUser($username, UsernamePasswordToken $token)
+	protected function _RetrieveUser($username, UsernamePasswordToken $token)
 	{
 		$user = $token->getUser();
 		if ($user instanceof UserInterface)
@@ -135,6 +225,31 @@ class NOUTOnlineAuthenticationProvider extends UserAuthenticationProvider
 		{
 			throw new AuthenticationServiceException($repositoryProblem->getMessage(), $token, 0, $repositoryProblem);
 		}
+	}
+
+
+
+	/**
+	 * Retrieves roles from user and appends SwitchUserRole if original token contained one.
+	 *
+	 * @param UserInterface  $user  The user
+	 * @param TokenInterface $token The token
+	 *
+	 * @return Role[] The user roles
+	 */
+	private function _aGetRoles(UserInterface $user, TokenInterface $token)
+	{
+		$roles = $user->getRoles();
+
+		foreach ($token->getRoles() as $role) {
+			if ($role instanceof SwitchUserRole) {
+				$roles[] = $role;
+
+				break;
+			}
+		}
+
+		return $roles;
 	}
 }
 

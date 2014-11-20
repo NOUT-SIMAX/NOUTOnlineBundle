@@ -26,12 +26,6 @@ class User implements UserInterface
 	 */
 	protected $m_TabRoles;
 
-	/**
-	 * @var string
-	 */
-	protected $m_sTokenSession;
-
-
 
 	/**
 	 * @inheritdoc
@@ -102,22 +96,4 @@ class User implements UserInterface
 	 * the plain-text password is stored on this object.
 	 */
 	public function eraseCredentials() {}
-
-	/**
-	 * @param string $m_sTokenSession
-	 */
-	public function setTokenSession($sTokenSession)
-	{
-		$this->m_sTokenSession = $sTokenSession;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getTokenSession()
-	{
-		return $this->m_sTokenSession;
-	}
-
-} 
+}

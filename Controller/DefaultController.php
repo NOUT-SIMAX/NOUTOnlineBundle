@@ -126,12 +126,13 @@ class DefaultController extends Controller
 	 */
 	public function indexAction()
 	{
-		$oUser = $this->get('security.context')->getToken()->getUser();
+		$oToken = $this->get('security.context')->getToken();
+		$oUser = $oToken->getUser();
 
 		//page d'index
 		return $this->render(
 			'NOUTSessionManagerBundle:Default:index.html.twig',
-			array('username'=>$oUser->getUsername(), 'tokensession'=>$oUser->getTokenSession())
+			array('username'=>$oUser->getUsername(), 'tokensession'=>$oToken->getSessionToken())
 		);
 	}
 

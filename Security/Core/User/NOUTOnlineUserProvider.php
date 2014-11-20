@@ -39,11 +39,13 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 	public function loadUserByUsername($username)
 	{
 		// Try service
-		if ($this->m_clRESTProxy->bGetUserExists($username)) {
+		$nTypeUtilisateur = $this->m_clRESTProxy->nGetUserExists($username);
+		if ($nTypeUtilisateur != RESTProxy::TYPEUTIL_NONE)
+		{
 			// Set some fields
 			$user = new User();
 			$user->setUsername($username);
-			$user->addRole('ROLE_USER');
+			$user->addRole($nTypeUtilisateur==RESTProxy::TYPEUTIL_UTILISATEUR ? 'ROLE_USER' : 'ROLE_SUPERVISEUR');
 			return $user;
 		}
 
