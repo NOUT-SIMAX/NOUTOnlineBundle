@@ -49,6 +49,9 @@ class NOUTOnlineExtension extends \Twig_Extension {
 	public function beautifySOAPQuery($query)
 	{
 		$nPos = strpos($query, '<?xml ');
+		if (!$nPos)
+			return $query;
+
 		$header = substr($query, 0, $nPos);
 		$xml = substr($query, $nPos);
 
