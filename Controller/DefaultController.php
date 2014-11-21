@@ -16,37 +16,6 @@ use Symfony\Component\Security\Core\SecurityContext;
 
 class DefaultController extends Controller
 {
-    //TODO: controlleur trop volumineux, sortir le code metier
-
-	/**
-	 * @return OnlineServiceProxy
-	 */
-	protected function _clGetOnlineProxy()
-	{
-		$clConfiguration = $this->get('nout_online.configuration_dialogue');
-		return $this->get('nout_online.service_factory')->clGetSOAPProxy($clConfiguration);
-	}
-
-	/**
-	 * fonction permettant de generer les info de connexion pour recuperer le token de session
-	 *
-	 * @param string $sLogin login (default:emtpy)
-	 * @param string $sPass (default:emtpy)
-	 * @return object instance of GetTokenSession
-	 */
-	private function __clGetTokenSessionParams($sLogin ='', $sPass = '')
-	{
-		$clTokenSession = new GetTokenSession();
-		$clTokenSession->UsernameToken = new UsernameToken($sLogin, $sPass);
-
-		//TODO : gestion langue gestion extranet
-		$clTokenSession->DefaultClientLanguageCode=12;
-
-		return $clTokenSession;
-	}
-	//--------
-
-
 	protected function _renderConnectForm($error)
 	{
 		//si on est pas connecté on affiche le formulaire de connexion
@@ -88,35 +57,6 @@ class DefaultController extends Controller
 		    'last_username' => $session->get(SecurityContext::LAST_USERNAME),
 		    'error'         => $error,
 	    ));
-
-	    /*
-	    $request = $this->get('request');
-	    $session = $request->getSession();
-
-	    // get the login error if there is one
-	    if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR))
-	    {
-		    $error = $request->attributes->get(SecurityContext::AUTHENTICATION_ERROR);
-	    }
-	    else
-	    {
-		    $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
-		    $session->remove(SecurityContext::AUTHENTICATION_ERROR);
-	    }
-
-	    /*
-	     return $this->render('AcmeSecurityBundle:Security:login.html.twig', array(
-            // last username entered by the user
-            'last_username' => $session->get(SecurityContext::LAST_USERNAME),
-            'error'         => $error,
-        ));
-	     */
-
-	    //return $this->_renderConnectForm(null);
-
-
-
-
     }
 
 	/**
@@ -135,65 +75,4 @@ class DefaultController extends Controller
 			array('username'=>$oUser->getUsername(), 'tokensession'=>$oToken->getSessionToken())
 		);
 	}
-
-
-    /**
-     * fonction qui permet d'executer la tentative de connexion
-     */
-    private function __tryConnect()
-    {
-	    //recuperation du proxy simaxOnline
-	    $OnlineProxy = $this->_clGetOnlineProxy();
-
-        $oRequest = $this->get('request')/*->request*/; //->request pour uniquement les valeur post
-	    $aForm = $oRequest->get('form');
-
-        //execution requete de connexion
-        try
-        {
-            $clReponseXML = $OnlineProxy->getTokenSession($this->__clGetTokenSessionParams($aForm['m_sLogin'], $aForm['m_sPass']));
-        }
-        catch(SOAPException $clSoapEx)
-        {
-            //on retourne a la page d'origine en fournissant message d'erreur et code erreur
-
-            //TODO: return le form avec le message d'erreur
-	        $clReponseXML = $OnlineProxy->getXMLResponseWS();
-	        return $this->_renderConnectForm($clReponseXML->getMessError());
-        }
-
-
-	    return $this->_renderConnectForm('connexion OK');
-/*
-       if( $this->__bCheckConnection($clReponseXML))
-       {
-           //la connexion reussis on redirige vers un nouveau controlleur
-       }
-       else
-       {
-           //echec connexion, on reaffiche le formulaire de connexion
-           //comment
-       }*/
-    }
-    //-------
-
-
-    private function __fGenerateLogForm()
-    {
-
-    }
-    //-----
-
-    private function __bCheckConnection(XMLResponseWS $clResponseXml)
-    {
-//        $clXmlRespParser = new XMLResponseWS($clResponseXml->sGetXML());
-
-//        var_dump($clXmlRespParser);
-
-    }
-    //---------
-
-
-
-
 }
