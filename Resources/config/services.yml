@@ -29,7 +29,7 @@ services:
 
     nout_online.configuration_dialogue:
         class:      NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
-        arguments:  ['%nout_online.address%', '%nout_online.port%', '%nout_online.protocole%']
+        arguments:  ['%nout_online.address%', '%nout_online.port%', '%nout_online.protocole%', '%nout_online.apiuuid%']
 
     #factory pour le service
     nout_online.service_factory:

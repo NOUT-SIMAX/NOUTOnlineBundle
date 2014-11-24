@@ -61,8 +61,8 @@ class OnlineServiceProxy
 		$sBottom .= '&created=' . urlencode($clTokenSession->Created);
 		$sBottom .= '&SessionToken=' . urlencode($sTokenSession);
 
-		if (strlen($this->__ConfigurationDialogue->m_sAPIUUID) > 0)
-			$sBottom .= '&APIUUID=' . urlencode($this->__ConfigurationDialogue->m_sAPIUUID );
+		if (strlen($this->__ConfigurationDialogue->getAPIUUID()) > 0)
+			$sBottom .= '&APIUUID=' . urlencode($this->__ConfigurationDialogue->getAPIUUID() );
 
 		if(strlen(sIdContext) > 0)
 			$sBottom .= '&ActionContext=' . urlencode($sIdContext);
@@ -84,7 +84,7 @@ class OnlineServiceProxy
 	 */
 	private function _sCreateRequest($sAction, array $aTabParam, array $aTabOption, UsernameToken $clUsernameToken, $sTokenSession, $sIDContexte='')
 	{
-		$sUrl = $this->__ConfigurationDialogue->m_sServiceAddress.$sAction.'?';
+		$sUrl = $this->__ConfigurationDialogue->getServiceAddress().$sAction.'?';
 		//la liste des paramètres (entre ? et ;)
 		if(is_array($aTabParam) && count($aTabParam)>0)
 		{

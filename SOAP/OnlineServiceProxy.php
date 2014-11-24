@@ -110,11 +110,11 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
      */
     public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache=null)
     {
-        parent::__construct($clConfig->m_sWSDLUri, $clConfig->m_bWsdl,$clConfig->m_sHost,$clConfig->m_nPort);
+        parent::__construct($clConfig->getWSDLUri(), $clConfig->getWsdl(), $clConfig->getHost(),$clConfig->getPort());
 
 	    $this->__ConfigurationDialogue = $clConfig;
 
-        $this->forceEndpoint = $clConfig->m_sProtocolPrefix . $clConfig->m_sHost . ':' . $clConfig->m_nPort; //on force l'ip et le port du fichier config
+        $this->forceEndpoint = $clConfig->getProtocolPrefix() . $clConfig->getHost() . ':' . $clConfig->getPort(); //on force l'ip et le port du fichier config
         // on force le timeout a 300s
         $this->timeout = 300;
         $this->response_timeout = 300;
@@ -122,9 +122,9 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 
 	    //il faut lire le début de endpoint pour avoir la version de la wsdl
 	    $this->__clCache = $cache;
-	    if (file_exists($clConfig->m_sWSDLUri))
+	    if (file_exists($clConfig->getWSDLUri()))
 	    {
-		    $fHandle = fopen($clConfig->m_sWSDLUri, "r");
+		    $fHandle = fopen($clConfig->getWSDLUri(), "r");
 		    $sDebutWSDL = fgets($fHandle, 250);
 		    fclose($fHandle);
 
@@ -177,7 +177,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 			|| !isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
 			return ;
 
-		$this->__clCache->save($this->__sVersionWSDL, $this->wsdl, $this->__ConfigurationDialogue->m_nDureeSession);
+		$this->__clCache->save($this->__sVersionWSDL, $this->wsdl, $this->__ConfigurationDialogue->getDureeSession());
 	}
 
 	/**
@@ -469,7 +469,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
             $this->__aListHeaders['OptionDialogue']['LanguageCode'] == ''
         )
         {
-            $this->__aListHeaders['OptionDialogue']['LanguageCode'] = $this->__ConfigurationDialogue->m_nLangCode;
+            $this->__aListHeaders['OptionDialogue']['LanguageCode'] = $this->__ConfigurationDialogue->getLangCode();
         }
 
         //si on a pas de withFieldStateControl precisé, on le mets à 1 (pour recuperer les controle d'etat de champ)
@@ -485,7 +485,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 
 
         //on ajoute l'id application
-        $this->__aListHeaders['APIUUID'] = $this->__ConfigurationDialogue->m_sAPIUUID;
+        $this->__aListHeaders['APIUUID'] = $this->__ConfigurationDialogue->getAPIUUID();
 
 	    //
 	    if (isset($this->__clLogger)) //log des requetes

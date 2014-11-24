@@ -51,6 +51,8 @@ class Configuration implements ConfigurationInterface
 		            ->cannotBeEmpty()
 				    ->defaultValue('8052')
 			    ->end()
+		        ->scalarNode('apiuuid')
+		        ->end()
 		    ->end()
 	    ;
 
