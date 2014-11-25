@@ -4,6 +4,7 @@ namespace NOUT\Bundle\NOUTSessionManagerBundle\Controller;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTSessionManagerBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -16,33 +17,14 @@ use Symfony\Component\Security\Core\SecurityContext;
 
 class DefaultController extends Controller
 {
-	protected function _renderConnectForm($error)
-	{
-		//si on est pas connecté on affiche le formulaire de connexion
-		$clConnectInfo = new ConnectionInfos();
-
-		$clFormBuilder = $this->get('form.factory')->createBuilder('form', $clConnectInfo);
-
-		$clFormBuilder
-			->add('m_sLogin', 'text', array('label' => 'nom d\'utilisateur'))
-			->add('m_sPass', 'password', array('label' => 'mot de passe', 'required' => false))
-			->add('connexion', 'submit');
-
-		//generation du formulaire avec le builder
-		return $this->render(
-			'NOUTSessionManagerBundle:Default:formLogin.html.twig',
-			array('form'=> $clFormBuilder->getForm()->createView(), 'error'=>$error)
-		);
-	}
-
     /**
-     *  Route de génération du formulaire de connexion
+     * Route de génération du formulaire de connexion
+     * Comme c'est pour l'identification, on n'utilise pas de formBuilder, uniquement un template twig avec le formulaire dedans
      *
      * @Route("/login/", name="login")
      */
     public function loginAction()
     {
-
 	    $request = $this->get('request');
 	    $session = $request->getSession();
 	    // get the login error if there is one
@@ -52,11 +34,13 @@ class DefaultController extends Controller
 		    $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
 		    $session->remove(SecurityContext::AUTHENTICATION_ERROR);
 	    }
+
 	    return $this->render('NOUTSessionManagerBundle:Security:login.html.twig', array(
 		    // last username entered by the user
 		    'last_username' => $session->get(SecurityContext::LAST_USERNAME),
 		    'error'         => $error,
 	    ));
+
     }
 
 	/**
