@@ -3,11 +3,11 @@ parameters:
 
 services:
     #http://blog.vandenbrand.org/2012/06/19/symfony2-authentication-provider-authenticate-against-webservice/
-    nout_online.user_provider:
+    nout_session.user_provider:
         class:      NOUT\Bundle\NOUTSessionManagerBundle\Security\Core\User\NOUTOnlineUserProvider
         arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue]
 
-    nout_online.authentication_provider:
+    nout_session.authentication_provider:
         class:      NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTOnlineAuthenticationProvider
         arguments:
             - @nout_online.service_factory

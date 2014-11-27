@@ -18,7 +18,7 @@ class SecurityFactory extends FormLoginFactory
 {
 	public function getKey()
 	{
-		return 'noutonline_login';
+		return 'noutsession_login';
 	}
 
 	protected function getListenerId()
@@ -28,9 +28,9 @@ class SecurityFactory extends FormLoginFactory
 
 	protected function createAuthProvider(ContainerBuilder $container, $id, $config, $userProviderId)
 	{
-		$provider = 'nout_online.authentication_provider.'.$id;
+		$provider = 'nout_session.authentication_provider.'.$id;
 		$container
-			->setDefinition($provider, new DefinitionDecorator('nout_online.authentication_provider'))
+			->setDefinition($provider, new DefinitionDecorator('nout_session.authentication_provider'))
 			->replaceArgument(2, new Reference($userProviderId))
 			->replaceArgument(4, $id)
 		;
