@@ -68,7 +68,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 class DefaultController extends Controller
 {
 	/**
-	 * @Route("/", name="index")
+	 * @Route("/", name="online_index")
 	 */
     public function indexAction()
     {
@@ -166,7 +166,7 @@ class DefaultController extends Controller
 
 	/**
 	 * pour tester la connexion/déconnexion
-	 * @Route("/connexion/{host}", name="connexion", defaults={"host"=""})
+	 * @Route("/connexion/{host}", name="online_connexion", defaults={"host"=""})
 	 */
 	public function connexionAction($host)
 	{
@@ -188,7 +188,7 @@ class DefaultController extends Controller
 
 	/**
 	 * pour tester la connexion/déconnexion
-	 * @Route("/cnx_error/{error}/{host}", name="cnx_error", defaults={"host"=""})
+	 * @Route("/cnx_error/{error}/{host}", name="online_cnx_error", defaults={"host"=""})
 	 */
 	public function cnxErrorAction($host, $error)
 	{
@@ -210,7 +210,7 @@ class DefaultController extends Controller
 
 	/**
 	 * pour tester la connexion/déconnexion
-	 * @Route("/cnx_try_error/{error}/{host}", name="cnx_try_error", defaults={"host"=""})
+	 * @Route("/cnx_try_error/{error}/{host}", name="online_cnx_try_error", defaults={"host"=""})
 	 */
 	public function cnxTryErrorAction($host, $error)
 	{
@@ -380,7 +380,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/list/{form}/{host}", name="list", defaults={"host"=""})
+	 * @Route("/list/{form}/{host}", name="online_list", defaults={"host"=""})
 	 */
 	public function listAction($form, $host)
 	{
@@ -460,7 +460,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/chart/{form}/{host}", name="chart", defaults={"host"=""})
+	 * @Route("/chart/{form}/{host}", name="online_chart", defaults={"host"=""})
 	 */
 	public function chartAction($form, $host)
 	{
@@ -534,7 +534,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/execute/{action}/{host}", name="execute", defaults={"host"=""})
+	 * @Route("/execute/{action}/{host}", name="online_execute", defaults={"host"=""})
 	 */
 	public function executeAction($action, $host)
 	{
@@ -582,7 +582,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/drillthrought/{host}", name="drillthrought", defaults={"host"=""})
+	 * @Route("/drillthrought/{host}", name="online_drillthrought", defaults={"host"=""})
 	 */
 	public function drillthroughtAction($host)
 	{
@@ -648,7 +648,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/request/{form}/{colonne}/{valeur}/{host}", name="request", defaults={"host"=""})
+	 * @Route("/request/{form}/{colonne}/{valeur}/{host}", name="online_request", defaults={"host"=""})
 	 */
 	public function requestAction($form, $colonne, $valeur, $host)
 	{
@@ -674,7 +674,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/request_param/{host}", name="request_param", defaults={"host"=""})
+	 * @Route("/request_param/{host}", name="online_request_param", defaults={"host"=""})
 	 *
 	 * <RequestParam><Table>8267</Table>
 	 * <CondList>
@@ -729,7 +729,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/search/{form}/{host}", name="search", defaults={"host"=""})
+	 * @Route("/search/{form}/{host}", name="online_search", defaults={"host"=""})
 	 */
 	public function searchAction($form, $host)
 	{
@@ -779,7 +779,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/display/{form}/{id}/{host}", name="display", defaults={"host"=""})
+	 * @Route("/display/{form}/{id}/{host}", name="online_display", defaults={"host"=""})
 	 */
 	public function displayAction($form, $id, $host)
 	{
@@ -828,7 +828,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/print/{form}/{id}/{host}", name="print", defaults={"host"=""})
+	 * @Route("/print/{form}/{id}/{host}", name="online_print", defaults={"host"=""})
 	 */
 	public function printAction($form, $id, $host)
 	{
@@ -875,7 +875,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/select_print_template/{form}/{id}/{modele}/{host}", name="select_print_template", defaults={"host"=""})
+	 * @Route("/select_print_template/{form}/{id}/{modele}/{host}", name="online_select_print_template", defaults={"host"=""})
 	 */
 	public function selectPrintTemplateAction($form, $id, $host, $modele)
 	{
@@ -923,7 +923,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/getcolinrecord/{colonne}/{id}/{content}/{host}", name="getcolinrecord", defaults={"host"=""})
+	 * @Route("/getcolinrecord/{colonne}/{id}/{content}/{host}", name="online_getcolinrecord", defaults={"host"=""})
 	 */
 	public function getColInRecordAction($colonne, $id, $host, $content)
 	{
@@ -950,7 +950,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/get_planning_info/{res}/{host}", name="get_planning_info", defaults={"host"=""})
+	 * @Route("/get_planning_info/{res}/{host}", name="online_get_planning_info", defaults={"host"=""})
 	 * <Resource>36683203627649</Resource><StartTime>20140901000000</StartTime><EndTime>20140907000000</EndTime>
 	 */
 	public function getPlanningInfoAction($res, $host)
@@ -1057,7 +1057,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/modify/{form}/{id}/{colonne}/{valeur}/{host}", name="modify", defaults={"host"=""})
+	 * @Route("/modify/{form}/{id}/{colonne}/{valeur}/{host}", name="online_modify", defaults={"host"=""})
 	 *
 	 * exemple GUID : /modify/41296233836619/219237638150324/45208949043557/deux
 	 */
@@ -1160,7 +1160,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/create/{form}/{colonne}/{valeur}/{host}", name="create", defaults={"host"=""})
+	 * @Route("/create/{form}/{colonne}/{valeur}/{host}", name="online_create", defaults={"host"=""})
 	 *
 	 * exemple GUID : /create/41296233836619/45208949043557/trois
 	 */
@@ -1205,7 +1205,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/transform_into/{formSrc}/{formDest}/{colonne}/{valeur}/{host}", name="transform_into", defaults={"host"=""})
+	 * @Route("/transform_into/{formSrc}/{formDest}/{colonne}/{valeur}/{host}", name="online_transform_into", defaults={"host"=""})
 	 *
 	 * exemple GUID : /transform_into/51346223489588/40810668714136/40896568059607/trois
 	 */
@@ -1236,7 +1236,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/has_changed/{form}/{colonne}/{valeur}/{host}", name="has_changed", defaults={"host"=""})
+	 * @Route("/has_changed/{form}/{colonne}/{valeur}/{host}", name="online_has_changed", defaults={"host"=""})
 	 *
 	 * exemple GUID : /create/41296233836619/45208949043557/trois
 	 */
@@ -1302,7 +1302,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/select_form/{form}/{host}", name="select_form", defaults={"host"=""})
+	 * @Route("/select_form/{form}/{host}", name="online_select_form", defaults={"host"=""})
 	 *
 	 * exemple GUID : /selectForm/48918773563102
 	 */
@@ -1356,7 +1356,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/create_from/{form}/{origine}/{host}", name="create_from", defaults={"host"=""})
+	 * @Route("/create_from/{form}/{origine}/{host}", name="online_create_from", defaults={"host"=""})
 	 *
 	 * exemple GUID : /create/41296233836619/45354977933184
 	 *
@@ -1421,7 +1421,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/delete/{form}/{colonne}/{valeur}/{host}", name="delete", defaults={"host"=""})
+	 * @Route("/delete/{form}/{colonne}/{valeur}/{host}", name="online_delete", defaults={"host"=""})
 	 *
 	 * exemple GUID : /delete
 	 */
@@ -1481,7 +1481,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/reorder_list/{host}", name="reorder_list", defaults={"host"=""})
+	 * @Route("/reorder_list/{host}", name="online_reorder_list", defaults={"host"=""})
 	 */
 	public function ReorderListAction($host)
 	{
@@ -1551,7 +1551,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/reorder_sublist/{host}", name="reorder_sublist", defaults={"host"=""})
+	 * @Route("/reorder_sublist/{host}", name="online_reorder_sublist", defaults={"host"=""})
 	 */
 	public function ReorderSubListAction($host)
 	{
@@ -1632,7 +1632,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/getstartautomatism/{host}", name="getstartautomatism", defaults={"host"=""})
+	 * @Route("/getstartautomatism/{host}", name="online_getstartautomatism", defaults={"host"=""})
 	 */
 	public function getStartAutomatismAction($host)
 	{
@@ -1670,7 +1670,7 @@ class DefaultController extends Controller
 		return $clReponseXML;
 	}
 	/**
-	 * @Route("/gettemporalautomatism/{host}", name="gettemporalautomatism", defaults={"host"=""})
+	 * @Route("/gettemporalautomatism/{host}", name="online_gettemporalautomatism", defaults={"host"=""})
 	 */
 	public function getTemporalAutomatismAction($host)
 	{
@@ -1704,7 +1704,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/getendautomatism/{host}", name="getendautomatism", defaults={"host"=""})
+	 * @Route("/getendautomatism/{host}", name="online_getendautomatism", defaults={"host"=""})
 	 */
 	public function getEndAutomatismAction($host)
 	{
@@ -1730,7 +1730,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/getlanguages/{host}", name="getlanguages", defaults={"host"=""})
+	 * @Route("/getlanguages/{host}", name="online_getlanguages", defaults={"host"=""})
 	 */
 	public function getLanguagesAction($host)
 	{
@@ -1747,7 +1747,7 @@ class DefaultController extends Controller
 	}
 
 	/**
-	 * @Route("/gettablechild/{form}/{host}", name="gettablechild", defaults={"host"=""})
+	 * @Route("/gettablechild/{form}/{host}", name="online_gettablechild", defaults={"host"=""})
 	 */
 	public function getTableChildAction($form, $host)
 	{
@@ -1777,7 +1777,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/record_test", name="record_test")
+	 * @Route("/record_test", name="online_record_test")
 	 *
 	 */
 	public function recordTestAction()
@@ -1801,7 +1801,7 @@ class DefaultController extends Controller
 
 
 	/**
-	 * @Route("/filenpi_test", name="filenpi_test")
+	 * @Route("/filenpi_test", name="online_filenpi_test")
 	 *
 	 */
 	public function filenpiTestAction()
@@ -1944,7 +1944,7 @@ RESULTAT;
 
 
 	/**
-	 * @Route("/rest_test/{host}", name="rest_test", defaults={"host"=""})
+	 * @Route("/rest_test/{host}", name="online_rest_test", defaults={"host"=""})
 	 *
 	 */
 	public function restTestAction($host)
