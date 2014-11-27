@@ -17,3 +17,10 @@ services:
             - null #null remplacer par le replaceArgument du fichier \NOUT\Bundle\NOUTSessionManagerBundle\DependencyInjection\Factory\SecurityFactory.php
             - @security.encoder_factory
             - '%security.authentication.hide_user_not_found%'
+    nout_session.authentication_handler.logout_handler:
+        class:      NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Handler\NOUTOnlineLogoutHandler
+        arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue]
+        tags:
+            - { name: 'monolog.logger', channel: 'security' }
+
+
