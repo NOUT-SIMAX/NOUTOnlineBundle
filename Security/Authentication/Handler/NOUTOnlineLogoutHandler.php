@@ -68,7 +68,5 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 				throw new \Exception('Error on logout');
 			}
 		}
-
-		//$request->getSession()->invalidate();
 	}
 }
