@@ -10,6 +10,8 @@ namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Handler;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -56,11 +58,10 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 		{
 			//erreur à la connexion
 			$clReponseXML = $this->m_clSOAPProxy->getXMLResponseWS();
-			$request->getSession()->invalidate();
-
 			if ($clReponseXML instanceof XMLResponseWS)
 			{
-				throw new \Exception($clReponseXML->getMessError());
+				if ($clReponseXML->getNumError()!=OnlineError::ERR_UTIL_DECONNECTE)
+					throw new \Exception($clReponseXML->getMessError());
 			}
 			else
 			{
@@ -68,6 +69,6 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 			}
 		}
 
-		$request->getSession()->invalidate();
+		//$request->getSession()->invalidate();
 	}
 }
