@@ -51,7 +51,7 @@ class EnregTableauArray implements \Iterator
 		$aRet = array();
 		foreach($this->m_Tab as $clEnreg)
 		{
-			if (($clEnreg->m_nIDTableau == $nIDTableau) || !isset($nIDTableau) || ($nIDTableau==null))
+			if (($clEnreg->m_nIDTableau == $nIDTableau) || empty($nIDTableau))
 				$aRet[]=$clEnreg->m_nIDEnreg;
 			else if ($bMemeTaille)
 				$aRet[]=null;
@@ -211,7 +211,7 @@ class EnregTableauArray implements \Iterator
 	// recherche si l'IDAuto est dans la liste
 	public  function bEstDansTableau($nIDEnreg)
 	{
-		return $this->nGetIndice($nIDEnreg) != null;
+		return !is_null($this->nGetIndice($nIDEnreg));
 	}
 
 	public function Intersection($TabIDauto)

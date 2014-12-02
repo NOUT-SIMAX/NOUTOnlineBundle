@@ -41,7 +41,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			'queries'     => $queries,
 		);
 
-		if (($this->m_clSecurityContext === null) || (null === $token = $this->m_clSecurityContext->getToken()))
+		if (is_null($this->m_clSecurityContext) || is_null($token = $this->m_clSecurityContext->getToken()))
 		{
 			$this->data['authenticated'] = false;
 			$this->data['session_token'] = '';

@@ -4,6 +4,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Exception\NOUTOnlineException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
@@ -79,10 +80,28 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ZipPJ;
  */
 final class OnlineServiceProxy extends ModifiedNuSoapClient
 {
-	//OPTION HEADER
-	const FORMHEAD_UNDECODED_SPECIAL_ELEM_AND_DATE = 16508; //display value a utilise
-	const FORMHEAD_UNDECODED_SPECIAL_ELEM = 16638; //display value a utilise
-	const FORMHEAD_DB_FORMAT_SPECIAL_ELEM = 0; //display value permettant de récupérer les donnée au format stockés.
+	const HEADER_OptionDialogue                 = 'OptionDialogue';
+	const HEADER_OptionDialogue_Readable        = 'Readable';
+	const HEADER_OptionDialogue_DisplayValue    = 'DisplayValue';
+	const HEADER_OptionDialogue_EncodingOutput  = 'EncodingOutput';
+	const HEADER_OptionDialogue_LanguageCode    = 'LanguageCode';
+	const HEADER_WithFieldStateControl          = 'WithFieldStateControl';
+
+	const HEADER_APIUUID                        = 'APIUUID';
+	const HEADER_UsernameToken                  = 'UsernameToken';
+	const HEADER_SessionToken                   = 'SessionToken';
+	const HEADER_ActionContext                  = 'ActionContext';
+	const HEADER_AutoValidate                   = 'AutoValidate';
+	const HEADER_APIUser                        = 'APIUser';
+
+	const AUTOVALIDATE_Validate = 1;
+	const AUTOVALIDATE_None     = 0;
+	const AUTOVALIDATE_Cancel   = -1;
+
+	const APIUSER_Active    = 1;
+	const APIUSER_Desabled  = 0;
+
+
 
     //Definition des variable pour gestion des headers de requete
     private $__aListHeaders = array();
@@ -158,8 +177,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	 */
 	function _loadWSDLFromCache()
 	{
-		if (!isset($this->__clCache) || ($this->__clCache == null)
-			|| !isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
+		if (!isset($this->__clCache) || empty($this->__sVersionWSDL))
 			return false;
 
 		if ($this->__clCache->contains($this->__sVersionWSDL))
@@ -173,8 +191,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	 */
 	function _saveWSDLInCache()
 	{
-		if (!isset($this->__clCache) || ($this->__clCache == null)
-			|| !isset($this->__sVersionWSDL) || ($this->__sVersionWSDL == '') || ($this->__sVersionWSDL == null))
+		if (!isset($this->__clCache) || empty($this->__sVersionWSDL))
 			return ;
 
 		$this->__clCache->save($this->__sVersionWSDL, $this->wsdl, $this->__ConfigurationDialogue->getDureeSession());
@@ -417,7 +434,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	public function call($sOperation, $mParams = array(),$sNamespace=null,$sSoapAction=null , $mHeaders = false,$mRpcParams=null,$sStyle='rpc',$sUse='encoded')
     {
 	    //petite modif sur le paramètre mParams si tableau vide
-	    if (!isset($mParams) || (is_array($mParams) && (count($mParams)==0)))
+	    if (empty($mParams))
 		    $mParams = '<'.$sOperation.' />';
 
 
@@ -434,58 +451,44 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 		//TODO: ajouter les header X-SIMAX pour le service.
 
 
-	    if (isset($this->__aListHeaders['OptionDialogue']) && is_object($this->__aListHeaders['OptionDialogue']))
+	    if (isset($this->__aListHeaders[self::HEADER_OptionDialogue]) && is_object($this->__aListHeaders[self::HEADER_OptionDialogue]))
 	    {
 		    //on transforme l'objet en tableau associatif
-		    $this->__aListHeaders['OptionDialogue'] = (array)$this->__aListHeaders['OptionDialogue'];
+		    $this->__aListHeaders[self::HEADER_OptionDialogue] = (array)$this->__aListHeaders[self::HEADER_OptionDialogue];
 	    }
 
 
         //si le la partie optiondialogue du header n'est pas passer en param on la crée
-        if( ! isset($this->__aListHeaders['OptionDialogue']) )
+        if( empty($this->__aListHeaders[self::HEADER_OptionDialogue]) )
         {
-            $this->__aListHeaders['OptionDialogue'] = array('Readable'=>false);
+            $this->__aListHeaders[self::HEADER_OptionDialogue] = array(self::HEADER_OptionDialogue_Readable=>false);
         }
-        if(!isset($this->__aListHeaders['OptionDialogue']['DisplayValue']))
+        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_DisplayValue]))
         {
-            $this->__aListHeaders['OptionDialogue']['DisplayValue'] = OnlineServiceProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;
+            $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_DisplayValue] = OptionDialogue::DISPLAY_No_ID;
         }
 
         //Si on a pas encore d'encodingType, on le met a 0
-        if(
-            !isset($this->__aListHeaders['OptionDialogue']['EncodingOutput']) ||
-            is_null($this->__aListHeaders['OptionDialogue']['EncodingOutput']) ||
-            $this->__aListHeaders['OptionDialogue']['EncodingOutput'] == ''
-        )
+        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_EncodingOutput]))
         {
-            $this->__aListHeaders['OptionDialogue']['EncodingOutput'] = 0;
+            $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_EncodingOutput] = 0;
         }
 
 
         //on ajoute le bon code langue.
-        if(
-            !isset($this->__aListHeaders['OptionDialogue']['LanguageCode']) ||
-            is_null($this->__aListHeaders['OptionDialogue']['LanguageCode']) ||
-            $this->__aListHeaders['OptionDialogue']['LanguageCode'] == ''
-        )
+        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_LanguageCode]))
         {
-            $this->__aListHeaders['OptionDialogue']['LanguageCode'] = $this->__ConfigurationDialogue->getLangCode();
+            $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_LanguageCode] = $this->__ConfigurationDialogue->getLangCode();
         }
 
         //si on a pas de withFieldStateControl precisé, on le mets à 1 (pour recuperer les controle d'etat de champ)
-        if(
-            !isset($this->__aListHeaders['OptionDialogue']['WithFieldStateControl']) ||
-            is_null($this->__aListHeaders['OptionDialogue']['WithFieldStateControl']) ||
-            $this->__aListHeaders['OptionDialogue']['WithFieldStateControl'] == ''
-        )
+        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_WithFieldStateControl]))
         {
-            $this->__aListHeaders['OptionDialogue']['WithFieldStateControl'] = 1;
+            $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_WithFieldStateControl] = 1;
         }
 
-
-
         //on ajoute l'id application
-        $this->__aListHeaders['APIUUID'] = $this->__ConfigurationDialogue->getAPIUUID();
+        $this->__aListHeaders[self::HEADER_APIUUID] = $this->__ConfigurationDialogue->getAPIUUID();
 
 	    //
 	    if (isset($this->__clLogger)) //log des requetes

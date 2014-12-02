@@ -127,7 +127,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
-		$clOptionDialogue->DisplayValue = OnlineServiceProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;;
+		$clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_No_ID;
 		$clOptionDialogue->Readable = 0;
 		$clOptionDialogue->EncodingOutput = 0;
 		$clOptionDialogue->LanguageCode = 12;
@@ -152,7 +152,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clGetTokenSession->DefaultClientLanguageCode=12;
 		$clGetTokenSession->UsernameToken = $UsernameToken;
 
-		if ($UserExtranet == null)
+		if (is_null($UserExtranet))
 			$clGetTokenSession->ExtranetUser = null;
 		else
 		{
@@ -231,7 +231,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$nCategorie=0;
 		try
 		{
-			if (is_null($Param))
+			if (!isset($Param))
 				$clReponseWS = $this->m_clNOUTOnline->$function($this->_aGetTabHeader($sTokenSession, $sContexteAction));
 			else
 				$clReponseWS = $this->m_clNOUTOnline->$function($Param, $this->_aGetTabHeader($sTokenSession, $sContexteAction));
@@ -254,7 +254,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		if ($bTestContexte)
 			$this->assertNotEquals('', $clReponseWS->sGetActionContext());
 
-		if (!is_null($sReturnType))
+		if (isset($sReturnType))
 			$this->assertEquals($sReturnType, $clReponseWS->sGetReturnType());
 
 		return $clReponseWS;
@@ -386,7 +386,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		if (!is_null($clRecord))
+		if (isset($clRecord))
 		{
 			//on met à jour la valeur de la colonne
 			$this->_sUpdate($sTokenSession, $sActionContexte, '41296233836619', $clRecord->m_nIDEnreg, array('45208949043557'=>'phpUnit Test HasChanged'));

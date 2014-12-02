@@ -77,7 +77,7 @@ class Record
 
 	public function bRef()
 	{
-		return isset($this->m_TabColumns) && (count($this->m_TabColumns)>0);
+		return !empty($this->m_TabColumns);
 	}
 
 	public function sGetValCol($idColonne)

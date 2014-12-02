@@ -25,12 +25,6 @@ class ConnectionManager {
 	 */
 	public function getGetTokenSession($nErreur=0)
 	{
-		/*
-		if(isset($_SESSION) && isset($_SESSION[SS_URL . '_' . SESSION_NAME_COMPLEMENT]['UTILLOGIN']) && isset($_SESSION[SS_URL . '_' . SESSION_NAME_COMPLEMENT]['SECUREPASSWD']))
-			return array("UsernameToken"=>getTokenHeader($_SESSION[SS_URL . '_' . SESSION_NAME_COMPLEMENT]['UTILLOGIN']));
-		return false;
-		*/
-
 		//il faut retourner les paramètres pour la connexion
 		$clGetTokenSession = new GetTokenSession();
 		switch($nErreur)

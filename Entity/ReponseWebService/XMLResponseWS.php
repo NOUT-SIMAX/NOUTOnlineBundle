@@ -97,7 +97,7 @@ class XMLResponseWS
 		$this->m_TabError = null;
 
 		$ndFault = isset($this->m_ndBody) ? $this->m_ndBody->children($this->m_sNamespaceSOAP, true)->Fault : null;
-		if (isset($ndFault) && ($ndFault->count()>0))
+		if (!empty($ndFault))
 		{
 			//le noeud ListErr fils de  Detail
 			$ndListErr = $ndFault->children($this->m_sNamespaceSOAP, true)->Detail->children()->ListErr;
@@ -344,7 +344,7 @@ class XMLResponseWS
 	public function getNodeSchema()
 	{
 		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
-		if (!isset($clXSDSchema) || ($clXSDSchema->count()==0))
+		if (empty($clXSDSchema))
 			return null;
 
 		//le noeud XSDSchema n'a qu'un fils
@@ -370,7 +370,7 @@ class XMLResponseWS
 	public function nGetNumberOfChart()
 	{
 		$ndXML = $this->getNodeXML();
-		if (is_null($ndXML))
+		if (!isset($ndXML))
 			return 0;
 
 		return (int)$ndXML->numberOfChart;
@@ -383,7 +383,7 @@ class XMLResponseWS
 	public function GetTabLanguages()
 	{
 		$ndXML = $this->getNodeXML();
-		if (is_null($ndXML))
+		if (!isset($ndXML))
 			return array();
 /*
 		<xml>

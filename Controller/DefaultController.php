@@ -78,7 +78,7 @@ class DefaultController extends Controller
 	protected function _clGetConfiguration($host)
 	{
 		$clConfiguration = $this->get('nout_online.configuration_dialogue');
-		if (isset($host) && !is_null($host) && (strlen($host)!=0))
+		if (!empty($host)) //! (null, '', false, 0, !isset, [])
 		{
 			list($sAddress,$sPort) = explode(':', $host );
 			$clConfiguration->SetHost($sAddress, $sPort);
@@ -131,7 +131,7 @@ class DefaultController extends Controller
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
-		$clOptionDialogue->DisplayValue = SOAPProxy::FORMHEAD_UNDECODED_SPECIAL_ELEM;;
+		$clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_No_ID;
 		$clOptionDialogue->Readable = 0;
 		$clOptionDialogue->EncodingOutput = 0;
 		$clOptionDialogue->LanguageCode = 12;
@@ -147,7 +147,7 @@ class DefaultController extends Controller
 		$clUsernameToken = $this->get('nout_online.connection_manager')->getUsernameToken();
 		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession, 'OptionDialogue'=>$this->_clGetOptionDialogue());
 
-		if (isset($nIDContexteAction))
+		if (!empty($nIDContexteAction))
 			$TabHeader['ActionContext']=$nIDContexteAction;
 
 		return $TabHeader;
@@ -264,7 +264,7 @@ class DefaultController extends Controller
 
 	protected function _bEstNumerique($form)
 	{
-		return strlen(str_replace(array(0,1,2,3,4,5,6,7,8,9), array('', '', '', '', '', '', '', '', '', ''), $form))==0;
+		return empty(str_replace(array(0,1,2,3,4,5,6,7,8,9), array('', '', '', '', '', '', '', '', '', ''), $form));
 	}
 
 	protected function _sNettoieForm($form)
@@ -300,14 +300,14 @@ class DefaultController extends Controller
 
 		// remplacer les espaces et les caractères spéciaux par des '_'
 		$nLength=strlen($form)-1;
-		while(($nLength>=0) && (strchr($_pszCaractereInterdit, $form[$nLength])!=NULL))
+		while(($nLength>=0) && (!is_null(strchr($_pszCaractereInterdit, $form[$nLength]))))
 		{
 			$pszLibelle[$nLength]=0;
 			$nLength--;
 		}
 		while($nLength>=0)
 		{
-			if (strchr($_pszCaractereInterdit, $form[$nLength])!=NULL)
+			if (!is_null(strchr($_pszCaractereInterdit, $form[$nLength])))
 				$form[$nLength]='_';
 			$nLength--;
 		}
@@ -327,7 +327,7 @@ class DefaultController extends Controller
 
 		// si le libelle est une chaine vide, renvoyer faux
 		// ce sera l'ID de la colonne qui sera utilisé pour construire le nom de la balise
-		if (strlen(trim($form))==0)
+		if (empty(trim($form)))
 			return false;
 
 
@@ -1079,7 +1079,7 @@ class DefaultController extends Controller
 
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		if (!is_null($clRecord))
+		if ($clRecord instanceof Record)
 		{
 			//on met à jour la valeur de la colonne
 			$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $id, $colonne, $valeur);
@@ -1145,7 +1145,7 @@ class DefaultController extends Controller
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		if (!is_null($clRecord))
+		if ($clRecord instanceof Record)
 		{
 			//on met à jour la valeur de la colonne
 			$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $clReponseWS->clGetElement()->getID(), $colonne, $valeur);
@@ -1258,7 +1258,7 @@ class DefaultController extends Controller
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
-		if (!is_null($clRecord))
+		if ($clRecord instanceof Record)
 		{
 			//on met à jour la valeur de la colonne
 			$this->_sUpdate($OnlineProxy, $sTokenSession, $sActionContexte, $form, $clReponseWS->clGetElement()->getID(), $colonne, $valeur);
@@ -1569,7 +1569,7 @@ class DefaultController extends Controller
 		$clParserModify = new ReponseWSParser();
 		$clParserModify->InitFromXmlXsd($clReponseModify);
 		$clRecord = $clParserModify->clGetRecord($clReponseModify->clGetForm(), $clReponseModify->clGetElement());
-		if (!is_null($clRecord))
+		if ($clRecord instanceof Record)
 		{
 			$TabValColOrig = $clRecord->sGetValCol('221655479824831');
 			$this->_VarDumpRes('valcol', implode('|', $TabValColOrig));

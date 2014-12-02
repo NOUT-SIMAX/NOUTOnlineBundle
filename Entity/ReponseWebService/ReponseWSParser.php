@@ -273,13 +273,13 @@ class ReponseWSParser
 
 			}
 
-			if (is_null($sIDColonnePere))
+			if (!isset($sIDColonnePere))
 				$clStructElement->m_TabStructureColonne[] = $clStructElement->m_MapIDColonne2StructColonne[$sIDColonne];
 			else
 				$clStructElement->m_MapIDColonne2StructColonne[$sIDColonnePere]->m_TabStructureColonne[]=$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne];
 		}
 
-		if (is_null($sIDColonnePere))
+		if (!isset($sIDColonnePere))
 			$this->m_MapIDTableau2Niv2StructureElement[$clStructElement->m_nID][$clStructElement->m_nNiveau]=$clStructElement;
 	}
 
@@ -397,7 +397,7 @@ class ReponseWSParser
 		$sIDTableau = str_replace('id_', '', $clXML->getName());
 		$sIDEnreg = (string)$TabAttrib['id'];
 
-		if (isset($sIDForm) && ($sIDForm != null) && ($sIDForm==$sIDTableau))
+		if (isset($sIDForm) && ($sIDForm==$sIDTableau))
 			$this->m_TabEnregTableau->Add($sIDTableau, $sIDEnreg);
 
 		if (!isset($this->m_MapIDTableau2IDEnreg2Record[$sIDTableau]))
@@ -616,7 +616,7 @@ class ReponseWSParser
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_PRINTTEMPLATE))
 		{
-			if (!is_null($ndSchema))
+			if (isset($ndSchema))
 			{
 				$this->m_MapIDTableau2Niv2StructureElement = array();
 				$nNiveau = ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD) ? StructureElement::NV_XSD_Enreg : StructureElement::NV_XSD_List;

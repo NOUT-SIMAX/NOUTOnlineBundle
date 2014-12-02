@@ -22,7 +22,7 @@ class ReorderSubList extends WSDLReorderSubList
 
 		foreach($TabIDEnreg as $IDEnreg)
 		{
-			if (strlen($this->items)>0)
+			if (!empty($this->items))
 				$this->items.='|';
 
 			if ($IDEnreg instanceof EnregTableau)

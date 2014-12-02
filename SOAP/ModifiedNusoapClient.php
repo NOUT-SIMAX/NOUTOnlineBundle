@@ -117,7 +117,7 @@ class ModifiedNuSoapClient extends SOAPClient
 		
 		if($this->fault || $mReturn === false)
 		{
-			if(!isset($sErrCode) ||  is_null($sErrCode))
+			if(!isset($sErrCode))
 				$sErrCode = -1;
 
 			throw new SOAPException($this->getError(), $sErrCode);

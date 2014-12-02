@@ -61,10 +61,10 @@ class OnlineServiceProxy
 		$sBottom .= '&created=' . urlencode($clTokenSession->Created);
 		$sBottom .= '&SessionToken=' . urlencode($sTokenSession);
 
-		if (strlen($this->__ConfigurationDialogue->getAPIUUID()) > 0)
+		if (!empty($this->__ConfigurationDialogue->getAPIUUID()))
 			$sBottom .= '&APIUUID=' . urlencode($this->__ConfigurationDialogue->getAPIUUID() );
 
-		if(strlen(sIdContext) > 0)
+		if(!empty(sIdContext))
 			$sBottom .= '&ActionContext=' . urlencode($sIdContext);
 
 		return $sBottom;
@@ -91,7 +91,7 @@ class OnlineServiceProxy
 			$sListeParam='';
 			foreach ($aTabParam as $sKey => $sValue)
 			{
-				$sListeParam .= '&' . $sKey .'=' . $sValue;
+				$sListeParam .= '&' . urlencode($sKey) .'=' . urlencode($sValue);
 			}
 			$sUrl.=trim($sListeParam,  '&');
 		}
@@ -101,7 +101,7 @@ class OnlineServiceProxy
 			$sListeOption='';
 			foreach ($aTabOption as $sKey => $sValue)
 			{
-				$sListeOption .= '&' . $sKey .'=' . $sValue;
+				$sListeOption .= '&' . urlencode($sKey) .'=' . urlencode($sValue);
 			}
 			$sUrl.=';'.trim($sListeOption,  '&');
 		}
@@ -127,7 +127,7 @@ class OnlineServiceProxy
 		if (isset($this->__clLogger)) //log des requetes
 			$this->__clLogger->startQuery();
 
-		if (strlen($sDestination)>0)
+		if (!empty($sDestination))
 		{
 			if (@copy($sURI, $sDestination) === false)
 			{
