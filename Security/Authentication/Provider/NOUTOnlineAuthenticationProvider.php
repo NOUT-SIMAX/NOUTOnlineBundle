@@ -158,7 +158,7 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 				throw new BadCredentialsException('The credentials were changed from another session.');
 			}
 
-			if (strlen($token->getSessionToken())==0)
+			if (empty($token->getSessionToken()))
 			{
 				throw new BadCredentialsException('The session token is empty.');
 			}
@@ -223,7 +223,7 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 		}
 		catch (\Exception $repositoryProblem)
 		{
-			throw new AuthenticationServiceException($repositoryProblem->getMessage(), $token, 0, $repositoryProblem);
+			throw new AuthenticationServiceException($repositoryProblem->getMessage(), 0, $repositoryProblem);
 		}
 	}
 
