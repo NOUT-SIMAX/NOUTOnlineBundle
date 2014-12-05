@@ -1,30 +1,4 @@
-{% extends "NOUTSessionManagerBundle::layout.html.twig" %}
-
-{% block stylesheets %}
-	{{ parent() }}
-
-	<style type="text/css">
-
-		.form {
-			margin-left: auto;
-			margin-right: auto;
-			width: 500px;
-		}
-
-		.form label {
-			display: inline-block;
-			width: 50%;
-		}
-
-		button[type=submit] {
-			margin: 1em 0 1em 0;
-		}
-
-	</style>
-
-{% endblock%}
-
-{% block containt %}
+{#
 	<div class="form">
 		{% if error %}
 			<div class="form_error">{{ error.message }}</div>
@@ -39,13 +13,88 @@
 				<input type="password" id="password" name="m_sPass" />
 			</div>
 
-			{#
-				Si vous voulez contrôler l'URL vers laquelle l'utilisateur est redirigé en cas de succès
-				(plus de détails ci-dessous)
-				<input type="hidden" name="_target_path" value="/account" />
-			#}
 
 			<button type="submit">{{ 'Connection' | trans }}</button>
 		</form>
 	</div>
+#}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>NOUTSessionManager Bundle</title>
+	{% block stylesheets %}
+		<!-- icon -->
+		<link rel="shortcut icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico') }}" type="image/x-icon"/>
+		<link rel="icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico') }}" type="image/x-icon"/>
+
+		<!-- feuille de style -->
+		<link rel="stylesheet" href="{{ asset('bundles/noutsessionmanager/css/bootstrap.min.css') }}" />
+	{% endblock%}
+</head>
+<body>
+
+<div class="container">
+
+	<div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+		<div class="panel panel-info" >
+			<div class="panel-heading">
+				<div class="panel-title">{{ 'Sign In' | trans }}</div>
+				{# <div style="float:right; font-size: 80%; position: relative; top:-10px"><a href="#">Forgot password?</a></div> #}
+			</div>
+			<div style="padding-top:30px" class="panel-body" >
+				<form id="loginform" class="form-horizontal" role="form" action="{{ path('login_check') }}" method="post">
+					{% if error %}
+					<div style="margin-bottom: 25px" class="input-group col-sm-12">
+						<div id="login-alert" class="alert alert-danger col-sm-12 ">{{ error.message }}</div>
+					</div>
+					{% endif %}
+					<div style="margin-bottom: 25px" class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+						<input id="login-username" type="text" class="form-control" name="m_sLogin" value="{{ last_username }}" placeholder="{{ 'Login' | trans }}">
+					</div>
+					<div style="margin-bottom: 25px" class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+						<input id="login-password" type="password" class="form-control" name="m_sPass" placeholder="{{ 'Password' | trans }}">
+					</div>
+					<div style="margin-top:10px" class="form-group">
+						<!-- Button -->
+						<div class="col-sm-12 controls">
+							<button type="submit" class="btn btn-default btn-success">{{ 'Connection' | trans }}</button>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-md-12 control">
+							<div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >
+								© NOUTSessionManager Bundle <br />
+								© NOUTOnline {{ version_noutonline }}
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% block javascripts %}
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="{{ asset('bundles/noutsessionmanager/js/jquery-2.1.1.min.js') }}"></script>
+	<script src="{{ asset('bundles/noutsessionmanager/js/bootstrap.min.js') }}"></script>
 {% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

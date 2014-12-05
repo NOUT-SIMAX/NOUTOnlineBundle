@@ -4,28 +4,31 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>NOUTSessionManager Bundle</title>
 	{% block stylesheets %}
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-		<style type="text/css">
-			footer {
-				margin-top: 1em;
-				width:100%;
-			}
-		</style>
+		<!-- icon -->
+		<link rel="shortcut icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico') }}" type="image/x-icon"/>
+		<link rel="icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico') }}" type="image/x-icon"/>
+
+		<!-- feuille de style -->
+		<link rel="stylesheet" href="{{ asset('bundles/noutsessionmanager/css/bootstrap.min.css') }}" />
 	{% endblock%}
 </head>
 <body>
-<div class="container">
-	<header>
+<div id="container">
+	<header id="header">
 		{% block header %}
 		{% endblock %}
 	</header>
-	{% block containt %}
-	{% endblock %}
-	<footer>
+	<div id="main">
+		{% block main %}
+		{% endblock %}
+	</div>
+	<footer id="footer">
 		{% block footer %}© NOUTSessionManager Bundle{% endblock %}
 	</footer>
 </div>
 {% block javascripts %}
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="{{ asset('bundles/noutsessionmanager/js/bootstrap.min.js') }}"></script>
 {% endblock %}
 </body>
 </html>
