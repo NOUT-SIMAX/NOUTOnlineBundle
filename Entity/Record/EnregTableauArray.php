@@ -11,6 +11,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 class EnregTableauArray implements \Iterator
 {
+	/**
+	 * @var array
+	 */
 	protected $m_Tab;
 
 	private $_key;
@@ -26,16 +29,25 @@ class EnregTableauArray implements \Iterator
 		$this->_key = 0;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function valid()
 	{
 		return array_key_exists($this->_key, $this->m_Tab);
 	}
 
+	/**
+	 * @return int|mixed
+	 */
 	public function key()
 	{
 		return $this->_key;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function current()
 	{
 		return $this->m_Tab[$this->_key];
@@ -46,6 +58,11 @@ class EnregTableauArray implements \Iterator
 		++$this->_key;
 	}
 
+	/**
+	 * @param null $nIDTableau
+	 * @param bool $bMemeTaille
+	 * @return array
+	 */
 	public function GetTabIDEnreg($nIDTableau=null, $bMemeTaille=false)
 	{
 		$aRet = array();
@@ -60,6 +77,9 @@ class EnregTableauArray implements \Iterator
 		return $aRet;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function GetTabIDTableau()
 	{
 		$aRet = array();
@@ -69,6 +89,9 @@ class EnregTableauArray implements \Iterator
 		return $aRet;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function bEstIDTableauUnique()
 	{
 		if (count($this->m_Tab)==0)
@@ -82,6 +105,10 @@ class EnregTableauArray implements \Iterator
 		return true;
 	}
 
+	/**
+	 * @param $nIDEnreg
+	 * @return null|string
+	 */
 	public function nGetIDTableauEnreg($nIDEnreg)
 	{
 		foreach($this->m_Tab as $clEnregTab)
@@ -91,6 +118,10 @@ class EnregTableauArray implements \Iterator
 		return null;
 	}
 
+	/**
+	 * @param $nIndice
+	 * @return null|string
+	 */
 	public function nGetIDTableau($nIndice)
 	{
 		if (isset($this->m_Tab[$nIndice]))
@@ -99,6 +130,10 @@ class EnregTableauArray implements \Iterator
 		return null;
 	}
 
+	/**
+	 * @param $nIndice
+	 * @return null|string
+	 */
 	public function nGetIDEnreg($nIndice)
 	{
 		if (isset($this->m_Tab[$nIndice]))
@@ -107,16 +142,25 @@ class EnregTableauArray implements \Iterator
 		return null;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function GetSize()
 	{
 		return count($this->m_Tab);
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function IsEmpty()
 	{
 		return count($this->m_Tab)==0;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function RemoveAll()
 	{
 		$this->m_Tab=array();
@@ -124,6 +168,11 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $nIDTableau
+	 * @param $nIDEnreg
+	 * @return $this
+	 */
 	public function Add($nIDTableau, $nIDEnreg)
 	{
 		$this->m_Tab[]=new EnregTableau($nIDTableau, $nIDEnreg);
@@ -145,14 +194,26 @@ class EnregTableauArray implements \Iterator
 		return $this->Add($nIDTableau, $nIDEnreg);
 	}
 
-	public function AddFromListeStr($nIDTableau, $sStr)
+	/**
+	 * @param $nIDTableau
+	 * @param $sStr
+	 * @return $this
+	 */
+	public function AddFromListeStr($nIDTableau, string $sStr)
 	{
 		$TabIDEnreg = explode('|', $sStr);
 
 		foreach($TabIDEnreg as $nIDEnreg)
 			$this->Add($nIDTableau, $nIDEnreg);
+
+		return $this;
 	}
 
+	/**
+	 * @param $TabSrc
+	 * @param null $nIDTableau
+	 * @return $this
+	 */
 	public function Append($TabSrc, $nIDTableau=null)
 	{
 		if ($TabSrc instanceof EnregTableauArray)
@@ -166,6 +227,11 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $TabSrc
+	 * @param null $nIDTableau
+	 * @return $this
+	 */
 	public function AppendNouveauIDAuto($TabSrc, $nIDTableau=null)
 	{
 		if ($TabSrc instanceof EnregTableauArray)
@@ -197,6 +263,10 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $nIDEnreg
+	 * @return int|null|string
+	 */
 	public function nGetIndice($nIDEnreg)
 	{
 		foreach($this->m_Tab as $key=>$clEnreg)
@@ -208,12 +278,20 @@ class EnregTableauArray implements \Iterator
 		return null;
 	}
 
-	// recherche si l'IDAuto est dans la liste
+	/**
+	 * recherche si l'IDAuto est dans la liste
+	 * @param $nIDEnreg
+	 * @return bool
+	 */
 	public  function bEstDansTableau($nIDEnreg)
 	{
 		return !is_null($this->nGetIndice($nIDEnreg));
 	}
 
+	/**
+	 * @param $TabIDauto
+	 * @return $this
+	 */
 	public function Intersection($TabIDauto)
 	{
 		$Temp = $this->m_Tab;
@@ -229,6 +307,10 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $TabIDauto
+	 * @return $this
+	 */
 	public function Exclusion($TabIDauto)
 	{
 		$Temp = $this->m_Tab;
@@ -246,7 +328,10 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
-
+	/**
+	 * @param $nIDEnreg
+	 * @return int
+	 */
 	public function nGetOccurrence($nIDEnreg)
 	{
 		$nNb = 0;
@@ -258,6 +343,10 @@ class EnregTableauArray implements \Iterator
 		return $nNb;
 	}
 
+	/**
+	 * @param $nIDTableau
+	 * @return $this
+	 */
 	public function RemoveTableau($nIDTableau)
 	{
 		$Temp = $this->m_Tab;
@@ -272,6 +361,11 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $nIDTableauARemplacer
+	 * @param $nIDTableau
+	 * @return $this
+	 */
 	public function ReplaceTableau($nIDTableauARemplacer, $nIDTableau)
 	{
 
@@ -284,6 +378,10 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $nIDEnreg
+	 * @return $this
+	 */
 	public function RemoveIDAuto($nIDEnreg)
 	{
 		$Temp = $this->m_Tab;
@@ -298,6 +396,10 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $nIndice
+	 * @return $this
+	 */
 	public function RemoveAt($nIndice)
 	{
 		$Temp = $this->m_Tab;
@@ -312,6 +414,12 @@ class EnregTableauArray implements \Iterator
 		return $this;
 	}
 
+	/**
+	 * @param $nIndice
+	 * @param $nIDTableau
+	 * @param $nIDEnreg
+	 * @return $this
+	 */
 	public function InsertAt($nIndice, $nIDTableau, $nIDEnreg)
 	{
 		$Temp = $this->m_Tab;
@@ -340,12 +448,22 @@ class EnregTableauArray implements \Iterator
 		return $this->m_Tab[$nIndice];
 	}
 
+	/**
+	 * @param $nIndice
+	 * @param $nIDTableau
+	 * @param $nIDEnreg
+	 * @return $this
+	 */
 	public function SetAt($nIndice, $nIDTableau, $nIDEnreg)
 	{
 		$this->m_Tab[$nIndice]=new EnregTableau($nIDTableau, $nIDEnreg);
 		return $this;
 	}
 
+	/**
+	 * @param $nNewSize
+	 * @return $this
+	 */
 	public function Resize($nNewSize)
 	{
 		$this->m_Tab = array_slice($this->m_Tab, 0, $nNewSize);
