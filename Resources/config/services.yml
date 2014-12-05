@@ -5,3 +5,7 @@ services:
 #    nout_contextes.example:
 #        class: %nout_contextes.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
+    nout_contextes.client:
+        class:      NOUT\Bundle\ContextesBundle\Service\NOUTClient
+        arguments:  [@security.context, @nout_online.service_factory, @nout_online.configuration_dialogue]
+
