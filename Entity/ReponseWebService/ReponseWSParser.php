@@ -101,12 +101,22 @@ class ReponseWSParser
 	 */
 	public function clGetRecord(Form $clForm, Element $clElement)
 	{
+		return $this->clGetRecordFromId($clForm->getID(), $clElement->getID());
+	}
+
+	/**
+	 * @param $sIDForm
+	 * @param $sIDEreng
+	 * @return null|Record
+	 */
+	public function clGetRecordFromId($sIDForm, $sIDEreng)
+	{
 		if (    !isset($this->m_MapIDTableau2IDEnreg2Record)
-			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$clForm->getID()])
-			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$clForm->getID()][$clElement->getID()]))
+			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$sIDForm])
+			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$sIDForm][$sIDEreng]))
 			return null;
 
-		return $this->m_MapIDTableau2IDEnreg2Record[$clForm->getID()][$clElement->getID()];
+		return $this->m_MapIDTableau2IDEnreg2Record[$sIDForm][$sIDEreng];
 	}
 
 	/**
@@ -171,17 +181,21 @@ class ReponseWSParser
 		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau]) && isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][$nNiveau]))
 			return ; //on a déjà parsé cette partie de l'XSD
 
-		$clStructureElement = new StructureElement();
-		$clStructureElement->m_nNiveau = $nNiveau;
-		$clStructureElement->m_nID = $sIDTableau;
-		$clStructureElement->m_sLibelle = (string)$TabAttribSIMAX['name'];
+		if (count($ndElement->children('http://www.w3.org/2001/XMLSchema'))>0)
+		{
+			$clStructureElement = new StructureElement();
+			$clStructureElement->m_nNiveau = $nNiveau;
+			$clStructureElement->m_nID = $sIDTableau;
+			$clStructureElement->m_sLibelle = (string)$TabAttribSIMAX['name'];
 
-		//$sType = $TabAttribSIMAX['tableType'];
+			//$sType = $TabAttribSIMAX['tableType'];
 
-		$ndSequence = $ndElement->children('http://www.w3.org/2001/XMLSchema')->complexType
-								->children('http://www.w3.org/2001/XMLSchema')->sequence;
+			$ndSequence = $ndElement->children('http://www.w3.org/2001/XMLSchema')->complexType
+				->children('http://www.w3.org/2001/XMLSchema')->sequence;
 
-		$this->__ParseXSDSequence($nNiveau, $clStructureElement, $ndSequence, null);
+			$this->__ParseXSDSequence($nNiveau, $clStructureElement, $ndSequence, null);
+		}
+
 	}
 
 	/**

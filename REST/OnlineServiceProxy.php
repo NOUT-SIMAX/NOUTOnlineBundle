@@ -110,18 +110,6 @@ class OnlineServiceProxy
 		return $sUrl;
 	}
 
-
-	/**
-	 * @param $login
-	 * @return int
-	 */
-	public function nGetUserExists($login)
-	{
-		$sURI = $this->_sCreateRequest('GetUserExists', array('login'=>$login), array(), new UsernameToken('',''), '', '');
-
-		return (int)$this->_sExecute('GetUserExists', $sURI, '');
-	}
-
 	protected function _sExecute($sAction, $sURI, $sDestination)
 	{
 		if (isset($this->__clLogger)) //log des requetes
@@ -173,5 +161,32 @@ class OnlineServiceProxy
 		return $sResp;
 	}
 
+
+	/**
+	 * recherche un utilisateur par son pseudo
+	 * @param $login
+	 * @return int :
+	 * - TYPEUTIL_NONE : n'existe pas
+	 * - TYPEUTIL_UTILISATEUR : utilisateur non superviseur
+	 * - TYPEUTIL_SUPERVISEUR : utilisateur superviseur
+	 */
+	public function nGetUserExists($login)
+	{
+		$sURI = $this->_sCreateRequest('GetUserExists', array('login'=>$login), array(), new UsernameToken('',''), '', '');
+
+		return (int)$this->_sExecute('GetUserExists', $sURI, '');
+	}
+
+
+	/**
+	 * récupère la version de NOUTOnline
+	 * @return string
+	 */
+	public function sGetVersion()
+	{
+		$sURI = $this->_sCreateRequest('GetVersion', array(), array(), new UsernameToken('',''), '', '');
+
+		return $this->_sExecute('GetVersion', $sURI, '');
+	}
 
 } 

@@ -118,7 +118,7 @@
 					<div>
 						{{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms ({{ '%0.2f'|format(query.sendMS * 1000) }} ms)
 					</div>
-					<div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-request-{{ i }}" style="cursor: pointer;">
+					<div ondblclick="return expandQuery(this);" title="Expand query" data-target-id="code-request-{{ i }}" style="cursor: pointer;">
 						<div>
 							<img alt="+" id="expand-request-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
 							<img alt="-" id="hide-request-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display:none ;" />
@@ -128,7 +128,7 @@
 							{{ query.request | noutonline_beautify_soap_query | nl2br }}
 						</code>
 					</div>
-					<div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-response-{{ i }}" style="cursor: pointer;">
+					<div ondblclick="return expandQuery(this);" title="Expand query" data-target-id="code-response-{{ i }}" style="cursor: pointer;">
 						<div>
 							<img alt="+" id="expand-response-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
 							<img alt="-" id="hide-response-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none;" />
@@ -145,6 +145,7 @@
 
 		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true"></script>
 		<script type="text/javascript">//<![CDATA[
+			function nop() {}
 			function expandQuery(link) {
 				var target = link.getAttribute('data-target-id');
 				var targetId = target.replace('code', '');
