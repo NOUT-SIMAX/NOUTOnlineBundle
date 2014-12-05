@@ -13,14 +13,12 @@ namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 
 class OnlineServiceProxy
 {
-	const TYPEUTIL_NONE = 0;
-	const TYPEUTIL_UTILISATEUR = 1;
-	const TYPEUTIL_SUPERVISEUR = 2;
-
 	/**
 	 * classe de configuration
 	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
@@ -48,24 +46,31 @@ class OnlineServiceProxy
 	 * @param string $sIdContext le context de l'action (facultatif)
 	 * @return string la fin de la requette rest
 	 */
-	private function _sCreateIdentification(UsernameToken $clTokenSession, $sTokenSession, $sIdContext = '')
+	private function _sCreateIdentification(Identification $clIdentification)
 	{
-		if (!$clTokenSession->bIsValid())
+
+		if (empty($clIdentification->m_clUsernameToken) || !$clIdentification->m_clUsernameToken->bIsValid())
 			return '';
 
 		$sBottom = '!';
 
-		$sBottom .= 'Username=' . urlencode($clTokenSession->Username);
-		$sBottom .= '&Password=' . urlencode($clTokenSession->Password);
-		$sBottom .= '&nonce=' . urlencode($clTokenSession->Nonce);
-		$sBottom .= '&created=' . urlencode($clTokenSession->Created);
-		$sBottom .= '&SessionToken=' . urlencode($sTokenSession);
+		$sBottom .= 'Username=' . urlencode($clIdentification->m_clUsernameToken->Username);
+		$sBottom .= '&Password=' . urlencode($clIdentification->m_clUsernameToken->Password);
+		$sBottom .= '&nonce=' . urlencode($clIdentification->m_clUsernameToken->Nonce);
+		$sBottom .= '&created=' . urlencode($clIdentification->m_clUsernameToken->Created);
+
+		if (!empty($clIdentification->m_sTokenSession))
+			$sBottom .= '&SessionToken=' . urlencode($clIdentification->m_sTokenSession);
+
+		if(!empty($clIdentification->m_sIDContexteAction))
+			$sBottom .= '&ActionContext=' . urlencode($clIdentification->m_sIDContexteAction);
 
 		if (!empty($this->__ConfigurationDialogue->getAPIUUID()))
 			$sBottom .= '&APIUUID=' . urlencode($this->__ConfigurationDialogue->getAPIUUID() );
 
-		if(!empty(sIdContext))
-			$sBottom .= '&ActionContext=' . urlencode($sIdContext);
+
+		if (!empty($clIdentification->m_bAPIUser))
+			$sBottom .= '&APIUser=1';
 
 		return $sBottom;
 	}
@@ -82,7 +87,7 @@ class OnlineServiceProxy
 	 * @param string $sIDContexte identifiant du contexte
 	 * @return string la requette rest
 	 */
-	private function _sCreateRequest($sAction, array $aTabParam, array $aTabOption, UsernameToken $clUsernameToken, $sTokenSession, $sIDContexte='')
+	private function _sCreateRequest($sAction, array $aTabParam, array $aTabOption, Identification $clIdentification)
 	{
 		$sUrl = $this->__ConfigurationDialogue->getServiceAddress().$sAction.'?';
 		//la liste des paramètres (entre ? et ;)
@@ -106,7 +111,7 @@ class OnlineServiceProxy
 			$sUrl.=';'.trim($sListeOption,  '&');
 		}
 
-		$sUrl .= $this->_sCreateIdentification($clUsernameToken, $sTokenSession, $sIDContexte);
+		$sUrl .= $this->_sCreateIdentification($clIdentification);
 		return $sUrl;
 	}
 
@@ -172,7 +177,7 @@ class OnlineServiceProxy
 	 */
 	public function nGetUserExists($login)
 	{
-		$sURI = $this->_sCreateRequest('GetUserExists', array('login'=>$login), array(), new UsernameToken('',''), '', '');
+		$sURI = $this->_sCreateRequest('GetUserExists', array('login'=>$login), array(), new Identification());
 
 		return (int)$this->_sExecute('GetUserExists', $sURI, '');
 	}
@@ -184,9 +189,73 @@ class OnlineServiceProxy
 	 */
 	public function sGetVersion()
 	{
-		$sURI = $this->_sCreateRequest('GetVersion', array(), array(), new UsernameToken('',''), '', '');
+		$sURI = $this->_sCreateRequest('GetVersion', array(), array(), new Identification());
 
 		return $this->_sExecute('GetVersion', $sURI, '');
 	}
 
+	/**
+	 * @param $sIDTableau
+	 * @param $sIDEnreg
+	 * @param $sIDColonne
+	 * @param $aTabParam
+	 * @param $aTabOption
+	 * @param UsernameToken $clUsernameToken
+	 * @param $sTokenSession
+	 * @param string $sIDContexte
+	 * @return string
+	 */
+	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
+	{
+		$sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
+		return $this->_sExecute('GetColInRecord', $sURI, '');
+	}
+
+
+
+	const TYPEUTIL_NONE = 0;
+	const TYPEUTIL_UTILISATEUR = 1;
+	const TYPEUTIL_SUPERVISEUR = 2;
+
+	const PARAM_TestRestart = 'TestRestart';
+	const PARAM_Login       = 'Login';
+	const PARAM_Table       = 'Table';
+	const PARAM_TypeGraph   = 'TypeGraph';
+	const PARAM_DPI         = 'DPI';
+	const PARAM_Index       = 'Index';
+	const PARAM_Axes        = 'Axes';
+	const PARAM_OnlyData    = 'OnlyData';
+	const PARAM_Items       = 'Items';
+	const PARAM_MoveType    = 'MoveType';
+	const PARAM_Scale       = 'Scale';
+	const PARAM_Offset      = 'Offset';
+	const PARAM_StartTime   = 'StartTime';
+	const PARAM_EndTime     = 'EndTime';
+	const PARAM_Resource    = 'Resource';
+	const PARAM_RealOnly    = 'RealOnly';
+	const PARAM_Recursive   = 'Recursive';
+
+	const OPTION_First              = 'First';
+	const OPTION_Length             = 'Length';
+	const OPTION_ChangePage         = 'ChangePage';
+	const OPTION_Sort1              = 'Sort1';
+	const OPTION_Sort2              = 'Sort2';
+	const OPTION_Sort3              = 'Sort3';
+	const OPTION_WithBreakRow       = 'WithBreakRow';
+	const OPTION_WithEndCalculation = 'WithEndCalculation';
+	const OPTION_DisplayMode        = 'DisplayMode';
+	const OPTION_MaxResult          = 'MaxResult';
+	const OPTION_ColList            = 'ColList';
+	const OPTION_Encoding           = 'Encoding';
+	const OPTION_MimeType           = 'MineType';
+	const OPTION_TransColor         = 'TransColor';
+	const OPTION_WantContent        = 'WantContent';
+	const OPTION_Readable           = 'Readable';
+	const OPTION_LanguageCode       = 'LanguageCode';
+	const OPTION_DisplayValue       = 'DisplayValue';
+	const OPTION_ColorFrom          = 'ColorFrom';
+	const OPTION_ColorTo            = 'ColorTo';
+	const OPTION_Width              = 'Width';
+	const OPTION_Height             = 'Height';
+	const OPTION_ListMode           = 'ListMode';
 } 

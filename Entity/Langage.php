@@ -1640,4 +1640,12 @@ class Langage
 	const PA_ConnexionExtranet_Extranet_Mdp		= 17218;
 	const PA_ConnexionExtranet_Intranet_Pseudo	= 17299;
 	const PA_ConnexionExtranet_Intranet_Mdp		= 17300;
+
+
+
+	//les mimes types
+	const MIMETYPE_png = 'image/png';
+
+	//les couleurs définies
+	const COLOR_Magenta = 'ff00ff';
 }

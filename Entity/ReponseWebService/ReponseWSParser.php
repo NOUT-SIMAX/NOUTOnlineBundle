@@ -412,7 +412,7 @@ class ReponseWSParser
 		$sIDEnreg = (string)$TabAttrib['id'];
 
 		if (isset($sIDForm) && ($sIDForm==$sIDTableau))
-			$this->m_TabEnregTableau->Add($sIDTableau, $sIDEnreg);
+			$this->m_TabEnregTableau->AddNouveau($sIDTableau, $sIDEnreg);
 
 		if (!isset($this->m_MapIDTableau2IDEnreg2Record[$sIDTableau]))
 			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau] = array();
