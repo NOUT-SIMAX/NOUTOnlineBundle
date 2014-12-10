@@ -9,12 +9,78 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 /**
- * classe qui contient les identifiants du langage
+ * classe qui contient les identifiants du langage ainsi que les différents checksum de version pour l'IHM
  * Class Langage
  * @package NOUT\Bundle\NOUTOnlineBundle\Entity
  */
 class Langage
 {
+	protected $m_sVersion_Langage;
+	protected $m_sVersion_Icone;
+
+
+	/**
+	 * @return string
+	 */
+	public function serialize()
+	{
+		return serialize(array($this->m_sVersion_Langage, $this->m_sVersion_Icone));
+	}
+
+	/**
+	 * @param $serialized
+	 */
+	public function unserialize($serialized)
+	{
+		list($this->m_sVersion_Langage, $this->m_sVersion_Icone) = unserialize($serialized);
+	}
+
+	/**
+	 * @param $sVLangage string
+	 * @param $sVIcone string
+	 */
+	public function __construct($sVLangage, $sVIcone)
+	{
+		$this->m_sVersion_Langage = $sVLangage;
+		$this->m_sVersion_Icone = $sVIcone;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getVersionLangage()
+	{
+		return $this->m_sVersion_Langage;
+	}
+
+	/**
+	 * @param $sVersion string
+	 * @return $this
+	 */
+	public function setVersionLangage($sVersion)
+	{
+		$this->m_sVersion_Langage = $sVersion;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getVersionIcone()
+	{
+		return $this->m_sVersion_Icone;
+	}
+
+	/**
+	 * @param $sVersion sring
+	 * @return $this
+	 */
+	public function setVersionIcone($sVersion)
+	{
+		$this->m_sVersion_Icone = $sVersion;
+		return $this;
+	}
+
 	//typeAction
 	const eTYPEACTION_Unknown			    = 0;		//Action inconnue (ne manipule pas un objet de façon générique
 	const eTYPEACTION_DescEnreg		        = 1;		//Description d'un enreg
