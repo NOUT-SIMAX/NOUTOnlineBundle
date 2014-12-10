@@ -8,12 +8,15 @@
 
 namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
 use Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -55,6 +58,11 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 	private $m_clSOAPProxy;
 
 	/**
+	 * @var RESTProxy
+	 */
+	private $m_clRESTProxy;
+
+	/**
 	 * @param OnlineServiceFactory $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
 	 * @param UserProviderInterface $userProvider
@@ -80,6 +88,7 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 		$this->encoderFactory = $encoderFactory; // usually this is responsible for validating passwords
 
 		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
+		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 	}
 
 	/**
@@ -132,6 +141,18 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 		$authenticatedToken = new NOUTToken($user, $token->getCredentials(), $this->providerKey, $this->_aGetRoles($user, $token));
 		$authenticatedToken->setAttributes($token->getAttributes());
 		$authenticatedToken->setSessionToken($sTokenSession);
+
+		$clIdentification = new Identification();
+		$clIdentification->m_clUsernameToken = new UsernameToken($user->getUsername(), $user->getPassword());
+		$clIdentification->m_sTokenSession = $sTokenSession;
+		$clIdentification->m_sIDContexteAction = '';
+		$clIdentification->m_bAPIUser = true;
+
+		$sVersionLangage = $this->m_clRESTProxy->sGetChecksumLangage($clIdentification);
+		$clIdentification->m_clUsernameToken->ComputeCryptedPassword(); //recalcule le mot de passe crypté
+		$sVersionIcone = $this->m_clRESTProxy->sGetChecksum(Langage::TABL_ImageCatalogue, $clIdentification);
+
+		$authenticatedToken->setLangage(new Langage($sVersionLangage, $sVersionIcone));
 
 		return $authenticatedToken;
 	}
