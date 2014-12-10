@@ -29,10 +29,17 @@ use Symfony\Component\Security\Core\SecurityContext;
 
 class NOUTClient
 {
+	const REPCACHE      = 'NOUTClient';
+	const REPCACHE_IHM  = 'ihm';
 	/**
 	 * @var ConfigurationDialogue
 	 */
 	private $m_clConfigurationDialogue;
+
+	/**
+	 * @var string
+	 */
+	private $m_sCacheDir;
 
 	/**
 	 * @var SOAPProxy
@@ -56,13 +63,16 @@ class NOUTClient
 	 * @param OnlineServiceFactory $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
 	 */
-	public function __construct(SecurityContext $security, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue)
+	public function __construct(SecurityContext $security, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, $sCacheDir)
 	{
 		$this->__security=$security;
+		$this->m_sCacheDir=$sCacheDir.'/'.self::REPCACHE;
 		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
 		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 
 		$this->m_clConfigurationDialogue=$configurationDialogue;
+
+		//création du repertoire de
 	}
 
 
@@ -237,10 +247,93 @@ class NOUTClient
 		if (!empty($nHeight))
 			$aTabOption[RESTProxy::OPTION_Height]=$nHeight;
 
-		$sRet = $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_ImageGrande, array(), $aTabOption, $clIdentification);
+		//on veut le contenu
+		$aTabOption[RESTProxy::OPTION_WantContent]=1;
+
+		//on regarde si le fichier existe
+		$sFile = $this->_sGetNomFichierCacheIHM(Langage::TABL_ImageCatalogue, $sIDIcon, $aTabOption);
+
+		if (file_exists($sFile))
+			return $sFile;
+
+		$sRet = $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_ImageGrande, array(), $aTabOption, $clIdentification, $sFile);
 		if (!empty($sRet))
 			return $sRet;
 
-		return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_Image, array(), $aTabOption, $clIdentification);
+		return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_Image, array(), $aTabOption, $clIdentification, $sFile);
 	}
+
+	protected function _sGetRepCacheIHM($sIDTab)
+	{
+		$oToken = $this->__security->getToken();
+		$clLangage = $oToken->getLangage();
+
+		$sRep = $this->m_sCacheDir.'/'.self::REPCACHE_IHM.'/'.$clLangage->getVersionLangage();
+
+		switch($sIDTab)
+		{
+		case Langage::TABL_ImageCatalogue:
+			$sRep.=	'/'.$clLangage->getVersionIcone();
+			break;
+		}
+
+		if (!file_exists($sRep))
+			mkdir($sRep, 0777, true);
+
+		return $sRep;
+	}
+
+	/**
+	 * retourne le nom de fichier pour le cache
+	 * @param $sID
+	 * @param $aTabOption array
+	 */
+	protected function _sGetNomFichierCacheIHM($sIDTab, $sIDElement, $aTabOption)
+	{
+		$sRep = $this->_sGetRepCacheIHM($sIDTab);
+
+		//on tri le tableau pour toujours l'avoir dans le même ordre
+		ksort($aTabOption);
+
+		$sListeOption='';
+		foreach($aTabOption as $sOption=>$valeur)
+		{
+			if (!empty($sListeOption))
+				$sListeOption.='_';
+
+			$sListeOption.=$valeur;
+		}
+
+		return $sRep.'/'.$this->_sSanitizeFilename($sIDElement.'_'.$sListeOption);
+	}
+
+	protected function _sSanitizeFilename($filename) {
+		// a combination of various methods
+		// we don't want to convert html entities, or do any url encoding
+		// we want to retain the "essence" of the original file name, if possible
+		// char replace table found at:
+		// http://www.php.net/manual/en/function.strtr.php#98669
+		$replace_chars = array(
+			'Š'=>'S', 'š'=>'s', 'Ð'=>'Dj','Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A',
+			'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I',
+			'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U',
+			'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss','à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a',
+			'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i',
+			'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u',
+			'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y', 'ƒ'=>'f'
+		);
+		$filename = strtr($filename, $replace_chars);
+		// convert & to "and", @ to "at", and # to "number"
+		$filename = preg_replace(array('/[\&]/', '/[\@]/', '/[\#]/'), array('-and-', '-at-', '-number-'), $filename);
+		$filename = preg_replace('/[^(\x20-\x7F)]*/','', $filename); // removes any special chars we missed
+		$filename = str_replace(' ', '-', $filename); // convert space to hyphen
+		$filename = str_replace('/', '-', $filename); // convert / to hyphen
+		$filename = str_replace('\\', '-', $filename); // convert \ to hyphen
+		$filename = str_replace('\'', '', $filename); // removes apostrophes
+		$filename = preg_replace('/[^\w\-\.]+/', '', $filename); // remove non-word chars (leaving hyphens and periods)
+		$filename = preg_replace('/[\-]+/', '-', $filename); // converts groups of hyphens into one
+		return strtolower($filename);
+	}
+
+
 } 
