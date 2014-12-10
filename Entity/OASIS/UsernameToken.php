@@ -15,7 +15,7 @@ class UsernameToken extends WSDLUsernameToken
 	{		
 		$this->Username = $sUsername;
 		$this->m_sClearPassword = $sPassword;
-		$this->Password = $this->_getCryptedPassword($sPassword);
+		$this->ComputeCryptedPassword();
 	}
 
 	/**
@@ -57,6 +57,7 @@ class UsernameToken extends WSDLUsernameToken
 	{
 		return $this->Username;
 	}
+
 	
 	/**
 	 * fonction permettant de générer le mot de passe encrypter compatible avec la norme oasis.
@@ -64,20 +65,18 @@ class UsernameToken extends WSDLUsernameToken
 	 *
 	 * @param string $strPassword le mot de passe en encrypter
 	 */
-	protected function _getCryptedPassword($sPassword=null)
+	public function ComputeCryptedPassword()
 	{		
-		if (!empty($sPassword))
-			//$this->securePassword = base64_encode(md5($strPassword, true));
-			$sSecurePassword = base64_encode(md5($sPassword,true));
-			//$this->securePassword = base64_encode(md5($strPassword));
+		if (!empty($this->m_sClearPassword))
+			$sSecurePassword = base64_encode(md5($this->m_sClearPassword,true));
 		else
 			$sSecurePassword = 'AAAAAAAAAAAAAAAAAAAAAA==';
 	
 
 		$this->Created = date('r');
 		$this->Nonce = base64_encode( microtime() );
-		
-		return base64_encode(sha1($this->Nonce.$this->Created.$sSecurePassword, true));
+
+		$this->Password = base64_encode(sha1($this->Nonce.$this->Created.$sSecurePassword, true));
 	}
 }
 ?>
