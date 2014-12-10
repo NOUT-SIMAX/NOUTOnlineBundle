@@ -195,6 +195,29 @@ class OnlineServiceProxy
 	}
 
 	/**
+	 * récupère la version du langage
+	 * @param Identification $clIdentification
+	 * @return string
+	 */
+	public function sGetChecksumLangage(Identification $clIdentification)
+	{
+		$sURI = $this->_sCreateRequest('GetLangageVersion', array(), array(), $clIdentification);
+		return $this->_sExecute('GetLangageVersion', $sURI, '');
+	}
+
+	/**
+	 * récupère le checksum d'un formulaire
+	 * @param $idTableau identifiant du formulaire
+	 * @param Identification $clIdentification
+	 * @return string
+	 */
+	public function sGetChecksum($idTableau, Identification $clIdentification)
+	{
+		$sURI = $this->_sCreateRequest($idTableau.'/GetChecksum', array(), array(), $clIdentification);
+		return $this->_sExecute('GetChecksum', $sURI, '');
+	}
+
+	/**
 	 * @param $sIDTableau
 	 * @param $sIDEnreg
 	 * @param $sIDColonne
@@ -205,10 +228,10 @@ class OnlineServiceProxy
 	 * @param string $sIDContexte
 	 * @return string
 	 */
-	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
+	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest='')
 	{
 		$sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
-		return $this->_sExecute('GetColInRecord', $sURI, '');
+		return $this->_sExecute('GetColInRecord', $sURI, $sDest);
 	}
 
 
