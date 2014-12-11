@@ -541,7 +541,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 * @param $form
 	 * @return XMLResponseWS |\NOUT\Bundle\NOUTOnlineBundle\SOAP\ListResponse
 	 */
-	protected function _sList($sTokenSession, $form, $sActionContexte='', $displayMode=XMLResponseWS::DISPLAYMODE_LISTE)
+	protected function _sList($sTokenSession, $form, $sActionContexte='', $displayMode=OnlineServiceProxy::DISPLAYMODE_Liste)
 	{
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
@@ -734,7 +734,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		//on vérifie que le mode graphe est disponible
 		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
-		$this->assertContains(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM);
+		$this->assertContains(OnlineServiceProxy::DISPLAYMODE_Graphe, $TabPossibleDM);
 
 		$clParserList = new ReponseWSParser();
 		$clParserList->InitFromXmlXsd($clReponseWSList);
@@ -743,7 +743,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clReponseWSSelectItems = $this->_sSelectItems($sTokenSession, $sActionContexte, $TabIDEnreg);
 		$this->assertEquals(XMLResponseWS::RETURNTYPE_EMPTY, $clReponseWSSelectItems->sGetReturnType());
 
-		$clReponseWSGraphe = $this->_sList($sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
+		$clReponseWSGraphe = $this->_sList($sTokenSession, $form, $sActionContexte, OnlineServiceProxy::DISPLAYMODE_Graphe);
 		$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
 		$this->assertNotEquals(0, $nNbChart);
 
@@ -784,9 +784,9 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sActionContexte = $clReponseWSList->sGetActionContext();
 
 		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
-		if (in_array(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM))
+		if (in_array(OnlineServiceProxy::DISPLAYMODE_Graphe, $TabPossibleDM))
 		{
-			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
+			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, OnlineServiceProxy::DISPLAYMODE_Graphe);
 			$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
 
 			for ($i=0 ; $i<$nNbChart ; $i++)

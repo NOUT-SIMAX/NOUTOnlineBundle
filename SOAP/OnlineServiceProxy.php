@@ -80,29 +80,6 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ZipPJ;
  */
 final class OnlineServiceProxy extends ModifiedNuSoapClient
 {
-	const HEADER_OptionDialogue                 = 'OptionDialogue';
-	const HEADER_OptionDialogue_Readable        = 'Readable';
-	const HEADER_OptionDialogue_DisplayValue    = 'DisplayValue';
-	const HEADER_OptionDialogue_EncodingOutput  = 'EncodingOutput';
-	const HEADER_OptionDialogue_LanguageCode    = 'LanguageCode';
-	const HEADER_WithFieldStateControl          = 'WithFieldStateControl';
-
-	const HEADER_APIUUID                        = 'APIUUID';
-	const HEADER_UsernameToken                  = 'UsernameToken';
-	const HEADER_SessionToken                   = 'SessionToken';
-	const HEADER_ActionContext                  = 'ActionContext';
-	const HEADER_AutoValidate                   = 'AutoValidate';
-	const HEADER_APIUser                        = 'APIUser';
-
-	const AUTOVALIDATE_Validate = 1;
-	const AUTOVALIDATE_None     = 0;
-	const AUTOVALIDATE_Cancel   = -1;
-
-	const APIUSER_Active    = 1;
-	const APIUSER_Desabled  = 0;
-
-
-
     //Definition des variable pour gestion des headers de requete
     private $__aListHeaders = array();
     private $__bCleanHeadersBeforeRequest = true; //sert a savoir si on remet les headers a zero avant une requete
@@ -1424,6 +1401,60 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	    return $this->call('ZipPJ', array($clWsdlType_ZipPJ) ,  null, null , $aHeaders);
     }
     //---
+
+
+
+	const HEADER_OptionDialogue                 = 'OptionDialogue';
+	const HEADER_OptionDialogue_Readable        = 'Readable';
+	const HEADER_OptionDialogue_DisplayValue    = 'DisplayValue';
+	const HEADER_OptionDialogue_EncodingOutput  = 'EncodingOutput';
+	const HEADER_OptionDialogue_LanguageCode    = 'LanguageCode';
+	const HEADER_WithFieldStateControl          = 'WithFieldStateControl';
+
+	const HEADER_APIUUID                        = 'APIUUID';
+	const HEADER_UsernameToken                  = 'UsernameToken';
+	const HEADER_SessionToken                   = 'SessionToken';
+	const HEADER_ActionContext                  = 'ActionContext';
+	const HEADER_AutoValidate                   = 'AutoValidate';
+	const HEADER_APIUser                        = 'APIUser';
+
+	const AUTOVALIDATE_Validate = 1;
+	const AUTOVALIDATE_None     = 0;
+	const AUTOVALIDATE_Cancel   = -1;
+
+	const APIUSER_Active    = 1;
+	const APIUSER_Desabled  = 0;
+
+	//enum pour le type d'affichage
+	// !!!! NE PAS OUBLIER DE MODIFIER LA FONCTION s_sVerifDisplayMode !!!!
+	const DISPLAYMODE_Liste         = 'List';
+	const DISPLAYMODE_Graphe        = 'Chart';
+	const DISPLAYMODE_ListeImage    = 'Thumbnail';
+	const DISPLAYMODE_Planning      = 'Planning';
+	const DISPLAYMODE_Plan          = 'Map';
+	const DISPLAYMODE_Gantt         = 'Gantt';
+	const DISPLAYMODE_Organigramme  = 'FlowChart';
+	//const DISPLAYMODE_Data = 'Data';
+	//const DISPLAYMODE_ChartPicture = 'ChartPicture';
+
+	static public function s_sVerifDisplayMode($sValueToVerif, $sDefaultValue)
+	{
+		$aTabPossible = array(
+			self::DISPLAYMODE_Liste,
+			self::DISPLAYMODE_Graphe,
+			self::DISPLAYMODE_ListeImage,
+			self::DISPLAYMODE_Planning,
+			self::DISPLAYMODE_Plan,
+			self::DISPLAYMODE_Gantt,
+			self::DISPLAYMODE_Organigramme,
+		);
+
+		return (in_array($sValueToVerif, $aTabPossible)) ? $sValueToVerif : $sDefaultValue;
+	}
+
+
+
+
 }
 //***
 
@@ -1437,17 +1468,20 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 
 /*
  * definition des classe de constante utile a la communication soap
- *
+ */
+//
+
+/*
+- class CalculationTypeEnum :                           voir la classe NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType
+- class COutOfWsdlType_CalculEnumForGetCalculation :    voir la classe NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType
+- class ReturnType :                                    voir la classe NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS les constantes RETURNTYPE_xxxx
+- class DisplayModeParamEnum :                          voir la classe OnlineServiceProxy les constantes DISPLAYMODE_xxx
+- class DisplayModeEnum :                               voir la classe OnlineServiceProxy les constantes DISPLAYMODE_xxx
+
+/*
+ * definition des classe de constante utile a la communication soap pour la partie messagerie
  */
 /*
-class CalculationTypeEnum
-{
-    const Sum = 'Sum';
-    const Count = 'Count';
-    const Max = 'Max';
-    const Min = 'Min';
-    const Average = 'Average';
-}
 //***
 
 class WayEnum
@@ -1490,394 +1524,5 @@ class PJSizeCheck
     const value_1 = '1';
     const value_2 = '2';
 }
-//***
 
-class ReturnType
-{
-    const _Empty = 'Empty';
-    const Report = 'Report';
-    const Value = 'Value';
-    const Record = 'Record';
-    const _List = 'List';
-    const Thumbnail = 'Thumbnail';
-    const AmbiguousAction = 'AmbiguousAction';
-    const Identification = 'Identification';
-    const XSD = 'XSD';
-    const MessageBox = 'MessageBox';
-    const ValidateAction = 'ValidateAction';
-    const Planning = 'Planning';
-    const RequestFilter = 'RequestFilter';
-    const MailServiceRecord = 'MailServiceRecord';
-    const MailServiceList = 'MailServiceList';
-    const GlobalSearch = 'GlobalSearch';
-    const ListCalculation = 'ListCalculation';
-    const PrintTemplate = 'PrintTemplate';
-    const MailServiceStatus = 'MailServiceStatus';
-    const ValidateRecord = 'ValidateRecord';
-    const WithAutomaticResponse = 'WithAutomaticResponse';
-    const Chart = 'Chart';
-}
-//***
-
-class DisplayModeEnum
-{
-    const _List = 'List';
-    const Chart = 'Chart';
-}
-//***
-
-class DisplayModeParamEnum
-{
-    const _List = 'List';
-    const Chart = 'Chart';
-    const Planning = 'Planning';
-    const Thumbnail = 'Thumbnail';
-}
-//***
-*/
-
-/*
- * definition des classe de constante utile a la communication soap mais non presente dans la WSDL (uniquement dans la doc)
- */
-/*
-class COutOfWsdlType_CalculEnumForGetCalculation
-{
-    const Sum = 'sum';
-    const Average = 'average';
-    const Min = 'min';
-    const Max = 'max';
-    const Count = 'count';
-    const Percent = 'percent';
-}
-
-
-class GetTokenSessionResponse
-{
-	public $SessionToken; // string
-}
-//***
-
-
-class ResetPasswordFailedResponse
-{
-	public $xml; // string
-}
-//***
-
-
-class GetStartAutomatismResponse
-{
-	public $xml; // string
-}
-//***
-
-
-class ConfirmResponseResponse
-{
-	public $xml; // string
-}
-//***
-
-class HasChangedResponse
-{
-	public $Value; // integer
-}
-//***
-
-class SelectFormResponse
-{
-	public $xml; // string
-}
-//***
-class SelectPrintTemplateResponse
-{
-	public $xml; // string
-}
-//***
-class GetPlanningInfoResponse
-{
-	public $xml; // string
-}
-//***
-
-class GetColInRecordResponse
-{
-	public $xml; // string
-}
-//***
-class DisplayResponse
-{
-	public $xml; // string
-}
-//***
-class CreateResponse
-{
-	public $xml; // string
-}
-//***
-
-class CreateFromResponse
-{
-	public $xml; // string
-}
-//***
-class TransformIntoResponse
-{
-	public $xml; // string
-}
-//***
-//***
-class ModifyResponse
-{
-	public $xml; // string
-}
-//***
-class UpdateResponse
-{
-	public $xml; // string
-}
-//***
-class PrintResponse
-{
-	public $xml; // string
-}
-//***
-class DeleteResponse
-{
-	public $xml; // string
-}
-//***
-class ExecuteResponse
-{
-	public $xml; // string
-}
-//***
-class DrillThroughResponse
-{
-	public $xml; // string
-}
-//***
-
-class ValidateResponse
-{
-	public $xml; // string
-}
-//***
-class CancelResponse
-{
-	public $xml; // string
-}
-//***
-
-class ListResponse
-{
-	public $xml; // string
-}
-//***
-
-class GetLanguagesResponse
-{
-	public $xml; // LanguageCodeList
-}
-//***
-class GetChartResponse
-{
-	public $xml; // string
-}
-//***
-class SelectItemsResponse
-{
-	public $xml; // string
-}
-//***
-
-class EnterReorderListModeResponse
-{
-	public $Value; // integer
-}
-//***
-class ReorderListResponse
-{
-	public $Value; // string
-}
-//***
-class SetOrderListResponse
-{
-	public $Value; // string
-}
-//***
-class ReorderSubListResponse
-{
-	public $Value; // string
-}
-//***
-
-class SetOrderSubListResponse
-{
-	public $Value; // string
-}
-//***
-class GetCalculationResponse
-{
-	public $xml; // string
-}
-//***
-class SearchResponse
-{
-	public $xml; // string
-}
-//***
-class RequestResponse
-{
-	public $xml; // string
-}
-//***
-class RequestParamResponse
-{
-	public $xml; // string
-}
-//***
-
-class GetTemporalAutomatismResponse
-{
-	public $xml; // string
-}
-//***
-class GetEndAutomatismResponse
-{
-	public $xml; // string
-}
-//***
-class UpdateFolderResponse
-{
-	public $xml; // string
-}
-//***
-
-class GetContentFolderResponse
-{
-	public $xml; // string
-}
-//***
-class GetTableChildResponse
-{
-	public $xml; // string
-}
-//***
-
-class GetFolderListResponse
-{
-	public $xml; // string
-}
-//***
-
-class CreateFolderResponse
-{
-	public $xml; // string
-}
-//***
-
-class DeletePJResponse
-{
-	public $xml; // string
-}
-//***
-
-class GetPJResponse
-{
-	public $xml; // GetPJResponseType
-}
-//***
-
-class SendMessageResponse
-{
-	public $xml; // string
-}
-//***
-
-class CreateMessageResponse
-{
-	public $xml; // string
-}
-//***
-
-class UpdateMessageResponse
-{
-	public $xml; // string
-}
-//***
-
-
-class ModifyMessageResponse
-{
-	public $xml; // string
-}
-//***
-class GetListMessageResponse
-{
-	public $xml; // string
-}
-//***
-class RequestMessageResponse
-{
-	public $xml; // string
-}
-//***
-
-class ModifyFolderResponse
-{
-	public $xml; // string
-}
-//***
-
-class AddPJResponse
-{
-	public $xml; // string
-}
-//***
-
-class CheckRecipientResponse
-{
-	public $xml; // string
-}
-//***
-
-class ZipPJResponse
-{
-	public $xml; // string
-}
-//***
-
-class CheckCreateElementResponse
-{
-	public $xml; // string
-}
-//***
-
-class InitRecordFromMessageResponse
-{
-	public $xml; // string
-}
-//***
-class InitRecordFromAddressResponse
-{
-	public $xml; // string
-}
-//***
-
-
-class GetMailServiceStatusResponse
-{
-	public $UnRead; // integer
-	public $Receive; // integer
-	public $LastUnRead; // LastUnReadType
-}
-//***
-
-
-class WithAutomaticResponseResponse
-{
-	public $xml; // string
-}
-//***
 */

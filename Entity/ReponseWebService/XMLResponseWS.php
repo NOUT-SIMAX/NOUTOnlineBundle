@@ -16,54 +16,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class XMLResponseWS
 {
-	//réponse générique
-	const RETURNTYPE_EMPTY = 'Empty';
-	const RETURNTYPE_REPORT = 'Report';
-	const RETURNTYPE_VALUE = 'Value';
-	const RETURNTYPE_REQUESTFILTER = 'RequestFilter';
-	const RETURNTYPE_CHART = 'Chart';
-	const RETURNTYPE_NUMBEROFCHART = 'NumberOfChart';
-
-	//retourne des enregistrements
-	const RETURNTYPE_RECORD = 'Record';
-	const RETURNTYPE_LIST = 'List';
-
-
-	//réponse particulière
-	const RETURNTYPE_XSD = 'XSD';
-	const RETURNTYPE_IDENTIFICATION = 'Identification';
-	const RETURNTYPE_PLANNING = 'Planning';
-	const RETURNTYPE_GLOBALSEARCH = 'GlobalSearch';
-	const RETURNTYPE_LISTCALCULATION = 'ListCalculation';
-	const RETURNTYPE_EXCEPTION = 'Exception';
-
-	//réponse intermédiaire
-	const RETURNTYPE_AMBIGUOUSACTION = 'AmbiguousAction';
-	const RETURNTYPE_MESSAGEBOX = 'MessageBox';
-	const RETURNTYPE_VALIDATEACTION = 'ValidateAction';
-	const RETURNTYPE_VALIDATERECORD = 'ValidateRecord';
-	const RETURNTYPE_PRINTTEMPLATE = 'PrintTemplate';
-
-
-	//réponse de messagerie
-	const RETURNTYPE_MAILSERVICERECORD = 'MailServiceRecord';
-	const RETURNTYPE_MAILSERVICELIST = 'MailServiceList';
-	const RETURNTYPE_MAILSERVICESTATUS = 'MailServiceStatus';
-	const RETURNTYPE_WITHAUTOMATICRESPONSE = 'WithAutomaticResponse';
-
-
-
-	//type d'affichage
-	const DISPLAYMODE_LISTE = 'List';
-	const DISPLAYMODE_GRAPHE = 'Chart';
-	const DISPLAYMODE_LISTEIMAGE = 'Thumbnail';
-	const DISPLAYMODE_PLANNING = 'Planning';
-	const DISPLAYMODE_PLAN = 'Map';
-	const DISPLAYMODE_GANTT = 'Gantt';
-	const DISPLAYMODE_ORGANIGRAMME = 'FlowChart';
-	//const DISPLAYMODE_DATA = 'Data';
-	//const DISPLAYMODE_CHARTPICTURE = 'ChartPicture';
-
 	//noeud particulier
 	protected $m_ndBody;
 	protected $m_ndHeader;
@@ -400,4 +352,42 @@ class XMLResponseWS
 
 		return $TabLanguages;
 	}
+
+
+
+	//réponse générique
+	const RETURNTYPE_EMPTY          = 'Empty';
+	const RETURNTYPE_REPORT         = 'Report';
+	const RETURNTYPE_VALUE          = 'Value';
+	const RETURNTYPE_REQUESTFILTER  = 'RequestFilter';
+	const RETURNTYPE_CHART          = 'Chart';
+	const RETURNTYPE_NUMBEROFCHART  = 'NumberOfChart';
+
+	//retourne des enregistrements
+	const RETURNTYPE_RECORD         = 'Record';
+	const RETURNTYPE_LIST           = 'List';
+
+
+	//réponse particulière
+	const RETURNTYPE_XSD                = 'XSD';
+	const RETURNTYPE_IDENTIFICATION     = 'Identification';
+	const RETURNTYPE_PLANNING           = 'Planning';
+	const RETURNTYPE_GLOBALSEARCH       = 'GlobalSearch';
+	const RETURNTYPE_LISTCALCULATION    = 'ListCalculation';
+	const RETURNTYPE_EXCEPTION          = 'Exception';
+
+	//réponse intermédiaire
+	const RETURNTYPE_AMBIGUOUSACTION    = 'AmbiguousAction';
+	const RETURNTYPE_MESSAGEBOX         = 'MessageBox';
+	const RETURNTYPE_VALIDATEACTION     = 'ValidateAction';
+	const RETURNTYPE_VALIDATERECORD     = 'ValidateRecord';
+	const RETURNTYPE_PRINTTEMPLATE      = 'PrintTemplate';
+
+
+	//réponse de messagerie
+	const RETURNTYPE_MAILSERVICERECORD      = 'MailServiceRecord';
+	const RETURNTYPE_MAILSERVICELIST        = 'MailServiceList';
+	const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
+	const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
+
 }

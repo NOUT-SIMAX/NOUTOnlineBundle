@@ -341,7 +341,7 @@ class DefaultController extends Controller
 	 * @param $form
 	 * @return XMLResponseWS
 	 */
-	protected function _sList(SOAPProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte='', $displayMode=XMLResponseWS::DISPLAYMODE_LISTE)
+	protected function _sList(SOAPProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte='', $displayMode=OnlineServiceProxy::DISPLAYMODE_Liste)
 	{
 		$clParamList = new ListParams();
 		$clParamList->Table = $form;
@@ -475,7 +475,7 @@ class DefaultController extends Controller
 		$sActionContexte = $clReponseWSList->sGetActionContext();
 
 		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
-		if (in_array(XMLResponseWS::DISPLAYMODE_GRAPHE, $TabPossibleDM))
+		if (in_array(OnlineServiceProxy::DISPLAYMODE_Graphe, $TabPossibleDM))
 		{
 			$clParserList = new ReponseWSParser();
 			$clParserList->InitFromXmlXsd($clReponseWSList);
@@ -483,7 +483,7 @@ class DefaultController extends Controller
 			$TabIDEnreg = array_slice($clParserList->GetTabEnregTableau()->GetTabIDEnreg($clReponseWSList->clGetForm()->getID()), 0, 5);
 			$this->_sSelectItems($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDEnreg);
 
-			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, XMLResponseWS::DISPLAYMODE_GRAPHE);
+			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, OnlineServiceProxy::DISPLAYMODE_Graphe);
 			$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
 
 			for ($i=0 ; $i<$nNbChart ; $i++)
