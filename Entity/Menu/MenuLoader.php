@@ -97,10 +97,7 @@ class MenuLoader
 		if ($clMenu->bIsEmpty())
 			return null;
 
-		if ($clMenu->bLastOptionIsSeparateur())
-			$clMenu->RemoveLastOption();
-
-		return $clMenu;
+		return $clMenu->TrimSeparateur();
 	}
 
 

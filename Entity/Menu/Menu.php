@@ -118,6 +118,18 @@ class Menu extends OptionMenu
 	/**
 	 * @return bool
 	 */
+	public function bFirstOptionIsSeparateur()
+	{
+		if (empty($this->m_TabOptionMenu))
+			return false;
+
+		return reset($this->m_TabOptionMenu)->bEstSeparateur();
+	}
+
+
+	/**
+	 * @return bool
+	 */
 	public function bLastOptionIsSeparateur()
 	{
 		if (empty($this->m_TabOptionMenu))
@@ -136,6 +148,16 @@ class Menu extends OptionMenu
 		return $this;
 	}
 
+	/**
+	 * supprime la première option de menu
+	 * @return $this
+	 */
+	public function RemoveFirstOption()
+	{
+		array_shift($this->m_TabOptionMenu);
+		return $this;
+	}
+
 
 	/**
 	 * @return bool
@@ -148,6 +170,16 @@ class Menu extends OptionMenu
 				return true;
 		}
 		return false;
+	}
+
+	public function TrimSeparateur()
+	{
+		if ($this->bFirstOptionIsSeparateur())
+			$this->RemoveFirstOption();
+		if ($this->bLastOptionIsSeparateur())
+			$this->RemoveLastOption();
+
+		return $this;
 	}
 
 } 

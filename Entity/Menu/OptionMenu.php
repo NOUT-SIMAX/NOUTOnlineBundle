@@ -4,10 +4,14 @@
  * User: Ninon
  * Date: 27/11/14
  * Time: 15:30
+ *
+ * Règle pour l'execution de l'action
+ * 1 - Commande sinon vide
+ * 2 - IDAction si != 0
+ * 3 - Libelle de l'option
  */
 
 namespace NOUT\Bundle\ContextesBundle\Entity\Menu;
-
 
 class OptionMenu
 {
@@ -145,6 +149,34 @@ class OptionMenu
 	public function getIDAction()
 	{
 		return $this->m_sIDAction;
+	}
+
+	/**
+	/*
+	 * Règle pour l'execution de l'action
+	 * 1 - Commande sinon vide
+	 * 2 - IDAction si != 0
+	 * 3 - Libelle de l'option
+	 * @return bool
+	 */
+	public function bExecByIDAction()
+	{
+		if (!empty($this->m_sCommande))
+			return false;
+
+		return !empty($this->m_sIDAction);
+	}
+
+	/**
+	 * retourne la phrase a executer
+	 * @return string
+	 */
+	public function sGetCommandeToExec()
+	{
+		if (!empty($this->m_sCommande))
+			return $this->m_sCommande;
+
+		return $this->m_sLibelle;
 	}
 
 	/**
