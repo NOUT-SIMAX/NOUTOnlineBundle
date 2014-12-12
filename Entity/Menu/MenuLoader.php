@@ -59,14 +59,14 @@ class MenuLoader
 	{
 		$clRecordMenu = $clParserMenu->clGetRecordFromId(Langage::TABL_MenuPourTous, $sIDMenu);
 
-		$sIDMenuPere = $clRecordMenu->sGetValCol(Langage::COL_MENUPOURTOUS_IDMenuParent);
+		$sIDMenuPere = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_IDMenuParent);
 		if ($bUniquementRacine && !empty($sIDMenuPere))
 			return null; //on prend que les menus qui n'ont pas de père
 
 		//on construit un menu
-		$clMenu = new Menu($sIDMenu, $clRecordMenu->sGetValCol(Langage::COL_MENUPOURTOUS_Libelle), $sIDMenuPere);
+		$clMenu = new Menu($sIDMenu, $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle), $sIDMenuPere);
 
-		$ValOptionMenu = $clRecordMenu->sGetValCol(Langage::COL_MENUPOURTOUS_OptionsMenu);
+		$ValOptionMenu = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_OptionsMenu);
 		foreach($ValOptionMenu as $sIDOptionMenu)
 		{
 			if (in_array($sIDOptionMenu, $aTabIDEnregMenu))
@@ -84,10 +84,10 @@ class MenuLoader
 
 			$clRecordOption = $clParserOption->clGetRecordFromId(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
 
-			$clOptionMenu = new OptionMenu($sIDOptionMenu, $clRecordOption->sGetValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), $clRecordOption->sGetValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent));
-			$clOptionMenu->setIDAction($clRecordOption->sGetValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction));
-			$clOptionMenu->setCommande($clRecordOption->sGetValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande));
-			$clOptionMenu->setIDIcone($clRecordOption->sGetValCol(Langage::COL_OPTIONMENUPOURTOUS_IDIcone));
+			$clOptionMenu = new OptionMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent));
+			$clOptionMenu->setIDAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction));
+			$clOptionMenu->setCommande($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande));
+			$clOptionMenu->setIDIcone($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDIcone));
 
 			if (!$clMenu->bLastOptionIsSeparateur() || !$clOptionMenu->bEstSeparateur())
 				$clMenu->AddOptionMenu($clOptionMenu);

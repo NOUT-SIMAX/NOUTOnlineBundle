@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\ContextesBundle\Service;
 
 
+use NOUT\Bundle\ContextesBundle\Entity\ActionResult;
 use NOUT\Bundle\ContextesBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextesBundle\Entity\Menu\MenuLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
@@ -20,11 +21,16 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\RequestColList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Security\Core\SecurityContext;
 
 class NOUTClient
@@ -66,6 +72,7 @@ class NOUTClient
 	public function __construct(SecurityContext $security, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, $sCacheDir)
 	{
 		$this->__security=$security;
+
 		$this->m_sCacheDir=$sCacheDir.'/'.self::REPCACHE;
 		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
 		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
@@ -230,6 +237,15 @@ class NOUTClient
 	}
 
 
+	/**
+	 * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+	 * @param $sIDIcon
+	 * @param $sMimeType
+	 * @param $sTransColor
+	 * @param $nWidth
+	 * @param $nHeight
+	 * @return string
+	 */
 	public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
 	{
 		$clIdentification = $this->_clGetIdentificationREST('', true);
@@ -263,6 +279,10 @@ class NOUTClient
 		return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_Image, array(), $aTabOption, $clIdentification, $sFile);
 	}
 
+	/**
+	 * @param $sIDTab
+	 * @return string
+	 */
 	protected function _sGetRepCacheIHM($sIDTab)
 	{
 		$oToken = $this->__security->getToken();
@@ -307,7 +327,12 @@ class NOUTClient
 		return $sRep.'/'.$this->_sSanitizeFilename($sIDElement.'_'.$sListeOption);
 	}
 
-	protected function _sSanitizeFilename($filename) {
+	/**
+	 * @param $filename
+	 * @return string
+	 */
+	protected function _sSanitizeFilename($filename)
+	{
 		// a combination of various methods
 		// we don't want to convert html entities, or do any url encoding
 		// we want to retain the "essence" of the original file name, if possible
@@ -335,5 +360,126 @@ class NOUTClient
 		return strtolower($filename);
 	}
 
+	/**
+	 * Execute une action via son id
+	 * @param $sIDAction
+	 * @param string $sIDContexte
+	 * @param array $aTabParam
+	 * @param string $sIDCallingColumn
+	 * @param SpecialParamListType $oParamListe
+	 * @param string $sDisplayMode
+	 * @param string $sChecksum
+	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+	 */
+	public function oExecIDAction($sIDAction, $sIDContexte='', $aTabParam=array(), $sIDCallingColumn='', SpecialParamListType $oParamListe=null, $sDisplayMode=SOAPProxy::DISPLAYMODE_Liste, $sChecksum='')
+	{
+		//paramètre de l'action
+		$clParamExecute = new Execute();
+		$clParamExecute->ID = $sIDAction;                   // identifiant de l'action
+		//$clParamExecute->Sentence                         // phrase de l'action
+		$clParamExecute->SpecialParamList = $oParamListe;   //paramètre supplémentaire pour les listes
+		$clParamExecute->Checksum = $sChecksum;             // checksum pour utilisation du cache
+		$clParamExecute->CallingColumn = $sIDCallingColumn; // identifiant de la colonne d'appel
+		$clParamExecute->DisplayMode = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
+		//$clParamExecute->ParamXML = $aTabParam;             // paramètre de l'action
 
-} 
+		//header
+		$aTabHeaderSuppl = array();
+		if (!empty($sIDContexte))
+			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext]=$sIDContexte;
+
+		return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+	}
+
+	/**
+	 * Execute une action via la phrase
+	 *
+	 * @param $sPhrase
+	 * @param string $sIDContexte
+	 * @param array $aTabParam
+	 * @param string $sIDCallingColumn
+	 * @param SpecialParamListType $oParamListe
+	 * @param string $sDisplayMode
+	 * @param string $sChecksum
+	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+	 */
+	public function oExecSentence($sPhrase, $sIDContexte='', array $aTabParam=array(), $sIDCallingColumn='', SpecialParamListType $oParamListe=null, $sDisplayMode=SOAPProxy::DISPLAYMODE_Liste, $sChecksum='')
+	{
+		//paramètre de l'action
+		$clParamExecute = new Execute();
+		//$clParamExecute->ID = $sIDAction;                 // identifiant de l'action
+		$clParamExecute->Sentence = $sPhrase;               // phrase de l'action
+		$clParamExecute->SpecialParamList = $oParamListe;   //paramètre supplémentaire pour les listes
+		$clParamExecute->Checksum = $sChecksum;             // checksum pour utilisation du cache
+		$clParamExecute->CallingColumn = $sIDCallingColumn; // identifiant de la colonne d'appel
+		$clParamExecute->DisplayMode = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
+		//$clParamExecute->ParamXML = $aTabParam;             // paramètre de l'action
+
+		//header
+		$aTabHeaderSuppl = array();
+		if (!empty($sIDContexte))
+			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext]=$sIDContexte;
+
+		return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+	}
+
+	protected function _oExecute(Execute $clParamExecute, array $aTabHeaderSuppl)
+	{
+		$clReponseXML = $this->m_clSOAPProxy->execute($clParamExecute, $this->_aGetTabHeader($aTabHeaderSuppl));
+		return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+	}
+
+	/**
+	 * @param XMLResponseWS $clReponseXML
+	 * @return ActionResult
+	 * @throws \Exception
+	 */
+	protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML)
+	{
+		$clActionResult = new ActionResult($clReponseXML->sGetReturnType());
+
+		switch($clActionResult->ReturnType)
+		{
+			case XMLResponseWS::RETURNTYPE_EMPTY:
+			case XMLResponseWS::RETURNTYPE_REPORT:
+			case XMLResponseWS::RETURNTYPE_VALUE:
+			case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
+			case XMLResponseWS::RETURNTYPE_CHART:
+			case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
+
+			case XMLResponseWS::RETURNTYPE_LIST:
+
+			case XMLResponseWS::RETURNTYPE_XSD:
+			case XMLResponseWS::RETURNTYPE_IDENTIFICATION:
+			case XMLResponseWS::RETURNTYPE_PLANNING:
+			case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
+			case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
+			case XMLResponseWS::RETURNTYPE_EXCEPTION:
+
+			case XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION:
+			case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
+			case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
+			case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
+			case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
+
+			case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
+			case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
+			case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
+			case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
+			{
+				throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
+			}
+
+			case XMLResponseWS::RETURNTYPE_RECORD:
+			{
+				$clParser = new ReponseWSParser();
+				$clParser->InitFromXmlXsd($clReponseXML);
+
+				$clActionResult->setData($clParser->clGetRecord($clReponseXML->clGetForm(), $clReponseXML->clGetElement()));
+				break;
+			}
+		}
+
+		return $clActionResult;
+	}
+}
