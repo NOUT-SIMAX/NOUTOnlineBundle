@@ -183,11 +183,7 @@ class ReponseWSParser
 
 		if (count($ndElement->children('http://www.w3.org/2001/XMLSchema'))>0)
 		{
-			$clStructureElement = new StructureElement();
-			$clStructureElement->m_nNiveau = $nNiveau;
-			$clStructureElement->m_nID = $sIDTableau;
-			$clStructureElement->m_sLibelle = (string)$TabAttribSIMAX['name'];
-
+			$clStructureElement = new StructureElement($sIDTableau, (string)$TabAttribSIMAX['name'], $nNiveau);
 			//$sType = $TabAttribSIMAX['tableType'];
 
 			$ndSequence = $ndElement->children('http://www.w3.org/2001/XMLSchema')->complexType
@@ -216,9 +212,9 @@ class ReponseWSParser
 			$clAttribNOUT = $ndNoeud->attributes('http://www.nout.fr/XMLSchema');
 
 			$sIDColonne = str_replace('id_', '', (string)$clAttribXS->name);
-			$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]=new StructureColonne($sIDColonne, $clAttribNOUT);
+			$clStructElement->setStructureColonne(new StructureColonne($sIDColonne, $clAttribNOUT, $clAttribXS));
 
-			switch($clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_eTypeElement)
+			switch($clStructElement->getTypeElement($sIDColonne))
 			{
 				case StructureColonne::TM_ListeElem:
 					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
@@ -246,20 +242,26 @@ class ReponseWSParser
 						$ndSimpleType = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->simpleType
 							->children('http://www.w3.org/2001/XMLSchema')->restriction;
 
-						$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_eTypeElement = (string)$ndSimpleType->attributes('http://www.w3.org/2001/XMLSchema')['base'];
+						$clStructElement->setTypeElement($sIDColonne, (string)$ndSimpleType->attributes('http://www.w3.org/2001/XMLSchema')['base']);
 
-						$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_clRestriction = new ColonneRestriction();
-
-						foreach($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+						if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
 						{
-							$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_clRestriction->m_sTypeRestriction = $ndFils->getName();
-							switch($ndFils->getName())
+							$clRestriction = new ColonneRestriction();
+
+							foreach($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
 							{
-								case ColonneRestriction::R_MAXLENGTH:
-									$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_clRestriction->m_ValeurRestriction = (int)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value'];
-									break;
+								$clRestriction->setTypeRestriction($ndFils->getName());
+								switch($ndFils->getName())
+								{
+									case ColonneRestriction::R_MAXLENGTH:
+										$clRestriction->setValeurRestriction((int)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
+										break;
+								}
 							}
+
+							$clStructElement->setRestriction($sIDColonne, $clRestriction);
 						}
+
 
 					}
 					break;
@@ -271,30 +273,35 @@ class ReponseWSParser
 						$ndSimpleType = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->simpleType
 							->children('http://www.w3.org/2001/XMLSchema')->restriction;
 
-						$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_clRestriction = new ColonneRestriction();
-						foreach($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+						if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
 						{
-							$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_clRestriction->m_sTypeRestriction = $ndFils->getName();
-							switch($ndFils->getName())
+							$clRestriction = new ColonneRestriction();
+
+							foreach($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
 							{
-								case ColonneRestriction::R_ENUMERATION:
-									$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne]->m_clRestriction->m_ValeurRestriction[(string)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id']] = (string)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value'];
-									break;
+								$clRestriction->setTypeRestriction($ndFils->getName());
+								switch($ndFils->getName())
+								{
+									case ColonneRestriction::R_ENUMERATION:
+										$clRestriction->addValeurRestriction((string)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id'] , (string)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
+										break;
+								}
 							}
+
+							$clStructElement->setRestriction($sIDColonne, $clRestriction);
 						}
+
+
 					}
 					break;
 
 			}
 
-			if (!isset($sIDColonnePere))
-				$clStructElement->m_TabStructureColonne[] = $clStructElement->m_MapIDColonne2StructColonne[$sIDColonne];
-			else
-				$clStructElement->m_MapIDColonne2StructColonne[$sIDColonnePere]->m_TabStructureColonne[]=$clStructElement->m_MapIDColonne2StructColonne[$sIDColonne];
+			$clStructElement->addColonne2TabStruct($sIDColonne, $sIDColonnePere);
 		}
 
 		if (!isset($sIDColonnePere))
-			$this->m_MapIDTableau2Niv2StructureElement[$clStructElement->m_nID][$clStructElement->m_nNiveau]=$clStructElement;
+			$this->m_MapIDTableau2Niv2StructureElement[$clStructElement->getID()][$clStructElement->getNiveau()]=$clStructElement;
 	}
 
 
@@ -418,16 +425,7 @@ class ReponseWSParser
 			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau] = array();
 
 		if (!isset($this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]))
-		{
-			$clRecord = new Record();
-			$clRecord->m_nIDTableau = $sIDTableau;
-			$clRecord->m_nIDEnreg = $sIDEnreg;
-			$clRecord->m_sTitle = (string)$TabAttrib['title'];
-			$clRecord->m_clStructElem = $this->clGetStructureElement($sIDTableau);
-
-			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg] = $clRecord;
-		}
-
+			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg] = new Record($sIDTableau, $sIDEnreg, (string)$TabAttrib['title'], $this->clGetStructureElement($sIDTableau));
 
 		$this->__ParseColumnRecord($clXML, $TabFormPresent, $sIDTableau, $sIDEnreg);
 	}
@@ -452,15 +450,16 @@ class ReponseWSParser
 			$TabAttribNOUT = $clXML->attributes('http://www.nout.fr/XML/');
 			$TabAttribLayout = $clXML->attributes('http://www.nout.fr/XML/layout');
 
-			$clInfoColonne = new InfoColonne($TabAttribNOUT, $TabAttribLayout);
-			$clInfoColonne->m_nIDColonne=str_replace('id_', '', $sNom);
+			$clInfoColonne = new InfoColonne(str_replace('id_', '', $sNom), $TabAttribNOUT, $TabAttribLayout);
 
+			$ValeurColonne=null;
 			if ($ndColonne->count()>0)
 			{
 				//on a des fils
-				if (isset($this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]->m_clStructElem))
+				$clStructElem = $this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]->clGetStructElem();
+				if (isset($clStructElem))
 				{
-					$sTypeElement = $this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]->m_clStructElem->sGetColonneTypeElement($clInfoColonne->m_nIDColonne);
+					$sTypeElement = $clStructElem->getTypeElement($clInfoColonne->getIDColonne());
 					//on a la structure de l'enregistrement
 					if ($sTypeElement==StructureColonne::TM_Separateur)
 					{
@@ -473,10 +472,10 @@ class ReponseWSParser
 						if ($sTypeElement==StructureColonne::TM_ListeElem)
 						{
 							//il faut prendre la valeur des colonnes filles et mettre dans un tableau
-							$clInfoColonne->m_Valeur = array();
+							$ValeurColonne = array();
 							foreach($ndColonne->children() as $ndValeur)
 							{
-								$clInfoColonne->m_Valeur[]=(string)$ndValeur;
+								$ValeurColonne[]=(string)$ndValeur;
 							}
 						}
 					}
@@ -498,10 +497,10 @@ class ReponseWSParser
 					if ($bFormulaire)
 					{
 						//c'est pas un separateur mais une colonne liste
-						$clInfoColonne->m_Valeur = array();
+						$ValeurColonne = array();
 						foreach($ndColonne->children() as $ndValeur)
 						{
-							$clInfoColonne->m_Valeur[]=(string)$ndValeur;
+							$ValeurColonne[]=(string)$ndValeur;
 						}
 					}
 					else
@@ -513,10 +512,12 @@ class ReponseWSParser
 			}
 			else
 			{
-				$clInfoColonne->m_Valeur = (string)$ndColonne;
+				$ValeurColonne = (string)$ndColonne;
 			}
 
-			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]->m_TabColumns[$clInfoColonne->m_nIDColonne]=$clInfoColonne;
+			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]
+				->setInfoColonne($clInfoColonne)
+				->setValCol($clInfoColonne->getIDColonne(), $ValeurColonne, false); //false car on parse le xml, donc par modifié utilisateur
 		}
 	}
 
@@ -541,7 +542,7 @@ class ReponseWSParser
 			foreach($ndCol->children() as $ndCalcul)
 				$clCalculation->AddCacul((string)$ndCalcul->getName(), (string)$ndCalcul);
 
-			$this->m_MapColonne2Calcul[$clCalculation->m_nIDColonne]=$clCalculation;
+			$this->m_MapColonne2Calcul[$clCalculation->getIDColonne()]=$clCalculation;
 		}
 	}
 

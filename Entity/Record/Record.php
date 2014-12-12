@@ -42,50 +42,128 @@ class Record
 	/**
 	 * @var $m_sTitle : contient la mini desc de l'enregistrement
 	 */
-	public $m_sTitle;
+	protected $m_sTitle;
 	/**
 	 * @var $m_nID : identitifant de l'enregistrement
 	 */
-	public $m_nIDEnreg;
+	protected $m_nIDEnreg;
 
 	/**
 	 * @var $m_nIDTableau : identifiant du formulaire
 	 */
-	public $m_nIDTableau;
+	protected $m_nIDTableau;
 
 	/**
-	 * @var $m_TabColumns : tableau avec les informations variables des colonnes (valeur, mise en forme ...)
+	 * @var $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
 	 */
-	public $m_TabColumns;
+	protected $m_TabColumnsInfo;
 
 	/**
-	 * @var $m_clStructElem : classe contenant la structure
+	 * @var $m_TabColumnsValues : tableau avec les valeurs des colonnes
 	 */
-	public $m_clStructElem;
+	protected $m_TabColumnsValues;
+	/**
+	 * @var $m_TabColumnsModified : tableau de booleen pour indiquer que la valeur à changée
+	 */
+	protected $m_TabColumnsModified;
+
+	/**
+	 * @var StructureElement
+	 */
+	protected $m_clStructElem;
 
 	/**
 	 * @param Form $clForm : information sur le formulaire
 	 */
-	public function __construct()
+	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, StructureElement $clStruct=null)
 	{
-		$this->m_nIDTableau = '';
-		$this->m_nIDEnreg = '';
-		$this->m_sTitle='';
-		$this->m_TabColumns=null;
-		$this->m_clStructElem=null;
+		$this->m_nIDTableau = $sIDTableau;
+		$this->m_nIDEnreg = $sIDEnreg;
+		$this->m_sTitle=$sLibelle;
+		$this->m_clStructElem=$clStruct;
+
+		$this->m_TabColumnsInfo=array();
+		$this->m_TabColumnsModified=array();
+		$this->m_TabColumnsValues=array();
 	}
 
+	/**
+	 * @return StructureElement
+	 */
+	public function clGetStructElem()
+	{
+		return $this->m_clStructElem;
+	}
+
+	/**
+	 * @param InfoColonne $clInfoColonne
+	 * @return $this
+	 */
+	public function setInfoColonne(InfoColonne $clInfoColonne)
+	{
+		$this->m_TabColumnsInfo[$clInfoColonne->getIDColonne()]=$clInfoColonne;
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function bRef()
 	{
-		return !empty($this->m_TabColumns);
+		return !empty($this->m_TabColumnsInfo);
 	}
 
-	public function sGetValCol($idColonne)
+	/**
+	 * @param $idColonne
+	 * @return mixed
+	 */
+	public function getValCol($idColonne)
 	{
-		if (isset($this->m_TabColumns) && isset($this->m_TabColumns[$idColonne]))
-			return $this->m_TabColumns[$idColonne]->m_Valeur;
+		if (!isset($this->m_TabColumnsValues[$idColonne]))
+			return null;
+		return $this->m_TabColumnsValues[$idColonne];
+	}
 
-		return null;
+	/**
+	 * @param $idcolonne
+	 * @param $value
+	 * @param bool $modified
+	 * @return $this
+	 */
+	public function setValCol($idcolonne, $value, $modifiedByUser=true)
+	{
+		$this->m_TabColumnsValues[$idcolonne]=$value;
+		$this->m_TabColumnsModified[$idcolonne]=$modifiedByUser;
+		return $this;
+
+	}
+
+
+	/**
+	 * méthode magique pour les formulaires
+	 * @param $idColonne
+	 * @return null
+	 */
+	public function __get($idColonne)
+	{
+		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
+			throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __get() n\'est pas autorisé');
+
+		return $this->getValCol($idColonne);
+	}
+
+	/**
+	 * méthode magique pour les formulaires
+	 * @param $name
+	 * @param $args
+	 * @return $this
+	 */
+	public function __set($idColonne, $value)
+	{
+		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
+			throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __call() n\'est pas autorisé');
+
+		return $this->setValCol($idColonne, $value, true);
 	}
 
 

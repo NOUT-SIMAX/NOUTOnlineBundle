@@ -14,8 +14,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class Calculation
 {
-	public $m_nIDColonne; //Identifiant de la colonne
-	public $m_MapCalcul; //tableau associatif type de calcul => valeur
+	protected $m_nIDColonne; //Identifiant de la colonne
+	protected $m_MapCalcul; //tableau associatif type de calcul => valeur
 
 	public function __construct($nIDColonne)
 	{
@@ -31,5 +31,10 @@ class Calculation
 	public function GetCalcul($sTypeCalcul)
 	{
 		return $this->m_MapCalcul[$sTypeCalcul];
+	}
+
+	public function getIDColonne()
+	{
+		return $this->m_nIDColonne;
 	}
 } 

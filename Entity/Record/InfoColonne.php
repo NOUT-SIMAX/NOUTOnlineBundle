@@ -11,25 +11,23 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 class InfoColonne
 {
-	public $m_nIDColonne;
-	public $m_Valeur;
+	protected $m_nIDColonne;
 
 	//mise en forme
-	public $m_bBold;
-	public $m_bItalic;
-	public $m_Color;
-	public $m_BackgroundColor;
+	protected $m_bBold;
+	protected $m_bItalic;
+	protected $m_Color;
+	protected $m_BackgroundColor;
 
 	//controle d'etat de champ
-	public $m_bHidden;
-	public $m_bDisabled;
-	public $m_bReadOnly;
+	protected $m_bHidden;
+	protected $m_bDisabled;
+	protected $m_bReadOnly;
 
 
-	public function __construct($TabAttrib, $tabAttribLayout)
+	public function __construct($sIDColonne, $TabAttrib, $tabAttribLayout)
 	{
-		$this->m_nIDColonne=0;
-		$this->m_Valeur='';
+		$this->m_nIDColonne=$sIDColonne;
 
 		$this->m_bBold=0;
 		$this->m_bItalic=0;
@@ -63,4 +61,70 @@ class InfoColonne
 			}
 		}
 	}
+
+	/**
+	 * @return null
+	 */
+	public function getBackgroundColor()
+	{
+		return $this->m_BackgroundColor;
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getColor()
+	{
+		return $this->m_Color;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getBold()
+	{
+		return $this->m_bBold;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDisabled()
+	{
+		return $this->m_bDisabled;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getHidden()
+	{
+		return $this->m_bHidden;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getItalic()
+	{
+		return $this->m_bItalic;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getReadOnly()
+	{
+		return $this->m_bReadOnly;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getIDColonne()
+	{
+		return $this->m_nIDColonne;
+	}
+
+
 } 

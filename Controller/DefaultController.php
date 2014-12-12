@@ -1571,7 +1571,7 @@ class DefaultController extends Controller
 		$clRecord = $clParserModify->clGetRecord($clReponseModify->clGetForm(), $clReponseModify->clGetElement());
 		if ($clRecord instanceof Record)
 		{
-			$TabValColOrig = $clRecord->sGetValCol('221655479824831');
+			$TabValColOrig = $clRecord->getValCol('221655479824831');
 			$this->_VarDumpRes('valcol', implode('|', $TabValColOrig));
 
 			$TabSetOrder = $TabValColOrig;

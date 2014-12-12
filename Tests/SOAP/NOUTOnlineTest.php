@@ -1004,7 +1004,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$formSrc = '51346223489588'; //Creation - Fils 1
 		$formDest = '40810668714136'; //Creation - Fils 2
 
-		$sIDEnreg = $this->_sCreate($sTokenSession, '51346223489588', '40896568059607', 'phpUnit Test Transformer En');
+		$sIDEnreg = $this->_sCreate($sTokenSession, '51346223489588', '40896568059607', 'phpUnit Test transformer En');
 
 		//et on le transforme en formulaire 2
 		$clReponseWS = $this->_sTransformInto($sTokenSession, $formDest, $formSrc, $sIDEnreg);
@@ -1080,7 +1080,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		$this->assertNotNull($clRecord);
 
-		$sValeur = $clRecord->sGetValCol($colonne);
+		$sValeur = $clRecord->getValCol($colonne);
 
 		//on fait l'update
 		$clReponseWS = $this->_sUpdate($sTokenSession, $sActionContexte, $form, $id, array($colonne=>$sValeur.'t'));
@@ -1207,7 +1207,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$clRecord = $clParserModify->clGetRecord($clReponseModify->clGetForm(), $clReponseModify->clGetElement());
 		$this->assertNotNull($clRecord);
 
-		$TabValColOrig = $clRecord->sGetValCol('221655479824831');
+		$TabValColOrig = $clRecord->getValCol('221655479824831');
 
 		$TabSetOrder = $TabValColOrig;
 		$sTemp = $TabSetOrder[0];
