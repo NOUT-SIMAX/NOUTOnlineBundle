@@ -29,6 +29,10 @@
 				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.sessiontoken }}</span>
 			</div>
 			<div class="sf-toolbar-info-piece">
+				<b>Time zone</b>
+				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.timezone }}</span>
+			</div>
+			<div class="sf-toolbar-info-piece">
 				<b>Logged in as</b>
 				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.user }}</span>
 				{% if collector.superviseur %}

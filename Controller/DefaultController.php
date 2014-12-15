@@ -131,8 +131,8 @@ class DefaultController extends Controller
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
+		$clOptionDialogue->InitDefault();
 		$clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_No_ID;
-		$clOptionDialogue->Readable = 0;
 		$clOptionDialogue->EncodingOutput = 0;
 		$clOptionDialogue->LanguageCode = 12;
 		$clOptionDialogue->WithFieldStateControl = 1;

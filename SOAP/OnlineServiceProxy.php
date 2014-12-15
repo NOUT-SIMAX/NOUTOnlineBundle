@@ -374,14 +374,6 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     //---
 
 
-	/**
-	 * @return XMLResponseWS
-	 */
-	public function getXMLResponseWS()
-	{
-		//retourne un XMLResponseWS qui permet de manipuler la réponse
-		return new XMLResponseWS($this->responseData);
-	}
 
 
     //------------------------------------------------------------------------------------------
@@ -428,29 +420,19 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 		//TODO: ajouter les header X-SIMAX pour le service.
 
 
-	    if (isset($this->__aListHeaders[self::HEADER_OptionDialogue]) && is_object($this->__aListHeaders[self::HEADER_OptionDialogue]))
+	    if (!isset($this->__aListHeaders[self::HEADER_OptionDialogue]) || is_object($this->__aListHeaders[self::HEADER_OptionDialogue]))
 	    {
+		    if (!isset($this->__aListHeaders[self::HEADER_OptionDialogue]))//si le la partie optiondialogue du header n'est pas passer en param on la crée
+			    $this->__aListHeaders[self::HEADER_OptionDialogue] = new OptionDialogue();
+
 		    //on transforme l'objet en tableau associatif
-		    $this->__aListHeaders[self::HEADER_OptionDialogue] = (array)$this->__aListHeaders[self::HEADER_OptionDialogue];
+		  	$this->__aListHeaders[self::HEADER_OptionDialogue] = (array)$this->__aListHeaders[self::HEADER_OptionDialogue];
 	    }
 
-
-        //si le la partie optiondialogue du header n'est pas passer en param on la crée
-        if( is_null($this->__aListHeaders[self::HEADER_OptionDialogue]) )
-        {
-            $this->__aListHeaders[self::HEADER_OptionDialogue] = array(self::HEADER_OptionDialogue_Readable=>false);
-        }
         if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_DisplayValue]))
         {
             $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_DisplayValue] = OptionDialogue::DISPLAY_No_ID;
         }
-
-        //Si on a pas encore d'encodingType, on le met a 0
-        if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_EncodingOutput]))
-        {
-            $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_EncodingOutput] = 0;
-        }
-
 
         //on ajoute le bon code langue.
         if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_LanguageCode]))
@@ -496,6 +478,17 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
     //---
 
 
+	/**
+	 * @return XMLResponseWS
+	 */
+	public function getXMLResponseWS()
+	{
+		if (empty($this->responseData))
+			throw new SOAPException('La réponse du service est vide');
+
+		//retourne un XMLResponseWS qui permet de manipuler la réponse
+		return new XMLResponseWS($this->responseData);
+	}
 
     //------------------------------------------------------------------------------------------
     // Fonction d'appel  direct soap

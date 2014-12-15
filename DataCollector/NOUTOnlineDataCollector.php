@@ -45,6 +45,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 		{
 			$this->data['authenticated'] = false;
 			$this->data['session_token'] = '';
+			$this->data['time_zone']='';
 			$this->data['user'] = '';
 			$this->data['superviseur']=false;
 		}
@@ -52,13 +53,17 @@ class NOUTOnlineDataCollector  extends DataCollector
 		{
 			$this->data['authenticated'] = $token->isAuthenticated();
 			$this->data['session_token'] = '';
+			$this->data['time_zone']='';
 			$this->data['user'] = $token->getUsername();
 
 			$tabRole = array_map(function ($role) { return $role->getRole();}, $token->getRoles());
 			$this->data['superviseur']=in_array('ROLE_SUPERVISEUR', $tabRole);
 
 			if ($token instanceof NOUTToken)
+			{
 				$this->data['session_token']=$token->getSessionToken();
+				$this->data['time_zone']=$token->getTimeZone();
+			}
 		}
 	}
 
@@ -127,6 +132,15 @@ class NOUTOnlineDataCollector  extends DataCollector
 	public function getSessionToken()
 	{
 		return $this->data['session_token'];
+	}
+
+	/**
+	 * get the time zone
+	 * @return string
+	 */
+	public function getTimeZone()
+	{
+		return $this->data['time_zone'];
 	}
 
 }
