@@ -436,30 +436,30 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 
 
         //si le la partie optiondialogue du header n'est pas passer en param on la crée
-        if( empty($this->__aListHeaders[self::HEADER_OptionDialogue]) )
+        if( is_null($this->__aListHeaders[self::HEADER_OptionDialogue]) )
         {
             $this->__aListHeaders[self::HEADER_OptionDialogue] = array(self::HEADER_OptionDialogue_Readable=>false);
         }
-        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_DisplayValue]))
+        if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_DisplayValue]))
         {
             $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_DisplayValue] = OptionDialogue::DISPLAY_No_ID;
         }
 
         //Si on a pas encore d'encodingType, on le met a 0
-        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_EncodingOutput]))
+        if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_EncodingOutput]))
         {
             $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_EncodingOutput] = 0;
         }
 
 
         //on ajoute le bon code langue.
-        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_LanguageCode]))
+        if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_LanguageCode]))
         {
             $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_LanguageCode] = $this->__ConfigurationDialogue->getLangCode();
         }
 
         //si on a pas de withFieldStateControl precisé, on le mets à 1 (pour recuperer les controle d'etat de champ)
-        if(empty($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_WithFieldStateControl]))
+        if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_WithFieldStateControl]))
         {
             $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_WithFieldStateControl] = 1;
         }

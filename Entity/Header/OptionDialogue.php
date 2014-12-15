@@ -30,6 +30,7 @@ class OptionDialogue extends WSDLOptionDialogue
 	const DISPLAY_TM_Duree      = 0x4000;		// 100000000000000   15- Entier non signé sur 8, nb de secondes
 
 	//masque générique
+	const DISPLAY_None              = 0;
 	const DISPLAY_No_ID             = 0x000040FF;           // 100000011111111
 	const DISPLAY_No_ID_TL          = 0x000040FD;           // 100000011111101
 	const DISPLAY_No_ID_TL_T        = 0x000040FC;           // 100000011111100

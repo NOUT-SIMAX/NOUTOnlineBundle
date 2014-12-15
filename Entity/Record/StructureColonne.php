@@ -215,7 +215,7 @@ class StructureColonne
 	 */
 	public function getFormType()
 	{
-		str_replace(':', '_', $this->m_eTypeElement);
+		return str_replace(':', '_', $this->m_eTypeElement);
 	}
 
 	/**
