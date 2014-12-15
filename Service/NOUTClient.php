@@ -87,7 +87,8 @@ class NOUTClient
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
-		$clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_No_ID;
+		$clOptionDialogue->InitDefault();
+		$clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
 		$clOptionDialogue->LanguageCode = $this->m_clConfigurationDialogue->getLangCode();
 
 		return $clOptionDialogue;
