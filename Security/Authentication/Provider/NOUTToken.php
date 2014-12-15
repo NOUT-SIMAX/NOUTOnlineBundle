@@ -14,6 +14,12 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 
 class NOUTToken extends UsernamePasswordToken
 {
+
+	/**
+	 * @var string
+	 */
+	protected $m_sTimeZone;
+
 	/**
 	 * @var string
 	 */
@@ -23,6 +29,15 @@ class NOUTToken extends UsernamePasswordToken
 	 * @var Langage
 	 */
 	protected $m_clLangage;
+
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __construct($user, $credentials, $providerKey, array $roles = array())
+	{
+		parent::__construct($user, $credentials, $providerKey, $roles);
+	}
 
 	/**
 	 * @param string $sSessionToken
@@ -59,13 +74,31 @@ class NOUTToken extends UsernamePasswordToken
 		return $this->m_clLangage;
 	}
 
+	/**
+	 * @param string $sTimeZone
+	 * @return $this
+	 */
+	public function setTimeZone($sTimeZone)
+	{
+		$this->m_sTimeZone = $sTimeZone;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTimeZone()
+	{
+		return $this->m_sTimeZone;
+	}
+
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function serialize()
 	{
-		return serialize(array($this->m_sSessionToken, $this->m_clLangage->serialize(), parent::serialize()));
+		return serialize(array($this->m_sSessionToken, $this->m_sTimeZone, is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize(), parent::serialize()));
 	}
 
 	/**
@@ -73,9 +106,12 @@ class NOUTToken extends UsernamePasswordToken
 	 */
 	public function unserialize($serialized)
 	{
-		list($this->m_sSessionToken, $sLangage, $parentStr) = unserialize($serialized);
+		list($this->m_sSessionToken, $this->m_sTimeZone, $sLangage, $parentStr) = unserialize($serialized);
 		$this->m_clLangage = new Langage('', '');
 		$this->m_clLangage->unserialize($sLangage);
 		parent::unserialize($parentStr);
 	}
+
+
+	const SESSION_LastTimeZone='LastTimeZone';
 } 

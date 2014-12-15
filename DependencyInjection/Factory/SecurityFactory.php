@@ -23,7 +23,7 @@ class SecurityFactory extends FormLoginFactory
 
 	protected function getListenerId()
 	{
-		return 'security.authentication.listener.form';
+		return 'nout_session.authentication_listener';
 	}
 
 	protected function createAuthProvider(ContainerBuilder $container, $id, $config, $userProviderId)

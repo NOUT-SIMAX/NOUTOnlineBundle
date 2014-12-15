@@ -14,7 +14,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
+use NOUT\Bundle\NOUTOnlineBundle\Exception\NOUTOnlineException;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
@@ -139,6 +141,7 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 		}
 
 		$authenticatedToken = new NOUTToken($user, $token->getCredentials(), $this->providerKey, $this->_aGetRoles($user, $token));
+		$authenticatedToken->setTimeZone($token->getTimeZone());
 		$authenticatedToken->setAttributes($token->getAttributes());
 		$authenticatedToken->setSessionToken($sTokenSession);
 
@@ -198,17 +201,21 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 			}
 			catch(\Exception $e)
 			{
-				//erreur à la connexion
-				$clReponseXML = $this->m_clSOAPProxy->getXMLResponseWS();
-				if ($clReponseXML instanceof XMLResponseWS)
+				if ($e instanceof SOAPException)
 				{
-					throw new BadCredentialsException($clReponseXML->getMessError());
-				}
-				else
-				{
-					throw new BadCredentialsException('The presented password is invalid.');
+					//erreur à la connexion
+					$clReponseXML = $this->m_clSOAPProxy->getXMLResponseWS();
+					if ($clReponseXML instanceof XMLResponseWS)
+					{
+						throw new BadCredentialsException($clReponseXML->getMessError());
+					}
+					else
+					{
+						throw new BadCredentialsException('The presented password is invalid.');
+					}
 				}
 
+				throw $e;
 			}
 
 			$user->setPassword($presentedPassword);
