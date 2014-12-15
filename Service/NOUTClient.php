@@ -10,6 +10,7 @@ namespace NOUT\Bundle\ContextesBundle\Service;
 
 
 use NOUT\Bundle\ContextesBundle\Entity\ActionResult;
+use NOUT\Bundle\ContextesBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextesBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextesBundle\Entity\Menu\MenuLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
@@ -226,16 +227,21 @@ class NOUTClient
 
 	/**
 	 * retourne un tableau d'option de menu
-	 * @return array
+	 * @return ActionResult
 	 */
 	public function getTabMenu()
 	{
 		$clReponseXML_OptionMenu = $this->_oGetTabMenu_OptionMenu();
 		$clReponseXML_Menu = $this->_oGetTabMenu_Menu();
 
-		return MenuLoader::s_aGetTabMenu($clReponseXML_OptionMenu, $clReponseXML_Menu);
-	}
+		$clActionResult = new ActionResult(null);
+		$clActionResult->setData(MenuLoader::s_aGetTabMenu($clReponseXML_OptionMenu, $clReponseXML_Menu));
 
+		//le menu dépend de l'utilisateur, c'est un cache privé
+		$clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+
+		return $clActionResult;
+	}
 
 	/**
 	 * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
@@ -246,7 +252,7 @@ class NOUTClient
 	 * @param $nHeight
 	 * @return string
 	 */
-	public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+	public function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
 	{
 		$clIdentification = $this->_clGetIdentificationREST('', true);
 
@@ -277,6 +283,30 @@ class NOUTClient
 			return $sRet;
 
 		return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_Image, array(), $aTabOption, $clIdentification, $sFile);
+	}
+
+
+	/**
+	 * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+	 * @param $sIDIcon
+	 * @param $sMimeType
+	 * @param $sTransColor
+	 * @param $nWidth
+	 * @param $nHeight
+	 * @return ActionResult
+	 */
+	public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+	{
+		$sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
+
+		$clActionResult = new ActionResult(null);
+		$clActionResult->setData($sFichier);
+
+		//gestion du cache
+		$clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+		$clActionResult->setLastModified( new \DateTime('@'.filemtime($sFichier)));
+
+		return $clActionResult;
 	}
 
 	/**
