@@ -83,12 +83,51 @@ class NOUTOnlineLogger {
 	{
 		if ($this->m_bEnabled) {
 
+			if ($bSOAP)
+				$sTo = str_replace('><', ">\r\n<", $sTo);
+
 			$this->m_clMonolog->debug($sTo);
 			$this->m_clMonolog->debug($sFrom);
 
+			if ($bSOAP)
+			{
+				$sSeparateur = "\r\n\r\n";
+				$nPosT = strpos($sTo, $sSeparateur);
+				$nPosF = strpos($sFrom, $sSeparateur);
+
+				if ($nPosT)
+				{
+					$sRequestHeader = substr($sTo, 0, $nPosT);
+					$sRequest = substr($sTo, $nPosT+strlen($sSeparateur));
+				}
+				else
+				{
+					$sRequestHeader = '';
+					$sRequest = $sTo;
+				}
+
+				if ($nPosF)
+				{
+					$sResponseHeader = substr($sFrom, 0, $nPosF);
+					$sResponse = substr($sFrom, $nPosF+strlen($sSeparateur));
+				}
+				else
+				{
+					$sResponseHeader = '';
+					$sResponse = $sFrom;
+				}
+			}
+			else
+			{
+				$sRequest = $sTo;
+				$sResponse = $sFrom;
+			}
+
 			$this->m_TabQueries[] = array(
-				'request' => $sTo,
-				'response'=> $sFrom,
+				'request' => $sRequest,
+				'response'=> $sResponse,
+				'request_header'=>$bSOAP ? $sRequestHeader : '',
+				'response_header'=>$bSOAP ? $sResponseHeader : '',
 				'executionMS' => microtime(true) - $this->m_fStart,
 				'sendMS' => $this->m_fSend,
 				'operation'=>$sOperation,
