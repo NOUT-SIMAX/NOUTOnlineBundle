@@ -40,7 +40,7 @@
 					</div>
 					<div style="margin-bottom: 25px" class="input-group">
 						<span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
-						<select class="form-control" id="sel1" name="m_sTimeZone">
+						<select class="form-control" id="login-timezone" name="m_sTimeZone">
 							{% for zone in timezone_list %}
 								<option value="{{ zone.zone }}" {% if last_timezone == zone.zone %} selected {% endif %}  >UTC/GMT {{ zone.diff_from_GMT }} - {{ zone.zone }}</option>
 							{% endfor %}
@@ -68,13 +68,20 @@
 
 {% block javascripts %}
 	<!-- Latest compiled and minified JavaScript -->
-	<script src="{{ asset('bundles/noutsessionmanager/js/jquery-2.1.1.min.js') }}"></script>
-	<script src="{{ asset('bundles/noutsessionmanager/js/bootstrap.min.js') }}"></script>
-	<script src="{{ asset('bundles/noutsessionmanager/js/jstz.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/noutsessionmanager/js/jquery-2.1.1.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/noutsessionmanager/js/bootstrap.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/noutsessionmanager/js/jstz.min.js') }}"></script>
 
-
-
-
+	<script type="text/javascript">
+		$( document ).ready(function() {
+			var hasSelected = $('#login-timezone').has('[selected]').length > 0;
+			if (!hasSelected)
+			{
+				var timezone = jstz.determine();
+				$("#login-timezone").val(timezone.name());
+			}
+		});
+	</script>
 {% endblock %}
 </body>
 </html>
