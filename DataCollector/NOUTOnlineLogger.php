@@ -79,7 +79,7 @@ class NOUTOnlineLogger {
 	 * @param $sTo
 	 * @param $sFrom
 	 */
-	public function stopQuery($sTo, $sFrom, $sOperation)
+	public function stopQuery($sTo, $sFrom, $sOperation, $bSOAP, $bXML=false)
 	{
 		if ($this->m_bEnabled) {
 
@@ -91,7 +91,9 @@ class NOUTOnlineLogger {
 				'response'=> $sFrom,
 				'executionMS' => microtime(true) - $this->m_fStart,
 				'sendMS' => $this->m_fSend,
-				'operation'=>$sOperation
+				'operation'=>$sOperation,
+				'soap'=>$bSOAP,
+				'xml'=> $bSOAP ? true : $bXML,
 			);
 		}
 	}

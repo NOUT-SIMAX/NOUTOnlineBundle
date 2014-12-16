@@ -462,7 +462,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 	    catch(\Exception $e)
 	    {
 		    if (isset($this->__clLogger)) //log des requetes
-		        $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
+		        $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true);
 
 		    throw $e;
 	    }
@@ -470,7 +470,7 @@ final class OnlineServiceProxy extends ModifiedNuSoapClient
 
 
 	    if (isset($this->__clLogger)) //log des requetes
-		    $this->__clLogger->stopQuery($this->request, $this->response, $sOperation);
+		    $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true);
 
 	    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
         return $this->getXMLResponseWS();

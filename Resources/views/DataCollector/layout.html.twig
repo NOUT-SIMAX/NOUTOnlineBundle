@@ -104,6 +104,11 @@
 				<th>Token session</th>
 				<td>{{ collector.sessiontoken }}</td>
 			</tr>
+			<tr>
+				<th>Time zone</th>
+				<td>{{ collector.timezone }}</td>
+			</tr>
+
 		</table>
 	{% endif %}
 
@@ -119,26 +124,28 @@
 		{% for i, query in collector.queries %}
 			<li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ '%0.2f'|format(query.executionMS * 1000) }}" data-target-id="{{ i }}">
 				<div style="margin-top: 4px" id="queryNo-{{ i }}">
+					{#
 					<div>
 						{{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms ({{ '%0.2f'|format(query.sendMS * 1000) }} ms)
 					</div>
-					<div ondblclick="return expandQuery(this);" title="Expand query" data-target-id="code-request-{{ i }}" style="cursor: pointer;">
+					#}
+					<div>
 						<div>
-							<img alt="+" id="expand-request-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
-							<img alt="-" id="hide-request-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display:none ;" />
-							<span>Request</span>
+							<img title="Expand query" alt="+" id="expand-request-{{ i }}" class="expand" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
+							<img title="Hide query" alt="-" id="hide-request-{{ i }}" class="hide" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display:none ; cursor: pointer;" />
+							<span>Request {{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms ({{ '%0.2f'|format(query.sendMS * 1000) }} ms)</span>
 						</div>
-						<code class="prettyprint" id="code-request-{{ i }}">
+						<code class="{% if query.soap %}prettyprint{% endif %}" id="code-request-{{ i }}">
 							{{ query.request | noutonline_beautify_soap_query | nl2br }}
 						</code>
 					</div>
-					<div ondblclick="return expandQuery(this);" title="Expand query" data-target-id="code-response-{{ i }}" style="cursor: pointer;">
+					<div>
 						<div>
-							<img alt="+" id="expand-response-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
-							<img alt="-" id="hide-response-{{ i }}" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none;" />
+							<img title="Expand query" alt="+" id="expand-response-{{ i }}" class="expand" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
+							<img title="Hide query" alt="-" id="hide-response-{{ i }}" class="hide" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none; cursor: pointer;" />
 							<span>Response</span>
 						</div>
-						<code class="prettyprint" id="code-response-{{ i }}">
+						<code class="{% if query.xml %}prettyprint{% endif %}" id="code-response-{{ i }}">
 							{{ query.response | noutonline_beautify_soap_query |nl2br }}
 						</code>
 					</div>
@@ -148,31 +155,35 @@
 		</ul>
 
 		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true"></script>
+
+
+		{# <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> #}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
 		<script type="text/javascript">//<![CDATA[
-			function nop() {}
-			function expandQuery(link) {
-				var target = link.getAttribute('data-target-id');
-				var targetId = target.replace('code', '');
 
-				if (document.getElementById(target).style.display != 'none')
-				{
-					//c'est affiché
-					document.getElementById(target).style.display = 'none';
-					document.getElementById('hide'+targetId).style.display = 'none';
-					document.getElementById('expand'+targetId).style.display = 'inline';
-					link.title = 'Expand query';
-				}
-				else
-				{
-					//c'est pas affiché
-					document.getElementById(target).style.display = 'block';
-					document.getElementById('hide'+targetId).style.display = 'inline';
-					document.getElementById('expand'+targetId).style.display = 'none';
-					link.title = 'Hide query';
-				}
-				return false;
-			}
+			$( document ).ready(function() {
 
+				$('.expand').bind('click', function() {
+					var expand_id = $(this).attr('id');
+					var code_id = expand_id.replace("expand", "code");
+					var hide_id = expand_id.replace("expand", "hide");
+
+					$('#'+code_id).css('display', 'block');
+					$('#'+hide_id).css('display', 'inline');
+					$(this).css('display', 'none');
+				});
+
+				$('.hide').bind('click', function() {
+					var hide_id = $(this).attr('id');
+					var code_id = hide_id.replace("hide", "code");
+					var expand_id = hide_id.replace("hide", "expand");
+
+					$('#'+code_id).css('display', 'none');
+					$('#'+expand_id).css('display', 'inline');
+					$(this).css('display', 'none');
+				});
+			});
 			//]]></script>
 
 

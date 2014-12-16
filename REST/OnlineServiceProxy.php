@@ -128,7 +128,7 @@ class OnlineServiceProxy
 				$e = new \Exception($aError['message']);
 
 				if (isset($this->__clLogger))
-					$this->__clLogger->stopQuery($sURI, $aError['message'], $sAction);
+					$this->__clLogger->stopQuery($sURI, $aError['message'], (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, false);
 
 				throw $e;
 			}
@@ -137,13 +137,13 @@ class OnlineServiceProxy
 			{
 				unlink($sDestination);
 				if (isset($this->__clLogger))
-					$this->__clLogger->stopQuery($sURI, '', $sAction);
+					$this->__clLogger->stopQuery($sURI, '', $sAction, false, false);
 
 				return '';
 			}
 
 			if (isset($this->__clLogger))
-				$this->__clLogger->stopQuery($sURI, file_get_contents($sDestination, null, null, 0, 20), $sAction);
+				$this->__clLogger->stopQuery($sURI, file_get_contents($sDestination, null, null, 0, 20), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, false);
 
 			return $sDestination;
 		}
@@ -154,14 +154,14 @@ class OnlineServiceProxy
 			$e = new \Exception($aError['message']);
 
 			if (isset($this->__clLogger))
-				$this->__clLogger->stopQuery($sURI, $aError['message'], $sAction);
+				$this->__clLogger->stopQuery($sURI, $aError['message'], (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
 
 			throw $e;
 		}
 
 
 		if (isset($this->__clLogger))
-			$this->__clLogger->stopQuery($sURI, $sResp, $sAction);
+			$this->__clLogger->stopQuery($sURI, $sResp, (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
 
 		return $sResp;
 	}
