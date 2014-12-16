@@ -14,92 +14,40 @@ class StructureColonne
 	protected $m_nIDColonne;
 	protected $m_sLibelle;
 	protected $m_eTypeElement;
-	protected $m_clRestriction;
 
-	protected $m_bPrinted;
-	protected $m_bReadonly;
 	protected $m_bRequired;
-	protected $m_bComputed;
-	protected $m_bTitled;
-	protected $m_bSort;
-
-	protected $m_bLink;
-	protected $m_sLinkedTableXml;
-	protected $m_sLinkedTableID;
 
 	protected $m_TabStructureColonne;
+	protected $m_clRestriction;
+
+	protected $m_TabOptions;
 
 
 	public function __construct($sID, \SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
-		$this->m_TabStructureColonne = array();
 
 		$this->m_nIDColonne = $sID;
 		$this->m_sLibelle = '';
 		$this->m_eTypeElement =  '';
-		$this->m_clRestriction = null;
-		$this->m_bPrinted=0;
-		$this->m_bReadonly=0;
-		$this->m_bTitled=0;
+
 		$this->m_bRequired=false;
-		$this->m_bComputed=0;
-		$this->m_bSort=0;
-		$this->m_bLink=0;
-		$this->m_sLinkedTableXml='';
-		$this->m_sLinkedTableID='';
+
+		$this->m_TabStructureColonne = array();
+		$this->m_TabOptions = array();
+		$this->m_clRestriction = null;
 
 		$this->_InitInfoColonne($clAttribNOUT, $clAttribXS);
 	}
 
 	protected function _InitInfoColonne(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
-		foreach($clAttribNOUT as $sAttribName => $ndAttrib)
-		{
-			switch($sAttribName)
-			{
-				case 'titled':
-					$this->m_bTitled = (int)$ndAttrib;
-					break;
-				case 'name':
-					$this->m_sLibelle = (string)$ndAttrib;
-					break;
-				case 'typeElement':
-					$this->m_eTypeElement = (string)$ndAttrib;
-					break;
-				case 'printed':
-					$this->m_bPrinted = (int)$ndAttrib;
-					break;
-				case 'readOnly':
-					$this->m_bReadonly = (int)$ndAttrib;
-					break;
-				case 'computed':
-					$this->m_bComputed = (int)$ndAttrib;
-					break;
-				case 'sort':
-					$this->m_bSort = (int)$ndAttrib;
-					break;
-				case 'link':
-					$this->m_bLink = (int)$ndAttrib;
-					break;
-				case 'linkedTableXml':
-					$this->m_sLinkedTableXml = (string)$ndAttrib;
-					break;
-				case 'linkedTableID':
-					$this->m_sLinkedTableID = (string)$ndAttrib;
-					break;
-			}
-		}
+		$this->m_sLibelle = (string)$clAttribNOUT['name'];
+		$this->m_eTypeElement = (string)$clAttribNOUT['typeElement'];
 
-		foreach($clAttribXS as $sAttribName => $ndAttrib)
-		{
-			switch($sAttribName)
-			{
-				case 'use': //xs:use="required"
-					if ((string)$ndAttrib==='required')
-						$this->m_bRequired = true;
-					break;
-			}
-		}
+		$this->m_bRequired = (isset($clAttribXS['use']) && ((string)$clAttribXS['use']==='required')); //xs:use="required"
+
+		foreach($clAttribNOUT as $sAttribName => $ndAttrib)
+			$this->m_TabOptions[$sAttribName]=(string)$ndAttrib;
 	}
 
 	public function bEstTypeSimple()
@@ -118,6 +66,7 @@ class StructureColonne
 		return in_array($this->m_eTypeElement, $aTypeSimple);
 	}
 
+
 	/**
 	 * @return array
 	 */
@@ -126,53 +75,6 @@ class StructureColonne
 		return $this->m_TabStructureColonne;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getComputed()
-	{
-		return $this->m_bComputed;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getLink()
-	{
-		return $this->m_bLink;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getPrinted()
-	{
-		return $this->m_bPrinted;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getReadonly()
-	{
-		return $this->m_bReadonly;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getRequired()
-	{
-		return $this->m_bRequired;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getSort()
-	{
-		return $this->m_bSort;
-	}
 
 	/**
 	 * @return null|ColonneRestriction
@@ -180,6 +82,22 @@ class StructureColonne
 	public function getRestriction()
 	{
 		return $this->m_clRestriction;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getIDColonne()
+	{
+		return $this->m_nIDColonne;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLibelle()
+	{
+		return $this->m_sLibelle;
 	}
 
 	/**
@@ -210,6 +128,30 @@ class StructureColonne
 		return $this;
 	}
 
+
+
+
+	public function isOption($sOption)
+	{
+		//les options qui viennent de membres
+		switch($sOption)
+		{
+			case self::OPTION_Required:
+				return $this->m_bRequired;
+		}
+
+
+		if (!isset($this->m_TabOptions[$sOption]))
+			return false;
+
+		return !empty($this->m_TabOptions[$sOption]);
+	}
+
+	//////////////////////////////////////////
+	// POUR LE MOTEUR DE FORMULAIRE PAR DEFAUT
+	//////////////////////////////////////////
+
+
 	/**
 	 * @return string
 	 */
@@ -219,58 +161,118 @@ class StructureColonne
 	}
 
 	/**
-	 * @return mixed
+	 * @return array
 	 */
-	public function getIDColonne()
+	public function getFormOption()
 	{
-		return $this->m_nIDColonne;
+		$aOptions = array(
+			'label'=>$this->m_sLibelle,
+			'read_only'=>$this->isOption(StructureColonne::OPTION_ReadOnly),
+			'required'=>$this->m_bRequired,
+			'disabled'=>$this->isOption(StructureColonne::OPTION_Disabled),
+		);
+
+
+
+
+
+
 	}
 
 	/**
-	 * @return string
+	 *
 	 */
-	public function getLibelle()
-	{
-		return $this->m_sLibelle;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLinkedTableID()
-	{
-		return $this->m_sLinkedTableID;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLinkedTableXml()
-	{
-		return $this->m_sLinkedTableXml;
-	}
-
-
-
 
 
 	const TM_Invalide   = null;
 
 	//type simple
-	const TM_Booleen    = 'xs:boolean';
-	const TM_Entier     = 'xs:integer';
-	const TM_Texte      = 'xs:string';
-	const TM_DateHeure  = 'xs:dateTime';
-	const TM_Date       = 'xs:date';
-	const TM_Heure      = 'xs:time';
-	const TM_Reel       = 'xs:float';
-	const TM_Monetaire  = 'xs:decimal';
+	const TM_Booleen	= 'xs:boolean';
+	const TM_Entier		= 'xs:integer';
+	const TM_Texte		= 'xs:string';
+	const TM_DateHeure	= 'xs:dateTime';
+	const TM_Date		= 'xs:date';
+	const TM_Heure		= 'xs:time';
+	const TM_Reel		= 'xs:float';
+	const TM_Monetaire	= 'xs:decimal';
 
 	//type complexe
-	const TM_Tableau    = 'simax-element';
-	const TM_ListeElem  = 'simax-list';
-	const TM_Separateur = 'simax-section';
-	const TM_Bouton     = 'simax-button';
-	const TM_Combo      = 'simax-choice';
-	const TM_Fichier    = 'xs:base64Binary';
+	const TM_Tableau	= 'simax-element';
+	const TM_ListeElem	= 'simax-list';
+	const TM_Separateur	= 'simax-section';
+	const TM_Bouton		= 'simax-button';
+	const TM_Combo		= 'simax-choice';
+	const TM_Fichier	= 'xs:base64Binary';
+
+
+	// attributs communs à toutes les colonnes
+	const OPTION_Detail			= 'detail';
+	const OPTION_Printed		= 'printed';
+	const OPTION_Computed		= 'computed';
+	const OPTION_Titled			= 'titled';         //repris dans l'intitulé
+	const OPTION_Sort			= 'sort';
+	const OPTION_Link			= 'link';
+	const OPTION_LinkControl	= 'linkControl';    // pour les colonnes (controles de validité)
+
+	const OPTION_Hidden			= "hidden";
+	const OPTION_ReadOnly		= "readOnly";
+	const OPTION_Disabled		= "disabled";
+
+	const OPTION_Required		= "required";
+
+
+	// Attributs pour element d'un tableau
+	const OPTION_LinkedTableXml	= "linkedTableXml";
+	const OPTION_LinkedTableID	= "linkedTableID";
+	const OPTION_WithBtnOrdre	= "withBtnOrder";
+	const OPTION_WithoutDetail	= "withoutDetail";
+	const OPTION_WithoutSearch	= "withoutSearch";
+	const OPTION_WithoutCreate	= "withoutCreate";
+	const OPTION_Resource		= "resource";
+	const OPTION_MultiResource	= "resourceMulti";
+
+	// Attributs pour les sous-listes
+	const OPTION_Relation		= "withAddAndRemove";    // bestGroupeRelation
+	const OPTION_Relation11		= "withModifyAndRemove"; // bEstRelation11
+	const OPTION_UniqueElement	= "uniqueElement";
+
+	// Attributs pour les listes en général
+	const OPTION_WithPlanning	= "withPlanning";
+	const OPTION_WithGhost		= "withGhost";
+	const OPTION_TableType		= "tableType";
+
+	const OPTION_TableType_ListTable	= "list";
+	const OPTION_TableType_PivotTable	= "pivotTable";
+	const OPTION_TableType_ViewTable	= "view";
+
+	// Attributs pour les boutons
+	const OPTION_IDAction		= "idAction";
+	const OPTION_IDBouton		= "idButton";
+	const OPTION_Sentence		= "sentence";
+	const OPTION_TypeAction		= "actionType";
+	const OPTION_TypeSelection	= "typeSelection";
+	const OPTION_Icone			= "icon";
+	const OPTION_WithValidation	= "withValidation";
+	const OPTION_IDColToUpdate	= "columnToUpdate";
+	const OPTION_IDColSelection	= "columnSelection";
+
+	// Attributs des separateurs
+	const OPTION_ModeMultiC			= "multiColumnMode";
+	const OPTION_SensMultiC			= "multiColumnWay";
+	const OPTION_SectionComputed	= "sectionComputed";
+	const OPTION_SectionLevel		= "sectionLevel";
+	const OPTION_BackgroundColor	= "backgroundColor";
+
+	// Attributs pour liste deroulante
+	const OPTION_AttributID		= "id";
+
+	// Attributs liés au modele
+	const OPTION_Modele_PhoneNumber		= "phoneNumber";
+	const OPTION_Modele_Directory		= "directory";
+	const OPTION_Modele_PostalCode		= "postalCode";
+	const OPTION_Modele_City			= "City";
+	const OPTION_Modele_InputMask		= "inputMask";
+	const OPTION_Modele_WithSecond		= "withSecond";
+	const OPTION_Modele_PositionVideo	= "videoPosition";
+	const OPTION_Modele_IDColLinked		= "columnLinked";
 }
