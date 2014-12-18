@@ -8,27 +8,33 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ReorderSubList as WSDLReorderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableau;
-use \NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ReorderSubList as WSDLReorderSubList;
 
 class ReorderSubList extends WSDLReorderSubList
 {
 	public function __construct($nIDColonne, $TabIDEnreg, $nScale, $sTypeMove)
 	{
-		$this->column = $nIDColonne;
+		$this->column   = $nIDColonne;
 		$this->moveType = $sTypeMove;
-		$this->scale = $nScale;
-		$this->items='';
+		$this->scale    = $nScale;
+		$this->items    = '';
 
-		foreach($TabIDEnreg as $IDEnreg)
+		foreach ($TabIDEnreg as $IDEnreg)
 		{
 			if (!empty($this->items))
-				$this->items.='|';
+			{
+				$this->items .= '|';
+			}
 
 			if ($IDEnreg instanceof EnregTableau)
-				$this->items.=$IDEnreg->getIDEnreg();
+			{
+				$this->items .= $IDEnreg->getIDEnreg();
+			}
 			else
-				$this->items.=$IDEnreg;
+			{
+				$this->items .= $IDEnreg;
+			}
 		}
 	}
-} 
+}

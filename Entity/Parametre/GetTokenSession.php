@@ -14,8 +14,8 @@ class GetTokenSession extends WSDLGetTokenSession
 {
 	public function __construct()
 	{
-		$this->UsernameToken=null; // UsernameTokenType
-		$this->ExtranetUser=null; // ExtranetUserType
-		$this->DefaultClientLanguageCode=12; // DefaultClientLanguageCodeType
+		$this->UsernameToken             = null; // UsernameTokenType
+		$this->ExtranetUser              = null; // ExtranetUserType
+		$this->DefaultClientLanguageCode = 12; // DefaultClientLanguageCodeType
 	}
-} 
+}

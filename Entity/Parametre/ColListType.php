@@ -16,4 +16,4 @@ class ColListType extends WSDLColListType
 	{
 		$this->Col = $ColList;
 	}
-} 
+}

@@ -7,6 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre;
+
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CalculationListType as WSDLCalculationListType;
 
 class CalculationListType extends WSDLCalculationListType
@@ -22,4 +23,4 @@ class CalculationListType extends WSDLCalculationListType
 	{
 		$this->Calculation = $calculation;
 	}
-} 
+}

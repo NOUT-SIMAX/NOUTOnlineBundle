@@ -8,18 +8,14 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre;
 
-
 class ConditionOperateur
 {
-	const OP_AND = 'AND';
-	const OP_OR = 'OR';
-	const OP_NOT = 'NOT';
 
 	protected $m_sOperateur;
 
 	public function __construct($Op)
 	{
-		$this->m_sOperateur=$Op;
+		$this->m_sOperateur = $Op;
 	}
 
 	/**
@@ -39,4 +35,8 @@ class ConditionOperateur
 	{
 		return '</Operator>';
 	}
+
+	const OP_AND = 'AND';
+	const OP_OR  = 'OR';
+	const OP_NOT = 'NOT';
 }

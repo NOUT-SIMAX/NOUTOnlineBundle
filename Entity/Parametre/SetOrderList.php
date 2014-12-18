@@ -8,26 +8,31 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList as WSDLOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableau;
-use \NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList as WSDLOrderList;
 
 class SetOrderList extends WSDLOrderList
 {
 	public function __construct($TabIDEnreg, $nOffset)
 	{
 		$this->offset = $nOffset;
-		$this->items='';
+		$this->items  = '';
 
-		foreach($TabIDEnreg as $IDEnreg)
+		foreach ($TabIDEnreg as $IDEnreg)
 		{
 			if (!empty($this->items))
-				$this->items.='|';
+			{
+				$this->items .= '|';
+			}
 
 			if ($IDEnreg instanceof EnregTableau)
-				$this->items.=$IDEnreg->getIDEnreg();
+			{
+				$this->items .= $IDEnreg->getIDEnreg();
+			}
 			else
-				$this->items.=$IDEnreg;
+			{
+				$this->items .= $IDEnreg;
+			}
 		}
 	}
-
-} 
+}

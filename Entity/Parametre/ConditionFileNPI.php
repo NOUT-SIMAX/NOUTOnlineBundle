@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre;
 
-
 class ConditionFileNPI
 {
 	protected $m_FileNPI;
@@ -19,41 +18,43 @@ class ConditionFileNPI
 
 	public function EmpileCondition($colonne, $condition, $valeur)
 	{
-		$this->m_FileNPI[]=new ConditionColonne($colonne, $condition, $valeur);
+		$this->m_FileNPI[] = new ConditionColonne($colonne, $condition, $valeur);
+
 		return $this;
 	}
 
 	public function EmpileOperateur($Op)
 	{
-		$this->m_FileNPI[]=new ConditionOperateur($Op);
+		$this->m_FileNPI[] = new ConditionOperateur($Op);
+
 		return $this;
 	}
 
 	public function sToSoap()
 	{
 		$TabCopyFileNPI = $this->m_FileNPI;
-		$sSoap='';
+		$sSoap          = '';
 
 
-		$clDummy=new ConditionOperateur(ConditionOperateur::OP_AND);
+		$clDummy = new ConditionOperateur(ConditionOperateur::OP_AND);
 
 		$clElem = array_pop($TabCopyFileNPI);
 
-		$nLast = 0;
+		$nLast            = 0;
 		$TabNbFilsCourant = array(0);
 		$TabNbFilsAttendu = array(0);
 
-		while(!is_null($clElem))
+		while (!is_null($clElem))
 		{
 			$TabNbFilsCourant[$nLast]++;
 
 			if ($clElem instanceof ConditionColonne)
 			{
-				$sSoap.=$clElem->sToSOAP();
+				$sSoap .= $clElem->sToSOAP();
 			}
-			else if ($clElem instanceof ConditionOperateur)
+			elseif ($clElem instanceof ConditionOperateur)
 			{
-				$sSoap.=$clElem->sOuvrirSOAP();
+				$sSoap .= $clElem->sOuvrirSOAP();
 				$TabNbFilsCourant[] = 0;
 				$TabNbFilsAttendu[] = (($clElem->getOperateur() == ConditionOperateur::OP_NOT) ? 1 : 2);
 				$nLast++;
@@ -63,9 +64,9 @@ class ConditionFileNPI
 				throw new \Exception("ConditionFileNPI ne doit contenir que des ConditionColonne ou des ConditionOperateur");
 			}
 
-			while ($TabNbFilsCourant[$nLast]==$TabNbFilsAttendu[$nLast])
+			while ($TabNbFilsCourant[$nLast] == $TabNbFilsAttendu[$nLast])
 			{
-				$sSoap.=$clDummy->sFermeSOAP();
+				$sSoap .= $clDummy->sFermeSOAP();
 				array_pop($TabNbFilsCourant);
 				array_pop($TabNbFilsAttendu);
 				$nLast--;
@@ -75,5 +76,4 @@ class ConditionFileNPI
 
 		return $sSoap;
 	}
-
-} 
+}
