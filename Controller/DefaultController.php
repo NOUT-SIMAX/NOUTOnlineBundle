@@ -2,26 +2,25 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderSubList;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
+
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
@@ -50,12 +49,11 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 
-use Symfony\Component\HttpFoundation\Response;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route; // this imports the annotations
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-// this imports the annotations
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 
 
@@ -72,15 +70,17 @@ class DefaultController extends Controller
 	 */
     public function indexAction()
     {
-        return $this->render('NOUTOnlineBundle:Default:index.html.twig');
+    	return $this->render('NOUTOnlineBundle:Default:index.html.twig');
     }
 
 	protected function _clGetConfiguration($host)
 	{
 		$clConfiguration = $this->get('nout_online.configuration_dialogue');
-		if (!empty($host)) //! (null, '', false, 0, !isset, [])
+		if (!empty($host))
 		{
-			list($sAddress,$sPort) = explode(':', $host );
+			//! (null, '', false, 0, !isset, [])
+
+			list($sAddress, $sPort) = explode(':', $host);
 			$clConfiguration->SetHost($sAddress, $sPort);
 		}
 
@@ -108,9 +108,13 @@ class DefaultController extends Controller
 	{
 		echo '<h1>'.$sOperation.'</h1>';
 		if ($ret instanceof XMLResponseWS)
+		{
 			echo '<pre>'.htmlentities($ret->sGetXML()).'</pre>';
+		}
 		else
+		{
 			var_dump($ret);
+		}
 	}
 
 	/**
@@ -121,7 +125,7 @@ class DefaultController extends Controller
 	{
 		//GetTokenSession
 		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession();
-		$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
+		$clReponseXML      = $OnlineProxy->getTokenSession($clGetTokenSession);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());
 
@@ -132,23 +136,25 @@ class DefaultController extends Controller
 	{
 		$clOptionDialogue = new OptionDialogue();
 		$clOptionDialogue->InitDefault();
-		$clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_No_ID;
-		$clOptionDialogue->EncodingOutput = 0;
-		$clOptionDialogue->LanguageCode = 12;
+		$clOptionDialogue->DisplayValue          = OptionDialogue::DISPLAY_No_ID;
+		$clOptionDialogue->EncodingOutput        = 0;
+		$clOptionDialogue->LanguageCode          = 12;
 		$clOptionDialogue->WithFieldStateControl = 1;
-		$clOptionDialogue->ReturnXSD = 1;
+		$clOptionDialogue->ReturnXSD             = 1;
 
 		return $clOptionDialogue;
 	}
 
 
-	protected function _aGetTabHeader($sTokenSession, $nIDContexteAction=null)
+	protected function _aGetTabHeader($sTokenSession, $nIDContexteAction = null)
 	{
 		$clUsernameToken = $this->get('nout_online.connection_manager')->getUsernameToken();
-		$TabHeader=array('UsernameToken'=>$clUsernameToken, 'SessionToken'=>$sTokenSession, 'OptionDialogue'=>$this->_clGetOptionDialogue());
+		$TabHeader       = array('UsernameToken' => $clUsernameToken, 'SessionToken' => $sTokenSession, 'OptionDialogue' => $this->_clGetOptionDialogue());
 
 		if (!empty($nIDContexteAction))
-			$TabHeader['ActionContext']=$nIDContexteAction;
+		{
+			$TabHeader['ActionContext'] = $nIDContexteAction;
+		}
 
 		return $TabHeader;
 	}
@@ -161,6 +167,7 @@ class DefaultController extends Controller
 		//Disconnect
 		$clReponseXML = $OnlineProxy->disconnect($TabHeader);
 		$this->_VarDumpRes('Disconnect', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -182,7 +189,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -198,13 +206,14 @@ class DefaultController extends Controller
 
 		//GetTokenSession
 		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
-		$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
+		$clReponseXML      = $OnlineProxy->getTokenSession($clGetTokenSession);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -224,7 +233,7 @@ class DefaultController extends Controller
 		{
 			$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
 		}
-		catch(\Exception $e)
+		catch (\Exception $e)
 		{
 			//on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
 			$clReponseXML = $OnlineProxy->getXMLResponseWS();
@@ -241,10 +250,11 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
-	protected function _SupprAccents($str, $encoding='utf-8')
+	protected function _SupprAccents($str, $encoding = 'utf-8')
 	{
 		// transformer les caractères accentués en entités HTML
 		$str = htmlentities($str, ENT_NOQUOTES, $encoding);
@@ -264,7 +274,7 @@ class DefaultController extends Controller
 
 	protected function _bEstNumerique($form)
 	{
-		return empty(str_replace(array(0,1,2,3,4,5,6,7,8,9), array('', '', '', '', '', '', '', '', '', ''), $form));
+		return empty(str_replace(array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), array('', '', '', '', '', '', '', '', '', ''), $form));
 	}
 
 	protected function _sNettoieForm($form)
@@ -273,7 +283,9 @@ class DefaultController extends Controller
 		$_pszPrefixeBaliseID = "id_";
 
 		if ($this->_bEstNumerique($form))
+		{
 			return $_pszPrefixeBaliseID.$form;
+		}
 
 
 		// caractères interdits dans une balise
@@ -299,23 +311,25 @@ class DefaultController extends Controller
 		$form = strtolower($this->_SupprAccents($form));
 
 		// remplacer les espaces et les caractères spéciaux par des '_'
-		$nLength=strlen($form)-1;
-		while(($nLength>=0) && (!is_null(strchr($_pszCaractereInterdit, $form[$nLength]))))
+		$nLength = strlen($form)-1;
+		while (($nLength >= 0) && (!is_null(strchr($_pszCaractereInterdit, $form[$nLength]))))
 		{
-			$pszLibelle[$nLength]=0;
+			$pszLibelle[$nLength] = 0;
 			$nLength--;
 		}
-		while($nLength>=0)
+		while ($nLength >= 0)
 		{
 			if (!is_null(strchr($_pszCaractereInterdit, $form[$nLength])))
-				$form[$nLength]='_';
+			{
+				$form[$nLength] = '_';
+			}
 			$nLength--;
 		}
 
 		// supprimer tout caractere different d'un alpha en debut de chaine
 		$nLength = strlen($form);
-		$nIndex = 0;
-		while( ($nIndex < $nLength) && !(( ($form[0] >='a') && ($form[0] <='z') ) || ( ($form[0] >='A') && ($form[0] <='Z')) ))
+		$nIndex  = 0;
+		while (($nIndex < $nLength) && !((($form[0] >= 'a') && ($form[0] <= 'z')) || (($form[0] >= 'A') && ($form[0] <= 'Z'))))
 		{
 			$form = substr($form, 1);
 			$nIndex++;
@@ -323,12 +337,16 @@ class DefaultController extends Controller
 
 		// un nom XML ne peut pas commencer par la chaine de caractere "xml"
 		while (strncmp($form, $_pszChaineInterditDebut, strlen($_pszChaineInterditDebut)) == 0)
+		{
 			$form = substr($form, strlen($_pszChaineInterditDebut));
+		}
 
 		// si le libelle est une chaine vide, renvoyer faux
 		// ce sera l'ID de la colonne qui sera utilisé pour construire le nom de la balise
 		if (empty(trim($form)))
+		{
 			return false;
+		}
 
 
 		// créer un PXSTR qu'il faudra copier dans pszLibelle puis libérer
@@ -341,12 +359,12 @@ class DefaultController extends Controller
 	 * @param $form
 	 * @return XMLResponseWS
 	 */
-	protected function _sList(SOAPProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte='', $displayMode=OnlineServiceProxy::DISPLAYMODE_Liste)
+	protected function _sList(SOAPProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte = '', $displayMode = OnlineServiceProxy::DISPLAYMODE_Liste)
 	{
-		$clParamList = new ListParams();
-		$clParamList->Table = $form;
+		$clParamList              = new ListParams();
+		$clParamList->Table       = $form;
 		$clParamList->DisplayMode = $displayMode;
-		$clReponseXML = $OnlineProxy->listAction($clParamList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$clReponseXML             = $OnlineProxy->listAction($clParamList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('List', $clReponseXML);
 
 		return $clReponseXML;
@@ -361,21 +379,21 @@ class DefaultController extends Controller
 	 */
 	protected function _sGetCalculation(SOAPProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabIDColonne)
 	{
-		$clParamGetCalculation = new GetCalculation();
-		$clParamGetCalculation->ColList=new ColListType($TabIDColonne);
-		$clParamGetCalculation->CalculationList=new CalculationListType(
+		$clParamGetCalculation                  = new GetCalculation();
+		$clParamGetCalculation->ColList         = new ColListType($TabIDColonne);
+		$clParamGetCalculation->CalculationList = new CalculationListType(
 					array(
 						CalculationListType::SUM,
 						CalculationListType::AVERAGE,
 						CalculationListType::MIN,
 						CalculationListType::MAX,
-						CalculationListType::COUNT
+						CalculationListType::COUNT,
 					)
-			)
-		;
+			);
 
 		$clReponseXML = $OnlineProxy->getCalculation($clParamGetCalculation, $this->_aGetTabHeader($sTokenSession, $sIDActionContexte));
 		$this->_VarDumpRes('GetCalculation', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -398,7 +416,7 @@ class DefaultController extends Controller
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
-		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
+		$StructForm   = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
 
 		$clReponseWSCalcul = $this->_sGetCalculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
@@ -414,7 +432,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -428,15 +447,16 @@ class DefaultController extends Controller
 	 */
 	protected function _sGetChart(SOAPProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $form, $index)
 	{
-		$clParamChart = new GetChart();
+		$clParamChart         = new GetChart();
 		$clParamChart->Height = 500;
-		$clParamChart->Width = 700;
-		$clParamChart->DPI = 72;
-		$clParamChart->Index = $index;
-		$clParamChart->Table = $form;
+		$clParamChart->Width  = 700;
+		$clParamChart->DPI    = 72;
+		$clParamChart->Index  = $index;
+		$clParamChart->Table  = $form;
 
 		$clReponseXML = $OnlineProxy->getChart($clParamChart, $this->_aGetTabHeader($sTokenSession, $sIDActionContexte));
 		$this->_VarDumpRes('GetChart', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -450,11 +470,12 @@ class DefaultController extends Controller
 	 */
 	protected function _sSelectItems(SOAPProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabSelection)
 	{
-		$clParamSelectItems = new SelectItems();
-		$clParamSelectItems->items = implode('|',$TabSelection);
+		$clParamSelectItems        = new SelectItems();
+		$clParamSelectItems->items = implode('|', $TabSelection);
 
 		$clReponseXML = $OnlineProxy->selectItems($clParamSelectItems, $this->_aGetTabHeader($sTokenSession, $sIDActionContexte));
 		$this->_VarDumpRes('SelectItems', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -484,12 +505,12 @@ class DefaultController extends Controller
 			$this->_sSelectItems($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDEnreg);
 
 			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, OnlineServiceProxy::DISPLAYMODE_Graphe);
-			$nNbChart = $clReponseWSGraphe->nGetNumberOfChart();
+			$nNbChart          = $clReponseWSGraphe->nGetNumberOfChart();
 
-			for ($i=0 ; $i<$nNbChart ; $i++)
+			for ($i = 0; $i<$nNbChart; $i++)
 			{
 				$clReponseWSChart = $this->_sGetChart($OnlineProxy, $sTokenSession, $sActionContexte, $form, $i+1);
-				$clParser = new ReponseWSParser();
+				$clParser         = new ReponseWSParser();
 				$clParser->InitFromXmlXsd($clReponseWSChart);
 				$this->_VarDumpRes('Chart', $clParser->m_clChart);
 			}
@@ -507,7 +528,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -522,9 +544,13 @@ class DefaultController extends Controller
 		$clParamExecute = new Execute();
 
 		if ($this->_bEstNumerique($action))
+		{
 			$clParamExecute->ID = $action;
+		}
 		else
-			$clParamExecute->Sentence=$action;
+		{
+			$clParamExecute->Sentence = $action;
+		}
 
 		$clReponseXML = $OnlineProxy->execute($clParamExecute, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Execute', $clReponseXML);
@@ -545,7 +571,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//la liste
-		$clReponseWS = $this->_sExecute($OnlineProxy, $sTokenSession, $action);
+		$clReponseWS     = $this->_sExecute($OnlineProxy, $sTokenSession, $action);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
@@ -556,7 +582,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -570,7 +597,7 @@ class DefaultController extends Controller
 	 */
 	protected function _sDrillthrought(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $colonne, $enreg)
 	{
-		$clParamDrillThrough = new DrillThrough();
+		$clParamDrillThrough         = new DrillThrough();
 		$clParamDrillThrough->Record = $enreg;
 		$clParamDrillThrough->Column = $colonne;
 
@@ -601,25 +628,28 @@ class DefaultController extends Controller
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
-		$StructForm = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
+		$StructForm   = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
-		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseWSList->clGetForm()->getID());
+		$TabIDEnreg   = $clReponseWSParser->GetTabIDEnregFromForm($clReponseWSList->clGetForm()->getID());
 
-		$clReponseWSDrill = $this->_sDrillthrought($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne[0], $TabIDEnreg[0]);
+		$clReponseWSDrill     = $this->_sDrillthrought($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne[0], $TabIDEnreg[0]);
 		$sActionContexteDrill = $clReponseWSDrill->sGetActionContext();
 
 		//annulation de la liste
 		$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexte);
 
 		if ($sActionContexte != $sActionContexteDrill)
+		{
 			$this->_sCancel($OnlineProxy, $sTokenSession, $sActionContexteDrill);
+		}
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -635,8 +665,8 @@ class DefaultController extends Controller
 		$clFileNPI = new ConditionFileNPI();
 		$clFileNPI->EmpileCondition($colonne, ConditionColonne::COND_EQUAL, $valeur);
 
-		$clParamRequest = new Request();
-		$clParamRequest->Table = $form;
+		$clParamRequest           = new Request();
+		$clParamRequest->Table    = $form;
 		$clParamRequest->CondList = $clFileNPI->sToSoap();
 
 
@@ -659,7 +689,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//la liste
-		$clReponseWS = $this->_sRequest($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
+		$clReponseWS     = $this->_sRequest($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
@@ -670,7 +700,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -692,8 +723,8 @@ class DefaultController extends Controller
 		$clFileNPI = new ConditionFileNPI();
 		$clFileNPI->EmpileCondition('8521', ConditionColonne::COND_EQUAL, 8267);
 
-		$clParamRequest = new RequestParam();
-		$clParamRequest->Table = 8267;
+		$clParamRequest           = new RequestParam();
+		$clParamRequest->Table    = 8267;
 		$clParamRequest->CondList = $clFileNPI->sToSoap();
 
 
@@ -705,7 +736,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -719,9 +751,9 @@ class DefaultController extends Controller
 	 */
 	protected function _sSearch(SOAPProxy $OnlineProxy, $sTokenSession, $form)
 	{
-		$clParamSearch = new Search();
+		$clParamSearch        = new Search();
 		$clParamSearch->Table = $form;
-		$clReponseXML = $OnlineProxy->search($clParamSearch, $this->_aGetTabHeader($sTokenSession));
+		$clReponseXML         = $OnlineProxy->search($clParamSearch, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('Search', $clReponseXML);
 
 
@@ -740,7 +772,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//la recherche
-		$clReponseWS=$this->_sSearch($OnlineProxy, $sTokenSession, $form);
+		$clReponseWS     = $this->_sSearch($OnlineProxy, $sTokenSession, $form);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
@@ -751,7 +783,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -764,10 +797,10 @@ class DefaultController extends Controller
 	 */
 	protected function _sDisplay(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
-		$clParamDisplay = new Display();
+		$clParamDisplay        = new Display();
 		$clParamDisplay->Table = $form;
 
-		$baliseXML = $this->_sNettoieForm($form);
+		$baliseXML                = $this->_sNettoieForm($form);
 		$clParamDisplay->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
 		$clReponseXML = $OnlineProxy->display($clParamDisplay, $this->_aGetTabHeader($sTokenSession));
@@ -790,7 +823,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//ici il faut faire le display
-		$clReponseWS=$this->_sDisplay($OnlineProxy, $sTokenSession, $form, $id);
+		$clReponseWS     = $this->_sDisplay($OnlineProxy, $sTokenSession, $form, $id);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
@@ -801,7 +834,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -814,10 +848,10 @@ class DefaultController extends Controller
 	 */
 	protected function _sPrint(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
-		$clParamPrint = new PrintParams();
+		$clParamPrint        = new PrintParams();
 		$clParamPrint->Table = $form;
 
-		$baliseXML = $this->_sNettoieForm($form);
+		$baliseXML              = $this->_sNettoieForm($form);
 		$clParamPrint->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
 		$clReponseXML = $OnlineProxy->printAction($clParamPrint, $this->_aGetTabHeader($sTokenSession));
@@ -839,11 +873,11 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//ici il faut faire le display
-		$clReponseWS=$this->_sPrint($OnlineProxy, $sTokenSession, $form, $id);
+		$clReponseWS       = $this->_sPrint($OnlineProxy, $sTokenSession, $form, $id);
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
-		$clData = $clReponseWSParser->clGetData(0);
+		$clData   = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
 
 		//la deconnexion
@@ -851,7 +885,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt, 'html_raw'=>utf8_encode($html_raw)));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt, 'html_raw' => utf8_encode($html_raw)));
 	}
 
 	/**
@@ -863,7 +898,7 @@ class DefaultController extends Controller
 	 */
 	protected function _sSelectPrintTemplate(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $modele)
 	{
-		$clParamSelectPrintTemplate = new SelectPrintTemplate();
+		$clParamSelectPrintTemplate           = new SelectPrintTemplate();
 		$clParamSelectPrintTemplate->Template = $modele;
 
 		$clReponseXML = $OnlineProxy->selectPrintTemplate($clParamSelectPrintTemplate, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
@@ -886,14 +921,14 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//ici il faut faire le display
-		$clReponseWS=$this->_sPrint($OnlineProxy, $sTokenSession, $form, $id);
+		$clReponseWS = $this->_sPrint($OnlineProxy, $sTokenSession, $form, $id);
 
 		//sélection du modèle
-		$clReponseWS=$this->_sSelectPrintTemplate($OnlineProxy, $sTokenSession, $clReponseWS->sGetActionContext(), $modele);
+		$clReponseWS       = $this->_sSelectPrintTemplate($OnlineProxy, $sTokenSession, $clReponseWS->sGetActionContext(), $modele);
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
-		$clData = $clReponseWSParser->clGetData(0);
+		$clData   = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
 
 
@@ -902,16 +937,17 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt, 'html_raw'=>utf8_encode($html_raw)));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt, 'html_raw' => utf8_encode($html_raw)));
 	}
 
 
 	protected function _sGetColInRecord(SOAPProxy $OnlineProxy, $sTokenSession, $colonne, $id, $content)
 	{
-		$clParamGCR = new GetColInRecord();
-		$clParamGCR->Column = $colonne;
-		$clParamGCR->Record = $id;
-		$clParamGCR->WantContent=$content;
+		$clParamGCR              = new GetColInRecord();
+		$clParamGCR->Column      = $colonne;
+		$clParamGCR->Record      = $id;
+		$clParamGCR->WantContent = $content;
 
 
 		$clReponseXML = $OnlineProxy->getColInRecord($clParamGCR, $this->_aGetTabHeader($sTokenSession));
@@ -934,7 +970,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//ici il faut faire le display
-		$clReponseWS=$this->_sGetColInRecord($OnlineProxy, $sTokenSession, $colonne, $id, $content);
+		$clReponseWS     = $this->_sGetColInRecord($OnlineProxy, $sTokenSession, $colonne, $id, $content);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
@@ -945,7 +981,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -961,10 +998,10 @@ class DefaultController extends Controller
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
-		$clPlanningInfo = new GetPlanningInfo();
-		$clPlanningInfo->Resource = $res;
+		$clPlanningInfo            = new GetPlanningInfo();
+		$clPlanningInfo->Resource  = $res;
 		$clPlanningInfo->StartTime = '20140901000000';
-		$clPlanningInfo->EndTime = '20140907000000';
+		$clPlanningInfo->EndTime   = '20140907000000';
 
 		$clReponseXML = $OnlineProxy->getPlanningInfo($clPlanningInfo, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('GetPlanningInfo', $clReponseXML);
@@ -978,7 +1015,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -1004,11 +1042,11 @@ class DefaultController extends Controller
 	 */
 	protected function _sCancel(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
 	{
-		$clParamCancel = new Cancel();
-		$clParamCancel->ByUser = 1;
+		$clParamCancel          = new Cancel();
+		$clParamCancel->ByUser  = 1;
 		$clParamCancel->Context = 0;
 
-		$clReponseWS = $OnlineProxy->cancel($clParamCancel,$this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
+		$clReponseWS = $OnlineProxy->cancel($clParamCancel, $this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
 
 		$this->_VarDumpRes('Cancel', $clReponseWS);
 
@@ -1025,10 +1063,10 @@ class DefaultController extends Controller
 	 */
 	protected function _sModify(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
-		$clParamModify = new Modify();
+		$clParamModify        = new Modify();
 		$clParamModify->Table = $form;
 
-		$baliseXML = $this->_sNettoieForm($form);
+		$baliseXML               = $this->_sNettoieForm($form);
 		$clParamModify->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
 		$clReponseXML = $OnlineProxy->modify($clParamModify, $this->_aGetTabHeader($sTokenSession));
@@ -1041,13 +1079,13 @@ class DefaultController extends Controller
 
 	protected function _sUpdate(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction, $form, $id, $colonne, $valeur)
 	{
-		$clParamUpdate = new Update();
+		$clParamUpdate        = new Update();
 		$clParamUpdate->Table = $form;
 
-		$baliseXML = $this->_sNettoieForm($form);
+		$baliseXML               = $this->_sNettoieForm($form);
 		$clParamUpdate->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
-		$baliseColonne = $this->_sNettoieForm($colonne);
+		$baliseColonne             = $this->_sNettoieForm($colonne);
 		$clParamUpdate->UpdateData = "<xml><$baliseXML id=\"$id\"><$baliseColonne>".htmlentities($valeur)."</$baliseColonne></$baliseXML></xml>";
 
 		$clReponseXML = $OnlineProxy->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
@@ -1070,7 +1108,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//ici il faut faire le modify
-		$clReponseWS = $this->_sModify($OnlineProxy, $sTokenSession, $form, $id);
+		$clReponseWS     = $this->_sModify($OnlineProxy, $sTokenSession, $form, $id);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
@@ -1097,7 +1135,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -1109,7 +1148,7 @@ class DefaultController extends Controller
 	 */
 	protected function __sCreate(SOAPProxy $OnlineProxy, $sTokenSession, $form)
 	{
-		$clParamCreate = new Create();
+		$clParamCreate        = new Create();
 		$clParamCreate->Table = $form;
 
 		$clReponseXML = $OnlineProxy->create($clParamCreate, $this->_aGetTabHeader($sTokenSession));
@@ -1137,7 +1176,7 @@ class DefaultController extends Controller
 	protected function _sCreate(SOAPProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
 	{
 		//ici il faut faire le modify
-		$clReponseWS = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
+		$clReponseWS     = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
@@ -1152,11 +1191,13 @@ class DefaultController extends Controller
 
 			//on valide
 			$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
+
 			return $clRecord->m_nIDEnreg;
 		}
 
 		echo '<p>On n\'a pas l\'enregistrement</p>';
-		return null;
+
+		return;
 	}
 
 	/**
@@ -1179,7 +1220,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -1191,10 +1233,10 @@ class DefaultController extends Controller
 	 */
 	protected function _sTransformInto(SOAPProxy $OnlineProxy, $sTokenSession, $formDest, $formSrc, $elemSrc)
 	{
-		$clParamTransformInto = new TransformInto();
-		$clParamTransformInto->Table=$formDest;
+		$clParamTransformInto           = new TransformInto();
+		$clParamTransformInto->Table    = $formDest;
 		$clParamTransformInto->TableSrc = $formSrc;
-		$clParamTransformInto->ElemSrc = $elemSrc;
+		$clParamTransformInto->ElemSrc  = $elemSrc;
 
 		$clReponseXML = $OnlineProxy->transformInto($clParamTransformInto, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('TransformInto', $clReponseXML);
@@ -1231,7 +1273,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -1250,7 +1293,7 @@ class DefaultController extends Controller
 
 
 		//un create
-		$clReponseWS = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
+		$clReponseWS     = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
@@ -1271,11 +1314,11 @@ class DefaultController extends Controller
 				$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
 
 				//et on imprime
-				$clReponseWS=$this->_sPrint($OnlineProxy, $sTokenSession, $form, $clRecord->m_nIDEnreg);
+				$clReponseWS       = $this->_sPrint($OnlineProxy, $sTokenSession, $form, $clRecord->m_nIDEnreg);
 				$clReponseWSParser = new ReponseWSParser();
 				$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
-				$clData = $clReponseWSParser->clGetData(0);
+				$clData   = $clReponseWSParser->clGetData(0);
 				$html_raw = $clData->sGetRaw();
 			}
 		}
@@ -1286,13 +1329,14 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt, 'html_raw'=>utf8_encode($html_raw)));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt, 'html_raw' => utf8_encode($html_raw)));
 	}
 
 
 	protected function _sSelectForm(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $form)
 	{
-		$clParamSelectForm = new SelectForm();
+		$clParamSelectForm       = new SelectForm();
 		$clParamSelectForm->Form = $form;
 
 		$clReponseXML = $OnlineProxy->selectForm($clParamSelectForm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
@@ -1314,7 +1358,7 @@ class DefaultController extends Controller
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
-		$clReponseXML = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
+		$clReponseXML    = $this->__sCreate($OnlineProxy, $sTokenSession, $form);
 		$sActionContexte = $clReponseXML->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement
@@ -1331,7 +1375,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -1344,10 +1389,10 @@ class DefaultController extends Controller
 	 */
 	protected function _sCreateFrom(SOAPProxy $OnlineProxy, $sTokenSession, $form, $origine)
 	{
-		$clParamCreateFrom = new CreateFrom();
-		$clParamCreateFrom->Table = $form;
+		$clParamCreateFrom           = new CreateFrom();
+		$clParamCreateFrom->Table    = $form;
 		$clParamCreateFrom->TableSrc = $form;
-		$clParamCreateFrom->ElemSrc = $origine;
+		$clParamCreateFrom->ElemSrc  = $origine;
 
 		$clReponseXML = $OnlineProxy->createFrom($clParamCreateFrom, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('CreateFrom', $clReponseXML);
@@ -1370,7 +1415,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//ici il faut faire le modify
-		$clReponseWS = $this->_sCreateFrom($OnlineProxy, $sTokenSession, $form, $origine);
+		$clReponseWS     = $this->_sCreateFrom($OnlineProxy, $sTokenSession, $form, $origine);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on valide
@@ -1381,17 +1426,18 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
 
 	protected function _sDelete(SOAPProxy $OnlineProxy, $sTokenSession, $form, $id)
 	{
-		$clParamDelete = new Delete();
+		$clParamDelete        = new Delete();
 		$clParamDelete->Table = $form;
 
-		$baliseXML = $this->_sNettoieForm($form);
+		$baliseXML               = $this->_sNettoieForm($form);
 		$clParamDelete->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
 		$clReponseXML = $OnlineProxy->delete($clParamDelete, $this->_aGetTabHeader($sTokenSession));
@@ -1411,7 +1457,7 @@ class DefaultController extends Controller
 	 */
 	protected function _sConfirmResponse(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, MessageBox $clMessageBox)
 	{
-		$clConfirm = new ConfirmResponse();
+		$clConfirm                   = new ConfirmResponse();
 		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
 
 		$clReponseWS = $OnlineProxy->ConfirmResponse($clConfirm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
@@ -1436,11 +1482,11 @@ class DefaultController extends Controller
 		$sIDEnreg = $this->_sCreate($OnlineProxy, $sTokenSession, $form, $colonne, $valeur);
 
 		//ici il faut faire le delete
-		$clReponseWS = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $sIDEnreg);
+		$clReponseWS     = $this->_sDelete($OnlineProxy, $sTokenSession, $form, $sIDEnreg);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//on valide
-		if ($clReponseWS->sGetReturnType()==XMLResponseWS::RETURNTYPE_MESSAGEBOX)
+		if ($clReponseWS->sGetReturnType() == XMLResponseWS::RETURNTYPE_MESSAGEBOX)
 		{
 			//il faut confirmer la réponse
 			$this->_sConfirmResponse($OnlineProxy, $sTokenSession, $sActionContexte, $clReponseWS->clGetMessageBox());
@@ -1451,7 +1497,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	protected function _sEnterReorderListMode(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte)
@@ -1468,6 +1515,7 @@ class DefaultController extends Controller
 
 		$clReponseXML = $OnlineProxy->setOrderList($clSetOrderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('SetOrderList', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -1475,8 +1523,9 @@ class DefaultController extends Controller
 	protected function _sReOrderList(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $tabIDEnreg, $nScale, $nMove)
 	{
 		$clReorderList = new ReorderList($tabIDEnreg, $nScale, $nMove);
-		$clReponseXML = $OnlineProxy->reorderList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$clReponseXML  = $OnlineProxy->reorderList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('ReOrderList', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -1504,7 +1553,7 @@ class DefaultController extends Controller
 
 		$this->_sEnterReorderListMode($OnlineProxy, $sTokenSession, $clReponseList->sGetActionContext());
 
-		$tempOrig=implode('|', array_slice($tabEnregTableauOrigine->GetTabIDEnreg(), 0, 5));
+		$tempOrig = implode('|', array_slice($tabEnregTableauOrigine->GetTabIDEnreg(), 0, 5));
 		var_dump($tempOrig);
 
 		$tabSetOrder = new EnregTableauArray();
@@ -1526,8 +1575,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -1538,6 +1587,7 @@ class DefaultController extends Controller
 
 		$clReponseXML = $OnlineProxy->setOrderSubList($clSetOrderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('SetOrderSubList', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -1545,8 +1595,9 @@ class DefaultController extends Controller
 	protected function _sReOrderSubList(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nScale, $nMove)
 	{
 		$clReorderList = new ReorderSubList($nIDColonne, $tabIDEnreg, $nScale, $nMove);
-		$clReponseXML = $OnlineProxy->reorderSubList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
+		$clReponseXML  = $OnlineProxy->reorderSubList($clReorderList, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('ReOrderSubList', $clReponseXML);
+
 		return $clReponseXML;
 	}
 
@@ -1574,13 +1625,13 @@ class DefaultController extends Controller
 			$TabValColOrig = $clRecord->getValCol('221655479824831');
 			$this->_VarDumpRes('valcol', implode('|', $TabValColOrig));
 
-			$TabSetOrder = $TabValColOrig;
-			$sTemp = $TabSetOrder[0];
-			$TabSetOrder[0]=$TabSetOrder[3];
-			$TabSetOrder[3]=$sTemp;
+			$TabSetOrder    = $TabValColOrig;
+			$sTemp          = $TabSetOrder[0];
+			$TabSetOrder[0] = $TabSetOrder[3];
+			$TabSetOrder[3] = $sTemp;
 
 			$clReponseSetOrder = $this->_sSetOrderSubList($OnlineProxy, $sTokenSession, $sActionContexte, '221655479824831', $TabSetOrder, 0);
-			$tabSetOrderRes = new EnregTableauArray();
+			$tabSetOrderRes    = new EnregTableauArray();
 			$tabSetOrderRes->AddFromListeStr('', $clReponseSetOrder->getValue());
 
 			$tabIDEnreg = array($tabSetOrderRes->nGetIDEnreg(1), $tabSetOrderRes->nGetIDEnreg(3));
@@ -1611,8 +1662,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
 
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -1643,7 +1694,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//la liste
-		$clReponseWS = $this->_sGetStartAutomatism($OnlineProxy, $sTokenSession);
+		$clReponseWS     = $this->_sGetStartAutomatism($OnlineProxy, $sTokenSession);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
@@ -1654,7 +1705,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -1688,7 +1740,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -1715,7 +1768,7 @@ class DefaultController extends Controller
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//la liste
-		$clReponseWS = $this->_sGetEndAutomatism($OnlineProxy, $sTokenSession);
+		$clReponseWS     = $this->_sGetEndAutomatism($OnlineProxy, $sTokenSession);
 		$sActionContexte = $clReponseWS->sGetActionContext();
 
 		//annulation de la liste
@@ -1726,7 +1779,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -1743,7 +1797,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 	/**
@@ -1757,10 +1812,10 @@ class DefaultController extends Controller
 		//la connexion
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
-		$clTableChildParam = new GetTableChild();
-		$clTableChildParam->Table = $form;
+		$clTableChildParam            = new GetTableChild();
+		$clTableChildParam->Table     = $form;
 		$clTableChildParam->Recursive = 1;
-		$clTableChildParam->ReadOnly = 1;
+		$clTableChildParam->ReadOnly  = 1;
 
 		//récupération des langues
 		$clReponseXML = $OnlineProxy->getTableChild($clTableChildParam, $this->_aGetTabHeader($sTokenSession));
@@ -1771,7 +1826,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -1784,7 +1840,7 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$sXML = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
+		$sXML          = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
 		$clResponseXML = new XMLResponseWS($sXML);
 
 		$clRecordManager = new ReponseWSParser();
@@ -1796,7 +1852,8 @@ class DefaultController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -1933,12 +1990,13 @@ RESULTAT;
 		//$this->assertEquals(str_replace(array("\t", "\n", "\r"), array("","",""), $sResultatAttendu), $sSoap);
 
 		var_dump($sSoap);
-		var_dump(str_replace(array("\t", "\n", "\r"), array("","",""), $sResultatAttendu));
-		var_dump(str_replace(array("\t", "\n", "\r"), array("","",""), $sResultatAttendu)==$sSoap);
+		var_dump(str_replace(array("\t", "\n", "\r"), array("", "", ""), $sResultatAttendu));
+		var_dump(str_replace(array("\t", "\n", "\r"), array("", "", ""), $sResultatAttendu) == $sSoap);
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 
 
@@ -1960,6 +2018,7 @@ RESULTAT;
 
 		$containt = ob_get_contents();
 		ob_get_clean();
-		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt'=>$containt));
+
+		return $this->render('NOUTOnlineBundle:Default:debug.html.twig', array('containt' => $containt));
 	}
 }

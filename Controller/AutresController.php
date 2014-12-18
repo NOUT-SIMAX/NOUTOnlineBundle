@@ -10,12 +10,12 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
 use PhpCsFixer\Fixer\AllmanCurlyBracesFixer;
 use PhpCsFixer\Tests\AllmanCurlyBracesFixerTest;
-use Symfony\Component\HttpFoundation\Response;
+
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route; // this imports the annotations
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-// this imports the annotations
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 
 
@@ -42,6 +42,7 @@ class AutresController extends Controller
 
 		$containt = ob_get_contents();
 		ob_get_clean();
+
 		return $containt;
 	}
 
@@ -50,56 +51,50 @@ class AutresController extends Controller
 	 */
 	public function allmanAction()
 	{
-
-		$clAllman = new AllmanCurlyBracesFixer();
+		$clAllman     = new AllmanCurlyBracesFixer();
 		$clAllmanTest = new AllmanCurlyBracesFixerTest();
 
 
-		$file = __DIR__.'/../Resources/public/test/fixer/allman.php';
+		$file          = __DIR__.'/../Resources/public/test/fixer/allman.php';
 		$clQplFileInfo = new \SplFileInfo($file);
 
-		$containt='<div class="container">';
+		$containt = '<div class="container">';
 
-		foreach($clAllmanTest->provideFixCases() as $aArray)
+		foreach ($clAllmanTest->provideFixCases() as $aArray)
 		{
 			$clExpected = array_shift($aArray);
-			$clInput = array_shift($aArray);
+			$clInput    = array_shift($aArray);
 
 			if (isset($clInput))
 			{
 				$clFixInput = $clAllman->fix($clQplFileInfo, $clInput);
 
-				$ok = str_replace("\r\n", "\n", $clFixInput)===str_replace("\r\n", "\n", $clExpected);
-				$class=($ok ? 'bg-success' : 'bg-danger');
+				$ok   = str_replace("\r\n", "\n", $clFixInput) === str_replace("\r\n", "\n", $clExpected);
+				$class = ($ok ? 'bg-success' : 'bg-danger');
 
 
-				$containt.='<div class="row '.$class.'"><div class="col-md-3">'.$this->_sVarDump($clInput).
+				$containt .= '<div class="row '.$class.'"><div class="col-md-3">'.$this->_sVarDump($clInput).
 						   '</div><div class="col-md-3">'.$this->_sVarDump($clFixInput).
 						   '</div><div class="col-md-3">'.$this->_sVarDump($clExpected).
 						   '</div><div class="col-md-1">'.
 						   '</div><div class="col-md-2">'.$this->_sVarDump($ok).
 						   '</div></div>';
-
-
 			}
 			else
 			{
 				$clFixExpected = $clAllman->fix($clQplFileInfo, $clExpected);
 
-				$ok = str_replace("\r\n", "\n", $clFixExpected)===str_replace("\r\n", "\n", $clExpected);
-				$class=($ok ? 'bg-success' : 'bg-danger');
+				$ok   = str_replace("\r\n", "\n", $clFixExpected) === str_replace("\r\n", "\n", $clExpected);
+				$class = ($ok ? 'bg-success' : 'bg-danger');
 
-				$containt.='<div class="row '.$class.'"><div class="col-md-5">'.$this->_sVarDump($clFixExpected).
+				$containt .= '<div class="row '.$class.'"><div class="col-md-5">'.$this->_sVarDump($clFixExpected).
 						   '</div><div class="col-md-5">'.$this->_sVarDump($clExpected).
 						   '</div><div class="col-md-2">'.$this->_sVarDump($ok).
 							'</div></div>';
 			}
-
 		}
-		$containt.='</div>';
+		$containt .= '</div>';
 
-		return $this->render('NOUTOnlineBundle:Autres:debug.html.twig', array('containt'=>$containt));
+		return $this->render('NOUTOnlineBundle:Autres:debug.html.twig', array('containt' => $containt));
 	}
-
-
-} 
+}

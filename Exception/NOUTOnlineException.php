@@ -8,12 +8,11 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Exception;
 
-
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 
-class NOUTOnlineException extends SOAPException {
-
-	public  function __construct($fault, $message = "", $code = 0, \Exception $previous = null)
+class NOUTOnlineException extends SOAPException
+{
+	public function __construct($fault, $message = "", $code = 0, \Exception $previous = null)
 	{
 		parent::__construct($code.' '.$message, $code, $previous);
 

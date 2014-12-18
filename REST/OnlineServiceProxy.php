@@ -10,7 +10,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 
-
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
@@ -23,7 +22,7 @@ class OnlineServiceProxy
 	 * classe de configuration
 	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
 	 */
-	private $__ConfigurationDialogue ;
+	private $__ConfigurationDialogue;
 
 	//logger symfony
 	private $__clLogger;
@@ -39,7 +38,7 @@ class OnlineServiceProxy
 	public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger)
 	{
 		$this->__ConfigurationDialogue = $clConfig;
-		$this->__clLogger = $_clLogger;
+		$this->__clLogger              = $_clLogger;
 	}
 	/**
 	 * Retourne la fin de la requette rest (partie identification)
@@ -48,29 +47,38 @@ class OnlineServiceProxy
 	 */
 	private function _sCreateIdentification(Identification $clIdentification)
 	{
-
 		if (empty($clIdentification->m_clUsernameToken) || !$clIdentification->m_clUsernameToken->bIsValid())
+		{
 			return '';
+		}
 
 		$sBottom = '!';
 
-		$sBottom .= 'Username=' . urlencode($clIdentification->m_clUsernameToken->Username);
-		$sBottom .= '&Password=' . urlencode($clIdentification->m_clUsernameToken->Password);
-		$sBottom .= '&nonce=' . urlencode($clIdentification->m_clUsernameToken->Nonce);
-		$sBottom .= '&created=' . urlencode($clIdentification->m_clUsernameToken->Created);
+		$sBottom .= 'Username='.urlencode($clIdentification->m_clUsernameToken->Username);
+		$sBottom .= '&Password='.urlencode($clIdentification->m_clUsernameToken->Password);
+		$sBottom .= '&nonce='.urlencode($clIdentification->m_clUsernameToken->Nonce);
+		$sBottom .= '&created='.urlencode($clIdentification->m_clUsernameToken->Created);
 
 		if (!empty($clIdentification->m_sTokenSession))
-			$sBottom .= '&SessionToken=' . urlencode($clIdentification->m_sTokenSession);
+		{
+			$sBottom .= '&SessionToken='.urlencode($clIdentification->m_sTokenSession);
+		}
 
-		if(!empty($clIdentification->m_sIDContexteAction))
-			$sBottom .= '&ActionContext=' . urlencode($clIdentification->m_sIDContexteAction);
+		if (!empty($clIdentification->m_sIDContexteAction))
+		{
+			$sBottom .= '&ActionContext='.urlencode($clIdentification->m_sIDContexteAction);
+		}
 
 		if (!empty($this->__ConfigurationDialogue->getAPIUUID()))
-			$sBottom .= '&APIUUID=' . urlencode($this->__ConfigurationDialogue->getAPIUUID() );
+		{
+			$sBottom .= '&APIUUID='.urlencode($this->__ConfigurationDialogue->getAPIUUID());
+		}
 
 
 		if (!empty($clIdentification->m_bAPIUser))
+		{
 			$sBottom .= '&APIUser=1';
+		}
 
 		return $sBottom;
 	}
@@ -91,77 +99,91 @@ class OnlineServiceProxy
 	{
 		$sUrl = $this->__ConfigurationDialogue->getServiceAddress().$sAction.'?';
 		//la liste des paramètres (entre ? et ;)
-		if(is_array($aTabParam) && count($aTabParam)>0)
+		if (is_array($aTabParam) && count($aTabParam)>0)
 		{
-			$sListeParam='';
+			$sListeParam = '';
 			foreach ($aTabParam as $sKey => $sValue)
 			{
-				$sListeParam .= '&' . urlencode($sKey) .'=' . urlencode($sValue);
+				$sListeParam .= '&'.urlencode($sKey).'='.urlencode($sValue);
 			}
-			$sUrl.=trim($sListeParam,  '&');
+			$sUrl .= trim($sListeParam,  '&');
 		}
 		//la liste des options (entre ; et !)
-		if(is_array($aTabOption) && count($aTabOption)>0)
+		if (is_array($aTabOption) && count($aTabOption)>0)
 		{
-			$sListeOption='';
+			$sListeOption = '';
 			foreach ($aTabOption as $sKey => $sValue)
 			{
-				$sListeOption .= '&' . urlencode($sKey) .'=' . urlencode($sValue);
+				$sListeOption .= '&'.urlencode($sKey).'='.urlencode($sValue);
 			}
-			$sUrl.=';'.trim($sListeOption,  '&');
+			$sUrl .= ';'.trim($sListeOption,  '&');
 		}
 
 		$sUrl .= $this->_sCreateIdentification($clIdentification);
+
 		return $sUrl;
 	}
 
 	protected function _sExecute($sAction, $sURI, $sDestination)
 	{
-		if (isset($this->__clLogger)) //log des requetes
+		if (isset($this->__clLogger))
+		{
+			//log des requetes
 			$this->__clLogger->startQuery();
+		}
 
 		if (!empty($sDestination))
 		{
 			if (@copy($sURI, $sDestination) === false)
 			{
-				$aError=error_get_last();
-				$e = new \Exception($aError['message']);
+				$aError = error_get_last();
+				$e      = new \Exception($aError['message']);
 
 				if (isset($this->__clLogger))
+				{
 					$this->__clLogger->stopQuery($sURI, $aError['message'], (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, false);
+				}
 
 				throw $e;
 			}
 			//si le fichier est vide on le supprime
-			if(is_file($sDestination) && filesize($sDestination) == 0)
+			if (is_file($sDestination) && filesize($sDestination) == 0)
 			{
 				unlink($sDestination);
 				if (isset($this->__clLogger))
+				{
 					$this->__clLogger->stopQuery($sURI, '', $sAction, false, false);
+				}
 
 				return '';
 			}
 
 			if (isset($this->__clLogger))
+			{
 				$this->__clLogger->stopQuery($sURI, file_get_contents($sDestination, null, null, 0, 20), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, false);
+			}
 
 			return $sDestination;
 		}
 
-		if(($sResp = @file_get_contents($sURI)) === false)
+		if (($sResp = @file_get_contents($sURI)) === false)
 		{
-			$aError=error_get_last();
-			$e = new \Exception($aError['message']);
+			$aError = error_get_last();
+			$e      = new \Exception($aError['message']);
 
 			if (isset($this->__clLogger))
+			{
 				$this->__clLogger->stopQuery($sURI, $aError['message'], (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
+			}
 
 			throw $e;
 		}
 
 
 		if (isset($this->__clLogger))
+		{
 			$this->__clLogger->stopQuery($sURI, $sResp, (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
+		}
 
 		return $sResp;
 	}
@@ -177,9 +199,9 @@ class OnlineServiceProxy
 	 */
 	public function nGetUserExists($login)
 	{
-		$sURI = $this->_sCreateRequest('GetUserExists', array('login'=>$login), array(), new Identification());
+		$sURI = $this->_sCreateRequest('GetUserExists', array('login' => $login), array(), new Identification());
 
-		return (int)$this->_sExecute('GetUserExists', $sURI, '');
+		return (int) $this->_sExecute('GetUserExists', $sURI, '');
 	}
 
 
@@ -202,6 +224,7 @@ class OnlineServiceProxy
 	public function sGetChecksumLangage(Identification $clIdentification)
 	{
 		$sURI = $this->_sCreateRequest('GetLangageVersion', array(), array(), $clIdentification);
+
 		return $this->_sExecute('GetLangageVersion', $sURI, '');
 	}
 
@@ -214,6 +237,7 @@ class OnlineServiceProxy
 	public function sGetChecksum($idTableau, Identification $clIdentification)
 	{
 		$sURI = $this->_sCreateRequest($idTableau.'/GetChecksum', array(), array(), $clIdentification);
+
 		return $this->_sExecute('GetChecksum', $sURI, '');
 	}
 
@@ -228,15 +252,16 @@ class OnlineServiceProxy
 	 * @param string $sIDContexte
 	 * @return string
 	 */
-	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest='')
+	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest = '')
 	{
 		$sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
+
 		return $this->_sExecute('GetColInRecord', $sURI, $sDest);
 	}
 
 
 
-	const TYPEUTIL_NONE = 0;
+	const TYPEUTIL_NONE        = 0;
 	const TYPEUTIL_UTILISATEUR = 1;
 	const TYPEUTIL_SUPERVISEUR = 2;
 
@@ -281,4 +306,4 @@ class OnlineServiceProxy
 	const OPTION_Width              = 'Width';
 	const OPTION_Height             = 'Height';
 	const OPTION_ListMode           = 'ListMode';
-} 
+}

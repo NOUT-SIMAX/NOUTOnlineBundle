@@ -18,7 +18,7 @@ class NOUTFileCache extends CacheProvider
 
 	public function __construct($dir)
 	{
-		$this->m_sDir=$dir;
+		$this->m_sDir = $dir;
 	}
 
 
@@ -34,7 +34,9 @@ class NOUTFileCache extends CacheProvider
 	{
 		$sFilePath = $this->_sGetFilename($id);
 		if (!file_exists($sFilePath))
+		{
 			return false;
+		}
 
 		return unserialize(file_get_contents($sFilePath));
 	}
@@ -45,6 +47,7 @@ class NOUTFileCache extends CacheProvider
 	protected function doContains($id)
 	{
 		$sFilePath = $this->_sGetFilename($id);
+
 		return file_exists($sFilePath);
 	}
 
@@ -54,10 +57,15 @@ class NOUTFileCache extends CacheProvider
 	protected function doSave($id, $data, $lifeTime = 0)
 	{
 		if (!file_exists($this->m_sDir))
+		{
 			if (!@mkdir($this->m_sDir))
+			{
 				return false;
+			}
+		}
 
 		file_put_contents($this->_sGetFilename($id), serialize($data));
+
 		return true;
 	}
 
@@ -67,6 +75,7 @@ class NOUTFileCache extends CacheProvider
 	protected function doDelete($id)
 	{
 		unlink($this->_sGetFilename($id));
+
 		return true;
 	}
 
@@ -84,9 +93,6 @@ class NOUTFileCache extends CacheProvider
 	 */
 	protected function doGetStats()
 	{
-		return null;
+		return;
 	}
-
-
-
-} 
+}

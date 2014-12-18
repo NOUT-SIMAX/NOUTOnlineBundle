@@ -8,8 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DataCollector;
 
-
-
 use NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,8 +26,8 @@ class NOUTOnlineDataCollector  extends DataCollector
 
 	public function __construct(NOUTOnlineLogger $clLogger, SecurityContextInterface $context = null)
 	{
-		$this->m_clLogger=$clLogger;
-		$this->m_clSecurityContext=$context;
+		$this->m_clLogger          = $clLogger;
+		$this->m_clSecurityContext = $context;
 	}
 
 	public function collect(Request $request, Response $response, \Exception $exception = null)
@@ -45,24 +43,25 @@ class NOUTOnlineDataCollector  extends DataCollector
 		{
 			$this->data['authenticated'] = false;
 			$this->data['session_token'] = '';
-			$this->data['time_zone']='';
-			$this->data['user'] = '';
-			$this->data['superviseur']=false;
+			$this->data['time_zone']     = '';
+			$this->data['user']          = '';
+			$this->data['superviseur']   = false;
 		}
 		else
 		{
 			$this->data['authenticated'] = $token->isAuthenticated();
 			$this->data['session_token'] = '';
-			$this->data['time_zone']='';
-			$this->data['user'] = $token->getUsername();
+			$this->data['time_zone']     = '';
+			$this->data['user']          = $token->getUsername();
 
-			$tabRole = array_map(function ($role) { return $role->getRole();}, $token->getRoles());
-			$this->data['superviseur']=in_array('ROLE_SUPERVISEUR', $tabRole);
+			$tabRole = array_map(function ($role)	{ return $role->getRole();}
+				, $token->getRoles());
+			$this->data['superviseur'] = in_array('ROLE_SUPERVISEUR', $tabRole);
 
 			if ($token instanceof NOUTToken)
 			{
-				$this->data['session_token']=$token->getSessionToken();
-				$this->data['time_zone']=$token->getTimeZone();
+				$this->data['session_token'] = $token->getSessionToken();
+				$this->data['time_zone']     = $token->getTimeZone();
 			}
 		}
 	}
@@ -89,7 +88,8 @@ class NOUTOnlineDataCollector  extends DataCollector
 	public function getTime()
 	{
 		$time = 0;
-		foreach ($this->data['queries'] as $query) {
+		foreach ($this->data['queries'] as $query)
+		{
 			$time += $query['executionMS'];
 		}
 
@@ -142,5 +142,4 @@ class NOUTOnlineDataCollector  extends DataCollector
 	{
 		return $this->data['time_zone'];
 	}
-
 }

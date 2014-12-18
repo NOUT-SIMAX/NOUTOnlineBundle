@@ -7,6 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
+
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -28,12 +29,18 @@ class NOUTCache extends CacheProvider
 	public function __construct($dir)
 	{
 		if (extension_loaded('apc') || extension_loaded('apcu'))
+		{
 			$this->m_clPiloteCache = new ApcCache();
-		else if (extension_loaded('xcache'))
+		}
+		elseif (extension_loaded('xcache'))
+		{
 			$this->m_clPiloteCache = new XcacheCache();
+		}
 		else
+		{
 			//$this->m_clPiloteCache = new FilesystemCache($dir, '.noutcache.data');
 			$this->m_clPiloteCache = new NOUTFileCache($dir);
+		}
 	}
 
 
@@ -84,4 +91,4 @@ class NOUTCache extends CacheProvider
 	{
 		return $this->m_clPiloteCache->doGetStats();
 	}
-} 
+}
