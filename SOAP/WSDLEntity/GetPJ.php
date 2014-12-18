@@ -1,5 +1,6 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
+
 /**
  * Created by PhpStorm.
  * User: Ninon
