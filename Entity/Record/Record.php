@@ -7,9 +7,10 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Element;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Form;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\OptionDialogue;
+
+
+
+
 
 /**
  * Class Record
@@ -38,7 +39,6 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\OptionDialogue;
  */
 class Record
 {
-
 	/**
 	 * @var $m_sTitle : contient la mini desc de l'enregistrement
 	 */
@@ -75,16 +75,16 @@ class Record
 	/**
 	 * @param Form $clForm : information sur le formulaire
 	 */
-	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, StructureElement $clStruct=null)
+	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, StructureElement $clStruct = null)
 	{
-		$this->m_nIDTableau = $sIDTableau;
-		$this->m_nIDEnreg = $sIDEnreg;
-		$this->m_sTitle=$sLibelle;
-		$this->m_clStructElem=$clStruct;
+		$this->m_nIDTableau  = $sIDTableau;
+		$this->m_nIDEnreg    = $sIDEnreg;
+		$this->m_sTitle      = $sLibelle;
+		$this->m_clStructElem = $clStruct;
 
-		$this->m_TabColumnsInfo=array();
-		$this->m_TabColumnsModified=array();
-		$this->m_TabColumnsValues=array();
+		$this->m_TabColumnsInfo    = array();
+		$this->m_TabColumnsModified = array();
+		$this->m_TabColumnsValues  = array();
 	}
 
 	/**
@@ -101,7 +101,8 @@ class Record
 	 */
 	public function setInfoColonne(InfoColonne $clInfoColonne)
 	{
-		$this->m_TabColumnsInfo[$clInfoColonne->getIDColonne()]=$clInfoColonne;
+		$this->m_TabColumnsInfo[$clInfoColonne->getIDColonne()] = $clInfoColonne;
+
 		return $this;
 	}
 
@@ -120,7 +121,10 @@ class Record
 	public function getValCol($idColonne)
 	{
 		if (!isset($this->m_TabColumnsValues[$idColonne]))
-			return null;
+		{
+			return;
+		}
+
 		return $this->m_TabColumnsValues[$idColonne];
 	}
 
@@ -130,12 +134,12 @@ class Record
 	 * @param bool $modified
 	 * @return $this
 	 */
-	public function setValCol($idcolonne, $value, $modifiedByUser=true)
+	public function setValCol($idcolonne, $value, $modifiedByUser = true)
 	{
-		$this->m_TabColumnsValues[$idcolonne]=$value;
-		$this->m_TabColumnsModified[$idcolonne]=$modifiedByUser;
-		return $this;
+		$this->m_TabColumnsValues[$idcolonne]  = $value;
+		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser;
 
+		return $this;
 	}
 
 
@@ -147,7 +151,9 @@ class Record
 	public function __get($idColonne)
 	{
 		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
+		{
 			throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __get() n\'est pas autorisé');
+		}
 
 		return $this->getValCol($idColonne);
 	}
@@ -161,11 +167,10 @@ class Record
 	public function __set($idColonne, $value)
 	{
 		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
+		{
 			throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __call() n\'est pas autorisé');
+		}
 
 		return $this->setValCol($idColonne, $value, true);
 	}
-
-
-
-} 
+}

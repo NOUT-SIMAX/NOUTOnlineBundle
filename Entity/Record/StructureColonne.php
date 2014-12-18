@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
 class StructureColonne
 {
 	protected $m_nIDColonne;
@@ -25,29 +24,30 @@ class StructureColonne
 
 	public function __construct($sID, \SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
-
-		$this->m_nIDColonne = $sID;
-		$this->m_sLibelle = '';
+		$this->m_nIDColonne   = $sID;
+		$this->m_sLibelle     = '';
 		$this->m_eTypeElement =  '';
 
-		$this->m_bRequired=false;
+		$this->m_bRequired = false;
 
 		$this->m_TabStructureColonne = array();
-		$this->m_TabOptions = array();
-		$this->m_clRestriction = null;
+		$this->m_TabOptions          = array();
+		$this->m_clRestriction       = null;
 
 		$this->_InitInfoColonne($clAttribNOUT, $clAttribXS);
 	}
 
 	protected function _InitInfoColonne(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
-		$this->m_sLibelle = (string)$clAttribNOUT['name'];
-		$this->m_eTypeElement = (string)$clAttribNOUT['typeElement'];
+		$this->m_sLibelle     = (string) $clAttribNOUT['name'];
+		$this->m_eTypeElement = (string) $clAttribNOUT['typeElement'];
 
-		$this->m_bRequired = (isset($clAttribXS['use']) && ((string)$clAttribXS['use']==='required')); //xs:use="required"
+		$this->m_bRequired = (isset($clAttribXS['use']) && ((string) $clAttribXS['use'] === 'required')); //xs:use="required"
 
-		foreach($clAttribNOUT as $sAttribName => $ndAttrib)
-			$this->m_TabOptions[$sAttribName]=(string)$ndAttrib;
+		foreach ($clAttribNOUT as $sAttribName => $ndAttrib)
+		{
+			$this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
+		}
 	}
 
 	public function bEstTypeSimple()
@@ -107,6 +107,7 @@ class StructureColonne
 	public function setRestriction(ColonneRestriction $clRestriction)
 	{
 		$this->m_clRestriction = $clRestriction;
+
 		return $this;
 	}
 
@@ -125,6 +126,7 @@ class StructureColonne
 	public function setTypeElement($eTypeElement)
 	{
 		$this->m_eTypeElement = $eTypeElement;
+
 		return $this;
 	}
 
@@ -134,15 +136,17 @@ class StructureColonne
 	public function isOption($sOption)
 	{
 		//les options qui viennent de membres
-		switch($sOption)
+		switch ($sOption)
 		{
-			case self::OPTION_Required:
-				return $this->m_bRequired;
+		case self::OPTION_Required:
+			return $this->m_bRequired;
 		}
 
 
 		if (!isset($this->m_TabOptions[$sOption]))
+		{
 			return false;
+		}
 
 		return !empty($this->m_TabOptions[$sOption]);
 	}
@@ -166,17 +170,11 @@ class StructureColonne
 	public function getFormOption()
 	{
 		$aOptions = array(
-			'label'=>$this->m_sLibelle,
-			'read_only'=>$this->isOption(StructureColonne::OPTION_ReadOnly),
-			'required'=>$this->m_bRequired,
-			'disabled'=>$this->isOption(StructureColonne::OPTION_Disabled),
+			'label'    => $this->m_sLibelle,
+			'read_only'=> $this->isOption(StructureColonne::OPTION_ReadOnly),
+			'required' => $this->m_bRequired,
+			'disabled' => $this->isOption(StructureColonne::OPTION_Disabled),
 		);
-
-
-
-
-
-
 	}
 
 	/**
