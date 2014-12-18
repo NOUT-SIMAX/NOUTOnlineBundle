@@ -170,10 +170,10 @@ class StructureColonne
 	public function getFormOption()
 	{
 		$aOptions = array(
-			'label'    => $this->m_sLibelle,
-			'read_only'=> $this->isOption(StructureColonne::OPTION_ReadOnly),
-			'required' => $this->m_bRequired,
-			'disabled' => $this->isOption(StructureColonne::OPTION_Disabled),
+			'label'     => $this->m_sLibelle,
+			'read_only' => $this->isOption(StructureColonne::OPTION_ReadOnly),
+			'required'  => $this->m_bRequired,
+			'disabled'  => $this->isOption(StructureColonne::OPTION_Disabled),
 		);
 	}
 
@@ -182,95 +182,95 @@ class StructureColonne
 	 */
 
 
-	const TM_Invalide   = null;
+	const TM_Invalide = null;
 
 	//type simple
-	const TM_Booleen	= 'xs:boolean';
-	const TM_Entier		= 'xs:integer';
-	const TM_Texte		= 'xs:string';
-	const TM_DateHeure	= 'xs:dateTime';
-	const TM_Date		= 'xs:date';
-	const TM_Heure		= 'xs:time';
-	const TM_Reel		= 'xs:float';
-	const TM_Monetaire	= 'xs:decimal';
+	const TM_Booleen   = 'xs:boolean';
+	const TM_Entier    = 'xs:integer';
+	const TM_Texte     = 'xs:string';
+	const TM_DateHeure = 'xs:dateTime';
+	const TM_Date      = 'xs:date';
+	const TM_Heure     = 'xs:time';
+	const TM_Reel      = 'xs:float';
+	const TM_Monetaire = 'xs:decimal';
 
 	//type complexe
-	const TM_Tableau	= 'simax-element';
-	const TM_ListeElem	= 'simax-list';
-	const TM_Separateur	= 'simax-section';
-	const TM_Bouton		= 'simax-button';
-	const TM_Combo		= 'simax-choice';
-	const TM_Fichier	= 'xs:base64Binary';
+	const TM_Tableau    = 'simax-element';
+	const TM_ListeElem  = 'simax-list';
+	const TM_Separateur = 'simax-section';
+	const TM_Bouton     = 'simax-button';
+	const TM_Combo      = 'simax-choice';
+	const TM_Fichier    = 'xs:base64Binary';
 
 
 	// attributs communs à toutes les colonnes
-	const OPTION_Detail			= 'detail';
-	const OPTION_Printed		= 'printed';
-	const OPTION_Computed		= 'computed';
-	const OPTION_Titled			= 'titled';         //repris dans l'intitulé
-	const OPTION_Sort			= 'sort';
-	const OPTION_Link			= 'link';
-	const OPTION_LinkControl	= 'linkControl';    // pour les colonnes (controles de validité)
+	const OPTION_Detail      = 'detail';
+	const OPTION_Printed     = 'printed';
+	const OPTION_Computed    = 'computed';
+	const OPTION_Titled      = 'titled';         //repris dans l'intitulé
+	const OPTION_Sort        = 'sort';
+	const OPTION_Link        = 'link';
+	const OPTION_LinkControl = 'linkControl';    // pour les colonnes (controles de validité)
 
-	const OPTION_Hidden			= "hidden";
-	const OPTION_ReadOnly		= "readOnly";
-	const OPTION_Disabled		= "disabled";
+	const OPTION_Hidden   = "hidden";
+	const OPTION_ReadOnly = "readOnly";
+	const OPTION_Disabled = "disabled";
 
-	const OPTION_Required		= "required";
+	const OPTION_Required = "required";
 
 
 	// Attributs pour element d'un tableau
-	const OPTION_LinkedTableXml	= "linkedTableXml";
-	const OPTION_LinkedTableID	= "linkedTableID";
-	const OPTION_WithBtnOrdre	= "withBtnOrder";
-	const OPTION_WithoutDetail	= "withoutDetail";
-	const OPTION_WithoutSearch	= "withoutSearch";
-	const OPTION_WithoutCreate	= "withoutCreate";
-	const OPTION_Resource		= "resource";
-	const OPTION_MultiResource	= "resourceMulti";
+	const OPTION_LinkedTableXml = "linkedTableXml";
+	const OPTION_LinkedTableID  = "linkedTableID";
+	const OPTION_WithBtnOrdre   = "withBtnOrder";
+	const OPTION_WithoutDetail  = "withoutDetail";
+	const OPTION_WithoutSearch  = "withoutSearch";
+	const OPTION_WithoutCreate  = "withoutCreate";
+	const OPTION_Resource       = "resource";
+	const OPTION_MultiResource  = "resourceMulti";
 
 	// Attributs pour les sous-listes
-	const OPTION_Relation		= "withAddAndRemove";    // bestGroupeRelation
-	const OPTION_Relation11		= "withModifyAndRemove"; // bEstRelation11
-	const OPTION_UniqueElement	= "uniqueElement";
+	const OPTION_Relation      = "withAddAndRemove";    // bestGroupeRelation
+	const OPTION_Relation11    = "withModifyAndRemove"; // bEstRelation11
+	const OPTION_UniqueElement = "uniqueElement";
 
 	// Attributs pour les listes en général
-	const OPTION_WithPlanning	= "withPlanning";
-	const OPTION_WithGhost		= "withGhost";
-	const OPTION_TableType		= "tableType";
+	const OPTION_WithPlanning = "withPlanning";
+	const OPTION_WithGhost    = "withGhost";
+	const OPTION_TableType    = "tableType";
 
-	const OPTION_TableType_ListTable	= "list";
-	const OPTION_TableType_PivotTable	= "pivotTable";
-	const OPTION_TableType_ViewTable	= "view";
+	const OPTION_TableType_ListTable  = "list";
+	const OPTION_TableType_PivotTable = "pivotTable";
+	const OPTION_TableType_ViewTable  = "view";
 
 	// Attributs pour les boutons
-	const OPTION_IDAction		= "idAction";
-	const OPTION_IDBouton		= "idButton";
-	const OPTION_Sentence		= "sentence";
-	const OPTION_TypeAction		= "actionType";
-	const OPTION_TypeSelection	= "typeSelection";
-	const OPTION_Icone			= "icon";
-	const OPTION_WithValidation	= "withValidation";
-	const OPTION_IDColToUpdate	= "columnToUpdate";
-	const OPTION_IDColSelection	= "columnSelection";
+	const OPTION_IDAction       = "idAction";
+	const OPTION_IDBouton       = "idButton";
+	const OPTION_Sentence       = "sentence";
+	const OPTION_TypeAction     = "actionType";
+	const OPTION_TypeSelection  = "typeSelection";
+	const OPTION_Icone          = "icon";
+	const OPTION_WithValidation = "withValidation";
+	const OPTION_IDColToUpdate  = "columnToUpdate";
+	const OPTION_IDColSelection = "columnSelection";
 
 	// Attributs des separateurs
-	const OPTION_ModeMultiC			= "multiColumnMode";
-	const OPTION_SensMultiC			= "multiColumnWay";
-	const OPTION_SectionComputed	= "sectionComputed";
-	const OPTION_SectionLevel		= "sectionLevel";
-	const OPTION_BackgroundColor	= "backgroundColor";
+	const OPTION_ModeMultiC      = "multiColumnMode";
+	const OPTION_SensMultiC      = "multiColumnWay";
+	const OPTION_SectionComputed = "sectionComputed";
+	const OPTION_SectionLevel    = "sectionLevel";
+	const OPTION_BackgroundColor = "backgroundColor";
 
 	// Attributs pour liste deroulante
-	const OPTION_AttributID		= "id";
+	const OPTION_AttributID = "id";
 
 	// Attributs liés au modele
-	const OPTION_Modele_PhoneNumber		= "phoneNumber";
-	const OPTION_Modele_Directory		= "directory";
-	const OPTION_Modele_PostalCode		= "postalCode";
-	const OPTION_Modele_City			= "City";
-	const OPTION_Modele_InputMask		= "inputMask";
-	const OPTION_Modele_WithSecond		= "withSecond";
-	const OPTION_Modele_PositionVideo	= "videoPosition";
-	const OPTION_Modele_IDColLinked		= "columnLinked";
+	const OPTION_Modele_PhoneNumber   = "phoneNumber";
+	const OPTION_Modele_Directory     = "directory";
+	const OPTION_Modele_PostalCode    = "postalCode";
+	const OPTION_Modele_City          = "City";
+	const OPTION_Modele_InputMask     = "inputMask";
+	const OPTION_Modele_WithSecond    = "withSecond";
+	const OPTION_Modele_PositionVideo = "videoPosition";
+	const OPTION_Modele_IDColLinked   = "columnLinked";
 }

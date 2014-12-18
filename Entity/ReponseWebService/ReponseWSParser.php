@@ -8,9 +8,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableau;
+
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
@@ -64,12 +63,12 @@ class ReponseWSParser
 	public function __construct()
 	{
 		$this->m_MapIDTableau2Niv2StructureElement = array();
-		$this->m_MapIDTableau2IDEnreg2Record = array();
-		$this->m_TabEnregTableau = new EnregTableauArray();
-		$this->m_MapColonne2Calcul = array();
-		$this->m_MapRef2Data = array();
-		$this->m_TabEventPlanning=array();
-		$this->m_clChart = null;
+		$this->m_MapIDTableau2IDEnreg2Record       = array();
+		$this->m_TabEnregTableau                   = new EnregTableauArray();
+		$this->m_MapColonne2Calcul                 = array();
+		$this->m_MapRef2Data                       = array();
+		$this->m_TabEventPlanning                  = array();
+		$this->m_clChart                           = null;
 	}
 
 	/**
@@ -80,18 +79,26 @@ class ReponseWSParser
 	{
 		if (!isset($this->m_MapIDTableau2Niv2StructureElement) ||
 			!isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau]))
-			return null;
+		{
+			return;
+		}
 
 		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_Enreg]))
+		{
 			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_Enreg];
+		}
 
 		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_List]))
+		{
 			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_List];
+		}
 
 		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_LienElement]))
+		{
 			return $this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][StructureElement::NV_XSD_LienElement];
+		}
 
-		return null;
+		return;
 	}
 
 	/**
@@ -111,10 +118,12 @@ class ReponseWSParser
 	 */
 	public function clGetRecordFromId($sIDForm, $sIDEreng)
 	{
-		if (    !isset($this->m_MapIDTableau2IDEnreg2Record)
+		if (!isset($this->m_MapIDTableau2IDEnreg2Record)
 			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$sIDForm])
 			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$sIDForm][$sIDEreng]))
-			return null;
+		{
+			return;
+		}
 
 		return $this->m_MapIDTableau2IDEnreg2Record[$sIDForm][$sIDEreng];
 	}
@@ -126,11 +135,15 @@ class ReponseWSParser
 	public function GetTabIDEnregFromForm($form)
 	{
 		if ($form instanceof Form)
+		{
 			$form = $form->getID();
+		}
 
-		if (    !isset($this->m_MapIDTableau2IDEnreg2Record)
+		if (!isset($this->m_MapIDTableau2IDEnreg2Record)
 			||  !isset($this->m_MapIDTableau2IDEnreg2Record[$form]))
+		{
 			return array();
+		}
 
 		return array_keys($this->m_MapIDTableau2IDEnreg2Record[$form]);
 	}
@@ -172,18 +185,21 @@ class ReponseWSParser
 		//récupération du noeud element fils de schema
 		$ndElement = $clSchema->children('http://www.w3.org/2001/XMLSchema')->element;
 
-		$TabAttribXS = $ndElement->attributes('http://www.w3.org/2001/XMLSchema');
+		$TabAttribXS    = $ndElement->attributes('http://www.w3.org/2001/XMLSchema');
 		$TabAttribSIMAX = $ndElement->attributes('http://www.nout.fr/XMLSchema');
 
 		//on récupère l'id du formulaire, son libelle et le type
 		$sIDTableau = str_replace('id_', '', $TabAttribXS['name']);
 
 		if (isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau]) && isset($this->m_MapIDTableau2Niv2StructureElement[$sIDTableau][$nNiveau]))
-			return ; //on a déjà parsé cette partie de l'XSD
+		{
+			//on a déjà parsé cette partie de l'XSD
+			return;
+		}
 
 		if (count($ndElement->children('http://www.w3.org/2001/XMLSchema'))>0)
 		{
-			$clStructureElement = new StructureElement($sIDTableau, (string)$TabAttribSIMAX['name'], $nNiveau);
+			$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name'], $nNiveau);
 			//$sType = $TabAttribSIMAX['tableType'];
 
 			$ndSequence = $ndElement->children('http://www.w3.org/2001/XMLSchema')->complexType
@@ -191,7 +207,6 @@ class ReponseWSParser
 
 			$this->__ParseXSDSequence($nNiveau, $clStructureElement, $ndSequence, null);
 		}
-
 	}
 
 	/**
@@ -203,105 +218,105 @@ class ReponseWSParser
 	{
 		//'http://www.nout.fr/XMLSchema'
 
-		foreach($clSequence->children('http://www.w3.org/2001/XMLSchema') as $ndNoeud)
+		foreach ($clSequence->children('http://www.w3.org/2001/XMLSchema') as $ndNoeud)
 		{
 			if ($ndNoeud->getName() != 'element')
-				continue; //je cherche quel les xs:element
+			{
+				//je cherche quel les xs:element
+				continue;
+			}
 
-			$clAttribXS = $ndNoeud->attributes('http://www.w3.org/2001/XMLSchema');
+			$clAttribXS   = $ndNoeud->attributes('http://www.w3.org/2001/XMLSchema');
 			$clAttribNOUT = $ndNoeud->attributes('http://www.nout.fr/XMLSchema');
 
-			$sIDColonne = str_replace('id_', '', (string)$clAttribXS->name);
+			$sIDColonne = str_replace('id_', '', (string) $clAttribXS->name);
 			$clStructElement->setStructureColonne(new StructureColonne($sIDColonne, $clAttribNOUT, $clAttribXS));
 
-			switch($clStructElement->getTypeElement($sIDColonne))
+			switch ($clStructElement->getTypeElement($sIDColonne))
 			{
-				case StructureColonne::TM_ListeElem:
-					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
-					{
-						$ndSequence = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->complexType
+			case StructureColonne::TM_ListeElem:
+				if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
+				{
+					$ndSequence = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->complexType
 												->children('http://www.w3.org/2001/XMLSchema')->sequence;
 
-						$nNiveau = ($nNivCourant == StructureElement::NV_XSD_Enreg) ? StructureElement::NV_XSD_List : StructureElement::NV_XSD_LienElement;
-						$this->_ParseXSD($nNiveau, $ndSequence);
-					}
-					break;
-				case StructureColonne::TM_Separateur:
-					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
-					{
-						$ndSequence = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->complexType
+					$nNiveau = ($nNivCourant == StructureElement::NV_XSD_Enreg) ? StructureElement::NV_XSD_List : StructureElement::NV_XSD_LienElement;
+					$this->_ParseXSD($nNiveau, $ndSequence);
+				}
+				break;
+			case StructureColonne::TM_Separateur:
+				if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
+				{
+					$ndSequence = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->complexType
 							->children('http://www.w3.org/2001/XMLSchema')->sequence;
 
-						$this->__ParseXSDSequence($nNivCourant, $clStructElement, $ndSequence, $sIDColonne);
-					}
-					break;
-				case '':
+					$this->__ParseXSDSequence($nNivCourant, $clStructElement, $ndSequence, $sIDColonne);
+				}
+				break;
+			case '':
 					//il faut vérifier si pas extension d'un type de base (texte avec une limite de 100)
 					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
 					{
-						$ndSimpleType = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->simpleType
+						$ndSimpleType = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->simpleType
 							->children('http://www.w3.org/2001/XMLSchema')->restriction;
 
-						$clStructElement->setTypeElement($sIDColonne, (string)$ndSimpleType->attributes('http://www.w3.org/2001/XMLSchema')['base']);
+						$clStructElement->setTypeElement($sIDColonne, (string) $ndSimpleType->attributes('http://www.w3.org/2001/XMLSchema')['base']);
 
 						if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
 						{
 							$clRestriction = new ColonneRestriction();
 
-							foreach($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+							foreach ($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
 							{
 								$clRestriction->setTypeRestriction($ndFils->getName());
-								switch($ndFils->getName())
+								switch ($ndFils->getName())
 								{
-									case ColonneRestriction::R_MAXLENGTH:
-										$clRestriction->setValeurRestriction((int)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
-										break;
+								case ColonneRestriction::R_MAXLENGTH:
+									$clRestriction->setValeurRestriction((int) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
+									break;
 								}
 							}
 
 							$clStructElement->setRestriction($sIDColonne, $clRestriction);
 						}
-
-
 					}
-					break;
+				break;
 
-				case StructureColonne::TM_Combo:
+			case StructureColonne::TM_Combo:
 					//il faut vérifier si pas extension d'un type de base (texte avec une limite de 100)
 					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
 					{
-						$ndSimpleType = $ndNoeud  ->children('http://www.w3.org/2001/XMLSchema')->simpleType
+						$ndSimpleType = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->simpleType
 							->children('http://www.w3.org/2001/XMLSchema')->restriction;
 
 						if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
 						{
 							$clRestriction = new ColonneRestriction();
 
-							foreach($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+							foreach ($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
 							{
 								$clRestriction->setTypeRestriction($ndFils->getName());
-								switch($ndFils->getName())
+								switch ($ndFils->getName())
 								{
-									case ColonneRestriction::R_ENUMERATION:
-										$clRestriction->addValeurRestriction((string)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id'] , (string)$ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
-										break;
+								case ColonneRestriction::R_ENUMERATION:
+									$clRestriction->addValeurRestriction((string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id'], (string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
+									break;
 								}
 							}
 
 							$clStructElement->setRestriction($sIDColonne, $clRestriction);
 						}
-
-
 					}
-					break;
-
+				break;
 			}
 
 			$clStructElement->addColonne2TabStruct($sIDColonne, $sIDColonnePere);
 		}
 
 		if (!isset($sIDColonnePere))
-			$this->m_MapIDTableau2Niv2StructureElement[$clStructElement->getID()][$clStructElement->getNiveau()]=$clStructElement;
+		{
+			$this->m_MapIDTableau2Niv2StructureElement[$clStructElement->getID()][$clStructElement->getNiveau()] = $clStructElement;
+		}
 	}
 
 
@@ -316,31 +331,33 @@ class ReponseWSParser
 		 */
 
 		//on commence par faire un premier tour, pour récuperer les formulaires présent au premier niveau
-		$TabFormPresent=array();
-		foreach($clXML->children() as $clNoeud)
+		$TabFormPresent = array();
+		foreach ($clXML->children() as $clNoeud)
 		{
 			$sTagName = $clNoeud->getName();
-			if (strncmp($sTagName, 'id_', strlen('id_'))==0)
+			if (strncmp($sTagName, 'id_', strlen('id_')) == 0)
+			{
 				$TabFormPresent[] = str_replace('id_', '', $sTagName);
+			}
 		}
 
 
-		foreach($clXML->children() as $clNoeud)
+		foreach ($clXML->children() as $clNoeud)
 		{
 			$sTagName = $clNoeud->getName();
-			if (strncmp($sTagName, 'id_', strlen('id_'))==0)
+			if (strncmp($sTagName, 'id_', strlen('id_')) == 0)
 			{
 				$this->_ParseRecord($clNoeud, $TabFormPresent, $sIDForm);
 				continue;
 			}
 
-			if (strcmp($sTagName, 'event')==0)
+			if (strcmp($sTagName, 'event') == 0)
 			{
 				$this->_ParseEvent($clNoeud);
 				continue;
 			}
 
-			if (strcmp($sTagName, 'Data')==0)
+			if (strcmp($sTagName, 'Data') == 0)
 			{
 				$this->_ParseData($clNoeud);
 				continue;
@@ -364,20 +381,19 @@ class ReponseWSParser
 
 		$TabAttrib = $ndData->attributes('http://www.nout.fr/soap');
 
-		$clData = new Data();
-		$clData->m_nRef = (int)$TabAttrib['ref'];
-		$clData->m_nSize = (int)$TabAttrib['size'];
-		$clData->m_sEncoding = (string)$TabAttrib['encoding'];
-		$clData->m_sFileName = (string)$TabAttrib['filename'];
-		$clData->m_sMimeType = (string)$TabAttrib['typemime'];
-		$clData->m_sContent = (string)$ndData;
+		$clData              = new Data();
+		$clData->m_nRef      = (int) $TabAttrib['ref'];
+		$clData->m_nSize     = (int) $TabAttrib['size'];
+		$clData->m_sEncoding = (string) $TabAttrib['encoding'];
+		$clData->m_sFileName = (string) $TabAttrib['filename'];
+		$clData->m_sMimeType = (string) $TabAttrib['typemime'];
+		$clData->m_sContent  = (string) $ndData;
 
-		$this->m_MapRef2Data[$clData->m_nRef]=$clData;
+		$this->m_MapRef2Data[$clData->m_nRef] = $clData;
 	}
 
 	protected function _ParseEvent(\SimpleXMLElement $ndEvent)
 	{
-
 		/*
 		<xs:attribute xs:name="simax:uid" xs:use="required" simax:typeElement="xs:string"/>
 <xs:attribute xs:name="simax:startTime" xs:use="required" simax:typeElement="xs:datetime"/>
@@ -391,17 +407,17 @@ class ReponseWSParser
 
 		$TabAttrib = $ndEvent->attributes('http://www.nout.fr/XML/');
 
-		$clEvent = new Event();
-		$clEvent->m_sUID = (string)$TabAttrib['uid'];
-		$clEvent->m_sStartTime = (string)$TabAttrib['startTime'];
-		$clEvent->m_sEndTime = (string)$TabAttrib['endTime'];
-		$clEvent->m_sSummary = (string)$TabAttrib['summary'];
-		$clEvent->m_sDescription = (string)$TabAttrib['description'];
-		$clEvent->m_nIDResource = (string)$TabAttrib['resource'];
-		$clEvent->m_nTypeOfEvent = (string)$TabAttrib['typeOfEvent'];
-		$clEvent->m_sRrules = (string)$TabAttrib['rrules'];
+		$clEvent                 = new Event();
+		$clEvent->m_sUID         = (string) $TabAttrib['uid'];
+		$clEvent->m_sStartTime   = (string) $TabAttrib['startTime'];
+		$clEvent->m_sEndTime     = (string) $TabAttrib['endTime'];
+		$clEvent->m_sSummary     = (string) $TabAttrib['summary'];
+		$clEvent->m_sDescription = (string) $TabAttrib['description'];
+		$clEvent->m_nIDResource  = (string) $TabAttrib['resource'];
+		$clEvent->m_nTypeOfEvent = (string) $TabAttrib['typeOfEvent'];
+		$clEvent->m_sRrules      = (string) $TabAttrib['rrules'];
 
-		$this->m_TabEventPlanning[$clEvent->m_sUID]=$clEvent;
+		$this->m_TabEventPlanning[$clEvent->m_sUID] = $clEvent;
 	}
 
 	/**
@@ -416,16 +432,22 @@ class ReponseWSParser
 		$TabAttrib = $clXML->attributes('http://www.nout.fr/XML/');
 
 		$sIDTableau = str_replace('id_', '', $clXML->getName());
-		$sIDEnreg = (string)$TabAttrib['id'];
+		$sIDEnreg   = (string) $TabAttrib['id'];
 
-		if (isset($sIDForm) && ($sIDForm==$sIDTableau))
+		if (isset($sIDForm) && ($sIDForm == $sIDTableau))
+		{
 			$this->m_TabEnregTableau->AddNouveau($sIDTableau, $sIDEnreg);
+		}
 
 		if (!isset($this->m_MapIDTableau2IDEnreg2Record[$sIDTableau]))
+		{
 			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau] = array();
+		}
 
 		if (!isset($this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]))
-			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg] = new Record($sIDTableau, $sIDEnreg, (string)$TabAttrib['title'], $this->clGetStructureElement($sIDTableau));
+		{
+			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg] = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $this->clGetStructureElement($sIDTableau));
+		}
 
 		$this->__ParseColumnRecord($clXML, $TabFormPresent, $sIDTableau, $sIDEnreg);
 	}
@@ -444,15 +466,15 @@ class ReponseWSParser
          * xmlns:simax-layout="http://www.nout.fr/XML/layout"
 		 */
 
-		foreach($clXML->children() as $ndColonne)
+		foreach ($clXML->children() as $ndColonne)
 		{
-			$sNom = $ndColonne->getName();
-			$TabAttribNOUT = $clXML->attributes('http://www.nout.fr/XML/');
+			$sNom            = $ndColonne->getName();
+			$TabAttribNOUT   = $clXML->attributes('http://www.nout.fr/XML/');
 			$TabAttribLayout = $clXML->attributes('http://www.nout.fr/XML/layout');
 
 			$clInfoColonne = new InfoColonne(str_replace('id_', '', $sNom), $TabAttribNOUT, $TabAttribLayout);
 
-			$ValeurColonne=null;
+			$ValeurColonne = null;
 			if ($ndColonne->count()>0)
 			{
 				//on a des fils
@@ -461,7 +483,7 @@ class ReponseWSParser
 				{
 					$sTypeElement = $clStructElem->getTypeElement($clInfoColonne->getIDColonne());
 					//on a la structure de l'enregistrement
-					if ($sTypeElement==StructureColonne::TM_Separateur)
+					if ($sTypeElement == StructureColonne::TM_Separateur)
 					{
 						//c'est un séparateur, il faut faire les colonnes filles
 						$this->__ParseColumnRecord($ndColonne, $TabFormPresent, $sIDTableau, $sIDEnreg);
@@ -469,13 +491,13 @@ class ReponseWSParser
 					else
 					{
 						//c'est pas un séparateur, cela devrait normalement être un TM_ListeElem
-						if ($sTypeElement==StructureColonne::TM_ListeElem)
+						if ($sTypeElement == StructureColonne::TM_ListeElem)
 						{
 							//il faut prendre la valeur des colonnes filles et mettre dans un tableau
 							$ValeurColonne = array();
-							foreach($ndColonne->children() as $ndValeur)
+							foreach ($ndColonne->children() as $ndValeur)
 							{
-								$ValeurColonne[]=(string)$ndValeur;
+								$ValeurColonne[] = (string) $ndValeur;
 							}
 						}
 					}
@@ -485,11 +507,13 @@ class ReponseWSParser
 					//on a pas la structure
 					//on regarde si le fils est dans le tableau d'element premier niveau $TabFormPresent
 					$bFormulaire = false;
-					foreach($ndColonne->children() as $ndFils)
+					foreach ($ndColonne->children() as $ndFils)
 					{
 						$sID = str_replace('id_', '', $ndFils->getName());
-						if (array_search($sID, $TabFormPresent)==false)
-							$bFormulaire=true;
+						if (array_search($sID, $TabFormPresent) == false)
+						{
+							$bFormulaire = true;
+						}
 
 						break;
 					}
@@ -498,9 +522,9 @@ class ReponseWSParser
 					{
 						//c'est pas un separateur mais une colonne liste
 						$ValeurColonne = array();
-						foreach($ndColonne->children() as $ndValeur)
+						foreach ($ndColonne->children() as $ndValeur)
 						{
-							$ValeurColonne[]=(string)$ndValeur;
+							$ValeurColonne[] = (string) $ndValeur;
 						}
 					}
 					else
@@ -512,7 +536,7 @@ class ReponseWSParser
 			}
 			else
 			{
-				$ValeurColonne = (string)$ndColonne;
+				$ValeurColonne = (string) $ndColonne;
 			}
 
 			$this->m_MapIDTableau2IDEnreg2Record[$sIDTableau][$sIDEnreg]
@@ -536,13 +560,15 @@ class ReponseWSParser
 			<count>24</count>
 		</col>
 		*/
-		foreach($clXML->children() as $ndCol)
+		foreach ($clXML->children() as $ndCol)
 		{
-			$clCalculation = new Calculation((string)$ndCol->attributes('http://www.nout.fr/XML/')['id']);
-			foreach($ndCol->children() as $ndCalcul)
-				$clCalculation->AddCacul((string)$ndCalcul->getName(), (string)$ndCalcul);
+			$clCalculation = new Calculation((string) $ndCol->attributes('http://www.nout.fr/XML/')['id']);
+			foreach ($ndCol->children() as $ndCalcul)
+			{
+				$clCalculation->AddCacul((string) $ndCalcul->getName(), (string) $ndCalcul);
+			}
 
-			$this->m_MapColonne2Calcul[$clCalculation->getIDColonne()]=$clCalculation;
+			$this->m_MapColonne2Calcul[$clCalculation->getIDColonne()] = $clCalculation;
 		}
 	}
 
@@ -564,21 +590,21 @@ class ReponseWSParser
 	 */
 	protected function _GetTabParseXSD_TypeEvent2Color(\SimpleXMLElement $clSchema)
 	{
-
 		$ndLayout = $clSchema->element
 			->children('http://www.nout.fr/XMLSchema')->layout;
 
 
-		$MapTypeEvent2ColorRGB=array();
+		$MapTypeEvent2ColorRGB = array();
 
-		foreach($ndLayout->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+		foreach ($ndLayout->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
 		{
-			if (strcmp($ndFils->getName(), 'element')==0)
+			if (strcmp($ndFils->getName(), 'element') == 0)
 			{
-				$TabAttributes = $ndFils->attributes('http://www.nout.fr/XMLSchema');
-				$MapTypeEvent2ColorRGB[(string)$TabAttributes['typeOfEvent']]=(string)$TabAttributes['colorRGB'];
+				$TabAttributes                                                 = $ndFils->attributes('http://www.nout.fr/XMLSchema');
+				$MapTypeEvent2ColorRGB[(string) $TabAttributes['typeOfEvent']] = (string) $TabAttributes['colorRGB'];
 			}
 		}
+
 		return $MapTypeEvent2ColorRGB;
 	}
 
@@ -587,30 +613,30 @@ class ReponseWSParser
 	{
 		$ndChart = $ndXML->chart;
 
-		$this->m_clChart->m_sTitre = (string)$ndChart->title;
-		$this->m_clChart->m_sType = (string)$ndChart->chartType;
+		$this->m_clChart->m_sTitre = (string) $ndChart->title;
+		$this->m_clChart->m_sType  = (string) $ndChart->chartType;
 
-		foreach($ndChart->axes->axis as $ndAxis)
+		foreach ($ndChart->axes->axis as $ndAxis)
 		{
-			$TabAttributes = $ndAxis->attributes('http://www.nout.fr/XML/');
-			$sID = (string)$TabAttributes['id'];
-			$bCalculation = isset($TabAttributes['isCalculation']) ? ((int)$TabAttributes['isCalculation'] != 0) : false;
-			$this->m_clChart->m_TabAxes[$sID]=new ChartAxis($sID, (string)$TabAttributes['label'], $bCalculation);
+			$TabAttributes                    = $ndAxis->attributes('http://www.nout.fr/XML/');
+			$sID                              = (string) $TabAttributes['id'];
+			$bCalculation                     = isset($TabAttributes['isCalculation']) ? ((int) $TabAttributes['isCalculation'] != 0) : false;
+			$this->m_clChart->m_TabAxes[$sID] = new ChartAxis($sID, (string) $TabAttributes['label'], $bCalculation);
 		}
 
-		foreach($ndChart->serie->tuple as $ndTuple)
+		foreach ($ndChart->serie->tuple as $ndTuple)
 		{
 			$clTuple = new ChartTuple();
-			foreach($ndTuple->children() as $ndFils)
+			foreach ($ndTuple->children() as $ndFils)
 			{
 				$sTagName = $ndFils->getName();
-				if (strncmp($sTagName, 'id_', strlen('id_'))==0)
+				if (strncmp($sTagName, 'id_', strlen('id_')) == 0)
 				{
 					$sID = str_replace('id_', '', $sTagName);
-					$clTuple->Add($sID, (string)$ndFils->data, (string)$ndFils->displayValue);
+					$clTuple->Add($sID, (string) $ndFils->data, (string) $ndFils->displayValue);
 				}
 			}
-			$this->m_clChart->m_TabSeries[]=$clTuple;
+			$this->m_clChart->m_TabSeries[] = $clTuple;
 		}
 	}
 
@@ -622,11 +648,11 @@ class ReponseWSParser
 	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS)
 	{
 		$sReturnType = $clXMLReponseWS->sGetReturnType();
-		$ndXML = $clXMLReponseWS->getNodeXML();
-		$ndSchema = $clXMLReponseWS->getNodeSchema();
+		$ndXML       = $clXMLReponseWS->getNodeXML();
+		$ndSchema    = $clXMLReponseWS->getNodeSchema();
 
 		//on commence par les schemas
-		if (    ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD)
+		if (($sReturnType == XMLResponseWS::RETURNTYPE_RECORD)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_LIST)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_PRINTTEMPLATE))
@@ -634,7 +660,7 @@ class ReponseWSParser
 			if (isset($ndSchema))
 			{
 				$this->m_MapIDTableau2Niv2StructureElement = array();
-				$nNiveau = ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD) ? StructureElement::NV_XSD_Enreg : StructureElement::NV_XSD_List;
+				$nNiveau                                   = ($sReturnType == XMLResponseWS::RETURNTYPE_RECORD) ? StructureElement::NV_XSD_Enreg : StructureElement::NV_XSD_List;
 				$this->_ParseXSD($nNiveau, $ndSchema);
 			}
 
@@ -643,14 +669,15 @@ class ReponseWSParser
 			$this->m_TabEnregTableau->RemoveAll();
 			$this->_ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID());
 
-			return ;
+			return;
 		}
 
 		if ($sReturnType == XMLResponseWS::RETURNTYPE_LISTCALCULATION)
 		{
 			//on a un retour de GetCalculation
 			$this->_ParseListCaculation($ndXML);
-			return ;
+
+			return;
 		}
 
 		if ($sReturnType == XMLResponseWS::RETURNTYPE_REPORT)
@@ -659,31 +686,32 @@ class ReponseWSParser
 			$this->m_MapIDTableau2IDEnreg2Record = array();
 			$this->m_TabEnregTableau->RemoveAll();
 			$this->_ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID());
-			return ;
+
+			return;
 		}
 
 		if ($sReturnType == XMLResponseWS::RETURNTYPE_PLANNING)
 		{
-			$this->m_TabEventPlanning=array();
-			$MapTypeElement2Color = $this->_GetTabParseXSD_TypeEvent2Color($ndSchema);
+			$this->m_TabEventPlanning = array();
+			$MapTypeElement2Color     = $this->_GetTabParseXSD_TypeEvent2Color($ndSchema);
 
 			$this->_ParseXML($ndXML, null);
 
 			//on met à jour les couleurs
-			foreach($this->m_TabEventPlanning as $clEvent)
-				$clEvent->m_sColorRGB=$MapTypeElement2Color[$clEvent->m_nTypeOfEvent];
+			foreach ($this->m_TabEventPlanning as $clEvent)
+			{
+				$clEvent->m_sColorRGB = $MapTypeElement2Color[$clEvent->m_nTypeOfEvent];
+			}
 
-			return ;
+			return;
 		}
 
 		if ($sReturnType == XMLResponseWS::RETURNTYPE_CHART)
 		{
 			$this->m_clChart = new Chart();
 			$this->_ParseChart($ndXML);
-			return ;
+
+			return;
 		}
 	}
-
-
-
 }

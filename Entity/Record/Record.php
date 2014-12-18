@@ -8,10 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
-
-
-
 /**
  * Class Record
  * @package NOUT\Bundle\NOUTOnlineBundle\Entity
@@ -77,14 +73,14 @@ class Record
 	 */
 	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, StructureElement $clStruct = null)
 	{
-		$this->m_nIDTableau  = $sIDTableau;
-		$this->m_nIDEnreg    = $sIDEnreg;
-		$this->m_sTitle      = $sLibelle;
+		$this->m_nIDTableau   = $sIDTableau;
+		$this->m_nIDEnreg     = $sIDEnreg;
+		$this->m_sTitle       = $sLibelle;
 		$this->m_clStructElem = $clStruct;
 
-		$this->m_TabColumnsInfo    = array();
+		$this->m_TabColumnsInfo     = array();
 		$this->m_TabColumnsModified = array();
-		$this->m_TabColumnsValues  = array();
+		$this->m_TabColumnsValues   = array();
 	}
 
 	/**
@@ -136,7 +132,7 @@ class Record
 	 */
 	public function setValCol($idcolonne, $value, $modifiedByUser = true)
 	{
-		$this->m_TabColumnsValues[$idcolonne]  = $value;
+		$this->m_TabColumnsValues[$idcolonne]   = $value;
 		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser;
 
 		return $this;

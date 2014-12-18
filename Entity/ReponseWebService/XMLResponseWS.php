@@ -26,24 +26,28 @@ class XMLResponseWS
 	public function __construct($sXML)
 	{
 		$this->m_sXML = $sXML;
-		$clEnvelope = simplexml_load_string($sXML);
+		$clEnvelope   = simplexml_load_string($sXML);
 
 		//calcul du nom du namespace de l'enveloppe
-		$sNomNSSoap='';
-		$tabNamespace = $clEnvelope->getNamespaces();
+		$sNomNSSoap      = '';
+		$tabNamespace    = $clEnvelope->getNamespaces();
 		$tabNomNamespace = array_keys($tabNamespace, 'http://www.w3.org/2003/05/soap-envelope');
 		if (count($tabNomNamespace)>0)
+		{
 			$this->m_sNamespaceSOAP = $tabNomNamespace[0];
+		}
 		else
 		{
 			$tabNomNamespace = array_keys($tabNamespace, 'http://schemas.xmlsoap.org/soap/envelope/');
 			if (count($tabNomNamespace)>0)
+			{
 				$this->m_sNamespaceSOAP = $tabNomNamespace[0];
+			}
 		}
 
 		//on trouve le noeud header et le noeud body
 		$this->m_ndHeader = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Header;
-		$this->m_ndBody = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Body;
+		$this->m_ndBody   = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Body;
 
 		//on parse les erreurs si c'en est une
 		$this->m_TabError = null;
@@ -55,7 +59,7 @@ class XMLResponseWS
 			$ndListErr = $ndFault->children($this->m_sNamespaceSOAP, true)->Detail->children()->ListErr;
 
 			//on recherche le namespace pour les erreurs SIMAX http://www.nout.fr/soap/error
-			foreach($ndListErr->children('http://www.nout.fr/soap/error') as $ndError)
+			foreach ($ndListErr->children('http://www.nout.fr/soap/error') as $ndError)
 			{
 				$clError = new OnlineError($ndError->children()->Code['Name'],
 					$ndError->children()->Code->Numero,
@@ -63,13 +67,13 @@ class XMLResponseWS
 					$ndError->children()->Message
 				);
 
-				foreach($ndError->children()->Parameter as $ndParam)
+				foreach ($ndError->children()->Parameter as $ndParam)
 				{
 					$clParam = new OnlineErrorParameter($ndParam['IDParam'], $ndParam['TitleParam'], $ndParam['TitleElem']);
 					$clError->AddParameter($clParam);
 				}
 
-				$this->m_TabError[]=$clError;
+				$this->m_TabError[] = $clError;
 			}
 		}
 	}
@@ -96,7 +100,9 @@ class XMLResponseWS
 	public function getTabError()
 	{
 		if (!isset($this->m_TabError))
+		{
 			return false;
+		}
 
 		return $this->m_TabError;
 	}
@@ -107,7 +113,9 @@ class XMLResponseWS
 	public function getNumError()
 	{
 		if (!isset($this->m_TabError))
+		{
 			return 0;
+		}
 
 		return $this->m_TabError[0]->getErreur();
 	}
@@ -118,7 +126,9 @@ class XMLResponseWS
 	public function getCatError()
 	{
 		if (!isset($this->m_TabError))
+		{
 			return 0;
+		}
 
 		return $this->m_TabError[0]->getCategorie();
 	}
@@ -129,7 +139,9 @@ class XMLResponseWS
 	public function getMessError()
 	{
 		if (!isset($this->m_TabError))
+		{
 			return '';
+		}
 
 		return $this->m_TabError[0]->getMessage();
 	}
@@ -140,7 +152,7 @@ class XMLResponseWS
 	 */
 	public function sGetReturnType()
 	{
-		return (string)$this->m_ndHeader->children()->ReturnType;
+		return (string) $this->m_ndHeader->children()->ReturnType;
 	}
 
 	/**
@@ -149,7 +161,7 @@ class XMLResponseWS
 	 */
 	public function sGetActionContext()
 	{
-		return (string)$this->m_ndHeader->children()->ActionContext;
+		return (string) $this->m_ndHeader->children()->ActionContext;
 	}
 
 	/**
@@ -166,6 +178,7 @@ class XMLResponseWS
 	public function clGetAction()
 	{
 		$clAction = $this->m_ndHeader->children()->Action;
+
 		return new CurrentAction($clAction, $clAction['title'], $clAction['typeAction']);
 	}
 
@@ -175,6 +188,7 @@ class XMLResponseWS
 	public function clGetConnectedUser()
 	{
 		$clConnectedUser = $this->m_ndHeader->children()->ConnectedUser;
+
 		return new ConnectedUser(
 			$clConnectedUser->children()->Element,
 			$clConnectedUser->children()->Element['title'],
@@ -192,13 +206,18 @@ class XMLResponseWS
 		$clForm = new Form($ndForm, $ndForm['title']);
 
 		if (isset($ndForm['withBtnOrderPossible']))
-			$clForm->m_bWithBtnOrderPossible=true;
+		{
+			$clForm->m_bWithBtnOrderPossible = true;
+		}
 
-		for ($n=1 ; $n<=3 ; $n++)
+		for ($n = 1; $n <= 3; $n++)
 		{
 			if (isset($ndForm['sort'.$n]))
-				$clForm->m_TabSort[]=new ListSort($ndForm['sort'.$n], isset($ndForm['sort'.$n.'asc']) ? $ndForm['sort'.$n.'asc'] : 1 );
+			{
+				$clForm->m_TabSort[] = new ListSort($ndForm['sort'.$n], isset($ndForm['sort'.$n.'asc']) ? $ndForm['sort'.$n.'asc'] : 1);
+			}
 		}
+
 		return $clForm;
 	}
 
@@ -209,9 +228,11 @@ class XMLResponseWS
 	{
 		$clElem = $this->m_ndHeader->children()->Element;
 		if (isset($clElem))
+		{
 			return new Element($clElem, $clElem['title']);
+		}
 
-		return null;
+		return;
 	}
 
 	/**
@@ -221,13 +242,15 @@ class XMLResponseWS
 	{
 		$ndCount = $this->m_ndHeader->children()->Count;
 		if (!isset($ndCount))
-			return null;
+		{
+			return;
+		}
 
-		$clCount = new Count();
-		$clCount->m_nNbCaculation = (int)$ndCount->children()->NbCalculation;
-		$clCount->m_nNbLine = (int)$ndCount->children()->NbLine;
-		$clCount->m_nNbFiltered = (int)$ndCount->children()->NbFiltered;
-		$clCount->m_nNbTotal = (int)$ndCount->children()->NbTotal;
+		$clCount                  = new Count();
+		$clCount->m_nNbCaculation = (int) $ndCount->children()->NbCalculation;
+		$clCount->m_nNbLine       = (int) $ndCount->children()->NbLine;
+		$clCount->m_nNbFiltered   = (int) $ndCount->children()->NbFiltered;
+		$clCount->m_nNbTotal      = (int) $ndCount->children()->NbTotal;
 
 		return $clCount;
 	}
@@ -239,9 +262,11 @@ class XMLResponseWS
 	{
 		$ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
 		if (!isset($ndPossibleDM))
-			return null;
+		{
+			return;
+		}
 
-		return explode('|', (string)$ndPossibleDM);
+		return explode('|', (string) $ndPossibleDM);
 	}
 
 	/**
@@ -251,9 +276,11 @@ class XMLResponseWS
 	{
 		$ndDefaultDM = $this->m_ndHeader->children()->DefaultDisplayMode;
 		if (!isset($ndDefaultDM))
-			return null;
+		{
+			return;
+		}
 
-		return (string)$ndDefaultDM;
+		return (string) $ndDefaultDM;
 	}
 
 
@@ -276,18 +303,22 @@ class XMLResponseWS
 	{
 		$clNodeResponse = $this->_clGetNodeResponse();
 		if (isset($clNodeResponse))
+		{
 			return $clNodeResponse->xml;
+		}
 
-		return null;
+		return;
 	}
 
 	public function getValue()
 	{
 		$clNodeResponse = $this->_clGetNodeResponse();
 		if (isset($clNodeResponse))
-			return (string)$clNodeResponse->Value;
+		{
+			return (string) $clNodeResponse->Value;
+		}
 
-		return null;
+		return;
 	}
 
 	/**
@@ -297,7 +328,9 @@ class XMLResponseWS
 	{
 		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
 		if (empty($clXSDSchema))
-			return null;
+		{
+			return;
+		}
 
 		//le noeud XSDSchema n'a qu'un fils
 		return $clXSDSchema->children('http://www.w3.org/2001/XMLSchema', false)->schema;
@@ -311,7 +344,9 @@ class XMLResponseWS
 	{
 		$clNodeResponse = $this->_clGetNodeResponse('GetTokenSession');
 		if (isset($clNodeResponse))
-			return (string)$clNodeResponse->SessionToken;
+		{
+			return (string) $clNodeResponse->SessionToken;
+		}
 
 		return '';
 	}
@@ -323,9 +358,11 @@ class XMLResponseWS
 	{
 		$ndXML = $this->getNodeXML();
 		if (!isset($ndXML))
+		{
 			return 0;
+		}
 
-		return (int)$ndXML->numberOfChart;
+		return (int) $ndXML->numberOfChart;
 	}
 
 	/**
@@ -336,7 +373,9 @@ class XMLResponseWS
 	{
 		$ndXML = $this->getNodeXML();
 		if (!isset($ndXML))
+		{
 			return array();
+		}
 /*
 		<xml>
 			<LanguageCode>12</LanguageCode>
@@ -347,7 +386,7 @@ class XMLResponseWS
 		$TabLanguages = array();
 		foreach ($ndXML->LanguageCode as $ndLanguageCode)
 		{
-			$TabLanguages[]=(int)$ndLanguageCode;
+			$TabLanguages[] = (int) $ndLanguageCode;
 		}
 
 		return $TabLanguages;
@@ -389,5 +428,4 @@ class XMLResponseWS
 	const RETURNTYPE_MAILSERVICELIST        = 'MailServiceList';
 	const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
 	const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
-
 }
