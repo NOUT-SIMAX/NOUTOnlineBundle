@@ -8,10 +8,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
 class ColonneRestriction
 {
-
 	/**
 	 * @var string
 	 */
@@ -23,8 +21,8 @@ class ColonneRestriction
 
 	public function __construct()
 	{
-		$this->m_sTypeRestriction='';
-		$this->m_ValeurRestriction='';
+		$this->m_sTypeRestriction  = '';
+		$this->m_ValeurRestriction = '';
 	}
 
 	/**
@@ -34,6 +32,7 @@ class ColonneRestriction
 	public function setValeurRestriction($ValeurRestriction)
 	{
 		$this->m_ValeurRestriction = $ValeurRestriction;
+
 		return $this;
 	}
 
@@ -44,7 +43,8 @@ class ColonneRestriction
 	 */
 	public function addValeurRestriction($key, $value)
 	{
-		$this->m_ValeurRestriction[$key]=$value;
+		$this->m_ValeurRestriction[$key] = $value;
+
 		return $this;
 	}
 
@@ -64,6 +64,7 @@ class ColonneRestriction
 	public function setTypeRestriction($sTypeRestriction)
 	{
 		$this->m_sTypeRestriction = $sTypeRestriction;
+
 		return $this;
 	}
 
@@ -75,6 +76,6 @@ class ColonneRestriction
 		return $this->m_sTypeRestriction;
 	}
 
-	const R_MAXLENGTH = 'maxLength';
+	const R_MAXLENGTH   = 'maxLength';
 	const R_ENUMERATION = 'enumeration';
-} 
+}

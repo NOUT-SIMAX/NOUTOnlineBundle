@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
 class EnregTableauArray implements \Iterator
 {
 	/**
@@ -20,7 +19,7 @@ class EnregTableauArray implements \Iterator
 
 	public function __construct()
 	{
-		$this->_key=0;
+		$this->_key  = 0;
 		$this->m_Tab = array();
 	}
 
@@ -63,15 +62,19 @@ class EnregTableauArray implements \Iterator
 	 * @param bool $bMemeTaille
 	 * @return array
 	 */
-	public function GetTabIDEnreg($nIDTableau=null, $bMemeTaille=false)
+	public function GetTabIDEnreg($nIDTableau = null, $bMemeTaille = false)
 	{
 		$aRet = array();
-		foreach($this->m_Tab as $clEnreg)
+		foreach ($this->m_Tab as $clEnreg)
 		{
 			if (($clEnreg->m_nIDTableau == $nIDTableau) || empty($nIDTableau))
-				$aRet[]=$clEnreg->m_nIDEnreg;
-			else if ($bMemeTaille)
-				$aRet[]=null;
+			{
+				$aRet[] = $clEnreg->m_nIDEnreg;
+			}
+			elseif ($bMemeTaille)
+			{
+				$aRet[] = null;
+			}
 		}
 
 		return $aRet;
@@ -83,8 +86,10 @@ class EnregTableauArray implements \Iterator
 	public function GetTabIDTableau()
 	{
 		$aRet = array();
-		foreach($this->m_Tab as $clEnregTab)
-			$aRet[]=$clEnregTab->m_nIDTableau;
+		foreach ($this->m_Tab as $clEnregTab)
+		{
+			$aRet[] = $clEnregTab->m_nIDTableau;
+		}
 
 		return $aRet;
 	}
@@ -94,13 +99,19 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function bEstIDTableauUnique()
 	{
-		if (count($this->m_Tab)==0)
+		if (count($this->m_Tab) == 0)
+		{
 			return false;
+		}
 
-		$nIDPrec=$this->m_Tab[0]->m_nIDTableau;
-		foreach($this->m_Tab as $clEnregTab)
+		$nIDPrec = $this->m_Tab[0]->m_nIDTableau;
+		foreach ($this->m_Tab as $clEnregTab)
+		{
 			if ($clEnregTab->m_nIDTableau != $nIDPrec)
+			{
 				return false;
+			}
+		}
 
 		return true;
 	}
@@ -111,11 +122,15 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function nGetIDTableauEnreg($nIDEnreg)
 	{
-		foreach($this->m_Tab as $clEnregTab)
+		foreach ($this->m_Tab as $clEnregTab)
+		{
 			if ($clEnregTab->m_nIDEnreg == $nIDEnreg)
+			{
 				return $clEnregTab->m_nIDTableau;
+			}
+		}
 
-		return null;
+		return;
 	}
 
 	/**
@@ -125,9 +140,11 @@ class EnregTableauArray implements \Iterator
 	public function nGetIDTableau($nIndice)
 	{
 		if (isset($this->m_Tab[$nIndice]))
+		{
 			return $this->m_Tab[$nIndice]->m_nIDTableau;
+		}
 
-		return null;
+		return;
 	}
 
 	/**
@@ -137,9 +154,11 @@ class EnregTableauArray implements \Iterator
 	public function nGetIDEnreg($nIndice)
 	{
 		if (isset($this->m_Tab[$nIndice]))
+		{
 			return $this->m_Tab[$nIndice]->m_nIDEnreg;
+		}
 
-		return null;
+		return;
 	}
 
 	/**
@@ -155,7 +174,7 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function IsEmpty()
 	{
-		return count($this->m_Tab)==0;
+		return count($this->m_Tab) == 0;
 	}
 
 	/**
@@ -163,8 +182,9 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function RemoveAll()
 	{
-		$this->m_Tab=array();
+		$this->m_Tab = array();
 		$this->rewind();
+
 		return $this;
 	}
 
@@ -175,7 +195,8 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function Add($nIDTableau, $nIDEnreg)
 	{
-		$this->m_Tab[]=new EnregTableau($nIDTableau, $nIDEnreg);
+		$this->m_Tab[] = new EnregTableau($nIDTableau, $nIDEnreg);
+
 		return $this;
 	}
 
@@ -187,9 +208,13 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function AddNouveau($nIDTableau, $nIDEnreg)
 	{
-		foreach($this->m_Tab as $clEnregTab)
+		foreach ($this->m_Tab as $clEnregTab)
+		{
 			if ($clEnregTab->m_nIDEnreg == $nIDEnreg)
+			{
 				return $this;
+			}
+		}
 
 		return $this->Add($nIDTableau, $nIDEnreg);
 	}
@@ -203,8 +228,10 @@ class EnregTableauArray implements \Iterator
 	{
 		$TabIDEnreg = explode('|', $sStr);
 
-		foreach($TabIDEnreg as $nIDEnreg)
+		foreach ($TabIDEnreg as $nIDEnreg)
+		{
 			$this->Add($nIDTableau, $nIDEnreg);
+		}
 
 		return $this;
 	}
@@ -214,14 +241,18 @@ class EnregTableauArray implements \Iterator
 	 * @param null $nIDTableau
 	 * @return $this
 	 */
-	public function Append($TabSrc, $nIDTableau=null)
+	public function Append($TabSrc, $nIDTableau = null)
 	{
 		if ($TabSrc instanceof EnregTableauArray)
+		{
 			$this->m_Tab = array_merge($this->m_Tab, $TabSrc->m_Tab);
-		else if (is_array($TabSrc))
+		}
+		elseif (is_array($TabSrc))
 		{
-			foreach($TabSrc as $nIDEnreg)
+			foreach ($TabSrc as $nIDEnreg)
+			{
 				$this->Add($nIDTableau, $nIDEnreg);
+			}
 		}
 
 		return $this;
@@ -232,17 +263,21 @@ class EnregTableauArray implements \Iterator
 	 * @param null $nIDTableau
 	 * @return $this
 	 */
-	public function AppendNouveauIDAuto($TabSrc, $nIDTableau=null)
+	public function AppendNouveauIDAuto($TabSrc, $nIDTableau = null)
 	{
 		if ($TabSrc instanceof EnregTableauArray)
 		{
-			foreach($TabSrc as $clEnreg)
+			foreach ($TabSrc as $clEnreg)
+			{
 				$this->AddNouveau($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
+			}
 		}
-		else if (is_array($TabSrc))
+		elseif (is_array($TabSrc))
 		{
-			foreach($TabSrc as $nIDEnreg)
+			foreach ($TabSrc as $nIDEnreg)
+			{
 				$this->AddNouveau($nIDTableau, $nIDEnreg);
+			}
 		}
 
 		return $this;
@@ -257,8 +292,10 @@ class EnregTableauArray implements \Iterator
 		$Temp = $this->m_Tab;
 		$this->RemoveAll();
 
-		foreach($Temp as $clEnreg)
+		foreach ($Temp as $clEnreg)
+		{
 			$this->AddNouveau($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
+		}
 
 		return $this;
 	}
@@ -269,13 +306,15 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function nGetIndice($nIDEnreg)
 	{
-		foreach($this->m_Tab as $key=>$clEnreg)
+		foreach ($this->m_Tab as $key => $clEnreg)
 		{
 			if ($clEnreg->m_nIDEnreg == $nIDEnreg)
+			{
 				return $key;
+			}
 		}
 
-		return null;
+		return;
 	}
 
 	/**
@@ -283,7 +322,7 @@ class EnregTableauArray implements \Iterator
 	 * @param $nIDEnreg
 	 * @return bool
 	 */
-	public  function bEstDansTableau($nIDEnreg)
+	public function bEstDansTableau($nIDEnreg)
 	{
 		return !is_null($this->nGetIndice($nIDEnreg));
 	}
@@ -297,11 +336,13 @@ class EnregTableauArray implements \Iterator
 		$Temp = $this->m_Tab;
 		$this->RemoveAll();
 
-		foreach($Temp as $clEnreg)
+		foreach ($Temp as $clEnreg)
 		{
-			if (    (($TabIDauto instanceof EnregTableauArray) && $TabIDauto->bEstDansTableau($clEnreg->m_nIDEnreg))
+			if ((($TabIDauto instanceof EnregTableauArray) && $TabIDauto->bEstDansTableau($clEnreg->m_nIDEnreg))
 				||  (is_array($TabIDauto) && array_search($clEnreg->m_nIDEnreg, $this->m_Tab)))
+			{
 				$this->Add($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
+			}
 		}
 
 		return $this;
@@ -316,11 +357,13 @@ class EnregTableauArray implements \Iterator
 		$Temp = $this->m_Tab;
 		$this->RemoveAll();
 
-		foreach($Temp as $clEnreg)
+		foreach ($Temp as $clEnreg)
 		{
-			if (    (($TabIDauto instanceof EnregTableauArray) && $TabIDauto->bEstDansTableau($clEnreg->m_nIDEnreg))
+			if ((($TabIDauto instanceof EnregTableauArray) && $TabIDauto->bEstDansTableau($clEnreg->m_nIDEnreg))
 				||  (is_array($TabIDauto) && array_search($clEnreg->m_nIDEnreg, $this->m_Tab)))
+			{
 				continue;
+			}
 
 			$this->Add($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
 		}
@@ -335,11 +378,14 @@ class EnregTableauArray implements \Iterator
 	public function nGetOccurrence($nIDEnreg)
 	{
 		$nNb = 0;
-		foreach($this->m_Tab as $clEnreg)
+		foreach ($this->m_Tab as $clEnreg)
 		{
 			if ($clEnreg->m_nIDEnreg == $nIDEnreg)
+			{
 				$nNb++;
+			}
 		}
+
 		return $nNb;
 	}
 
@@ -352,10 +398,12 @@ class EnregTableauArray implements \Iterator
 		$Temp = $this->m_Tab;
 		$this->RemoveAll();
 
-		foreach($Temp as $clEnreg)
+		foreach ($Temp as $clEnreg)
 		{
 			if ($clEnreg->m_nIDTableau != $nIDTableau)
+			{
 				$this->Add($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
+			}
 		}
 
 		return $this;
@@ -368,11 +416,12 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function ReplaceTableau($nIDTableauARemplacer, $nIDTableau)
 	{
-
-		foreach($this->m_Tab as $clEnreg)
+		foreach ($this->m_Tab as $clEnreg)
 		{
 			if ($clEnreg->m_nIDTableau == $nIDTableauARemplacer)
+			{
 				$clEnreg->m_nIDTableau = $nIDTableau;
+			}
 		}
 
 		return $this;
@@ -387,10 +436,12 @@ class EnregTableauArray implements \Iterator
 		$Temp = $this->m_Tab;
 		$this->RemoveAll();
 
-		foreach($Temp as $clEnreg)
+		foreach ($Temp as $clEnreg)
 		{
 			if ($clEnreg->m_nIDEnreg != $nIDEnreg)
+			{
 				$this->Add($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
+			}
 		}
 
 		return $this;
@@ -405,10 +456,12 @@ class EnregTableauArray implements \Iterator
 		$Temp = $this->m_Tab;
 		$this->RemoveAll();
 
-		foreach($Temp as $i=>$clEnreg)
+		foreach ($Temp as $i => $clEnreg)
 		{
 			if ($i != $nIndice)
+			{
 				$this->Add($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
+			}
 		}
 
 		return $this;
@@ -425,10 +478,12 @@ class EnregTableauArray implements \Iterator
 		$Temp = $this->m_Tab;
 		$this->RemoveAll();
 
-		foreach($Temp as $i=>$clEnreg)
+		foreach ($Temp as $i => $clEnreg)
 		{
 			if ($i != $nIndice)
+			{
 				$this->Add($clEnreg->m_nIDTableau, $clEnreg->m_nIDEnreg);
+			}
 			else
 			{
 				$this->Add($nIDTableau, $nIDEnreg);
@@ -456,7 +511,8 @@ class EnregTableauArray implements \Iterator
 	 */
 	public function SetAt($nIndice, $nIDTableau, $nIDEnreg)
 	{
-		$this->m_Tab[$nIndice]=new EnregTableau($nIDTableau, $nIDEnreg);
+		$this->m_Tab[$nIndice] = new EnregTableau($nIDTableau, $nIDEnreg);
+
 		return $this;
 	}
 
@@ -467,6 +523,7 @@ class EnregTableauArray implements \Iterator
 	public function Resize($nNewSize)
 	{
 		$this->m_Tab = array_slice($this->m_Tab, 0, $nNewSize);
+
 		return $this;
 	}
 }

@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
 class InfoColonne
 {
 	protected $m_nIDColonne;
@@ -27,37 +26,36 @@ class InfoColonne
 
 	public function __construct($sIDColonne, $TabAttrib, $tabAttribLayout)
 	{
-		$this->m_nIDColonne=$sIDColonne;
+		$this->m_nIDColonne = $sIDColonne;
 
-		$this->m_bBold=0;
-		$this->m_bItalic=0;
-		$this->m_Color=null;
-		$this->m_BackgroundColor=null;
+		$this->m_bBold           = 0;
+		$this->m_bItalic         = 0;
+		$this->m_Color           = null;
+		$this->m_BackgroundColor = null;
 
-		$this->m_bHidden=0;
-		$this->m_bDisabled=0;
-		$this->m_bReadOnly=0;
+		$this->m_bHidden   = 0;
+		$this->m_bDisabled = 0;
+		$this->m_bReadOnly = 0;
 
 		$this->InitInfoColonne($TabAttrib);
 		$this->InitInfoColonne($tabAttribLayout);
-
 	}
 
 	public function InitInfoColonne($TabAttrib)
 	{
-		foreach($TabAttrib as $sName=>$ndAttrib)
+		foreach ($TabAttrib as $sName => $ndAttrib)
 		{
-			switch($sName)
+			switch ($sName)
 			{
-				case 'bold':
-					$this->m_bBold = (int)$ndAttrib;
-					break;
-				case 'italic':
-					$this->m_bItalic = (int)$ndAttrib;
-					break;
-				case 'hidden':
-					$this->m_bHidden = (int)$ndAttrib;
-					break;
+			case 'bold':
+				$this->m_bBold = (int) $ndAttrib;
+				break;
+			case 'italic':
+				$this->m_bItalic = (int) $ndAttrib;
+				break;
+			case 'hidden':
+				$this->m_bHidden = (int) $ndAttrib;
+				break;
 			}
 		}
 	}
@@ -125,6 +123,4 @@ class InfoColonne
 	{
 		return $this->m_nIDColonne;
 	}
-
-
-} 
+}

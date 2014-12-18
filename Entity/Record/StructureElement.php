@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
 class StructureElement
 {
 	/**
@@ -38,10 +37,10 @@ class StructureElement
 
 	public function __construct($sID, $sLibelle, $nNiv)
 	{
-		$this->m_nID = $sID;
-		$this->m_sLibelle = $sLibelle;
-		$this->m_nNiveau = $nNiv;
-		$this->m_TabStructureColonne = array();
+		$this->m_nID                        = $sID;
+		$this->m_sLibelle                   = $sLibelle;
+		$this->m_nNiveau                    = $nNiv;
+		$this->m_TabStructureColonne        = array();
 		$this->m_MapIDColonne2StructColonne = array();
 	}
 
@@ -49,7 +48,9 @@ class StructureElement
 	public function getTypeElement($sIDColonne)
 	{
 		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
-			return null;
+		{
+			return;
+		}
 
 		return $this->m_MapIDColonne2StructColonne[$sIDColonne]->getTypeElement();
 	}
@@ -61,7 +62,9 @@ class StructureElement
 	public function setTypeElement($sIDColonne, $eTypeElement)
 	{
 		if (isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+		{
 			$this->m_MapIDColonne2StructColonne[$sIDColonne]->setTypeElement($eTypeElement);
+		}
 	}
 
 	/**
@@ -71,21 +74,28 @@ class StructureElement
 	public function setRestriction($sIDColonne, ColonneRestriction $clRestriction)
 	{
 		if (isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+		{
 			$this->m_MapIDColonne2StructColonne[$sIDColonne]->setRestriction($clRestriction);
+		}
 	}
 
 	public function setStructureColonne(StructureColonne $clStructColonne)
 	{
-		$this->m_MapIDColonne2StructColonne[$clStructColonne->getIDColonne()]=$clStructColonne;
+		$this->m_MapIDColonne2StructColonne[$clStructColonne->getIDColonne()] = $clStructColonne;
+
 		return $this;
 	}
 
-	public function addColonne2TabStruct($sIDColonne, $sIDColPere, StructureColonne $clStruct=null)
+	public function addColonne2TabStruct($sIDColonne, $sIDColPere, StructureColonne $clStruct = null)
 	{
 		if (!isset($sIDColPere))
+		{
 			$this->m_TabStructureColonne[] = isset($clStruct) ? $clStruct : $this->m_MapIDColonne2StructColonne[$sIDColonne];
+		}
 		else
+		{
 			$this->m_MapIDColonne2StructColonne[$sIDColPere]->addColonne2TabStruct($sIDColonne, null, $this->m_MapIDColonne2StructColonne[$sIDColonne]);
+		}
 	}
 
 
@@ -128,4 +138,4 @@ class StructureElement
 	const NV_XSD_Enreg                  = 0;
 	const NV_XSD_List                   = 1;
 	const NV_XSD_LienElement            = 2;
-} 
+}

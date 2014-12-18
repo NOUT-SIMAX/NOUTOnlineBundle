@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
 class EnregTableau
 {
 	/**
@@ -21,10 +20,10 @@ class EnregTableau
 	 */
 	public $m_nIDTableau;
 
-	public function __construct($nIDTableau='', $nIDEnreg='')
+	public function __construct($nIDTableau = '', $nIDEnreg = '')
 	{
-		$this->m_nIDEnreg = (string)$nIDEnreg;
-		$this->m_nIDTableau = (string)$nIDTableau;
+		$this->m_nIDEnreg   = (string) $nIDEnreg;
+		$this->m_nIDTableau = (string) $nIDTableau;
 	}
 
 	/**
@@ -32,7 +31,8 @@ class EnregTableau
 	 */
 	public function setIDEnreg($nIDEnreg)
 	{
-		$this->m_nIDEnreg = (string)$nIDEnreg;
+		$this->m_nIDEnreg = (string) $nIDEnreg;
+
 		return $this;
 	}
 
@@ -49,7 +49,8 @@ class EnregTableau
 	 */
 	public function setIDTableau($nIDTableau)
 	{
-		$this->m_nIDTableau = (string)$nIDTableau;
+		$this->m_nIDTableau = (string) $nIDTableau;
+
 		return $this;
 	}
 
@@ -60,6 +61,4 @@ class EnregTableau
 	{
 		return $this->m_nIDTableau;
 	}
-
-
-} 
+}

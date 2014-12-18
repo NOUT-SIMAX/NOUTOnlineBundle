@@ -8,12 +8,10 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\REST;
 
-
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 
 class Identification
 {
-
 	/**
 	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken
 	 */
@@ -36,9 +34,9 @@ class Identification
 	 */
 	public function __construct()
 	{
-		$this->m_clUsernameToken = null;
-		$this->m_sTokenSession = '';
+		$this->m_clUsernameToken   = null;
+		$this->m_sTokenSession     = '';
 		$this->m_sIDContexteAction = '';
-		$this->m_bAPIUser = false;
+		$this->m_bAPIUser          = false;
 	}
-} 
+}
