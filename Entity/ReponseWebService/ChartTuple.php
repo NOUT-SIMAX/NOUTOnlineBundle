@@ -14,16 +14,16 @@ class ChartTuple
 
 	public function __construct()
 	{
-		$this->m_TabID2DataLabel=array();
+		$this->m_TabID2DataLabel = array();
 	}
 
 	public function Add($sID, $Data, $sDisplay)
 	{
-		$clElement = new \stdClass();
-		$clElement->m_Data = $Data;
+		$clElement                  = new \stdClass();
+		$clElement->m_Data          = $Data;
 		$clElement->m_sDisplayValue = $sDisplay;
-		$clElement->m_sID = $sID;
+		$clElement->m_sID           = $sID;
 
-		$this->m_TabID2DataLabel[$sID]=$clElement;
+		$this->m_TabID2DataLabel[$sID] = $clElement;
 	}
-} 
+}

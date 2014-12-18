@@ -15,8 +15,8 @@ class Element
 
 	public function __construct($nID, $sTitle)
 	{
-		$this->m_nID = (string)$nID;
-		$this->m_sTitle = (string)$sTitle;
+		$this->m_nID    = (string) $nID;
+		$this->m_sTitle = (string) $sTitle;
 	}
 
 	/**

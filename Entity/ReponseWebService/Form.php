@@ -34,10 +34,10 @@ class Form
 
 	public function __construct($nID, $sTitle)
 	{
-		$this->m_nID = (string)$nID;
-		$this->m_sTitle = (string)$sTitle;
+		$this->m_nID                   = (string) $nID;
+		$this->m_sTitle                = (string) $sTitle;
 		$this->m_bWithBtnOrderPossible = false;
-		$this->m_TabSort=array();
+		$this->m_TabSort               = array();
 	}
 
 	/**

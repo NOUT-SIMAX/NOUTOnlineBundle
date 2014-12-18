@@ -15,21 +15,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class CurrentAction
 {
-	const ETYPEACTION_CREATE = 2386;
-	const ETYPEACTION_LIST = 2388;
-	const ETYPEACTION_SEARCH = 2389;
-	const ETYPEACTION_DISPLAY = 2390;
-	const ETYPEACTION_MODIFY = 2387;
-
-	const ETYPEACTION_AFFTABRECAP = 9338;
-	const ETYPEACTION_AFFVUE = 15135;
-	const ETYPEACTION_CREATEFROM = 5303;
-	const ETYPEACTION_TRANSFORMIN = 8720;
-	const ETYPEACTION_PRINT = 2392;
-	const ETYPEACTION_DELETE = 2391;
-	const ETYPEACTION_STARTEXE = 8684;
-	const ETYPEACTION_ADDTO = 3182;
-	const ETYPEACTION_PARTICULARACTION = 2394;
 
 	protected $m_sID;
 	protected $m_sTitle;
@@ -42,9 +27,9 @@ class CurrentAction
 	 */
 	public function __construct($sID, $sTitle, $nTypeAction)
 	{
-		$this->m_sID = (string)$sID;
-		$this->m_sTitle = (string)$sTitle;
-		$this->m_nTypeAction = (int)$nTypeAction;
+		$this->m_sID         = (string) $sID;
+		$this->m_sTitle      = (string) $sTitle;
+		$this->m_nTypeAction = (int) $nTypeAction;
 	}
 
 	/**
@@ -70,4 +55,21 @@ class CurrentAction
 	{
 		return $this->m_sTitle;
 	}
-} 
+
+
+	const ETYPEACTION_CREATE  = 2386;
+	const ETYPEACTION_LIST    = 2388;
+	const ETYPEACTION_SEARCH  = 2389;
+	const ETYPEACTION_DISPLAY = 2390;
+	const ETYPEACTION_MODIFY  = 2387;
+
+	const ETYPEACTION_AFFTABRECAP      = 9338;
+	const ETYPEACTION_AFFVUE           = 15135;
+	const ETYPEACTION_CREATEFROM       = 5303;
+	const ETYPEACTION_TRANSFORMIN      = 8720;
+	const ETYPEACTION_PRINT            = 2392;
+	const ETYPEACTION_DELETE           = 2391;
+	const ETYPEACTION_STARTEXE         = 8684;
+	const ETYPEACTION_ADDTO            = 3182;
+	const ETYPEACTION_PARTICULARACTION = 2394;
+}

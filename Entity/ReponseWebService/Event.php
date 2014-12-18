@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-
 class Event
 {
 	/*
@@ -33,14 +32,14 @@ class Event
 
 	public function __construct()
 	{
-		$this->m_sUID='';
-		$this->m_sStartTime='';
-		$this->m_sEndTime='';
-		$this->m_sSummary='';
-		$this->m_sDescription='';
-		$this->m_nIDResource='';
-		$this->m_nTypeOfEvent='';
-		$this->m_sColorRGB='';
-		$this->m_sRrules='';
+		$this->m_sUID         = '';
+		$this->m_sStartTime   = '';
+		$this->m_sEndTime     = '';
+		$this->m_sSummary     = '';
+		$this->m_sDescription = '';
+		$this->m_nIDResource  = '';
+		$this->m_nTypeOfEvent = '';
+		$this->m_sColorRGB    = '';
+		$this->m_sRrules      = '';
 	}
-} 
+}

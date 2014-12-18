@@ -8,15 +8,14 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-
 class Chart
 {
-	const TYPE_Histogramme = 'column';
+	const TYPE_Histogramme       = 'column';
 	const TYPE_HistogrammeEmpile = 'stackedColumn';
-	const TYPE_Courbe = 'line';
-	const TYPE_CourbeLissee = 'line';
-	const TYPE_Camembert = 'pie';
-	const TYPE_Bulle = 'bubble';
+	const TYPE_Courbe            = 'line';
+	const TYPE_CourbeLissee      = 'line';
+	const TYPE_Camembert         = 'pie';
+	const TYPE_Bulle             = 'bubble';
 
 	/**
 	 * @var string
@@ -42,9 +41,9 @@ class Chart
 
 	public function __construct()
 	{
-		$this->m_sTitre='';
-		$this->m_sType='';
-		$this->m_TabAxes=array();
-		$this->m_TabSeries=array();
+		$this->m_sTitre   = '';
+		$this->m_sType    = '';
+		$this->m_TabAxes  = array();
+		$this->m_TabSeries = array();
 	}
-} 
+}

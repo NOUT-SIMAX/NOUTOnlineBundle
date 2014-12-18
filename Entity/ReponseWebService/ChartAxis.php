@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-
 class ChartAxis
 {
 	/**
@@ -27,10 +26,10 @@ class ChartAxis
 	 */
 	public $m_bIsCalculation;
 
-	public function __construct($sID='', $sLabel='', $bCalcultion=false)
+	public function __construct($sID = '', $sLabel = '', $bCalcultion = false)
 	{
-		$this->m_sID=$sID;
-		$this->m_sLabel=$sLabel;
-		$this->m_bIsCalculation=$bCalcultion;
+		$this->m_sID           = $sID;
+		$this->m_sLabel        = $sLabel;
+		$this->m_bIsCalculation = $bCalcultion;
 	}
-} 
+}

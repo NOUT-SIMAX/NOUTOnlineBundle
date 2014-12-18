@@ -28,10 +28,10 @@ class ConnectedUser
 	 */
 	public function __construct($nUserID, $sUserTitle, $nFormID, $sFormTitle)
 	{
-		$this->m_nUserID = (string)$nUserID;
-		$this->m_sUserTitle = (string)$sUserTitle;
-		$this->m_nFormID = (string)$nFormID;
-		$this->m_sFormTitle = (string)$sFormTitle;
+		$this->m_nUserID    = (string) $nUserID;
+		$this->m_sUserTitle = (string) $sUserTitle;
+		$this->m_nFormID    = (string) $nFormID;
+		$this->m_sFormTitle = (string) $sFormTitle;
 	}
 
 	/**
@@ -65,6 +65,4 @@ class ConnectedUser
 	{
 		return $this->m_sUserTitle;
 	}
-
-
-} 
+}

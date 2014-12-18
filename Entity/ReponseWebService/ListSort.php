@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-
 class ListSort
 {
 	/**
@@ -24,7 +23,7 @@ class ListSort
 
 	public function __construct($sID, $bAsc)
 	{
-		$this->m_nIDColonnne=(string)$sID;
-		$this->m_bAsc=((int)$bAsc == 1) ? true : false;
+		$this->m_nIDColonnne = (string) $sID;
+		$this->m_bAsc        = ((int) $bAsc == 1) ? true : false;
 	}
-} 
+}

@@ -8,7 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-
 class OnlineErrorParameter
 {
 	protected $m_nID;
@@ -17,9 +16,9 @@ class OnlineErrorParameter
 
 	public function __construct($nID, $sTitle, $sValue)
 	{
-		$this->m_nID = (string)$nID;
-		$this->m_sTitle = (string)$sTitle;
-		$this->m_sValue = (string)$sValue;
+		$this->m_nID    = (string) $nID;
+		$this->m_sTitle = (string) $sTitle;
+		$this->m_sValue = (string) $sValue;
 	}
 
 	/**
@@ -69,6 +68,4 @@ class OnlineErrorParameter
 	{
 		return $this->m_sValue;
 	}
-
-
 }

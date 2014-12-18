@@ -20,12 +20,12 @@ class Calculation
 	public function __construct($nIDColonne)
 	{
 		$this->m_nIDColonne = $nIDColonne;
-		$this->m_MapCalcul = array();
+		$this->m_MapCalcul  = array();
 	}
 
 	public function AddCacul($sTypeCalcul, $sValeur)
 	{
-		$this->m_MapCalcul[$sTypeCalcul]=$sValeur;
+		$this->m_MapCalcul[$sTypeCalcul] = $sValeur;
 	}
 
 	public function GetCalcul($sTypeCalcul)
@@ -37,4 +37,4 @@ class Calculation
 	{
 		return $this->m_nIDColonne;
 	}
-} 
+}
