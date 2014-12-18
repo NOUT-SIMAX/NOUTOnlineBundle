@@ -51,36 +51,36 @@ class ConfigurationDialogue
 	 */
 	protected $m_sServiceAddress;
 
-	public function __construct($sHost = '', $sPort = 0, $sProtocolPrefix = 'http://', $sAPIUUID='')
+	public function __construct($sHost = '', $sPort = 0, $sProtocolPrefix = 'http://', $sAPIUUID = '')
 	{
-		$this->m_sServiceAddress=$sProtocolPrefix.$sHost.':'.$sPort.'/';
-		$this->m_sWSDLUri=$this->m_sServiceAddress.'getwsdl';
-		$this->m_bWsdl=true;
-		$this->m_sHost=$sHost;
-		$this->m_nPort=$sPort;
-		$this->m_sProtocolPrefix=$sProtocolPrefix;
+		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
+		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
+		$this->m_bWsdl          = true;
+		$this->m_sHost          = $sHost;
+		$this->m_nPort          = $sPort;
+		$this->m_sProtocolPrefix = $sProtocolPrefix;
 
-		$this->m_nLangCode=12;
-		$this->m_sAPIUUID=$sAPIUUID;
-		$this->m_nDureeSession=3600;
+		$this->m_nLangCode    = 12;
+		$this->m_sAPIUUID     = $sAPIUUID;
+		$this->m_nDureeSession = 3600;
 	}
 
-	public function Init($sWSDLUri, $bWsdl = false,$sHost = false,$sPort = false, $sProtocolPrefix = 'http://')
+	public function Init($sWSDLUri, $bWsdl = false, $sHost = false, $sPort = false, $sProtocolPrefix = 'http://')
 	{
-		$this->m_sWSDLUri=$sWSDLUri;
-		$this->m_bWsdl=$bWsdl;
-		$this->m_sHost=$sHost;
-		$this->m_nPort=$sPort;
-		$this->m_sProtocolPrefix=$sProtocolPrefix;
-		$this->m_sServiceAddress=$sProtocolPrefix.$sHost.':'.$sPort.'/';
+		$this->m_sWSDLUri       = $sWSDLUri;
+		$this->m_bWsdl          = $bWsdl;
+		$this->m_sHost          = $sHost;
+		$this->m_nPort          = $sPort;
+		$this->m_sProtocolPrefix = $sProtocolPrefix;
+		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
 	}
 
 	public function SetHost($sAddress, $sPort)
 	{
-		$this->m_sHost=$sAddress;
-		$this->m_nPort=$sPort;
-		$this->m_sServiceAddress=$this->m_sProtocolPrefix.$sAddress.':'.$sPort.'/';
-		$this->m_sWSDLUri=$this->m_sServiceAddress.'getwsdl';
+		$this->m_sHost          = $sAddress;
+		$this->m_nPort          = $sPort;
+		$this->m_sServiceAddress = $this->m_sProtocolPrefix.$sAddress.':'.$sPort.'/';
+		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
 	}
 
 	/**
@@ -97,6 +97,7 @@ class ConfigurationDialogue
 	public function setDureeSession($nDureeSession)
 	{
 		$this->m_nDureeSession = $nDureeSession;
+
 		return $this;
 	}
 
@@ -114,6 +115,7 @@ class ConfigurationDialogue
 	public function setLangCode($nLangCode)
 	{
 		$this->m_nLangCode = $nLangCode;
+
 		return $this;
 	}
 
@@ -139,6 +141,7 @@ class ConfigurationDialogue
 	public function setAPIUUID($sAPIUUID)
 	{
 		$this->m_sAPIUUID = $sAPIUUID;
+
 		return $this;
 	}
 
@@ -180,6 +183,4 @@ class ConfigurationDialogue
 	{
 		return $this->m_sWSDLUri;
 	}
-
-
 }
