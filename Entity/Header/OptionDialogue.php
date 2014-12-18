@@ -45,19 +45,19 @@ class OptionDialogue extends WSDLOptionDialogue
 	{
 		//----------------------------------
 		//NE PAS MODIFIER CES VALEURS
-		$this->Readable=0; // integer TOUJOURS laisser 0, on considère que c'est toujours non lisible dans le bundle
-		$this->EncodingOutput=0; // integer
-		$this->HTTPForceReturn=0; // integer
+		$this->Readable        = 0; // integer TOUJOURS laisser 0, on considère que c'est toujours non lisible dans le bundle
+		$this->EncodingOutput  = 0; // integer
+		$this->HTTPForceReturn = 0; // integer
 		//----------------------------------
 
-		$this->ReturnValue=null; // integer
-		$this->ReturnXSD=null; // integer
-		$this->Ghost=null; // integer
-		$this->DefaultPagination=null; // integer
-		$this->DisplayValue= null;
-		$this->LanguageCode=null; // integer
-		$this->WithFieldStateControl=null; // integer
-		$this->ListContentAsync=null; // integer
+		$this->ReturnValue           = null; // integer
+		$this->ReturnXSD             = null; // integer
+		$this->Ghost                 = null; // integer
+		$this->DefaultPagination     = null; // integer
+		$this->DisplayValue          = null;
+		$this->LanguageCode          = null; // integer
+		$this->WithFieldStateControl = null; // integer
+		$this->ListContentAsync      = null; // integer
 	}
 
 	/**
@@ -65,18 +65,15 @@ class OptionDialogue extends WSDLOptionDialogue
 	 */
 	public function InitDefault()
 	{
-		$this->ReturnValue=1; // integer
-		$this->ReturnXSD=1; // integer
-		$this->Ghost=0; // integer
-		$this->DefaultPagination=20; // integer
-		$this->DisplayValue= 0; // integer
-		$this->LanguageCode=12; // integer
-		$this->WithFieldStateControl=1; // integer
-		$this->ListContentAsync=0; // integer
+		$this->ReturnValue           = 1; // integer
+		$this->ReturnXSD             = 1; // integer
+		$this->Ghost                 = 0; // integer
+		$this->DefaultPagination     = 20; // integer
+		$this->DisplayValue          = 0; // integer
+		$this->LanguageCode          = 12; // integer
+		$this->WithFieldStateControl = 1; // integer
+		$this->ListContentAsync      = 0; // integer
 
 		return $this;
 	}
 }
-
-
-

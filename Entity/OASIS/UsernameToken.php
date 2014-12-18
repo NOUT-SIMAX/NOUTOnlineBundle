@@ -12,8 +12,8 @@ class UsernameToken extends WSDLUsernameToken
 	protected $m_sClearPassword;
 
 	public function __construct($sUsername, $sPassword)
-	{		
-		$this->Username = $sUsername;
+	{
+		$this->Username         = $sUsername;
 		$this->m_sClearPassword = $sPassword;
 		$this->ComputeCryptedPassword();
 	}
@@ -66,17 +66,20 @@ class UsernameToken extends WSDLUsernameToken
 	 * @param string $strPassword le mot de passe en encrypter
 	 */
 	public function ComputeCryptedPassword()
-	{		
+	{
 		if (!empty($this->m_sClearPassword))
-			$sSecurePassword = base64_encode(md5($this->m_sClearPassword,true));
+		{
+			$sSecurePassword = base64_encode(md5($this->m_sClearPassword, true));
+		}
 		else
+		{
 			$sSecurePassword = 'AAAAAAAAAAAAAAAAAAAAAA==';
+		}
 	
 
 		$this->Created = date('r');
-		$this->Nonce = base64_encode( microtime() );
+		$this->Nonce   = base64_encode(microtime());
 
 		$this->Password = base64_encode(sha1($this->Nonce.$this->Created.$sSecurePassword, true));
 	}
 }
-?>
