@@ -8,13 +8,12 @@
 
 namespace NOUT\Bundle\ContextesBundle\Entity;
 
-
 class ActionResult
 {
 	/**
 	 * @var string
 	 */
-	public  $ReturnType;
+	public $ReturnType;
 
 	/**
 	 * @var mixed
@@ -34,8 +33,8 @@ class ActionResult
 	public function __construct($sReturnType)
 	{
 		$this->ReturnType = $sReturnType;
-		$this->m_Data = null;
-		$this->m_clCache = new ActionResultCache();
+		$this->m_Data     = null;
+		$this->m_clCache  = new ActionResultCache();
 	}
 
 	/**
@@ -45,6 +44,7 @@ class ActionResult
 	public function setReturnType($sReturnType)
 	{
 		$this->ReturnType = $sReturnType;
+
 		return $this;
 	}
 
@@ -63,6 +63,7 @@ class ActionResult
 	public function setData($data)
 	{
 		$this->m_Data = $data;
+
 		return $this;
 	}
 
@@ -82,6 +83,7 @@ class ActionResult
 	public function setTypeCache($eTypeCache)
 	{
 		$this->m_clCache->setTypeCache($eTypeCache);
+
 		return $this;
 	}
 
@@ -92,6 +94,7 @@ class ActionResult
 	public function setExpires(\DateTime $clExpires)
 	{
 		$this->m_clCache->setExpires($clExpires);
+
 		return $this;
 	}
 
@@ -102,6 +105,7 @@ class ActionResult
 	public function setMaxAge($nMaxAge)
 	{
 		$this->m_clCache->setMaxAge($nMaxAge);
+
 		return $this;
 	}
 
@@ -112,6 +116,7 @@ class ActionResult
 	public function setSharedMaxAge($nSharedMaxAge)
 	{
 		$this->m_clCache->setSharedMaxAge($nSharedMaxAge);
+
 		return $this;
 	}
 
@@ -122,6 +127,7 @@ class ActionResult
 	public function setETAG($sETAG)
 	{
 		$this->m_clCache->setETAG($sETAG);
+
 		return $this;
 	}
 
@@ -132,6 +138,7 @@ class ActionResult
 	public function setLastModified(\DateTime $lastModified)
 	{
 		$this->m_clCache->setLastModified($lastModified);
+
 		return $this;
 	}
 
@@ -142,4 +149,4 @@ class ActionResult
 	{
 		return $this->m_clCache;
 	}
-} 
+}
