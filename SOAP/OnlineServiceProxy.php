@@ -78,7 +78,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ZipPJ;
  *
  * @final
  */
-final class OnlineServiceProxy extends ModifiedNuSoapClient
+final class OnlineServiceProxy extends ModifiedNusoapClient
 {
     //Definition des variable pour gestion des headers de requete
     private $__aListHeaders = array();
