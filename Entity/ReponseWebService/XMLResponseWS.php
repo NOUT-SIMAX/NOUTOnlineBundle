@@ -365,6 +365,22 @@ class XMLResponseWS
 		return (int) $ndXML->numberOfChart;
 	}
 
+
+	/**
+	 * @return string
+	 */
+	public function sGetReport()
+	{
+		$ndXML = $this->getNodeXML();
+		if (!isset($ndXML))
+		{
+			return '';
+		}
+
+		return (string) $ndXML->Report;
+	}
+
+
 	/**
 	 * returne le tableau des codes langues disponibles
 	 * @return array

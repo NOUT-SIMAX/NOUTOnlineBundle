@@ -26,20 +26,24 @@ class NOUTCache extends CacheProvider
 	private $m_clPiloteCache;
 
 
-	public function __construct($dir)
+	public function __construct($dir, $prefix='')
 	{
 		if (extension_loaded('apc') || extension_loaded('apcu'))
 		{
 			$this->m_clPiloteCache = new ApcCache();
+			if (!empty($prefix))
+				$this->setNamespace($prefix);
 		}
 		elseif (extension_loaded('xcache'))
 		{
 			$this->m_clPiloteCache = new XcacheCache();
+			if (!empty($prefix))
+				$this->setNamespace($prefix);
 		}
 		else
 		{
 			//$this->m_clPiloteCache = new FilesystemCache($dir, '.noutcache.data');
-			$this->m_clPiloteCache = new NOUTFileCache($dir);
+			$this->m_clPiloteCache = new NOUTFileCache($dir.(!empty($prefix) ? '/'.$prefix : ''));
 		}
 	}
 

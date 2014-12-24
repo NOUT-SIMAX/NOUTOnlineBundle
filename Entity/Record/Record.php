@@ -7,6 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
  * Class Record
@@ -169,4 +170,29 @@ class Record
 
 		return $this->setValCol($idColonne, $value, true);
 	}
+
+
+	/**
+	 * on construit la structure qui est passée en paramètre de la méthode update du Proxy
+	 * @return Update
+	 */
+	public function getStructForUpdateSOAP()
+	{
+		$clParamUpdate        = new Update();
+
+		$sIDForm = $this->m_clStructElem->getID();
+		$clParamUpdate->Table = $sIDForm;
+		$clParamUpdate->ParamXML = '<id_'.$sIDForm.'>'.$this->m_nIDEnreg.'</id_'.$sIDForm.'>';
+		$clParamUpdate->UpdateData = '<xml><id_'.$sIDForm.'>';
+
+		foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
+		{
+			if ($this->m_TabColumnsModified[$sIDColonne])
+				$clParamUpdate->UpdateData.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
+		}
+
+		$clParamUpdate->UpdateData.= '</id_'.$sIDForm.'></xml>';
+		return $clParamUpdate;
+	}
+
 }

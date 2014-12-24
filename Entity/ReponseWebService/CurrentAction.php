@@ -15,9 +15,19 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class CurrentAction
 {
-
+	/**
+	 * @var string
+	 */
 	protected $m_sID;
+
+	/**
+	 * @var string
+	 */
+
 	protected $m_sTitle;
+	/**
+	 * @var int
+	 */
 	protected $m_nTypeAction;
 
 	/**
@@ -33,7 +43,7 @@ class CurrentAction
 	}
 
 	/**
-	 * @return mixed
+	 * @return int
 	 */
 	public function getTypeAction()
 	{
@@ -41,7 +51,7 @@ class CurrentAction
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getID()
 	{
@@ -49,7 +59,7 @@ class CurrentAction
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getTitle()
 	{

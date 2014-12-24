@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 class StructureElement
 {
 	/**
+	 * identifiant du formulaire
 	 * @var string
 	 */
 
