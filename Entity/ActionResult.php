@@ -8,6 +8,8 @@
 
 namespace NOUT\Bundle\ContextesBundle\Entity;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+
 class ActionResult
 {
 	/**
@@ -20,6 +22,15 @@ class ActionResult
 	 */
 	private $m_Data;
 
+	/**
+	 * @var string
+	 */
+	private $m_sIDContexte;
+
+	/**
+	 * @var string
+	 */
+	private $m_sLibelle;
 
 	/**
 	 * @var \NOUT\Bundle\ContextesBundle\Entity\ActionResultCache
@@ -30,9 +41,21 @@ class ActionResult
 	/**
 	 * @param string $sReturnType
 	 */
-	public function __construct($sReturnType)
+	public function __construct(XMLResponseWS $clReponseXML = null)
 	{
-		$this->ReturnType = $sReturnType;
+		if (isset($clReponseXML))
+		{
+			$this->ReturnType    = $clReponseXML->sGetReturnType();
+			$this->m_sIDContexte = $clReponseXML->sGetActionContext();
+			$this->m_sLibelle    = $clReponseXML->clGetAction()->getTitle();
+		}
+		else
+		{
+			$this->ReturnType    = null;
+			$this->m_sIDContexte = '';
+			$this->m_sIDContexte = '';
+		}
+
 		$this->m_Data     = null;
 		$this->m_clCache  = new ActionResultCache();
 	}
@@ -73,6 +96,22 @@ class ActionResult
 	public function getData()
 	{
 		return $this->m_Data;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIDContexte()
+	{
+		return $this->m_sIDContexte;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLibelle()
+	{
+		return $this->m_sLibelle;
 	}
 
 

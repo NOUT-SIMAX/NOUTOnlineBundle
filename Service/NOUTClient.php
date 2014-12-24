@@ -12,6 +12,7 @@ use NOUT\Bundle\ContextesBundle\Entity\ActionResult;
 use NOUT\Bundle\ContextesBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextesBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextesBundle\Entity\Menu\MenuLoader;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
@@ -21,6 +22,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
@@ -31,6 +33,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use Symfony\Component\Security\Core\SecurityContext;
 
 class NOUTClient
@@ -62,6 +65,12 @@ class NOUTClient
 	private $__security;
 
 	/**
+	 * @var NOUTCache
+	 */
+	private $m_clCacheSession;
+
+
+	/**
 	 * @param Router $router
 	 * @param SecurityContext $security
 	 * @param OnlineServiceFactory $serviceFactory
@@ -77,10 +86,58 @@ class NOUTClient
 
 		$this->m_clConfigurationDialogue = $configurationDialogue;
 
-		//création du repertoire de
+		//création du cache pour la session
+		$sSessionToken = $this->__security->getToken()->getSessionToken();
+		$this->m_clCacheSession = new NOUTCache($sCacheDir.'/'.self::REPCACHE, $sSessionToken);
+	}
+
+	protected function _TestParametre($sTypeTest, $sNomParametre, $sValeurParametre, $ValeurTest)
+	{
+		switch($sTypeTest)
+		{
+		case self::TP_NotEmpty:
+			if (empty($sValeurParametre))
+			{
+				throw new \Exception('the value of the parameter '.$sNomParametre.' must not be empty.');
+			}
+			break;
+
+		case self::TP_InArray:
+			if (!in_array($sValeurParametre, $ValeurTest))
+			{
+				$sMessage = 'the value of the parameter '.$sNomParametre.' must be one of : ';
+				foreach($ValeurTest as $Value)
+				{
+					$sMessage.=$Value.', ';
+				}
+				rtrim($sMessage, ", ");
+				$sMessage.='.';
+
+				throw new \Exception($sMessage);
+			}
+			break;
+		}
 	}
 
 
+	protected function _ThrowError($sMessage, $nCode=0)
+	{
+		throw new \Exception($sMessage, $nCode);
+	}
+
+
+	/**
+	 * @return NOUTCache
+	 */
+	public function getCacheSession()
+	{
+		return $this->m_clCacheSession;
+	}
+
+	/**
+	 * retourne les options de dialogue
+	 * @return OptionDialogue
+	 */
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
@@ -137,8 +194,8 @@ class NOUTClient
 		$oUser  =  $oToken->getUser();
 
 		$aTabHeader = array(
-			SOAPProxy::HEADER_UsernameToken => new UsernameToken($oUser->getUsername(), $oUser->getPassword()),
-			SOAPProxy::HEADER_SessionToken  => $oToken->getSessionToken(),
+			SOAPProxy::HEADER_UsernameToken  => new UsernameToken($oUser->getUsername(), $oUser->getPassword()),
+			SOAPProxy::HEADER_SessionToken   => $oToken->getSessionToken(),
 			SOAPProxy::HEADER_OptionDialogue => $this->_clGetOptionDialogue(),
 		);
 
@@ -219,7 +276,7 @@ class NOUTClient
 
 		$aTabHeaderSuppl = array(
 			SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel, //on ne garde pas le contexte ouvert
-			SOAPProxy::HEADER_APIUser     => SOAPProxy::APIUSER_Active,           //on force l'utilisation de l'user d'application (max) car un utilisateur classique n'aura pas les droit d'executer cette requete
+			SOAPProxy::HEADER_APIUser      => SOAPProxy::APIUSER_Active,           //on force l'utilisation de l'user d'application (max) car un utilisateur classique n'aura pas les droit d'executer cette requete
 		);
 
 		return $this->_oRequest(Langage::TABL_MenuPourTous, new ConditionFileNPI(), $aTabColonne, $aTabHeaderSuppl);
@@ -406,6 +463,41 @@ class NOUTClient
 		return strtolower($filename);
 	}
 
+
+	/**
+	 * Execute une action via la phrase
+	 *
+	 * @param $sPhrase
+	 * @param string $sIDContexte
+	 * @param array $aTabParam
+	 * @param string $sIDCallingColumn
+	 * @param SpecialParamListType $oParamListe
+	 * @param string $sDisplayMode
+	 * @param string $sChecksum
+	 * @return ActionResult
+	 */
+	public function oExecSentence($sPhrase, $sIDContexte = '', array $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+	{
+		//paramètre de l'action
+		$clParamExecute = new Execute();
+		//$clParamExecute->ID = $sIDAction;                    // identifiant de l'action
+		$clParamExecute->Sentence         = $sPhrase;          // phrase de l'action
+		$clParamExecute->SpecialParamList = $oParamListe;      //paramètre supplémentaire pour les listes
+		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
+		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
+		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
+		//$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
+
+		//header
+		$aTabHeaderSuppl = array();
+		if (!empty($sIDContexte))
+		{
+			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+		}
+
+		return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+	}
+
 	/**
 	 * Execute une action via son id
 	 * @param $sIDAction
@@ -440,39 +532,10 @@ class NOUTClient
 	}
 
 	/**
-	 * Execute une action via la phrase
-	 *
-	 * @param $sPhrase
-	 * @param string $sIDContexte
-	 * @param array $aTabParam
-	 * @param string $sIDCallingColumn
-	 * @param SpecialParamListType $oParamListe
-	 * @param string $sDisplayMode
-	 * @param string $sChecksum
-	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+	 * @param Execute $clParamExecute
+	 * @param array   $aTabHeaderSuppl
+	 * @return ActionResult
 	 */
-	public function oExecSentence($sPhrase, $sIDContexte = '', array $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
-	{
-		//paramètre de l'action
-		$clParamExecute = new Execute();
-		//$clParamExecute->ID = $sIDAction;                    // identifiant de l'action
-		$clParamExecute->Sentence         = $sPhrase;          // phrase de l'action
-		$clParamExecute->SpecialParamList = $oParamListe;      //paramètre supplémentaire pour les listes
-		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
-		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
-		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-		//$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
-
-		//header
-		$aTabHeaderSuppl = array();
-		if (!empty($sIDContexte))
-		{
-			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
-		}
-
-		return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
-	}
-
 	protected function _oExecute(Execute $clParamExecute, array $aTabHeaderSuppl)
 	{
 		$clReponseXML = $this->m_clSOAPProxy->execute($clParamExecute, $this->_aGetTabHeader($aTabHeaderSuppl));
@@ -487,12 +550,11 @@ class NOUTClient
 	 */
 	protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML)
 	{
-		$clActionResult = new ActionResult($clReponseXML->sGetReturnType());
+		$clActionResult = new ActionResult($clReponseXML);
 
 		switch ($clActionResult->ReturnType)
 		{
 		case XMLResponseWS::RETURNTYPE_EMPTY:
-		case XMLResponseWS::RETURNTYPE_REPORT:
 		case XMLResponseWS::RETURNTYPE_VALUE:
 		case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
 		case XMLResponseWS::RETURNTYPE_CHART:
@@ -521,6 +583,12 @@ class NOUTClient
 				throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
 			}
 
+		case XMLResponseWS::RETURNTYPE_REPORT:
+			{
+				$clActionResult->setData($clReponseXML->sGetReport());
+				break;
+			}
+
 		case XMLResponseWS::RETURNTYPE_RECORD:
 			{
 				$clParser = new ReponseWSParser();
@@ -535,8 +603,28 @@ class NOUTClient
 	}
 
 
+	public function oUpdate($sIDContexte, Record $clRecord, $autovalidate=SOAPProxy::AUTOVALIDATE_None)
+	{
+		//test des valeurs des paramètres
+		$this->_TestParametre(self::TP_InArray, '$autovalidate', $autovalidate, array(SOAPProxy::AUTOVALIDATE_None, SOAPProxy::AUTOVALIDATE_Cancel, SOAPProxy::AUTOVALIDATE_Validate));
+		$this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+
+		$paramUpdate = $clRecord->getStructForUpdateSOAP();
+
+		//header
+		$aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
+		$clReponseXML = $this->m_clSOAPProxy->update($paramUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+		return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+	}
+
 
 
 	const REPCACHE      = 'NOUTClient';
 	const REPCACHE_IHM  = 'ihm';
+
+
+
+	const TP_NotEmpty = 1;
+	const TP_InArray  = 2;
 }
