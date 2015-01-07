@@ -572,7 +572,6 @@ class NOUTClient
 		case XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION:
 		case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
 		case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
-		case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
 		case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
 
 		case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
@@ -589,12 +588,14 @@ class NOUTClient
 				break;
 			}
 
+		case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
 		case XMLResponseWS::RETURNTYPE_RECORD:
 			{
 				$clParser = new ReponseWSParser();
 				$clParser->InitFromXmlXsd($clReponseXML);
 
 				$clActionResult->setData($clParser->clGetRecord($clReponseXML->clGetForm(), $clReponseXML->clGetElement()));
+				$clActionResult->setValidateError($clReponseXML->getValidateError());
 				break;
 			}
 		}

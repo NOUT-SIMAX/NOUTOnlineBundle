@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\ContextesBundle\Entity;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 class ActionResult
@@ -39,6 +40,12 @@ class ActionResult
 
 
 	/**
+	 * @var ValidateError
+	 */
+	private $m_clValidateError;
+
+
+	/**
 	 * @param string $sReturnType
 	 */
 	public function __construct(XMLResponseWS $clReponseXML = null)
@@ -58,6 +65,7 @@ class ActionResult
 
 		$this->m_Data     = null;
 		$this->m_clCache  = new ActionResultCache();
+		$this->m_clValidateError = null;
 	}
 
 	/**
@@ -96,6 +104,24 @@ class ActionResult
 	public function getData()
 	{
 		return $this->m_Data;
+	}
+
+	/**
+	 * @param ValidateError $clValidateError
+	 * @return $this
+	 */
+	public function setValidateError(ValidateError $clValidateError=null)
+	{
+		$this->m_clValidateError = $clValidateError;
+		return $this;
+	}
+
+	/**
+	 * @return null|ValidateError
+	 */
+	public function getValidateError()
+	{
+		return $this->m_clValidateError;
 	}
 
 	/**
