@@ -654,6 +654,7 @@ class ReponseWSParser
 		//on commence par les schemas
 		if (($sReturnType == XMLResponseWS::RETURNTYPE_RECORD)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_LIST)
+			||  ($sReturnType == XMLResponseWS::RETURNTYPE_VALIDATERECORD)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION)
 			||  ($sReturnType == XMLResponseWS::RETURNTYPE_PRINTTEMPLATE))
 		{

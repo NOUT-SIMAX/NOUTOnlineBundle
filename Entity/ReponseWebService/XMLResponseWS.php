@@ -16,11 +16,29 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class XMLResponseWS
 {
-	//noeud particulier
+	/**
+	 * @var \SimpleXMLElement noeud du body
+	 */
 	protected $m_ndBody;
+
+	/**
+	 * @var \SimpleXMLElement noeud du header
+	 */
 	protected $m_ndHeader;
+
+	/**
+	 * @var array tableau des erreur
+	 */
 	protected $m_TabError;
+
+	/**
+	 * @var string contenu du XML
+	 */
 	protected $m_sXML;
+
+	/**
+	 * @var string namespace SOAP
+	 */
 	protected $m_sNamespaceSOAP;
 
 	public function __construct($sXML)
@@ -336,6 +354,22 @@ class XMLResponseWS
 		return $clXSDSchema->children('http://www.w3.org/2001/XMLSchema', false)->schema;
 	}
 
+
+	/**
+	 * @return ValidateError|null
+	 */
+	public function getValidateError()
+	{
+		$clValidateError = $this->m_ndHeader->children()->ValidateError;
+		if (empty($clValidateError))
+		{
+			return null;
+		}
+
+		return new ValidateError($clValidateError);
+	}
+
+
 	/**
 	 * récupère le token session dans la réponse XML
 	 * @return string
@@ -435,7 +469,7 @@ class XMLResponseWS
 	const RETURNTYPE_AMBIGUOUSACTION    = 'AmbiguousAction';
 	const RETURNTYPE_MESSAGEBOX         = 'MessageBox';
 	const RETURNTYPE_VALIDATEACTION     = 'ValidateAction';
-	const RETURNTYPE_VALIDATERECORD     = 'ValidateRecord';
+	const RETURNTYPE_VALIDATERECORD     = 'ValidateEnreg';
 	const RETURNTYPE_PRINTTEMPLATE      = 'PrintTemplate';
 
 

@@ -84,6 +84,11 @@ class Record
 		$this->m_TabColumnsValues   = array();
 	}
 
+	public function getIDEnreg()
+	{
+		return $this->m_nIDEnreg;
+	}
+
 	/**
 	 * @return StructureElement
 	 */
