@@ -1840,7 +1840,9 @@ class DefaultController extends Controller
 	{
 		ob_start();
 
-		$sXML          = file_get_contents('./bundles/noutonline/test/xml/FormEtatChamp_fiche_listesync.xml');
+		$path = $this->getService('kernel')->locateResource('@NOUTOnlineBundle/Resources/test/xml/FormEtatChamp_fiche_listesync.xml');
+
+		$sXML          = file_get_contents($path);
 		$clResponseXML = new XMLResponseWS($sXML);
 
 		$clRecordManager = new ReponseWSParser();
