@@ -135,6 +135,14 @@ class NOUTClient
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getTimeZone()
+	{
+		return $this->__security->getToken()->getTimeZone();
+	}
+
+	/**
 	 * retourne les options de dialogue
 	 * @return OptionDialogue
 	 */
