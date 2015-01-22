@@ -47,7 +47,18 @@ class OptionMenu
 	 */
 	protected $m_sIDMenuParent;
 
-	public function __construct($sIDOptionMenu, $sLibelle, $sIDMenu)
+	/**
+	 * vrai si c'est un menu, faux si c'est une option de menu
+	 * @var bool
+	 */
+	protected $m_bEstMenu;
+
+	/**
+	 * @param $sIDOptionMenu
+	 * @param $sLibelle
+	 * @param $sIDMenu
+	 */
+	public function __construct($sIDOptionMenu, $sLibelle, $sIDMenu, $bEstMenu=null)
 	{
 		$this->m_sIDOptionMenu = $sIDOptionMenu;
 		$this->m_sLibelle = str_replace('&&', '&', $sLibelle);
@@ -55,67 +66,74 @@ class OptionMenu
 		$this->m_sIDIcone = null;
 		$this->m_sCommande = null;
 		$this->m_sIDMenuParent = $sIDMenu;
+		$this->m_bEstMenu = is_null($bEstMenu) ? false : $bEstMenu;
 	}
+
+
+
+	/*******************************************
+	 * Accesseur get pour la serialization JSON
+	 *******************************************/
 
 	/**
 	 * @return bool
 	 */
-	public function bEstSeparateur()
+	public function getEstMenu()
 	{
-		return (empty($this->m_sIDAction) && empty($this->m_sCommande) && ($this->m_sLibelle=='-'));
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function bEstMenu()
-	{
-		return false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function bAvecIcon()
-	{
-		return !empty($this->m_sIDIcone);
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function bRoot()
-	{
-		return false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function bOptionsWithIcon()
-	{
-		return false;
-	}
-
-	/**
-	 * @param string $m_sIDOptionMenu
-	 * @return $this;
-	 */
-	public function setIDOptionMenu($sIDOptionMenu)
-	{
-		$this->m_sIDOptionMenu = $sIDOptionMenu;
-		return $this;
+		return $this->m_bEstMenu;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getIDOptionMenu()
+	public function getIdOptionMenu()
 	{
 		return $this->m_sIDOptionMenu;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getIdAction()
+	{
+		return $this->m_sIDAction;
+	}
 
+	/**
+	 * @return string
+	 */
+	public function getCommande()
+	{
+		return $this->m_sCommande;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIdIcone()
+	{
+		return $this->m_sIDIcone;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIdMenuParent()
+	{
+		return $this->m_sIDMenuParent;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLibelle()
+	{
+		return $this->m_sLibelle;
+	}
+
+	/*******************************************
+	 * Accesseur set pour la serialization JSON
+	 *******************************************/
 
 	/**
 	 * @param string $sCommande
@@ -126,32 +144,49 @@ class OptionMenu
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getCommande()
-	{
-		return $this->sCommande;
-	}
 
 	/**
 	 * @param string $sIDAction
 	 */
-	public function setIDAction($sIDAction)
+	public function setIdAction($sIDAction)
 	{
 		$this->m_sIDAction = $sIDAction;
 		return $this;
 	}
 
+
+
 	/**
-	 * @return string
+	 * @param string $sIDIcone
 	 */
-	public function getIDAction()
+	public function setIdIcone($sIDIcone)
 	{
-		return $this->m_sIDAction;
+		$this->m_sIDIcone = $sIDIcone;
+		return $this;
 	}
 
 	/**
+	 * @param string $sIDMenu
+	 */
+	public function setIdMenuParent($sIDMenu)
+	{
+		$this->m_sIDMenuParent = $sIDMenu;
+		return $this;
+	}
+
+	/**
+	 * @param string $sLibelle
+	 */
+	public function setLibelle($sLibelle)
+	{
+		$this->m_sLibelle = $sLibelle;
+		return $this;
+	}
+
+	/***************************************
+	 * Autres méthodes
+	 ***************************************/
+
 	/*
 	 * Règle pour l'execution de l'action
 	 * 1 - Commande sinon vide
@@ -167,6 +202,39 @@ class OptionMenu
 		return !empty($this->m_sIDAction);
 	}
 
+
+	/**
+	 * @return bool
+	 */
+	public function bRoot()
+	{
+		return $this->m_bEstMenu && empty($this->m_sIDMenuParent);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function bEstSeparateur()
+	{
+		return !$this->m_bEstMenu && (empty($this->m_sIDAction) && empty($this->m_sCommande) && ($this->m_sLibelle=='-'));
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function bAvecIcon()
+	{
+		return !empty($this->m_sIDIcone);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function bOptionsWithIcon()
+	{
+		return false;
+	}
+
 	/**
 	 * retourne la phrase a executer
 	 * @return string
@@ -179,56 +247,6 @@ class OptionMenu
 		return $this->m_sLibelle;
 	}
 
-	/**
-	 * @param string $sIDIcone
-	 */
-	public function setIDIcone($sIDIcone)
-	{
-		$this->m_sIDIcone = $sIDIcone;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getIDIcone()
-	{
-		return $this->m_sIDIcone;
-	}
-
-	/**
-	 * @param string $sIDMenu
-	 */
-	public function setIDMenuParent($sIDMenu)
-	{
-		$this->m_sIDMenuParent = $sIDMenu;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getIDMenuParent()
-	{
-		return $this->m_sIDMenuParent;
-	}
-
-	/**
-	 * @param string $sLibelle
-	 */
-	public function setLibelle($sLibelle)
-	{
-		$this->m_sLibelle = $sLibelle;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLibelle()
-	{
-		return $this->m_sLibelle;
-	}
 
 
 

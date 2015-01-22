@@ -15,34 +15,15 @@ class Menu extends OptionMenu
 
 	public function __construct($sIDOptionMenu, $sLibelle, $sIDMenu)
 	{
-		parent::__construct($sIDOptionMenu, $sLibelle, $sIDMenu);
+		parent::__construct($sIDOptionMenu, $sLibelle, $sIDMenu, true);
 
 		$this->m_TabOptionMenu = array();
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function bEstSeparateur()
-	{
-		return false;
-	}
 
-	/**
-	 * @return bool
-	 */
-	public function bEstMenu()
-	{
-		return true;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function bRoot()
-	{
-		return empty($this->m_sIDMenuParent);
-	}
+	/*******************************************
+	 * Accesseur get pour la serialization JSON
+	 *******************************************/
 
 	/**
 	 * @param array $TabOptionMenu
@@ -53,6 +34,10 @@ class Menu extends OptionMenu
 		return $this;
 	}
 
+	/*******************************************
+	 * Accesseur set pour la serialization JSON
+	 *******************************************/
+
 	/**
 	 * @return array
 	 */
@@ -60,6 +45,10 @@ class Menu extends OptionMenu
 	{
 		return $this->m_TabOptionMenu;
 	}
+
+	/***************************************
+	 * Autres méthodes
+	 ***************************************/
 
 	/**
 	 * @param OptionMenu $oOption
