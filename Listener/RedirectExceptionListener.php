@@ -46,7 +46,7 @@ class RedirectExceptionListener
 				if ($request->isXmlHttpRequest())
 				{
 					//si la requête est une requête ajax, on retourne un 403
-					$event->setResponse(new Response('', 403));
+					$event->setResponse(new Response($this->_router->generate('login', array()), 403));
 				}
 				else
 				{
