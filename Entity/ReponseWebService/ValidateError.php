@@ -60,4 +60,13 @@ class ValidateError
 	{
 		return $this->m_TabIDColonne;
 	}
+
+	/**
+	 * @param $indice
+	 * @return mixed
+	 */
+	public function getIDColonne($indice)
+	{
+		return $this->m_TabIDColonne[$indice];
+	}
 } 
