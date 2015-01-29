@@ -14,7 +14,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
-use NOUT\Bundle\NOUTOnlineBundle\Exception\NOUTOnlineException;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
