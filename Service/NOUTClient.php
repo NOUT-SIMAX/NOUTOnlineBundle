@@ -125,6 +125,14 @@ class NOUTClient
 		throw new \Exception($sMessage, $nCode);
 	}
 
+	/**
+	 * récupère le numéro de version
+	 * @return string
+	 */
+	public function sGetVersion()
+	{
+		return $this->m_clRESTProxy->sGetVersion();
+	}
 
 	/**
 	 * @return NOUTCache
