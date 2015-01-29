@@ -6,7 +6,6 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\Exception\NOUTOnlineException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\WSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
