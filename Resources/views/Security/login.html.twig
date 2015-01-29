@@ -10,7 +10,7 @@
 		<link rel="icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico') }}" type="image/x-icon"/>
 
 		<!-- feuille de style -->
-		<link rel="stylesheet" href="{{ asset('bundles/noutsessionmanager/vendors/bootstrap/css/bootstrap.min.css') }}" />
+		<link rel="stylesheet" href="{{ asset('vendors/bootstrap/css/bootstrap.min.css') }}" />
 	{% endblock%}
 </head>
 <body>
@@ -68,9 +68,9 @@
 
 {% block javascripts %}
 	<!-- Latest compiled and minified JavaScript -->
-	<script type="text/javascript" src="{{ asset('bundles/noutsessionmanager/vendors/jquery/jquery-2.1.1.min.js') }}"></script>
-	<script type="text/javascript" src="{{ asset('bundles/noutsessionmanager/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
-	<script type="text/javascript" src="{{ asset('bundles/noutsessionmanager/vendors/jstz.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('vendors/jquery/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('vendors/jstz/jstz.min.js') }}"></script>
 
 	<script type="text/javascript">
 		$( document ).ready(function() {
