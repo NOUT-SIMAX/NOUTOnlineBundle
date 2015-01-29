@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTSessionManagerBundle\Listener;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
+use NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -43,20 +44,22 @@ class RedirectExceptionListener
 			if ($exception->getCode()==OnlineError::ERR_UTIL_DECONNECTE)
 			{
 				$request = $event->getRequest();
+				$session = $request->getSession();
 				if ($request->isXmlHttpRequest())
 				{
 					//si la requête est une requête ajax, on retourne un 403
-					$event->setResponse(new Response($this->_router->generate('login', array()), 403));
+					//on passe en paramètre toutes les informations nécessaire pour la redirection vers la page de login
+					$aParam = array('exception'=>json_encode(array('message'=>$exception->getMessageOrigine(), 'code'=>$exception->getCode())));
+
+					$event->setResponse(new Response($this->_router->generate('forbidden', $aParam), 403));
 				}
 				else
 				{
-					$session = $event->getRequest()->getSession();
 					$session->set(SecurityContext::AUTHENTICATION_ERROR, array('message'=>$exception->getMessage()));
 
 					//c'est l'erreur utilisateur déconnecté, il faut redirigé sur la page de login
 					$event->setResponse(new RedirectResponse($this->_router->generate('login', array())));
 				}
-
 			}
 		}
 	}

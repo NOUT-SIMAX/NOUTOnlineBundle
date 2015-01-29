@@ -5,6 +5,7 @@ namespace NOUT\Bundle\NOUTSessionManagerBundle\Controller;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
+use NOUT\Bundle\NOUTSessionManagerBundle\Entity\TimeZone;
 use NOUT\Bundle\NOUTSessionManagerBundle\Entity\User;
 use NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -95,7 +96,7 @@ class DefaultController extends Controller
 		    'last_username' => $session->get(SecurityContext::LAST_USERNAME),
 		    'error'         => $error,
 		    'version_noutonline' => $this->_clGetRESTProxy()->sGetVersion(),
-		    'timezone_list' => $this->_aGetTabTimezone(),
+		    'timezone_list' => TimeZone::s_aGetTabTimezone(),
 		    'last_timezone' => $session->get(NOUTToken::SESSION_LastTimeZone),
 	    ));
 
