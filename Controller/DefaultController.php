@@ -417,7 +417,7 @@ class DefaultController extends Controller
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
 		$StructForm   = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
-		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
+		$TabIDColonne = $StructForm->getTabIDColonne();
 
 		$clReponseWSCalcul = $this->_sGetCalculation($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne);
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSCalcul);
@@ -629,7 +629,7 @@ class DefaultController extends Controller
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
 		$StructForm   = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
-		$TabIDColonne = array_keys($StructForm->m_MapIDColonne2StructColonne);
+		$TabIDColonne = $StructForm->getTabIDColonne();
 		$TabIDEnreg   = $clReponseWSParser->GetTabIDEnregFromForm($clReponseWSList->clGetForm()->getID());
 
 		$clReponseWSDrill     = $this->_sDrillthrought($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDColonne[0], $TabIDEnreg[0]);

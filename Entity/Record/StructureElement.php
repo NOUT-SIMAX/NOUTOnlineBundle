@@ -132,6 +132,14 @@ class StructureElement
 		return $this->m_sLibelle;
 	}
 
+    /**
+     * @return array
+     */
+    public function getTabIDColonne()
+    {
+        return array_keys($this->m_MapIDColonne2StructColonne);
+    }
+
 
 
 
