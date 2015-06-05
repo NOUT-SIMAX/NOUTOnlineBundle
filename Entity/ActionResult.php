@@ -28,10 +28,10 @@ class ActionResult
 	 */
 	private $m_sIDContexte;
 
-	/**
-	 * @var string
-	 */
-	private $m_sLibelle;
+    /**
+     * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction
+     */
+	private $m_clAction;
 
 	/**
 	 * @var \NOUT\Bundle\ContextesBundle\Entity\ActionResultCache
@@ -54,13 +54,13 @@ class ActionResult
 		{
 			$this->ReturnType    = $clReponseXML->sGetReturnType();
 			$this->m_sIDContexte = $clReponseXML->sGetActionContext();
-			$this->m_sLibelle    = $clReponseXML->clGetAction()->getTitle();
+			$this->m_clAction    = $clReponseXML->clGetAction();
 		}
 		else
 		{
 			$this->ReturnType    = null;
 			$this->m_sIDContexte = '';
-			$this->m_sIDContexte = '';
+            $this->m_clAction    = null;
 		}
 
 		$this->m_Data     = null;
@@ -132,12 +132,12 @@ class ActionResult
 		return $this->m_sIDContexte;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getLibelle()
+    /**
+     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction|null
+     */
+	public function getAction()
 	{
-		return $this->m_sLibelle;
+		return $this->m_clAction;
 	}
 
 
