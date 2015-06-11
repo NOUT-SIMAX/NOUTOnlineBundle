@@ -140,6 +140,22 @@ class StructureElement
         return array_keys($this->m_MapIDColonne2StructColonne);
     }
 
+    /**
+     * @param $option
+     * @return array
+     */
+    public function getTabColonneAvecOption($option)
+    {
+        $aRet = array();
+        foreach($this->m_MapIDColonne2StructColonne as $clStructureColonne)
+        {
+            if ($clStructureColonne->isOption($option))
+                $aRet[]=$clStructureColonne->getIDColonne();
+        }
+
+        return $aRet;
+    }
+
 
 
 

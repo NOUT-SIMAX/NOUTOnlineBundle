@@ -200,4 +200,13 @@ class Record
 		return $clParamUpdate;
 	}
 
+    /**
+     * @return array
+     */
+    public function getLinkedColumns()
+    {
+        return $this->m_clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link);
+    }
+
+
 }
