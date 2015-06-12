@@ -161,7 +161,18 @@ class StructureColonne
 	 */
 	public function getFormType()
 	{
-		return str_replace(':', '_', $this->m_eTypeElement);
+        if ($this->m_eTypeElement != self::TM_Texte)
+        {
+            return str_replace(':', '_', $this->m_eTypeElement);
+        }
+        //dans le cas d'un texte, il faut vérifier s'il y a pas des restrictions
+        if (    is_null($this->m_clRestriction)
+            || !$this->m_clRestriction->isTypeRestriction(ColonneRestriction::R_MAXLENGTH))
+        {
+            return str_replace(':', '_', self::TM_TexteLong);
+        }
+
+        return str_replace(':', '_', self::TM_Texte);
 	}
 
 	/**
@@ -171,9 +182,9 @@ class StructureColonne
 	{
 		$aOptions = array(
 			'label'     => $this->m_sLibelle,
-			'read_only' => $this->isOption(StructureColonne::OPTION_ReadOnly),
+			'read_only' => $this->isOption(self::OPTION_ReadOnly),
 			'required'  => $this->m_bRequired,
-			'disabled'  => $this->isOption(StructureColonne::OPTION_Disabled),
+			'disabled'  => $this->isOption(self::OPTION_Disabled),
 		);
 	}
 
@@ -193,6 +204,8 @@ class StructureColonne
 	const TM_Heure     = 'xs:time';
 	const TM_Reel      = 'xs:float';
 	const TM_Monetaire = 'xs:decimal';
+    //n'existe dans le xsd, pour cohérence de code
+    const TM_TexteLong = 'xs:longstring';
 
 	//type complexe
 	const TM_Tableau    = 'simax-element';

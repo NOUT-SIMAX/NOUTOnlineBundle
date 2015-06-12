@@ -76,6 +76,15 @@ class ColonneRestriction
 		return $this->m_sTypeRestriction;
 	}
 
+    /**
+     * @param $type
+     * @return bool
+     */
+    public function isTypeRestriction($type)
+    {
+        return $type==$this->m_sTypeRestriction;
+    }
+
 	const R_MAXLENGTH   = 'maxLength';
 	const R_ENUMERATION = 'enumeration';
 }
