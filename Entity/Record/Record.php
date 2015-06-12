@@ -130,6 +130,15 @@ class Record
 		return $this->m_TabColumnsValues[$idColonne];
 	}
 
+    /**
+     * @param $idColonne
+     * @return bool
+     */
+    public function isModified($idColonne)
+    {
+        return $this->m_TabColumnsModified[$idColonne];
+    }
+
 	/**
 	 * @param $idcolonne
 	 * @param $value
@@ -201,6 +210,7 @@ class Record
 	}
 
     /**
+     * retourne la liste des colonnes qui déclenchent un update partiel
      * @return array
      */
     public function getLinkedColumns()
@@ -208,5 +218,32 @@ class Record
         return $this->m_clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link);
     }
 
+    /**
+     * enlève toutes les colonnes modifiées
+     * @return $this
+     */
+    public function resetLastModified()
+    {
+        array_walk($this->m_TabColumnsModified, function(&$item, $key){
+            $item=false;
+        });
+        return $this;
+    }
+
+    /**
+     * met à jour l'enregistrement depuis la réponse de NOUTOnline
+     * @param Record $clRecordSrc
+     * @return $this
+     */
+    public function updateFromRecord(Record $clRecordSrc)
+    {
+        $this->resetLastModified();
+        foreach($clRecordSrc->m_TabColumnsValues as $idcolonne=>$value)
+        {
+            $this->setValCol($idcolonne, $value);
+        }
+
+        return $this;
+    }
 
 }
