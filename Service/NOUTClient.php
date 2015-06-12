@@ -620,6 +620,13 @@ class NOUTClient
 	}
 
 
+    /**
+     * @param $sIDContexte
+     * @param Record $clRecord
+     * @param int $autovalidate
+     * @return ActionResult
+     * @throws \Exception
+     */
 	public function oUpdate($sIDContexte, Record $clRecord, $autovalidate=SOAPProxy::AUTOVALIDATE_None)
 	{
 		//test des valeurs des paramètres
@@ -632,7 +639,23 @@ class NOUTClient
 		$aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
 		$clReponseXML = $this->m_clSOAPProxy->update($paramUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
 
-		return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+		$oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+
+        if ($autovalidate==SOAPProxy::AUTOVALIDATE_None)
+        {
+            //c'est un update tout bête sans validation normalement on à le même enregistrement en entrée et en sortie
+            $clRecortRes = $oRet->getData();
+            if ($clRecord->getIDEnreg() != $clRecortRes->getIDEnreg())
+            {
+                throw new \Exception("l'update n'a pas retourné le bon enregistrement");
+            }
+
+            //on met à jour l'enregistrement d'origine à partir de celui renvoyé par NOUTOnline
+            $clRecord->updateFromRecord($clRecortRes);
+            $oRet->setData($clRecord);
+        }
+
+        return $oRet;
 	}
 
 
