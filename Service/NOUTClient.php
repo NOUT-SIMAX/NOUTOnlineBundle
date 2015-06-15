@@ -29,6 +29,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
@@ -658,12 +659,46 @@ class NOUTClient
         return $oRet;
 	}
 
+    /**
+     * Valide l'action courante du contexte
+     * @param $sIDContexte
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oValidate($sIDContexte)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+        $clReponseXML = $this->m_clSOAPProxy->validate($this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * annulation
+     * @param $sIDContexte
+     * @param bool $bAll tout le contexte
+     * @param bool $bByUser action utilisateur
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oCancel($sIDContexte, $bAll=false, $bByUser=true)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+        $clParamCancel     = new Cancel();
+        $clParamCancel->Context = $bAll ? 1 : 0;
+        $clParamCancel->ByUser = $bByUser ? 1 : 0;
+
+        $clReponseXML = $this->m_clSOAPProxy->cancel($clParamCancel, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
 
 
 	const REPCACHE      = 'NOUTClient';
 	const REPCACHE_IHM  = 'ihm';
-
-
 
 	const TP_NotEmpty = 1;
 	const TP_InArray  = 2;
