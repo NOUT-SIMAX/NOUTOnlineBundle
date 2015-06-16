@@ -74,7 +74,11 @@ class NOUTFileCache extends CacheProvider
 	 */
 	protected function doDelete($id)
 	{
-		unlink($this->_sGetFilename($id));
+        $sFilePath = $this->_sGetFilename($id);
+        if (file_exists($sFilePath))
+        {
+            unlink($this->_sGetFilename($id));
+        }
 
 		return true;
 	}
