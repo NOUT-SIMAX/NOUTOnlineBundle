@@ -572,6 +572,7 @@ class NOUTClient
 		switch ($clActionResult->ReturnType)
 		{
 		case XMLResponseWS::RETURNTYPE_EMPTY:
+                break; //on ne fait rien de plus
 		case XMLResponseWS::RETURNTYPE_VALUE:
 		case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
 		case XMLResponseWS::RETURNTYPE_CHART:
