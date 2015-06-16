@@ -37,30 +37,30 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 class Record
 {
 	/**
-	 * @var $m_sTitle : contient la mini desc de l'enregistrement
+	 * @var string $m_sTitle : contient la mini desc de l'enregistrement
 	 */
 	protected $m_sTitle;
 	/**
-	 * @var $m_nID : identitifant de l'enregistrement
+	 * @var string $m_nID : identitifant de l'enregistrement
 	 */
 	protected $m_nIDEnreg;
 
 	/**
-	 * @var $m_nIDTableau : identifiant du formulaire
+	 * @var string $m_nIDTableau : identifiant du formulaire
 	 */
 	protected $m_nIDTableau;
 
 	/**
-	 * @var $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
+	 * @var array $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
 	 */
 	protected $m_TabColumnsInfo;
 
 	/**
-	 * @var $m_TabColumnsValues : tableau avec les valeurs des colonnes
+	 * @var array $m_TabColumnsValues : tableau avec les valeurs des colonnes
 	 */
 	protected $m_TabColumnsValues;
 	/**
-	 * @var $m_TabColumnsModified : tableau de booleen pour indiquer que la valeur à changée
+	 * @var array $m_TabColumnsModified : tableau de booleen pour indiquer que la valeur à changée
 	 */
 	protected $m_TabColumnsModified;
 
@@ -84,10 +84,23 @@ class Record
 		$this->m_TabColumnsValues   = array();
 	}
 
+    /**
+     * renvoi l'identifiant de l'enregistrement
+     * @return string
+     */
 	public function getIDEnreg()
 	{
 		return $this->m_nIDEnreg;
 	}
+
+    /**
+     * renvoi la minidesc de l'enregistrement
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->m_sTitle;
+    }
 
 	/**
 	 * @return StructureElement
@@ -238,6 +251,11 @@ class Record
     public function updateFromRecord(Record $clRecordSrc)
     {
         $this->resetLastModified();
+
+        //mise à jour du titre
+        $this->m_sTitle = $clRecordSrc->getTitle();
+
+        //mise à jour des valeurs
         foreach($clRecordSrc->m_TabColumnsValues as $idcolonne=>$value)
         {
             $this->setValCol($idcolonne, $value);
