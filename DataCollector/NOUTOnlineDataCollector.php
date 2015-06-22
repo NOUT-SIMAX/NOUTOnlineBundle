@@ -8,7 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DataCollector;
 
-use NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
