@@ -6,7 +6,7 @@
  * Time: 14:48
  */
 
-namespace NOUTBundleContextsBundle\Entity;
+namespace NOUT\Bundle\ContextsBundle\Entity;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
@@ -34,7 +34,7 @@ class ActionResult
 	private $m_clAction;
 
 	/**
-	 * @var \NOUTBundleContextsBundle\Entity\ActionResultCache
+	 * @var \NOUT\Bundle\ContextsBundle\Entity\ActionResultCache
 	 */
 	private $m_clCache;
 

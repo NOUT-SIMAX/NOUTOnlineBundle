@@ -11,7 +11,7 @@
  * 3 - Libelle de l'option
  */
 
-namespace NOUTBundleContextsBundle\Entity\Menu;
+namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
 
 class OptionMenu
 {

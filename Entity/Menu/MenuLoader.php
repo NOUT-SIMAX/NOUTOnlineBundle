@@ -8,7 +8,7 @@
  * Time: 09:18
  */
 
-namespace NOUTBundleContextsBundle\Entity\Menu;
+namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
