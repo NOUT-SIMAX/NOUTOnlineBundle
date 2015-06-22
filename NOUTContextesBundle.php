@@ -1,6 +1,6 @@
 <?php
 
-namespace NOUT\Bundle\ContextesBundle;
+namespace NOUTBundleContextsBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace NOUT\Bundle\ContextesBundle\DependencyInjection;
+namespace NOUTBundleContextsBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

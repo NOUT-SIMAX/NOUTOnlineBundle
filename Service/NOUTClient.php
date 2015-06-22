@@ -6,12 +6,12 @@
  * Time: 11:25
  */
 
-namespace NOUT\Bundle\ContextesBundle\Service;
+namespace NOUTBundleContextsBundle\Service;
 
-use NOUT\Bundle\ContextesBundle\Entity\ActionResult;
-use NOUT\Bundle\ContextesBundle\Entity\ActionResultCache;
-use NOUT\Bundle\ContextesBundle\Entity\ConnectionInfos;
-use NOUT\Bundle\ContextesBundle\Entity\Menu\MenuLoader;
+use NOUTBundleContextsBundle\Entity\ActionResult;
+use NOUTBundleContextsBundle\Entity\ActionResultCache;
+use NOUTBundleContextsBundle\Entity\ConnectionInfos;
+use NOUTBundleContextsBundle\Entity\Menu\MenuLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;

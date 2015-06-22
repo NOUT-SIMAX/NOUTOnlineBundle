@@ -6,7 +6,7 @@
  * Time: 15:30
  */
 
-namespace NOUT\Bundle\ContextesBundle\Entity\Menu;
+namespace NOUTBundleContextsBundle\Entity\Menu;
 
 
 class Menu extends OptionMenu

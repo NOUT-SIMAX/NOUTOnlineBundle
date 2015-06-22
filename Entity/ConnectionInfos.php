@@ -6,7 +6,7 @@
  * Time: 15:22
  */
 
-namespace NOUT\Bundle\ContextesBundle\Entity;
+namespace NOUTBundleContextsBundle\Entity;
 
 
 class ConnectionInfos

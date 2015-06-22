@@ -1,6 +1,6 @@
 <?php
 
-namespace NOUT\Bundle\ContextesBundle\Controller;
+namespace NOUTBundleContextsBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
