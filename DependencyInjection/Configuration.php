@@ -1,6 +1,6 @@
 <?php
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\DependencyInjection;
+namespace NOUT\Bundle\SessionManagerBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

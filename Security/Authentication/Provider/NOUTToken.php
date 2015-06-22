@@ -6,7 +6,7 @@
  * Time: 15:30
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider;
+namespace NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider;
 
 
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;

@@ -6,7 +6,7 @@
  * Time: 11:46
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider;
+namespace NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
@@ -36,7 +36,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
  *
  *
  * Class NOUTOnlineAuthenticationProvider
- * @package NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider
+ * @package NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider
  */
 class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 {

@@ -1,20 +1,20 @@
 <?php
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Controller;
+namespace NOUT\Bundle\SessionManagerBundle\Controller;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
-use NOUT\Bundle\NOUTSessionManagerBundle\Entity\TimeZone;
-use NOUT\Bundle\NOUTSessionManagerBundle\Entity\User;
-use NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use NOUT\Bundle\SessionManagerBundle\Entity\TimeZone;
+use NOUT\Bundle\SessionManagerBundle\Entity\User;
+use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
-use NOUT\Bundle\NOUTSessionManagerBundle\Entity\ConnectionInfos;
+use NOUT\Bundle\SessionManagerBundle\Entity\ConnectionInfos;
 use Symfony\Component\Security\Core\SecurityContext;
 
 

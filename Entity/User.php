@@ -6,7 +6,7 @@
  * Time: 11:34
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Entity;
+namespace NOUT\Bundle\SessionManagerBundle\Entity;
 
 
 use Symfony\Component\Security\Core\User\UserInterface;

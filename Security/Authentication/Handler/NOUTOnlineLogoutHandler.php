@@ -6,7 +6,7 @@
  * Time: 11:59
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Handler;
+namespace NOUT\Bundle\SessionManagerBundle\Security\Authentication\Handler;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;

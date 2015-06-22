@@ -6,7 +6,7 @@
  * Time: 14:55
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\DependencyInjection\Factory;
+namespace NOUT\Bundle\SessionManagerBundle\DependencyInjection\Factory;
 
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;

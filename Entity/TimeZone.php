@@ -6,7 +6,7 @@
  * Time: 10:29
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Entity;
+namespace NOUT\Bundle\SessionManagerBundle\Entity;
 
 
 class TimeZone 

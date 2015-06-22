@@ -1,6 +1,6 @@
 <?php
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Tests\Controller;
+namespace NOUT\Bundle\SessionManagerBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

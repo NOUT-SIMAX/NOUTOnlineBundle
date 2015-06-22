@@ -1,6 +1,6 @@
 <?php
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\DependencyInjection;
+namespace NOUT\Bundle\SessionManagerBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

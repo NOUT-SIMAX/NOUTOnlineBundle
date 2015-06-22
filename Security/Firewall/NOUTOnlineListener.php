@@ -6,9 +6,9 @@
  * Time: 17:10
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Firewall;
+namespace NOUT\Bundle\SessionManagerBundle\Security\Firewall;
 
-use NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;

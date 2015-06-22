@@ -6,13 +6,13 @@
  * Time: 11:51
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Security\Core\User;
+namespace NOUT\Bundle\SessionManagerBundle\Security\Core\User;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
-use NOUT\Bundle\NOUTSessionManagerBundle\Entity\User;
+use NOUT\Bundle\SessionManagerBundle\Entity\User;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
@@ -67,6 +67,6 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 	 */
 	public function supportsClass($class)
 	{
-		return $class === 'NOUT\Bundle\NOUTSessionManagerBundle\Entity\User';
+		return $class === 'NOUT\Bundle\SessionManagerBundle\Entity\User';
 	}
 }

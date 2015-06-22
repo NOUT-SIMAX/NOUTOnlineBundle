@@ -6,12 +6,12 @@
  * Time: 14:43
  */
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle\Listener;
+namespace NOUT\Bundle\SessionManagerBundle\Listener;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
-use NOUT\Bundle\NOUTSessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;

@@ -1,8 +1,8 @@
 <?php
 
-namespace NOUT\Bundle\NOUTSessionManagerBundle;
+namespace NOUT\Bundle\SessionManagerBundle;
 
-use NOUT\Bundle\NOUTSessionManagerBundle\DependencyInjection\Factory\SecurityFactory;
+use NOUT\Bundle\SessionManagerBundle\DependencyInjection\Factory\SecurityFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
