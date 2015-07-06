@@ -15,6 +15,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 class OnlineServiceProxy
 {
@@ -124,25 +125,65 @@ class OnlineServiceProxy
 		return $sUrl;
 	}
 
-	protected function _sExecute($sAction, $sURI, $sDestination)
+	protected function _sExecute_cURL($sAction, $sURI, $sDestination)
 	{
-		if (isset($this->__clLogger))
-		{
-			//log des requetes
-			$this->__clLogger->startQuery();
-		}
-
+		//initialisation de curl
+		$curl = curl_init($sURI);
 		if (!empty($sDestination))
 		{
+			//on a un fichier de destination, il faut écrire le résultat de l'url dans le fichier de destination
+			$fp = fopen($sDestination, "w");
+			curl_setopt($curl, CURLOPT_FILE, $fp);
+			curl_setopt($curl, CURLOPT_HEADER, 0);
+
+			curl_exec($curl);
+			fclose($fp);
+
+			// Vérifie si une erreur survient
+			if(curl_errno($curl))
+			{
+				$e = new \Exception(curl_error($curl));
+				curl_close($curl);
+				throw $e;
+			}
+			curl_close($curl);
+
+			//si le fichier est vide on le supprime
+			if (is_file($sDestination) && filesize($sDestination) == 0)
+			{
+				unlink($sDestination);
+				return '';
+			}
+			return $sDestination;
+		}
+
+		//pas de fichier de destination, on récupère le contenu de l'url dans une chaine
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		$output = curl_exec($curl);
+
+		// Vérifie si une erreur survient
+		if(curl_errno($curl))
+		{
+			$e = new \Exception(curl_error($curl));
+			curl_close($curl);
+			throw $e;
+		}
+
+		curl_close($curl);
+		return $output;
+	}
+
+	protected function _sExecute_natif($sAction, $sURI, $sDestination)
+	{
+		if (!empty($sDestination))
+		{
+			//on a un fichier de destination
 			if (@copy($sURI, $sDestination) === false)
 			{
 				$aError = error_get_last();
-				$e      = new \Exception($aError['message']);
-
-				if (isset($this->__clLogger))
-				{
-					$this->__clLogger->stopQuery($sURI, $aError['message'], (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, false);
-				}
+				if (empty($aError))
+					$aError['message']='le serveur '.$this->__ConfigurationDialogue->getServiceAddress().' ne répond pas';
+				$e = new \Exception($aError['message']);
 
 				throw $e;
 			}
@@ -150,17 +191,7 @@ class OnlineServiceProxy
 			if (is_file($sDestination) && filesize($sDestination) == 0)
 			{
 				unlink($sDestination);
-				if (isset($this->__clLogger))
-				{
-					$this->__clLogger->stopQuery($sURI, '', $sAction, false, false);
-				}
-
 				return '';
-			}
-
-			if (isset($this->__clLogger))
-			{
-				$this->__clLogger->stopQuery($sURI, file_get_contents($sDestination, null, null, 0, 20), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, false);
 			}
 
 			return $sDestination;
@@ -169,23 +200,52 @@ class OnlineServiceProxy
 		if (($sResp = @file_get_contents($sURI)) === false)
 		{
 			$aError = error_get_last();
-			$e      = new \Exception($aError['message']);
+			if (empty($aError))
+				$aError['message']='le serveur '.$this->__ConfigurationDialogue->getServiceAddress().' ne répond pas';
 
+			$e = new \Exception($aError['message']);
+			throw $e;
+		}
+		return $sResp;
+
+	}
+
+	protected function _sExecute($sAction, $sURI, $sDestination)
+	{
+		if (isset($this->__clLogger))
+		{
+			//log des requetes
+			$this->__clLogger->startQuery();
+		}
+
+		try
+		{
+			if (!function_exists('curl_version'))
+			{
+				//curl n'est pas disponible
+				$ret = $this->_sExecute_natif($sAction, $sURI, $sDestination);
+			}
+			else
+			{
+				//on l'extension curl
+				$ret = $this->_sExecute_cURL($sAction, $sURI, $sDestination);
+			}
+		}
+		catch(Exception $e)
+		{
 			if (isset($this->__clLogger))
 			{
-				$this->__clLogger->stopQuery($sURI, $aError['message'], (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
+				$this->__clLogger->stopQuery($sURI, $e.getMessage(), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
 			}
 
 			throw $e;
 		}
 
-
 		if (isset($this->__clLogger))
 		{
-			$this->__clLogger->stopQuery($sURI, $sResp, (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
+			$this->__clLogger->stopQuery($sURI, $ret, (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
 		}
-
-		return $sResp;
+		return $ret;
 	}
 
 
