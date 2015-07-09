@@ -92,11 +92,10 @@ class DefaultController extends Controller
 	    }
 		$sTheme = $this->container->getParameter('nout_web_site.theme');
 
-	    return $this->render("NOUTSessionManagerBundle:Security:$sTheme/login.html.twig", array(
+	    return $this->render("NOUTSessionManagerBundle:Security:$sTheme/index.html.twig", array(
 		    // last username entered by the user
 		    'last_username' => $session->get(SecurityContext::LAST_USERNAME),
 		    'error'         => $error,
-		    'version_noutonline' => $this->_clGetRESTProxy()->sGetVersion(),
 		    'timezone_list' => TimeZone::s_aGetTabTimezone(),
 		    'last_timezone' => $session->get(NOUTToken::SESSION_LastTimeZone),
 	    ));
