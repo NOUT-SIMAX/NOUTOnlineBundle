@@ -8,6 +8,9 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Twig;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -16,7 +19,30 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @author Florin Patan <florinpatan@gmail.com>
  * @author Christophe Coevoet <stof@notk.org>
  */
-class NOUTOnlineExtension extends \Twig_Extension {
+class NOUTOnlineExtension extends \Twig_Extension
+{
+
+	/**
+	 * @var OnlineServiceFactory $m_clServiceFactory
+	 */
+	protected $m_clServiceFactory;
+
+	/**
+	 * @var ConfigurationDialogue $m_clConfiguration
+	 */
+	protected $m_clConfiguration;
+
+	/**
+	 * @param OnlineServiceFactory  $factory
+	 * @param ConfigurationDialogue $configuration
+	 */
+	public function __construct(OnlineServiceFactory $factory, ConfigurationDialogue $configuration)
+	{
+		$this->m_clServiceFactory = $factory;
+		$this->m_clConfiguration = $configuration;
+	}
+
+
 	/**
 	 * Get the name of the extension
 	 *
@@ -63,4 +89,42 @@ class NOUTOnlineExtension extends \Twig_Extension {
 		$result = $header.$doc->saveXML();
 		return $result;
 	}
+
+
+	public function getFunctions()
+	{
+		return array(
+			'noutonline_version' => new \Twig_Function_Method($this, 'version'),
+			'noutonline_is_started' => new \Twig_Function_Method($this, 'isStarted'),
+		);
+	}
+
+	/**
+	 * Get NOUTOnline Version
+	 *
+	 * @return string
+	 */
+	public function version()
+	{
+		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
+		try
+		{
+			return $clRest->sGetVersion();
+		}
+		catch(Exception $e)
+		{
+			return $e->getMessage();
+		}
+	}
+
+	/**
+	 * Test si NOUTOnline est démarré
+	 * @return bool
+	 */
+	public function isStarted()
+	{
+		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
+		return $clRest->bIsStarted();
+	}
+
 } 
