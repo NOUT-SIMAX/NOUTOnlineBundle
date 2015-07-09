@@ -41,6 +41,24 @@ class OnlineServiceProxy
 		$this->__ConfigurationDialogue = $clConfig;
 		$this->__clLogger              = $_clLogger;
 	}
+
+	/**
+	 * Test si le service est démarré
+	 * @return bool
+	 */
+	public function bIsStarted()
+	{
+		try
+		{
+			$this->sGetVersion();
+			return true;
+		}
+		catch(\Exception $e)
+		{
+			return false;
+		}
+	}
+
 	/**
 	 * Retourne la fin de la requette rest (partie identification)
 	 * @param string $sIdContext le context de l'action (facultatif)
