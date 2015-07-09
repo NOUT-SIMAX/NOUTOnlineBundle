@@ -69,6 +69,27 @@ class DefaultController extends Controller
 		return $zones_array;
 	}
 
+	/**
+	 * @param $sNameSpace, le namespace
+	 * @param $sFile, le chemin du fichier dans le namespace sans l'extension
+	 * @return string
+	 */
+	protected function _sGetTemplate($sFile, $sNameSpace='')
+	{
+		if (empty($sNameSpace))
+			$sNameSpace='NOUTSessionManagerBundle';
+
+		$sTheme = $this->container->getParameter('nout_web_site.theme');
+		$sTemplate = "$sNameSpace:$sTheme:$sFile.html.twig";
+
+		if ( !$this->get('templating')->exists($sTemplate) ) {
+			// le template n'existe pas, on donne le template par défaut
+			$sTemplate = "$sNameSpace:$sTheme:$sFile.html.twig";
+		}
+
+		return $sTemplate;
+	}
+
     /**
      * Route de génération du formulaire de connexion
      * Comme c'est pour l'identification, on n'utilise pas de formBuilder, uniquement un template twig avec le formulaire dedans
@@ -90,9 +111,8 @@ class DefaultController extends Controller
 		    $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
 		    $session->remove(SecurityContext::AUTHENTICATION_ERROR);
 	    }
-		$sTheme = $this->container->getParameter('nout_web_site.theme');
 
-	    return $this->render("NOUTSessionManagerBundle:Security:$sTheme/index.html.twig", array(
+	    return $this->render($this->_sGetTemplate('Security/index'), array(
 		    // last username entered by the user
 		    'last_username' => $session->get(SecurityContext::LAST_USERNAME),
 		    'error'         => $error,

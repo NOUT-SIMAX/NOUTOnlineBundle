@@ -1,0 +1,5 @@
+{% if noutonline_is_started() %}
+	{% include 'NOUTSessionManagerBundle:Dev:Security/login.html.twig' %}
+{% else %}
+	{% include 'NOUTSessionManagerBundle:Dev:Security/notstarted.html.twig' %}
+{% endif %}

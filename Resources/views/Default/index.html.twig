@@ -1,7 +1,24 @@
 {% extends "NOUTOnlineBundle::layout.html.twig" %}
 
 {% block containt %}
-	<h1>Bonjour {{ username }}</h1>
-	<p>Token de session : {{ tokensession }}</p>
-	<p><a href="{{ path('logout') }}">Se déconnecter</a></p>
+	<div class="panel panel-error" style="margin-top: 50px;">
+			<div class="panel-heading">
+				<div class="panel-title">Oups....</div>
+			</div>
+			<div style="padding-top:30px" class="panel-body" >
+				<p>
+					Cette page ne devrait pas s'afficher,<br/>
+					Veuillez configurer le pare-feu symfony correctement<br />
+					ou contacter votre prestataire de service.
+				</p>
+			</div>
+			<div class="panel-footer">
+				© NOUTWeb {{ noutwebsite_version }}
+				{% if app.debug %}
+					<br />
+					© NOUTSessionManager Bundle
+				{% endif %}
+			</div>
+		</div>
+	</div>
 {% endblock %}
