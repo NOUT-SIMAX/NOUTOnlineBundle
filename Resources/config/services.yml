@@ -33,7 +33,7 @@ services:
 
     nout_online.configuration_dialogue:
         class:      NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
-        arguments:  [@nout_online.config_manager]
+        arguments:  [@nout_online.config_manager, '%noutwebsite_version%', '%noutwebsite_client% %societe%']
 
     #factory pour le service
     nout_online.service_factory:
@@ -43,6 +43,7 @@ services:
     nout_online.twig.nout_online_extension:
         class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension
         arguments:
+            - @service_container
             - @nout_online.service_factory
             - @nout_online.configuration_dialogue
         tags:

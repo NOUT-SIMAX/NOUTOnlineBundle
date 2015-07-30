@@ -28,6 +28,10 @@ class OnlineServiceProxy
 	//logger symfony
 	private $__clLogger;
 
+	/**
+	 * @var string
+	 */
+	private $m_sIPClient;
 
 
 	/**
@@ -40,6 +44,16 @@ class OnlineServiceProxy
 	{
 		$this->__ConfigurationDialogue = $clConfig;
 		$this->__clLogger              = $_clLogger;
+	}
+
+	/**
+	 * @param string $sIP
+	 * @return $this
+	 */
+	public function setIPClient($sIP)
+	{
+		$this->m_sIPClient=trim($sIP);
+		return $this;
 	}
 
 	/**
@@ -145,8 +159,19 @@ class OnlineServiceProxy
 
 	protected function _sExecute_cURL($sAction, $sURI, $sDestination)
 	{
+		if (empty($this->m_sIPClient))
+		{
+			throw new \Exception('Il faut obligatoirement spécifier l\'adresse IP du client final au niveau du proxy REST');
+		}
+
 		//initialisation de curl
 		$curl = curl_init($sURI);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+			ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP.': '.$this->m_sIPClient,
+			ConfigurationDialogue::HTTP_SIMAX_CLIENT.': '.$this->__ConfigurationDialogue->getSociete(),
+			ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version.': '.$this->__ConfigurationDialogue->getVersion(),
+		));
+
 		if (!empty($sDestination))
 		{
 			//on a un fichier de destination, il faut écrire le résultat de l'url dans le fichier de destination
@@ -193,6 +218,9 @@ class OnlineServiceProxy
 
 	protected function _sExecute_natif($sAction, $sURI, $sDestination)
 	{
+		//obligé de rajouter l'ip ici car j'ai pas accès au entête http
+		$sURI.='&ip='.urlencode($this->m_sIPClient);
+
 		if (!empty($sDestination))
 		{
 			//on a un fichier de destination

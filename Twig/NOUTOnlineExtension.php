@@ -33,11 +33,18 @@ class NOUTOnlineExtension extends \Twig_Extension
 	protected $m_clConfiguration;
 
 	/**
+	 * @var string IP du client final
+	 */
+	protected $m_sIP;
+
+	/**
 	 * @param OnlineServiceFactory  $factory
 	 * @param ConfigurationDialogue $configuration
 	 */
-	public function __construct(OnlineServiceFactory $factory, ConfigurationDialogue $configuration)
+	public function __construct(ContainerInterface $containerInterface, OnlineServiceFactory $factory, ConfigurationDialogue $configuration)
 	{
+		$this->m_sIP = $containerInterface->get('request')->getClientIp();
+
 		$this->m_clServiceFactory = $factory;
 		$this->m_clConfiguration = $configuration;
 	}
@@ -106,7 +113,7 @@ class NOUTOnlineExtension extends \Twig_Extension
 	 */
 	public function version()
 	{
-		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
+		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration, $this->m_sIP);
 		try
 		{
 			return $clRest->sGetVersion();
@@ -123,7 +130,7 @@ class NOUTOnlineExtension extends \Twig_Extension
 	 */
 	public function isStarted()
 	{
-		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
+		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration, $this->m_sIP);
 		return $clRest->bIsStarted();
 	}
 

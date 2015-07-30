@@ -46,6 +46,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			$this->data['time_zone']     = '';
 			$this->data['user']          = '';
 			$this->data['superviseur']   = false;
+			$this->data['ip']			 = '';
 		}
 		else
 		{
@@ -62,6 +63,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			{
 				$this->data['session_token'] = $token->getSessionToken();
 				$this->data['time_zone']     = $token->getTimeZone();
+				$this->data['ip']            = $token->getIP();
 			}
 		}
 	}
@@ -123,6 +125,16 @@ class NOUTOnlineDataCollector  extends DataCollector
 	public function getUser()
 	{
 		return $this->data['user'];
+	}
+
+	/**
+	 * Gets the client IP.
+	 *
+	 * @return string the client IP
+	 */
+	public function getIP()
+	{
+		return $this->data['ip'];
 	}
 	/**
 	 * get the token of the session

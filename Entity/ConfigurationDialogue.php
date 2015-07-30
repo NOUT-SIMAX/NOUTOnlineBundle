@@ -52,7 +52,16 @@ class ConfigurationDialogue
 	 */
 	protected $m_sServiceAddress;
 
-	public function __construct(ConfigManager $clConfigManager)
+	/**
+	 * @var string
+	 */
+	protected $m_sVersion;
+	/**
+	 * @var string
+	 */
+	protected $m_sSociete;
+
+	public function __construct(ConfigManager $clConfigManager, $sVersion, $sSociete)
 	{
 		$sProtocolPrefix = $clConfigManager->getParameter('protocole');
 		$sHost = $clConfigManager->getParameter('address');
@@ -69,6 +78,9 @@ class ConfigurationDialogue
 		$this->m_nLangCode    = 12;
 		$this->m_sAPIUUID     = $sAPIUUID;
 		$this->m_nDureeSession = 3600;
+
+		$this->m_sVersion=$sVersion;
+		$this->m_sSociete=$sSociete;
 	}
 
 	public function Init($sWSDLUri, $bWsdl = false, $sHost = false, $sPort = false, $sProtocolPrefix = 'http://')
@@ -189,4 +201,24 @@ class ConfigurationDialogue
 	{
 		return $this->m_sWSDLUri;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getVersion()
+	{
+		return $this->m_sVersion;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSociete()
+	{
+		return $this->m_sSociete;
+	}
+
+	const HTTP_SIMAX_CLIENT           = 'x-SIMAXService-Client';
+	const HTTP_SIMAX_CLIENT_IP        = 'x-SIMAXService-Client-IP';
+	const HTTP_SIMAX_CLIENT_Version   = 'x-SIMAXService-Client-Version';
 }

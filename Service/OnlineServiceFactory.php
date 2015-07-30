@@ -37,9 +37,15 @@ class OnlineServiceFactory
 	 * @param ConfigurationDialogue $clConfiguration
 	 * @return SOAPProxy
 	 */
-	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration)
+	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration, $sIP)
 	{
+		if (empty(trim($sIP)))
+		{
+			throw new \Exception('L\'addresse IP du client ne doit pas être vide');
+		}
+
 		$OnlineService = new SOAPProxy($clConfiguration, $this->m_clLogger, $this->m_clCache);
+		$OnlineService->setIPClient($sIP);
 
 		return $OnlineService;
 	}
@@ -48,9 +54,15 @@ class OnlineServiceFactory
 	 * @param ConfigurationDialogue $clConfiguration
 	 * @return RESTProxy
 	 */
-	public function clGetRESTProxy(ConfigurationDialogue $clConfiguration)
+	public function clGetRESTProxy(ConfigurationDialogue $clConfiguration, $sIP)
 	{
+		if (empty(trim($sIP)))
+		{
+			throw new \Exception('L\'addresse IP du client ne doit pas être vide');
+		}
+
 		$OnlineService = new RESTProxy($clConfiguration, $this->m_clLogger);
+		$OnlineService->setIPClient($sIP);
 
 		return $OnlineService;
 	}

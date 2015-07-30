@@ -8,7 +8,7 @@
 
 	{% set icon %}
 	{# l'icone de la plume pour SIMAX #}
-	<img width="24" height="24" alt="NOUTOnline" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABy0lEQVRIx61UPUsDQRANIYQQglVynjFisBCJhZcY4wcWIgj+ArGytBQLi2BnKZYWwR8gFsHCyipFKhErEZEgwUIEc2MKC7GS+Oa81ct5B7u5Gxh2b2/3zezbNxOJBLT5MTNW1GjdyNAx/AbeNTTqBMWNzI1SHMC7AHwxMm+9fqfzgYErOYotjpsxgNRn0mQB8ijmWO8h8NZA4Di4CoCH8ggVGEgAOx3rH/g/pEZHluLglTm2sixaczctv/TUlMBnkQ0OXfVTQZ9OWpzrpWHKq9Ky7UWFBzVdJe6RySR8iR/Tnw64RnfYt1PJmVl5WnRKA7iNw/sYb73U4p5j35F0ANaxfagNf5ag5x1JabKcrwi1yDrOVFWyr3tc/8ufIrrnqlYJ0HVd/xEZXju+2Ql+yQpDUaWkwZcnzKSraBp8fddah4uJ+xB4z0uDs61Nv0ZFEWE8hfwW/r7/9ZwL9KSoUgCboibkWUN7SGHe8lFNE9QklcHZSjpN2YFqPr3mbGBwYXbXdCmHWljfCATMVs5SgpVj9/UqfBNvYQQGdmR/IKgIDVQYt1pWDZc+3kIPPYCoYtxiL3Tw4o/mmZonSDQRfgCNTgB+CJoKYeJ+A+BCwvOaOKbxAAAAAElFTkSuQmCC" />
+	<img width="24" height="24" alt="NOUTOnline" style="margin-bottom: 4px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABy0lEQVRIx61UPUsDQRANIYQQglVynjFisBCJhZcY4wcWIgj+ArGytBQLi2BnKZYWwR8gFsHCyipFKhErEZEgwUIEc2MKC7GS+Oa81ct5B7u5Gxh2b2/3zezbNxOJBLT5MTNW1GjdyNAx/AbeNTTqBMWNzI1SHMC7AHwxMm+9fqfzgYErOYotjpsxgNRn0mQB8ijmWO8h8NZA4Di4CoCH8ggVGEgAOx3rH/g/pEZHluLglTm2sixaczctv/TUlMBnkQ0OXfVTQZ9OWpzrpWHKq9Ky7UWFBzVdJe6RySR8iR/Tnw64RnfYt1PJmVl5WnRKA7iNw/sYb73U4p5j35F0ANaxfagNf5ag5x1JabKcrwi1yDrOVFWyr3tc/8ufIrrnqlYJ0HVd/xEZXju+2Ql+yQpDUaWkwZcnzKSraBp8fddah4uJ+xB4z0uDs61Nv0ZFEWE8hfwW/r7/9ZwL9KSoUgCboibkWUN7SGHe8lFNE9QklcHZSjpN2YFqPr3mbGBwYXbXdCmHWljfCATMVs5SgpVj9/UqfBNvYQQGdmR/IKgIDVQYt1pWDZc+3kIPPYCoYtxiL3Tw4o/mmZonSDQRfgCNTgB+CJoKYeJ+A+BCwvOaOKbxAAAAAElFTkSuQmCC" />
 	{# s'il y a un utilisateur #}
 	{% if collector.user %}
 		<div class="sf-toolbar-status sf-toolbar-info-piece-additional sf-toolbar-status-{{ color_code }}">{{ collector.user }}</div>
@@ -24,6 +24,10 @@
 	{% set text %}
 		{# informations sur la session #}
 		{% if collector.authenticated %}
+			<div class="sf-toolbar-info-piece">
+				<b>Client IP</b>
+				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.ip }}</span>
+			</div>
 			<div class="sf-toolbar-info-piece">
 				<b>Token session</b>
 				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.sessiontoken }}</span>

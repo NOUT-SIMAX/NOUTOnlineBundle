@@ -54,6 +54,11 @@ class NOUTOnlineLogger
 		$this->m_bEnabled  = $debug;
 	}
 
+	public function getEnabled()
+	{
+		return $this->m_bEnabled;
+	}
+
 	public function startQuery()
 	{
 		if ($this->m_bEnabled)

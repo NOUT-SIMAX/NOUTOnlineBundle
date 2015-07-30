@@ -96,6 +96,11 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	private $__sVersionWSDL;
 	private $__clCache;
 
+	/**
+	 * @var string
+	 */
+	private $m_sIPClient;
+
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
      * @param $clConfig
@@ -193,6 +198,30 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 		$this->checkWSDL();
 	}
 
+
+	/**
+	 * ajoute les headers spécifique SIMAX
+	 * @param $http
+	 */
+	protected function _setHTTPHeader($http)
+	{
+		if (empty($this->m_sIPClient))
+		{
+			throw new \Exception('Il faut obligatoirement spécifier l\'adresse IP du client final au niveau du proxy SOAP');
+		}
+		$http->setHeader(ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP, $this->m_sIPClient);
+		$http->setHeader(ConfigurationDialogue::HTTP_SIMAX_CLIENT, $this->__ConfigurationDialogue->getSociete());
+		$http->setHeader(ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version, $this->__ConfigurationDialogue->getVersion());
+	}
+
+	/**
+	 * @param string $sIP IP du client
+	 */
+	public function setIPClient($sIP)
+	{
+		$this->m_sIPClient=trim($sIP);
+	}
+
 	/**
 	 * send the SOAP message
 	 *
@@ -233,6 +262,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 					$http->setEncoding($this->http_encoding);
 				}
 
+				$this->_setHTTPHeader($http);
 				$this->__StartSend();
 				if(preg_match('/^http:/',$this->endpoint)){
 					//if(strpos($this->endpoint,'http:')){
@@ -374,7 +404,6 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 
 
-
     //------------------------------------------------------------------------------------------
     // Redefinition methode call
     //------------------------------------------------------------------------------------------
@@ -414,10 +443,6 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
         //on rajoute les header
         $this->addMultipleHeaders($mHeaders);
-
-
-		//TODO: ajouter les header X-SIMAX pour le service.
-
 
 	    if (!isset($this->__aListHeaders[self::HEADER_OptionDialogue]) || is_object($this->__aListHeaders[self::HEADER_OptionDialogue]))
 	    {
