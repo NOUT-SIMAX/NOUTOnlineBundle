@@ -23,6 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\Role\SwitchUserRole;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -109,7 +110,9 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 	public function authenticate(TokenInterface $token)
 	{
 		if (!$this->supports($token))
-			return;
+		{
+			throw new AuthenticationServiceException('The token is not supported.');
+		}
 
 		$username = $token->getUsername();
 		if (empty($username))
@@ -150,25 +153,34 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 			throw $e;
 		}
 
-		$authenticatedToken = new NOUTToken($user, $token->getCredentials(), $this->providerKey, $this->_aGetRoles($user, $token));
-		$authenticatedToken->setTimeZone($token->getTimeZone());
-		$authenticatedToken->setAttributes($token->getAttributes());
-		$authenticatedToken->setSessionToken($sTokenSession);
-		$authenticatedToken->setIP($this->m_sIP);
+		if ($token instanceof NOUTToken)
+		{
+			$authenticatedToken = new NOUTToken($user, $token->getCredentials(), $this->providerKey, $this->_aGetRoles($user, $token));
+			$authenticatedToken->setTimeZone($token->getTimeZone());
+			$authenticatedToken->setAttributes($token->getAttributes());
+			$authenticatedToken->setSessionToken($sTokenSession);
+			$authenticatedToken->setIP($this->m_sIP);
 
-		$clIdentification = new Identification();
-		$clIdentification->m_clUsernameToken = new UsernameToken($user->getUsername(), $user->getPassword());
-		$clIdentification->m_sTokenSession = $sTokenSession;
-		$clIdentification->m_sIDContexteAction = '';
-		$clIdentification->m_bAPIUser = true;
+			$clIdentification = new Identification();
+			$clIdentification->m_clUsernameToken = new UsernameToken($user->getUsername(), $user->getPassword());
+			$clIdentification->m_sTokenSession = $sTokenSession;
+			$clIdentification->m_sIDContexteAction = '';
+			$clIdentification->m_bAPIUser = true;
 
-		$sVersionLangage = $this->m_clRESTProxy->sGetChecksumLangage($clIdentification);
-		$clIdentification->m_clUsernameToken->ComputeCryptedPassword(); //recalcule le mot de passe crypté
-		$sVersionIcone = $this->m_clRESTProxy->sGetChecksum(Langage::TABL_ImageCatalogue, $clIdentification);
+			$sVersionLangage = $this->m_clRESTProxy->sGetChecksumLangage($clIdentification);
+			$clIdentification->m_clUsernameToken->ComputeCryptedPassword(); //recalcule le mot de passe crypté
+			$sVersionIcone = $this->m_clRESTProxy->sGetChecksum(Langage::TABL_ImageCatalogue, $clIdentification);
 
-		$authenticatedToken->setLangage(new Langage($sVersionLangage, $sVersionIcone));
+			$authenticatedToken->setLangage(new Langage($sVersionLangage, $sVersionIcone));
 
-		return $authenticatedToken;
+			return $authenticatedToken;
+		}
+
+		throw new AuthenticationServiceException('The token is not a NOUTToken.');
+
+
+
+
 	}
 
 	/**
@@ -193,11 +205,16 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 				throw new BadCredentialsException('The credentials were changed from another session.');
 			}
 
-			if (empty($token->getSessionToken()))
+			if ($token instanceof NOUTToken)
 			{
-				throw new BadCredentialsException('The session token is empty.');
+				if (empty($token->getSessionToken()))
+				{
+					throw new BadCredentialsException('The session token is empty.');
+				}
+				return $token->getSessionToken();
 			}
-			return $token->getSessionToken();
+
+			throw new AuthenticationServiceException('The token is not a NOUTToken.');
 		}
 		else
 		{
