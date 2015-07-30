@@ -82,13 +82,18 @@ class NOUTClient
 		$this->__security = $security;
 
 		$this->m_sCacheDir   = $sCacheDir.'/'.self::REPCACHE;
-		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
-		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+
+
+		$oSecurityToken = $this->__security->getToken();
+		$sIP = $oSecurityToken->getIP();
+
+		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue, $sIP);
+		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue, $sIP);
 
 		$this->m_clConfigurationDialogue = $configurationDialogue;
 
 		//création du cache pour la session
-		$sSessionToken = $this->__security->getToken()->getSessionToken();
+		$sSessionToken = $oSecurityToken->getSessionToken();
 		$this->m_clCacheSession = new NOUTCache($sCacheDir.'/'.self::REPCACHE, $sSessionToken);
 	}
 
