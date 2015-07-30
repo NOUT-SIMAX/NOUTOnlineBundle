@@ -35,27 +35,9 @@ class Configuration implements ConfigurationInterface
 		    ->addDefaultsIfNotSet()
 		    ->children()
 		        ->booleanNode('debug')->end()
-			    ->enumNode('protocole')
-	                ->values(array('http://', 'https://'))
-				    ->defaultValue('http://')
-			    ->end()
-			    ->scalarNode('address')
-				    ->defaultValue('127.0.0.1')
-	                ->cannotBeEmpty()
-				    ->validate()
-					    ->ifTrue(function ($ip) { return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6); })
-					    ->thenInvalid('%s should be an IPv4 or IPv6 address') //la valeur "%s" n'est pas valide pour le paramètre address, la valeur doit être une adresse IPv4 ou IPv6
-				    ->end()
-			    ->end()
-			    ->integerNode('port')
-		            ->cannotBeEmpty()
-				    ->defaultValue('8052')
-			    ->end()
-		        ->scalarNode('apiuuid')
-		        ->end()
+				->scalarNode('config_file')->end()
 		    ->end()
 	    ;
-
 	    return $treeBuilder;
     }
 }

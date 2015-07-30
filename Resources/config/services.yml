@@ -27,9 +27,13 @@ services:
         class:  NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache
         arguments: ["%kernel.cache_dir%/soap"]
 
+    nout_online.config_manager:
+        class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConfigManager
+        arguments:  ['%kernel.root_dir%/config', '%nout_online.config_file%']
+
     nout_online.configuration_dialogue:
         class:      NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
-        arguments:  ['%nout_online.address%', '%nout_online.port%', '%nout_online.protocole%', '%nout_online.apiuuid%']
+        arguments:  [@nout_online.config_manager]
 
     #factory pour le service
     nout_online.service_factory:

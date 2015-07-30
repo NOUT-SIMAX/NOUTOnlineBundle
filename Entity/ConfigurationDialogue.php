@@ -7,6 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
+use NOUT\Bundle\NOUTOnlineBundle\Service\ConfigManager;
 
 /**
  * Class ConfigurationDialogue permet de transporter les informations configurée pour le dialogue avec NOUTOnline
@@ -51,8 +52,13 @@ class ConfigurationDialogue
 	 */
 	protected $m_sServiceAddress;
 
-	public function __construct($sHost = '', $sPort = 0, $sProtocolPrefix = 'http://', $sAPIUUID = '')
+	public function __construct(ConfigManager $clConfigManager)
 	{
+		$sProtocolPrefix = $clConfigManager->getParameter('protocole');
+		$sHost = $clConfigManager->getParameter('address');
+		$sPort = $clConfigManager->getParameter('port');
+		$sAPIUUID = $clConfigManager->getParameter('apiuuid');
+
 		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
 		$this->m_bWsdl          = true;
