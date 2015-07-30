@@ -103,10 +103,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
-     * @param $clConfig
-     * @param $_clLogger
-     * @param $cache
-     * @return unknown_type
+	 * @param ConfigurationDialogue $clConfig
+	 * @param NOUTOnlineLogger      $_clLogger
+	 * @param NOUTCache             $cache
      */
     public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache=null)
     {
@@ -349,7 +348,6 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
     /**
      * reactive le nettoyage automatique des headers avant requete.
-     * @return unknown_type
      */
     public function reactivateAutoCleanHeadersBeforeRequest()
     {
@@ -520,8 +518,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : AddPJ
      *
+	 * @param AddPJ $clWsdlType_AddPJ
      * @param array $aHeaders tableau d'headers a ajouter a la requete
-     * @return AddPJResponse
+	 * @return XMLResponseWS
+	 * @throws \Exception
      * @access public
      */
     public function addPJ(AddPJ $clWsdlType_AddPJ, $aHeaders = array())
