@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 
+use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -120,4 +121,35 @@ class ConfigManager
 
 		return $this->m_clConfig[$sName];
 	}
+
+	/**
+	 * @param string $sName
+	 * @return mixed
+	 * @throws \Exception
+	 */
+	public function setParameter($sName, $Value)
+	{
+		if (empty($this->m_clConfig) || !isset($this->m_clConfig[$sName]))
+		{
+			throw new \Exception("Une erreur est survenue pendant le chargement du fichier de configuration $this->m_sConfigFile");
+		}
+
+		switch($sName)
+		{
+			case 'port':
+				$Value=(int)$Value;
+				break;
+		}
+
+		$this->m_clConfig[$sName]=$Value;
+
+		//dump de la config
+		$dumper = new Dumper();
+		$yaml = $dumper->dump(array('nout_online'=>$this->m_clConfig), 4);
+		file_put_contents($this->m_sConfigFile, $yaml);
+
+		return $this;
+	}
+
+
 }
