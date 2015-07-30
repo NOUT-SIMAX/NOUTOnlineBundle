@@ -30,6 +30,10 @@ class NOUTToken extends UsernamePasswordToken
 	 */
 	protected $m_clLangage;
 
+	/**
+	 * @var string m_sIP
+	 */
+	protected $m_sIP;
 
 	/**
 	 * {@inheritdoc}
@@ -92,13 +96,30 @@ class NOUTToken extends UsernamePasswordToken
 		return $this->m_sTimeZone;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getIP()
+	{
+		return $this->m_sIP;
+	}
+
+	/**
+	 * @param string $sIP
+	 * @return $this
+	 */
+	public function setIP($sIP)
+	{
+		$this->m_sIP = $sIP;
+		return $this;
+	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function serialize()
 	{
-		return serialize(array($this->m_sSessionToken, $this->m_sTimeZone, is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize(), parent::serialize()));
+		return serialize(array($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize(), parent::serialize()));
 	}
 
 	/**
@@ -106,7 +127,7 @@ class NOUTToken extends UsernamePasswordToken
 	 */
 	public function unserialize($serialized)
 	{
-		list($this->m_sSessionToken, $this->m_sTimeZone, $sLangage, $parentStr) = unserialize($serialized);
+		list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $sLangage, $parentStr) = unserialize($serialized);
 		$this->m_clLangage = new Langage('', '');
 		$this->m_clLangage->unserialize($sLangage);
 		parent::unserialize($parentStr);

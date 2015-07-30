@@ -19,6 +19,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
@@ -64,6 +65,14 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 	private $m_clRESTProxy;
 
 	/**
+	 * @var string
+	 */
+	private $m_sIP;
+
+	/**
+	 * Quand ajout de paramètre, ne pas oublier de modifier \src\NOUT\Bundle\SessionManagerBundle\DependencyInjection\Factory\SecurityFactory.php
+	 * pour mettre à jour le remplacement de paramètre
+	 *
 	 * @param OnlineServiceFactory $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
 	 * @param UserProviderInterface $userProvider
@@ -72,7 +81,7 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 	 * @param EncoderFactoryInterface $encoderFactory
 	 * @param bool $hideUserNotFoundExceptions
 	 */
-	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, EncoderFactoryInterface $encoderFactory, $hideUserNotFoundExceptions = true )
+	public function __construct(ContainerInterface $containerInterface, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, EncoderFactoryInterface $encoderFactory, $hideUserNotFoundExceptions = true )
 	{
 		if (empty($providerKey))
 		{
@@ -88,8 +97,10 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 		$this->userProvider   = $userProvider;
 		$this->encoderFactory = $encoderFactory; // usually this is responsible for validating passwords
 
-		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
-		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+		$this->m_sIP = $containerInterface->get('request')->getClientIp();;
+
+		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue, $this->m_sIP);
+		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue, $this->m_sIP);
 	}
 
 	/**
@@ -143,6 +154,7 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 		$authenticatedToken->setTimeZone($token->getTimeZone());
 		$authenticatedToken->setAttributes($token->getAttributes());
 		$authenticatedToken->setSessionToken($sTokenSession);
+		$authenticatedToken->setIP($this->m_sIP);
 
 		$clIdentification = new Identification();
 		$clIdentification->m_clUsernameToken = new UsernameToken($user->getUsername(), $user->getPassword());

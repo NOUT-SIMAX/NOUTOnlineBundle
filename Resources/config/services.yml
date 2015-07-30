@@ -5,7 +5,7 @@ services:
     #http://blog.vandenbrand.org/2012/06/19/symfony2-authentication-provider-authenticate-against-webservice/
     nout_session.user_provider:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Core\User\NOUTOnlineUserProvider
-        arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue]
+        arguments:  [@service_container, @nout_online.service_factory, @nout_online.configuration_dialogue]
 
     nout_session.authentication_listener:
         class: NOUT\Bundle\SessionManagerBundle\Security\Firewall\NOUTOnlineListener
@@ -28,6 +28,10 @@ services:
     nout_session.authentication_provider:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTOnlineAuthenticationProvider
         arguments:
+            # quand ajout de paramètre, ne pas oublier d'aller modifier le fichier
+            # \NOUT\Bundle\SessionManagerBundle\DependencyInjection\Factory\SecurityFactory.php
+            # pour le remplacement de paramètres
+            - @service_container
             - @nout_online.service_factory
             - @nout_online.configuration_dialogue
             - null #null remplacer par le replaceArgument du fichier \NOUT\Bundle\SessionManagerBundle\DependencyInjection\Factory\SecurityFactory.php
@@ -37,7 +41,7 @@ services:
             - '%security.authentication.hide_user_not_found%'
     nout_session.authentication_handler.logout_handler:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Authentication\Handler\NOUTOnlineLogoutHandler
-        arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue]
+        arguments:  [@service_container, @nout_online.service_factory, @nout_online.configuration_dialogue]
         tags:
             - { name: 'monolog.logger', channel: 'security' }
 

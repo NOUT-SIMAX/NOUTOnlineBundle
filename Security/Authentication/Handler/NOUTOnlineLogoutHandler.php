@@ -14,6 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Logout\LogoutHandlerInterface;
@@ -32,9 +33,10 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 	 * @param OnlineServiceFactory $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
 	 */
-	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue)
+	public function __construct(ContainerInterface $containerInterface, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue)
 	{
-		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
+		$sIP = $containerInterface->get('request')->getClientIp();
+		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue, $sIP);
 	}
 
 	/**
