@@ -34,7 +34,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\Security\Core\SecurityContext;
 
 class NOUTClient
@@ -70,12 +70,12 @@ class NOUTClient
 	 */
 	private $m_clCacheSession;
 
-
 	/**
-	 * @param Router $router
-	 * @param SecurityContext $security
-	 * @param OnlineServiceFactory $serviceFactory
+	 * @param SecurityContext       $security
+	 * @param OnlineServiceFactory  $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
+	 * @param                       $sCacheDir
+	 * @throws \Exception
 	 */
 	public function __construct(SecurityContext $security, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, $sCacheDir)
 	{
@@ -84,7 +84,7 @@ class NOUTClient
 		$this->m_sCacheDir   = $sCacheDir.'/'.self::REPCACHE;
 
 
-		$oSecurityToken = $this->__security->getToken();
+		$oSecurityToken = $this->_oGetToken();
 		$sIP = $oSecurityToken->getIP();
 
 		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue, $sIP);
@@ -96,6 +96,15 @@ class NOUTClient
 		$sSessionToken = $oSecurityToken->getSessionToken();
 		$this->m_clCacheSession = new NOUTCache($sCacheDir.'/'.self::REPCACHE, $sSessionToken);
 	}
+
+	/**
+	 * @return NOUTToken
+	 */
+	protected function _oGetToken()
+	{
+		return $this->__security->getToken();
+	}
+
 
 	protected function _TestParametre($sTypeTest, $sNomParametre, $sValeurParametre, $ValeurTest)
 	{
@@ -153,7 +162,7 @@ class NOUTClient
 	 */
 	public function getTimeZone()
 	{
-		return $this->__security->getToken()->getTimeZone();
+		return $this->_oGetToken()->getTimeZone();
 	}
 
 	/**
@@ -177,7 +186,7 @@ class NOUTClient
 	 */
 	public function getConnectionInfos()
 	{
-		$oToken = $this->__security->getToken();
+		$oToken = $this->_oGetToken();
 		$oUser  = $oToken->getUser();
 
 		return new ConnectionInfos($oUser->getUsername());
@@ -193,7 +202,7 @@ class NOUTClient
 		$clIdentification = new Identification();
 
 		// récupération de l'utilsateur connecté
-		$oToken = $this->__security->getToken();
+		$oToken = $this->_oGetToken();
 		$oUser  =  $oToken->getUser();
 
 		$clIdentification->m_clUsernameToken   = new UsernameToken($oUser->getUsername(), $oUser->getPassword());
@@ -212,7 +221,7 @@ class NOUTClient
 	protected function _aGetTabHeader(array $aHeaderSup = null)
 	{
 		// récupération de l'utilsateur connecté
-		$oToken = $this->__security->getToken();
+		$oToken = $this->_oGetToken();
 		$oUser  =  $oToken->getUser();
 
 		$aTabHeader = array(
@@ -231,7 +240,7 @@ class NOUTClient
 	}
 
 	/**
-	 * @param $sIDform identifiant du formulaire
+	 * @param string $sIDform identifiant du formulaire
 	 * @param ConditionFileNPI $clFileNPI condition pour la requete
 	 * @param array $TabColonneAff tableau des colonnes a afficher
 	 * @param array $TabHeaderSuppl tableau des headers
@@ -406,7 +415,7 @@ class NOUTClient
 	 */
 	protected function _sGetRepCacheIHM($sIDTab)
 	{
-		$oToken    = $this->__security->getToken();
+		$oToken    = $this->_oGetToken();
 		$clLangage = $oToken->getLangage();
 
 		$sRep = $this->m_sCacheDir.'/'.self::REPCACHE_IHM.'/'.$clLangage->getVersionLangage();
@@ -470,7 +479,7 @@ class NOUTClient
 			'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss','à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
 			'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i',
 			'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
-			'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
+			'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
 		);
 		$filename = strtr($filename, $replace_chars);
 		// convert & to "and", @ to "at", and # to "number"
