@@ -10,12 +10,17 @@
 <div class="container">
 	<header>
 		{% block header %}
+			<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+				<div class="container">
+					<a class="navbar-brand" href="{{ path('form_test_index') }}">NOUTForm</a>
+				</div>
+			</nav>
 		{% endblock %}
 	</header>
 	{% block containt %}
 	{% endblock %}
 	<footer>
-		{% block footer %}© NOUTOnline Bundle{% endblock %}
+		{% block footer %}© NOUTForm Bundle{% endblock %}
 	</footer>
 </div>
 {% block javascripts %}
