@@ -6,6 +6,7 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\WSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
@@ -79,9 +80,17 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ZipPJ;
  */
 final class OnlineServiceProxy extends ModifiedNusoapClient
 {
-    //Definition des variable pour gestion des headers de requete
+	/**
+	 * Definition des variable pour gestion des headers de requete
+	 * @var array
+	 */
     private $__aListHeaders = array();
-    private $__bCleanHeadersBeforeRequest = true; //sert a savoir si on remet les headers a zero avant une requete
+
+	/**
+	 * sert a savoir si on remet les headers a zero avant une requete
+	 * @var bool
+	 */
+    private $__bCleanHeadersBeforeRequest = true;
 
 	/**
 	 * classe de configuration
@@ -89,29 +98,42 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	private $__ConfigurationDialogue ;
 
-	//logger symfony
+	/**
+	 * logger symfony
+	 * @var NOUTOnlineLogger
+	 */
 	private $__clLogger;
 
-	//pour le cache de la wsdl
+	/**
+	 * pour le cache de la wsdl
+	 * @var string
+	 */
 	private $__sVersionWSDL;
+
+	/**
+	 * système de cache
+	 * @var NOUTCache
+	 */
 	private $__clCache;
 
 	/**
-	 * @var string
+	 * @var ClientInformation
 	 */
-	private $m_sIPClient;
+	private $__clInfoClient;
 
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
+	 * @param ClientInformation		$clientInfo
 	 * @param ConfigurationDialogue $clConfig
 	 * @param NOUTOnlineLogger      $_clLogger
 	 * @param NOUTCache             $cache
      */
-    public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache=null)
+    public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache=null)
     {
         parent::__construct($clConfig->getWSDLUri(), $clConfig->getWsdl(), $clConfig->getHost(),$clConfig->getPort());
 
 	    $this->__ConfigurationDialogue = $clConfig;
+		$this->__clInfoClient = $clientInfo;
 
         $this->forceEndpoint = $clConfig->getProtocolPrefix() . $clConfig->getHost() . ':' . $clConfig->getPort(); //on force l'ip et le port du fichier config
         // on force le timeout a 300s
@@ -204,21 +226,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	protected function _setHTTPHeader($http)
 	{
-		if (empty($this->m_sIPClient))
-		{
-			throw new \Exception('Il faut obligatoirement spécifier l\'adresse IP du client final au niveau du proxy SOAP');
-		}
-		$http->setHeader(ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP, $this->m_sIPClient);
+		$http->setHeader(ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP, $this->__clInfoClient->getIP());
 		$http->setHeader(ConfigurationDialogue::HTTP_SIMAX_CLIENT, $this->__ConfigurationDialogue->getSociete());
 		$http->setHeader(ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version, $this->__ConfigurationDialogue->getVersion());
-	}
-
-	/**
-	 * @param string $sIP IP du client
-	 */
-	public function setIPClient($sIP)
-	{
-		$this->m_sIPClient=trim($sIP);
 	}
 
 	/**

@@ -12,9 +12,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
+use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 class OnlineServiceProxy
@@ -25,35 +25,29 @@ class OnlineServiceProxy
 	 */
 	private $__ConfigurationDialogue;
 
-	//logger symfony
+	/**
+	 * logger symfony
+	 * @var NOUTOnlineLogger
+	 */
 	private $__clLogger;
 
-	/**
-	 * @var string
-	 */
-	private $m_sIPClient;
 
+	/**
+	 * @var ClientInformation
+	 */
+	private $__clInfoClient;
 
 	/**
 	 * constructeur permettant d'instancier les classe de communication soap avec les bonne question
-	 * @param $clConfig
-	 * @param $_clLogger
-	 * @return unknown_type
+	 * @param ClientInformation $clientInfo
+	 * @param ConfigurationDialogue $clConfig
+	 * @param NOUTOnlineLogger $_clLogger
 	 */
-	public function __construct(ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger)
+	public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger)
 	{
-		$this->__ConfigurationDialogue = $clConfig;
-		$this->__clLogger              = $_clLogger;
-	}
-
-	/**
-	 * @param string $sIP
-	 * @return $this
-	 */
-	public function setIPClient($sIP)
-	{
-		$this->m_sIPClient=trim($sIP);
-		return $this;
+		$this->__ConfigurationDialogue 	= $clConfig;
+		$this->__clLogger              	= $_clLogger;
+		$this->__clInfoClient 			= $clientInfo;
 	}
 
 	/**
@@ -159,15 +153,10 @@ class OnlineServiceProxy
 
 	protected function _sExecute_cURL($sAction, $sURI, $sDestination)
 	{
-		if (empty($this->m_sIPClient))
-		{
-			throw new \Exception('Il faut obligatoirement spécifier l\'adresse IP du client final au niveau du proxy REST');
-		}
-
 		//initialisation de curl
 		$curl = curl_init($sURI);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-			ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP.': '.$this->m_sIPClient,
+			ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP.': '.$this->__clInfoClient->getIP(),
 			ConfigurationDialogue::HTTP_SIMAX_CLIENT.': '.$this->__ConfigurationDialogue->getSociete(),
 			ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version.': '.$this->__ConfigurationDialogue->getVersion(),
 		));
@@ -219,7 +208,11 @@ class OnlineServiceProxy
 	protected function _sExecute_natif($sAction, $sURI, $sDestination)
 	{
 		//obligé de rajouter l'ip ici car j'ai pas accès au entête http
-		$sURI.='&ip='.urlencode($this->m_sIPClient);
+		$sIP = $this->__clInfoClient->getIP();
+		if (!empty($sIP))
+		{
+			$sURI.='&ip='.urlencode($sIP);
+		}
 
 		if (!empty($sDestination))
 		{
@@ -277,7 +270,7 @@ class OnlineServiceProxy
 				$ret = $this->_sExecute_cURL($sAction, $sURI, $sDestination);
 			}
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			if (isset($this->__clLogger))
 			{
@@ -336,7 +329,7 @@ class OnlineServiceProxy
 
 	/**
 	 * récupère le checksum d'un formulaire
-	 * @param $idTableau identifiant du formulaire
+	 * @param string $idTableau identifiant du formulaire
 	 * @param Identification $clIdentification
 	 * @return string
 	 */

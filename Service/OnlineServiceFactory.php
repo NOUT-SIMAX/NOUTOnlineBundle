@@ -26,27 +26,27 @@ class OnlineServiceFactory
 	 */
 	protected $m_clCache;
 
+	/**
+	 * @var ClientInformation
+	 */
+	protected $m_clClientInformation;
 
-	public function __construct(NOUTOnlineLogger $logger, NOUTCache $cache)
+
+	public function __construct(ClientInformation $clientInfo, NOUTOnlineLogger $logger, NOUTCache $cache)
 	{
 		$this->m_clLogger = $logger;
 		$this->m_clCache  = $cache;
+
+		$this->m_clClientInformation=$clientInfo;
 	}
 
 	/**
 	 * @param ConfigurationDialogue $clConfiguration
 	 * @return SOAPProxy
 	 */
-	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration, $sIP)
+	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration)
 	{
-		if (empty(trim($sIP)))
-		{
-			throw new \Exception('L\'addresse IP du client ne doit pas être vide');
-		}
-
-		$OnlineService = new SOAPProxy($clConfiguration, $this->m_clLogger, $this->m_clCache);
-		$OnlineService->setIPClient($sIP);
-
+		$OnlineService = new SOAPProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->m_clCache);
 		return $OnlineService;
 	}
 
@@ -54,16 +54,9 @@ class OnlineServiceFactory
 	 * @param ConfigurationDialogue $clConfiguration
 	 * @return RESTProxy
 	 */
-	public function clGetRESTProxy(ConfigurationDialogue $clConfiguration, $sIP)
+	public function clGetRESTProxy(ConfigurationDialogue $clConfiguration)
 	{
-		if (empty(trim($sIP)))
-		{
-			throw new \Exception('L\'addresse IP du client ne doit pas être vide');
-		}
-
-		$OnlineService = new RESTProxy($clConfiguration, $this->m_clLogger);
-		$OnlineService->setIPClient($sIP);
-
+		$OnlineService = new RESTProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger);
 		return $OnlineService;
 	}
 }

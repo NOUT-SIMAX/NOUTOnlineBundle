@@ -31,19 +31,22 @@ services:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConfigManager
         arguments:  ['%kernel.root_dir%/config', '%nout_online.config_file%']
 
+    nout_online.client_information:
+        class:      NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation
+        arguments:  ["@request_stack"]
+
     nout_online.configuration_dialogue:
         class:      NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
         arguments:  [@nout_online.config_manager, '%noutwebsite_version%', '%noutwebsite_client% %societe%']
 
-    #factory pour le service
+    #factory pour les proxy
     nout_online.service_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-        arguments:  [@nout_online.logger, @nout_online.cache]
+        arguments:  [@nout_online.client_information, @nout_online.logger, @nout_online.cache]
 
     nout_online.twig.nout_online_extension:
         class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension
         arguments:
-            - @service_container
             - @nout_online.service_factory
             - @nout_online.configuration_dialogue
         tags:
