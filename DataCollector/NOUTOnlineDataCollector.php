@@ -54,6 +54,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			$this->data['session_token'] = '';
 			$this->data['time_zone']     = '';
 			$this->data['user']          = $token->getUsername();
+			$this->data['ip']			 = '';
 
 			$tabRole = array_map(function ($role)	{ return $role->getRole();}
 				, $token->getRoles());
