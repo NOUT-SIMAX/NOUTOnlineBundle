@@ -85,10 +85,9 @@ class NOUTClient
 
 
 		$oSecurityToken = $this->_oGetToken();
-		$sIP = $oSecurityToken->getIP();
 
-		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue, $sIP);
-		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue, $sIP);
+		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
+		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 
 		$this->m_clConfigurationDialogue = $configurationDialogue;
 
