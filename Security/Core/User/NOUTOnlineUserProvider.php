@@ -13,11 +13,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
 use NOUT\Bundle\SessionManagerBundle\Entity\User;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 
 class NOUTOnlineUserProvider implements UserProviderInterface
@@ -27,10 +25,9 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 	 */
 	private $m_clRESTProxy;
 
-	public function __construct(ContainerInterface $containerInterface, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue)
+	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue)
 	{
-		$sIP = $containerInterface->get('request')->getClientIp();
-		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue, $sIP);
+		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 	}
 
 	/**
