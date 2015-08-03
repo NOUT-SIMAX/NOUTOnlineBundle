@@ -163,16 +163,16 @@ class StructureColonne
 	{
         if ($this->m_eTypeElement != self::TM_Texte)
         {
-            return str_replace(':', '_', $this->m_eTypeElement);
+            return str_replace(array(':','-'), array('_','_'), $this->m_eTypeElement);
         }
         //dans le cas d'un texte, il faut vérifier s'il y a pas des restrictions
         if (    is_null($this->m_clRestriction)
             || !$this->m_clRestriction->isTypeRestriction(ColonneRestriction::R_MAXLENGTH))
         {
-            return str_replace(':', '_', self::TM_TexteLong);
+            return str_replace(array(':','-'), array('_','_'), self::TM_TexteLong);
         }
 
-        return str_replace(':', '_', self::TM_Texte);
+        return str_replace(array(':','-'), array('_','_'), self::TM_Texte);
 	}
 
 	/**
