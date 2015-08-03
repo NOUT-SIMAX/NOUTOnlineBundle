@@ -238,7 +238,7 @@ class ReponseWSParser
 			switch($eTypeElement)
 			{
 				case StructureColonne::TM_Bouton:
-					$clStructElement->setStructureColonne(new StructureBouton($clAttribNOUT, $clAttribXS));
+					$sIDColonne = $clStructElement->setStructureColonne(new StructureBouton($clAttribNOUT, $clAttribXS));
 					break;
 				case StructureColonne::TM_Separateur:
 					$clStructElement->setStructureColonne(new StructureSection($sIDColonne, $clAttribNOUT, $clAttribXS));

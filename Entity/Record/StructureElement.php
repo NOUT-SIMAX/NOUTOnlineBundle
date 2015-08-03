@@ -108,6 +108,10 @@ class StructureElement
 		}
 	}
 
+	/**
+	 * @param StructureColonne $clStructColonne
+	 * @return mixed|void
+	 */
 	public function setStructureColonne(StructureColonne $clStructColonne)
 	{
 		if ($clStructColonne instanceof StructureBouton)
@@ -121,9 +125,15 @@ class StructureElement
 		}
 
 		$this->m_MapIDColonne2StructColonne[$clStructColonne->getIDColonne()] = $clStructColonne;
-		return $this;
+		return $clStructColonne->getIDColonne();
 	}
 
+	/**
+	 * @param                  $sIDColonne
+	 * @param                  $sIDColPere
+	 * @param StructureColonne $clStruct
+	 * @return this
+	 */
 	public function addColonne2TabStruct($sIDColonne, $sIDColPere, StructureColonne $clStruct = null)
 	{
 		if (!isset($sIDColPere))
@@ -134,6 +144,7 @@ class StructureElement
 		{
 			$this->m_MapIDColonne2StructColonne[$sIDColPere]->addColonne2TabStruct($sIDColonne, null, $this->m_MapIDColonne2StructColonne[$sIDColonne]);
 		}
+		return $this;
 	}
 
 

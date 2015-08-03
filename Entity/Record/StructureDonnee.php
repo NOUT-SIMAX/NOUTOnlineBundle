@@ -42,4 +42,19 @@ class StructureDonnee extends StructureColonne
 	{
 		return $this->m_clRestriction;
 	}
+
+
+
+	public function isOption($sOption)
+	{
+		//les options qui viennent de membres
+		switch ($sOption)
+		{
+			case self::OPTION_Required:
+				return $this->m_bRequired;
+		}
+
+		parent::isOption($sOption);
+	}
+
 }

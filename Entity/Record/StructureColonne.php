@@ -128,14 +128,6 @@ abstract class StructureColonne
 
 	public function isOption($sOption)
 	{
-		//les options qui viennent de membres
-		switch ($sOption)
-		{
-		case self::OPTION_Required:
-			return $this->m_bRequired;
-		}
-
-
 		if (!isset($this->m_TabOptions[$sOption]))
 		{
 			return false;
