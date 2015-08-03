@@ -46,6 +46,9 @@ class StructureElement
 	}
 
 
+	/**
+	 * @param string $sIDColonne identifiant de la colonne
+	 */
 	public function getTypeElement($sIDColonne)
 	{
 		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
@@ -54,6 +57,20 @@ class StructureElement
 		}
 
 		return $this->m_MapIDColonne2StructColonne[$sIDColonne]->getTypeElement();
+	}
+
+	/**
+	 * @param string $sIDColonne identifiant de la colonne
+	 * @return StructureColonne|null
+	 */
+	public function getStructureColonne($sIDColonne)
+	{
+		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+		{
+			return;
+		}
+
+		return $this->m_MapIDColonne2StructColonne[$sIDColonne];
 	}
 
 	/**

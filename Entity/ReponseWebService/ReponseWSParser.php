@@ -299,7 +299,10 @@ class ReponseWSParser
 								switch ($ndFils->getName())
 								{
 								case ColonneRestriction::R_ENUMERATION:
-									$clRestriction->addValeurRestriction((string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id'], (string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
+									$clRestriction->addValeurRestriction(
+										(string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id'],
+										(string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value'],
+										(string) $ndFils->attributes('http://www.nout.fr/XMLSchema')['icon']);
 									break;
 								}
 							}

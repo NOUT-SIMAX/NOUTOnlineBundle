@@ -15,9 +15,14 @@ class ColonneRestriction
 	 */
 	protected $m_sTypeRestriction;
 	/**
-	 * @var string
+	 * @var string|array
 	 */
 	protected $m_ValeurRestriction;
+
+	/**
+	 * @var string|array
+	 */
+	protected $m_IconRestriction;
 
 	public function __construct()
 	{
@@ -29,22 +34,29 @@ class ColonneRestriction
 	 * @param string $ValeurRestriction
 	 * @return $this
 	 */
-	public function setValeurRestriction($ValeurRestriction)
+	public function setValeurRestriction($ValeurRestriction, $Icon=null)
 	{
 		$this->m_ValeurRestriction = $ValeurRestriction;
-
+		if (!empty($Icon))
+		{
+			$this->m_IconRestriction = $Icon;
+		}
 		return $this;
 	}
 
 	/**
 	 * @param $key
 	 * @param $value
+	 * @param $icon
 	 * @return $this
 	 */
-	public function addValeurRestriction($key, $value)
+	public function addValeurRestriction($key, $value, $icon=null)
 	{
 		$this->m_ValeurRestriction[$key] = $value;
-
+		if (!empty($icon))
+		{
+			$this->m_IconRestriction[$key] = $icon;
+		}
 		return $this;
 	}
 
@@ -54,6 +66,14 @@ class ColonneRestriction
 	public function getValeurRestriction()
 	{
 		return $this->m_ValeurRestriction;
+	}
+
+	/**
+	 * @return string|array
+	 */
+	public function getIconRestriction()
+	{
+		return $this->m_IconRestriction;
 	}
 
 
