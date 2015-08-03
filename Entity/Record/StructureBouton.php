@@ -41,4 +41,5 @@ class StructureBouton extends StructureColonne
 	{
 		return $this->m_clInfoBouton;
 	}
+
 }

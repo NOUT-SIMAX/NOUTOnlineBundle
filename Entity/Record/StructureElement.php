@@ -154,6 +154,14 @@ class StructureElement
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getTabBouton()
+	{
+		return$this->m_TabBouton;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getNiveau()
