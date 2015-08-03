@@ -13,8 +13,11 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureBouton;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 
 /**
  * Class RecordManager
@@ -230,90 +233,104 @@ class ReponseWSParser
 			$clAttribNOUT = $ndNoeud->attributes('http://www.nout.fr/XMLSchema');
 
 			$sIDColonne = str_replace('id_', '', (string) $clAttribXS->name);
-			$clStructElement->setStructureColonne(new StructureColonne($sIDColonne, $clAttribNOUT, $clAttribXS));
 
-			switch ($clStructElement->getTypeElement($sIDColonne))
+			$eTypeElement = StructureColonne::s_getTypeColonne($clAttribNOUT);
+			switch($eTypeElement)
 			{
-			case StructureColonne::TM_ListeElem:
-				if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
-				{
-					$ndSequence = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->complexType
-												->children('http://www.w3.org/2001/XMLSchema')->sequence;
-
-					$nNiveau = ($nNivCourant == StructureElement::NV_XSD_Enreg) ? StructureElement::NV_XSD_List : StructureElement::NV_XSD_LienElement;
-					$this->_ParseXSD($nNiveau, $ndSequence);
-				}
-				break;
-			case StructureColonne::TM_Separateur:
-				if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
-				{
-					$ndSequence = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->complexType
+				case StructureColonne::TM_Bouton:
+					$clStructElement->setStructureColonne(new StructureBouton($clAttribNOUT, $clAttribXS));
+					break;
+				case StructureColonne::TM_Separateur:
+					$clStructElement->setStructureColonne(new StructureSection($sIDColonne, $clAttribNOUT, $clAttribXS));
+					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
+					{
+						$ndSequence = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->complexType
 							->children('http://www.w3.org/2001/XMLSchema')->sequence;
 
-					$this->__ParseXSDSequence($nNivCourant, $clStructElement, $ndSequence, $sIDColonne);
-				}
-				break;
-			case '':
-					//il faut vérifier si pas extension d'un type de base (texte avec une limite de 100)
-					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
+						$this->__ParseXSDSequence($nNivCourant, $clStructElement, $ndSequence, $sIDColonne);
+					}
+					break;
+
+				default:
+				{
+					$clStructElement->setStructureColonne(new StructureDonnee($sIDColonne, $clAttribNOUT, $clAttribXS));
+					switch ($eTypeElement)
 					{
-						$ndSimpleType = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->simpleType
-							->children('http://www.w3.org/2001/XMLSchema')->restriction;
-
-						$clStructElement->setTypeElement($sIDColonne, (string) $ndSimpleType->attributes('http://www.w3.org/2001/XMLSchema')['base']);
-
-						if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
-						{
-							$clRestriction = new ColonneRestriction();
-
-							foreach ($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+						case StructureColonne::TM_ListeElem:
+							if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
 							{
-								$clRestriction->setTypeRestriction($ndFils->getName());
-								switch ($ndFils->getName())
+								$ndSequence = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->complexType
+									->children('http://www.w3.org/2001/XMLSchema')->sequence;
+
+								$nNiveau = ($nNivCourant == StructureElement::NV_XSD_Enreg) ? StructureElement::NV_XSD_List : StructureElement::NV_XSD_LienElement;
+								$this->_ParseXSD($nNiveau, $ndSequence);
+							}
+							break;
+						case '':
+							//il faut vérifier si pas extension d'un type de base (texte avec une limite de 100)
+							if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
+							{
+								$ndSimpleType = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->simpleType
+									->children('http://www.w3.org/2001/XMLSchema')->restriction;
+
+								$clStructElement->setTypeElement($sIDColonne, (string) $ndSimpleType->attributes('http://www.w3.org/2001/XMLSchema')['base']);
+
+								if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
 								{
-								case ColonneRestriction::R_MAXLENGTH:
-									$clRestriction->setValeurRestriction((int) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
-									break;
+									$clRestriction = new ColonneRestriction();
+
+									foreach ($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+									{
+										$clRestriction->setTypeRestriction($ndFils->getName());
+										switch ($ndFils->getName())
+										{
+											case ColonneRestriction::R_MAXLENGTH:
+												$clRestriction->setValeurRestriction((int) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value']);
+												break;
+										}
+									}
+
+									$clStructElement->setRestriction($sIDColonne, $clRestriction);
 								}
 							}
-
-							$clStructElement->setRestriction($sIDColonne, $clRestriction);
-						}
-					}
-				break;
-
-			case StructureColonne::TM_Combo:
-					//il faut vérifier si pas extension d'un type de base (texte avec une limite de 100)
-					if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
-					{
-						$ndSimpleType = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->simpleType
-							->children('http://www.w3.org/2001/XMLSchema')->restriction;
-
-						if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
-						{
-							$clRestriction = new ColonneRestriction();
-
-							foreach ($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+							break;
+						case StructureColonne::TM_Combo:
+							//il faut vérifier si pas extension d'un type de base (texte avec une limite de 100)
+							if (count($ndNoeud->children('http://www.w3.org/2001/XMLSchema'))>0)
 							{
-								$clRestriction->setTypeRestriction($ndFils->getName());
-								switch ($ndFils->getName())
+								$ndSimpleType = $ndNoeud->children('http://www.w3.org/2001/XMLSchema')->simpleType
+									->children('http://www.w3.org/2001/XMLSchema')->restriction;
+
+								if (count($ndSimpleType->children('http://www.w3.org/2001/XMLSchema'))>0)
 								{
-								case ColonneRestriction::R_ENUMERATION:
-									$clRestriction->addValeurRestriction(
-										(string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id'],
-										(string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value'],
-										(string) $ndFils->attributes('http://www.nout.fr/XMLSchema')['icon']);
-									break;
+									$clRestriction = new ColonneRestriction();
+
+									foreach ($ndSimpleType->children('http://www.w3.org/2001/XMLSchema') as $ndFils)
+									{
+										$clRestriction->setTypeRestriction($ndFils->getName());
+										switch ($ndFils->getName())
+										{
+											case ColonneRestriction::R_ENUMERATION:
+												$clRestriction->addValeurRestriction(
+													(string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['id'],
+													(string) $ndFils->attributes('http://www.w3.org/2001/XMLSchema')['value'],
+													(string) $ndFils->attributes('http://www.nout.fr/XMLSchema')['icon']);
+												break;
+										}
+									}
+
+									$clStructElement->setRestriction($sIDColonne, $clRestriction);
 								}
 							}
+							break;
+					} // \switch($eTypeElement)
+				} // \default
+			} // \switch($eTypeElement)
 
-							$clStructElement->setRestriction($sIDColonne, $clRestriction);
-						}
-					}
-				break;
+			if (!empty($sIDColonne))
+			{
+				$clStructElement->addColonne2TabStruct($sIDColonne, $sIDColonnePere);
 			}
-
-			$clStructElement->addColonne2TabStruct($sIDColonne, $sIDColonnePere);
 		}
 
 		if (!isset($sIDColonnePere))

@@ -14,18 +14,18 @@ class StructureElement
 	 * identifiant du formulaire
 	 * @var string
 	 */
-
 	protected $m_nID;
+
 	/**
 	 * @var string
 	 */
-
 	protected $m_sLibelle;
+
 	/**
 	 * @var integer
 	 */
-
 	protected $m_nNiveau;
+
 	/**
 	 * @var array
 	 */
@@ -36,6 +36,17 @@ class StructureElement
 	 */
 	protected $m_MapIDColonne2StructColonne;
 
+	/**
+	 * @var array
+	 */
+	protected $m_TabBouton;
+
+
+	/**
+	 * @param $sID
+	 * @param $sLibelle
+	 * @param $nNiv
+	 */
 	public function __construct($sID, $sLibelle, $nNiv)
 	{
 		$this->m_nID                        = $sID;
@@ -99,8 +110,17 @@ class StructureElement
 
 	public function setStructureColonne(StructureColonne $clStructColonne)
 	{
-		$this->m_MapIDColonne2StructColonne[$clStructColonne->getIDColonne()] = $clStructColonne;
+		if ($clStructColonne instanceof StructureBouton)
+		{
+			if (empty($clStructColonne->getIDColonne()))
+			{
+				//c'est pas un bouton par programmation, il faut le sortir des structures colonnes
+				$this->m_TabBouton[]=$clStructColonne;
+				return;
+			}
+		}
 
+		$this->m_MapIDColonne2StructColonne[$clStructColonne->getIDColonne()] = $clStructColonne;
 		return $this;
 	}
 

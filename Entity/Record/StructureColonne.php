@@ -8,19 +8,36 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-class StructureColonne
+abstract class StructureColonne
 {
+	/**
+	 * @var string identifiant de la colonne
+	 */
 	protected $m_nIDColonne;
+	/**
+	 * @var string nom de la colonne
+	 */
 	protected $m_sLibelle;
+	/**
+	 * @var string type modèle de la colonne
+	 */
 	protected $m_eTypeElement;
 
-	protected $m_bRequired;
-
-	protected $m_TabStructureColonne;
-	protected $m_clRestriction;
-
+	/**
+	 * @var array options du champ
+	 */
 	protected $m_TabOptions;
 
+
+	/**
+	 * retourne le type de l'élément
+	 * @param \SimpleXMLElement $clAttribNOUT
+	 * @return string
+	 */
+	static function s_getTypeColonne(\SimpleXMLElement $clAttribNOUT)
+	{
+		return (string) $clAttribNOUT['typeElement'];
+	}
 
 	public function __construct($sID, \SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
@@ -28,11 +45,7 @@ class StructureColonne
 		$this->m_sLibelle     = '';
 		$this->m_eTypeElement =  '';
 
-		$this->m_bRequired = false;
-
-		$this->m_TabStructureColonne = array();
 		$this->m_TabOptions          = array();
-		$this->m_clRestriction       = null;
 
 		$this->_InitInfoColonne($clAttribNOUT, $clAttribXS);
 	}
@@ -41,8 +54,6 @@ class StructureColonne
 	{
 		$this->m_sLibelle     = (string) $clAttribNOUT['name'];
 		$this->m_eTypeElement = (string) $clAttribNOUT['typeElement'];
-
-		$this->m_bRequired = (isset($clAttribXS['use']) && ((string) $clAttribXS['use'] === 'required')); //xs:use="required"
 
 		foreach ($clAttribNOUT as $sAttribName => $ndAttrib)
 		{
@@ -64,24 +75,6 @@ class StructureColonne
 		);
 
 		return in_array($this->m_eTypeElement, $aTypeSimple);
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getTabStructureColonne()
-	{
-		return $this->m_TabStructureColonne;
-	}
-
-
-	/**
-	 * @return null|ColonneRestriction
-	 */
-	public function getRestriction()
-	{
-		return $this->m_clRestriction;
 	}
 
 	/**
