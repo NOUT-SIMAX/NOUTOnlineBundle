@@ -41,7 +41,7 @@ services:
             - '%security.authentication.hide_user_not_found%'
     nout_session.authentication_handler.logout_handler:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Authentication\Handler\NOUTOnlineLogoutHandler
-        arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue]
+        arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue, @event_dispatcher]
         tags:
             - { name: 'monolog.logger', channel: 'security' }
 

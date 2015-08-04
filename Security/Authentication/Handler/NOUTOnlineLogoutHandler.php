@@ -14,6 +14,8 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Logout\LogoutHandlerInterface;
@@ -26,13 +28,20 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 	 */
 	private $m_clSOAPProxy;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $__eventDispatcher;
+
 	/**
 	 * @param OnlineServiceFactory $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
+     * @param EventDispatcherInterface $eventDispatcher
 	 */
-	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue)
+	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, EventDispatcherInterface $eventDispatcher)
 	{
 		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
+        $this->__eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -52,6 +61,7 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 		{
 			//Disconnect
 			$this->m_clSOAPProxy->disconnect($TabHeader);
+            $this->__eventDispatcher->dispatch('session.disconnect', new GenericEvent($oToken->getSessionToken()));
 		}
 		catch(\Exception $e)
 		{
