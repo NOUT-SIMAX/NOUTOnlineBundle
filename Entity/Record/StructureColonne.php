@@ -124,8 +124,10 @@ abstract class StructureColonne
 	}
 
 
-
-
+    /**
+     * @param $sOption
+     * @return bool
+     */
 	public function isOption($sOption)
 	{
 		if (!isset($this->m_TabOptions[$sOption]))

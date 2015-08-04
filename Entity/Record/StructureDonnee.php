@@ -54,7 +54,7 @@ class StructureDonnee extends StructureColonne
 				return $this->m_bRequired;
 		}
 
-		parent::isOption($sOption);
+		return parent::isOption($sOption);
 	}
 
 }
