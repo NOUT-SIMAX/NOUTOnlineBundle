@@ -14,16 +14,10 @@ use Symfony\Component\Translation\Translator;
  */
 class Configuration implements ConfigurationInterface
 {
-
-	public function __construct()
-	{
-	}
-
-
     /**
-     * {@inheritDoc}
+     * @return TreeBuilder
      */
-    public function getConfigTreeBuilder()
+    public static function s_getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('nout_online');
@@ -35,9 +29,41 @@ class Configuration implements ConfigurationInterface
 		    ->addDefaultsIfNotSet()
 		    ->children()
 		        ->booleanNode('debug')->end()
-				->scalarNode('config_file')->end()
-		    ->end()
+                ->enumNode('protocole')
+                    ->values(array('http://', 'https://'))
+                    ->defaultValue('http://')
+                ->end()//enumNode('protocole')
+                ->scalarNode('address')
+                    ->defaultValue('127.0.0.1')
+                    ->cannotBeEmpty()
+                    ->validate()
+                        ->ifTrue(
+                            function ($ip)
+                            {
+                                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6))
+                                    return false;
+
+                                return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6);
+                            }
+                        )
+                        ->thenInvalid('%s should be an IPv4 or IPv6 address') //la valeur "%s" n'est pas valide pour le paramètre address, la valeur doit être une adresse IPv4 ou IPv6
+                    ->end()//validate
+                ->end()//scalarNode('adresse')
+                ->integerNode('port')
+                    ->cannotBeEmpty()
+                    ->defaultValue('8052')
+                ->end()//integerNode('port')
+                ->scalarNode('apiuuid')->end()
+		    ->end()//children
 	    ;
 	    return $treeBuilder;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getConfigTreeBuilder()
+    {
+        return static::s_getConfigTreeBuilder();
     }
 }

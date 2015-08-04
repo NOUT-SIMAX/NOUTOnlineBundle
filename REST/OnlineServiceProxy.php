@@ -274,7 +274,7 @@ class OnlineServiceProxy
 		{
 			if (isset($this->__clLogger))
 			{
-				$this->__clLogger->stopQuery($sURI, $e.getMessage(), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
+				$this->__clLogger->stopQuery($sURI, $e->getMessage(), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
 			}
 
 			throw $e;
