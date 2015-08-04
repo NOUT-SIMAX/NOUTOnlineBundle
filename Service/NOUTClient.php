@@ -92,8 +92,11 @@ class NOUTClient
 		$this->m_clConfigurationDialogue = $configurationDialogue;
 
 		//création du cache pour la session
-		$sSessionToken = $oSecurityToken->getSessionToken();
-		$this->m_clCacheSession = new NOUTCache($sCacheDir.'/'.self::REPCACHE, $sSessionToken);
+        if ($oSecurityToken instanceof NOUTToken)
+        {
+            $sSessionToken = $oSecurityToken->getSessionToken();
+            $this->m_clCacheSession = new NOUTCache($sCacheDir.'/'.self::REPCACHE, $sSessionToken);
+        }
 	}
 
 	/**
