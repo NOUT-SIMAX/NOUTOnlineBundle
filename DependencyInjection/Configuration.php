@@ -36,18 +36,18 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('address')
                     ->defaultValue('127.0.0.1')
                     ->cannotBeEmpty()
-                    ->validate()
-                        ->ifTrue(
-                            function ($ip)
-                            {
-                                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6))
-                                    return false;
-
-                                return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6);
-                            }
-                        )
-                        ->thenInvalid('%s should be an IPv4 or IPv6 address') //la valeur "%s" n'est pas valide pour le paramètre address, la valeur doit être une adresse IPv4 ou IPv6
-                    ->end()//validate
+//                    ->validate()
+//                        ->ifTrue(
+//                            function ($ip)
+//                            {
+//                                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6))
+//                                    return false;
+//
+//                                return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6);
+//                            }
+//                        )
+//                        ->thenInvalid('%s should be an IPv4 or IPv6 address') //la valeur "%s" n'est pas valide pour le paramï¿½tre address, la valeur doit ï¿½tre une adresse IPv4 ou IPv6
+//                    ->end()//validate
                 ->end()//scalarNode('adresse')
                 ->integerNode('port')
                     ->cannotBeEmpty()
