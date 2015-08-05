@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="symfony">29</Element>
+		</ConnectedUser>
+		<ActionContext>32192318731497</ActionContext>
+		<Action title="Créer Type de champ simple" typeAction="2386" typeReturn="Record">221140495352006</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115062624" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_228441939754526" simax:name="Type de champ simple">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_215045936758430" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1">
+								<xs:simpleType>
+									<xs:restriction xs:base="xs:string">
+										<xs:maxLength xs:value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element xs:name="id_218640824396054" simax:name="Texte" simax:printed="1">
+								<xs:simpleType>
+									<xs:restriction xs:base="xs:string">
+										<xs:maxLength xs:value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element xs:name="id_226904345564985" simax:name="Entier" simax:typeElement="xs:integer" xs:use="required" simax:printed="1" simax:link="1"/>
+							<xs:element xs:name="id_211786060686999" simax:name="Réel" simax:typeElement="xs:float" simax:printed="1" simax:link="1" simax:inputMask="+999 999 999 999 999,99"/>
+							<xs:element xs:name="id_211472539506930" simax:name="Calcul" simax:typeElement="xs:float" simax:detail="1" simax:readOnly="1" simax:printed="1" simax:computed="1" simax:inputMask="+999 999 999 999 999,99"/>
+							<xs:element xs:name="id_221625830761687" simax:name="Monétaire" simax:typeElement="xs:decimal" simax:printed="1" simax:inputMask="+999 999 999 999 999,99 €"/>
+							<xs:element xs:name="id_212082413430520" simax:name="Date" simax:typeElement="xs:date" simax:printed="1" startDate="1"/>
+							<xs:element xs:name="id_226947295242069" simax:name="Heure" simax:typeElement="xs:time" simax:printed="1" startTime="1"/>
+							<xs:element xs:name="id_220642283251630" simax:name="Date heure" simax:typeElement="xs:dateTime" simax:printed="1"/>
+							<xs:element xs:name="id_221733204940980" simax:name="Vrai/faux" simax:typeElement="xs:boolean" simax:printed="1"/>
+							<xs:element xs:name="id_217047669220519" simax:name="Texte long" simax:typeElement="xs:string" simax:printed="1"/>
+							<xs:element xs:name="id_223339796382030" simax:name="Texte 2" simax:printed="1">
+								<xs:simpleType>
+									<xs:restriction xs:base="xs:string">
+										<xs:maxLength xs:value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="216029484269784" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+							<xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="224576469188824" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_228441939754526"/>
+					<xs:field xs:xpath="id_215045936758430"/>
+					<xs:field xs:xpath="id_226904345564985"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Type de champ simple">228441939754526</Form>
+		<Element title="TCS00005">32200908666089</Element>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115075895" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_228441939754526 simax:id="32200908666089" simax:title="TCS00005">
+					<id_215045936758430 simax:readOnly="1">TCS00005</id_215045936758430>
+					<id_218640824396054>toto</id_218640824396054>
+					<id_226904345564985>0</id_226904345564985>
+					<id_211786060686999>0.000000</id_211786060686999>
+					<id_211472539506930 simax:readOnly="1">0.00000</id_211472539506930>
+					<id_221625830761687>0.00000</id_221625830761687>
+					<id_212082413430520>20150803</id_212082413430520>
+					<id_226947295242069>114200</id_226947295242069>
+					<id_220642283251630>20150803094200</id_220642283251630>
+					<id_221733204940980>0</id_221733204940980>
+					<id_217047669220519/>
+					<id_223339796382030/>
+				</id_228441939754526>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>

@@ -6,7 +6,7 @@
 	<title>Lien pour debug NOUTOnline</title>
 
 	<style type="text/css">
-		body { padding-top: 70px; }
+		body { padding-top: 70px; margin-bottom: 250px; }
 	</style>
 {% endblock%}
 
@@ -19,68 +19,89 @@
 
 	<div class="container">
 		<div class="row">
+			<h1>SOAP</h1>
 			<div class="col-md-6">
 				<h2>Connexion</h2>
 				<ul>
-					<li><a href="{{ path('online_connexion') }}">Connexion</a></li>
-					<li><a href="{{ path('online_cnx_error', {'error': 1}) }}">Connexion Erreur 1</a></li>
-					<li><a href="{{ path('online_cnx_error', {'error': 2}) }}">Connexion Erreur 2</a></li>
-					<li><a href="{{ path('online_cnx_try_error', {'error': 1}) }}">Connexion Try Erreur 1</a></li>
-					<li><a href="{{ path('online_cnx_try_error', {'error': 2}) }}">Connexion Try Erreur 2</a></li>
+					<li><a href="{{ path('online_soap_connexion') }}">Connexion</a></li>
+					<li><a href="{{ path('online_soap_cnx_error', {'error': 1}) }}">Connexion Erreur 1</a></li>
+					<li><a href="{{ path('online_soap_cnx_error', {'error': 2}) }}">Connexion Erreur 2</a></li>
+					<li><a href="{{ path('online_soap_cnx_try_error', {'error': 1}) }}">Connexion Try Erreur 1</a></li>
+					<li><a href="{{ path('online_soap_cnx_try_error', {'error': 2}) }}">Connexion Try Erreur 2</a></li>
 				</ul>
 				<h2>Liste et assimilé</h2>
 				<ul>
-					<li><a href="{{ path('online_list', {'form': 'utilisateur'}) }}">Liste Utilisateur (list) + getCalculation</a></li>
-					<li><a href="{{ path('online_execute', {'action': 'liste utilisateur'}) }}">Liste Utilisateur (execute)</a></li>
-					<li><a href="{{ path('online_request', {'form': 'utilisateur', 'colonne': 'invalide', 'valeur': 1}) }}">Request Utilisateur invalide (request)</a></li>
-					<li><a href="{{ path('online_search', {'form': 'utilisateur'}) }}">Rechercher utilisateur (search)</a></li>
-					<li><a href="{{ path('online_drillthrought') }}">DrillThrought</a></li>
-					<li><a href="{{ path('online_request_param') }}">Request Param (pour lister les ressources du planning)</a></li>
-					<li><a href="{{ path('online_get_planning_info', {'res': '36683203627649'}) }}">GetPlanningInfo superviseur</a></li>
-					<li><a href="{{ path('online_reorder_list') }}">Reordonnancement (enterReorderListMode, reorderList, setorderList)</a></li>
-					<li><a href="{{ path('online_reorder_sublist') }}">Reordonnancement sous-liste (reorderSubList, setOrderSubList)</a></li>
-					<li><a href="{{ path('online_chart', {'form' : '42704702455450'}) }}">GetChart</a></li>
+					<li><a href="{{ path('online_soap_list', {'form': 'utilisateur'}) }}">Liste Utilisateur (list) + getCalculation</a></li>
+					<li><a href="{{ path('online_soap_execute', {'action': 'liste utilisateur'}) }}">Liste Utilisateur (execute)</a></li>
+					<li><a href="{{ path('online_soap_request', {'form': 'utilisateur', 'colonne': 'invalide', 'valeur': 1}) }}">Request Utilisateur invalide (request)</a></li>
+					<li><a href="{{ path('online_soap_search', {'form': 'utilisateur'}) }}">Rechercher utilisateur (search)</a></li>
+					<li><a href="{{ path('online_soap_drillthrought') }}">DrillThrought</a></li>
+					<li><a href="{{ path('online_soap_request_param') }}">Request Param (pour lister les ressources du planning)</a></li>
+					<li><a href="{{ path('online_soap_get_planning_info', {'res': '36683203627649'}) }}">GetPlanningInfo superviseur</a></li>
+					<li><a href="{{ path('online_soap_reorder_list') }}">Reordonnancement (enterReorderListMode, reorderList, setorderList)</a></li>
+					<li><a href="{{ path('online_soap_reorder_sublist') }}">Reordonnancement sous-liste (reorderSubList, setOrderSubList)</a></li>
+					<li><a href="{{ path('online_soap_chart', {'form' : '42704702455450'}) }}">GetChart</a></li>
 				</ul>
 				<h2>Autres</h2>
 				<ul>
-					<li><a href="{{ path('online_getstartautomatism') }}">GetStartAutomatism</a></li>
-					<li><a href="{{ path('online_getendautomatism') }}">GetEndAutomatism</a></li>
-					<li><a href="{{ path('online_gettemporalautomatism') }}">GetTemporalAutomatism</a></li>
-					<li><a href="{{ path('online_getlanguages') }}">GetLanguages</a></li>
-					<li><a href="{{ path('online_gettablechild', { 'form':'48918773563102'}) }}">GetTableChild (Mode déconnecté - Père abstrait avec fils accessibles en mode deconnecté : Père)</a></li>
-
-
-				</ul>
-				<h2>Test classes outils</h2>
-				<ul>
-					<li><a href="{{ path('online_record_test') }}">Test pour record</a></li>
-					<li><a href="{{ path('online_filenpi_test') }}">Test pour FileNPI</a></li>
-					<li><a href="{{ path('online_rest_test') }}">Test pour REST</a></li>
+					<li><a href="{{ path('online_soap_getstartautomatism') }}">GetStartAutomatism</a></li>
+					<li><a href="{{ path('online_soap_getendautomatism') }}">GetEndAutomatism</a></li>
+					<li><a href="{{ path('online_soap_gettemporalautomatism') }}">GetTemporalAutomatism</a></li>
+					<li><a href="{{ path('online_soap_getlanguages') }}">GetLanguages</a></li>
+					<li><a href="{{ path('online_soap_gettablechild', { 'form':'48918773563102'}) }}">GetTableChild (Mode déconnecté - Père abstrait avec fils accessibles en mode deconnecté : Père)</a></li>
 				</ul>
 			</div>
 			<div class="col-md-6">
 				<h2>Manipulation enregistrement</h2>
 				<h3>Creation</h3>
 				<ul>
-					<li><a href="{{ path('online_create', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test create'}) }}">creer formulaire avec liste image</a></li>
-					<li><a href="{{ path('online_create_from', {'form': '41296233836619', 'origine':'45354977933184'}) }}">dupliquer formulaire avec liste image</a></li>
-					<li><a href="{{ path('online_select_form', { 'form':'48918773563102'}) }}">SelectForm (Mode déconnecté - Père abstrait avec fils accessibles en mode deconnecté : Père)</a></li>
-					<li><a href="{{ path('online_transform_into', { 'formSrc':'51346223489588', 'formDest':'40810668714136', 'colonne':'40896568059607', 'valeur':'transorm_into'}) }}">Transformer en (Création - Formulaire Fils 1 en Création - Formulaire Fils 2)</a></li>
+					<li><a href="{{ path('online_soap_create', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test create'}) }}">creer formulaire avec liste image</a></li>
+					<li><a href="{{ path('online_soap_create_from', {'form': '41296233836619', 'origine':'45354977933184'}) }}">dupliquer formulaire avec liste image</a></li>
+					<li><a href="{{ path('online_soap_select_form', { 'form':'48918773563102'}) }}">SelectForm (Mode déconnecté - Père abstrait avec fils accessibles en mode deconnecté : Père)</a></li>
+					<li><a href="{{ path('online_soap_transform_into', { 'formSrc':'51346223489588', 'formDest':'40810668714136', 'colonne':'40896568059607', 'valeur':'transorm_into'}) }}">Transformer en (Création - Formulaire Fils 1 en Création - Formulaire Fils 2)</a></li>
 				</ul>
 				<h3>Consultation</h3>
 				<ul>
-					<li><a href="{{ path('online_display', {'form': 'utilisateur', 'id':2}) }}">Afficher utilisateur 2</a></li>
-					<li><a href="{{ path('online_getcolinrecord', {'colonne': 'photo utilisateur', 'id':2, 'content':1}) }}">Afficher le contenu de la photo de l'utilisateur 2</a></li>
+					<li><a href="{{ path('online_soap_display', {'form': 'utilisateur', 'id':2}) }}">Afficher utilisateur 2</a></li>
+					<li><a href="{{ path('online_soap_getcolinrecord', {'colonne': 'photo utilisateur', 'id':2, 'content':1}) }}">Afficher le contenu de la photo de l'utilisateur 2</a></li>
 				</ul>
 				<h3>Autres</h3>
 				<ul>
-					<li><a href="{{ path('online_print', {'form': 'utilisateur', 'id':2}) }}">Imprimer utilisateur 2</a></li>
-					<li><a href="{{ path('online_select_print_template', {'form': 'Form avec ME', 'id':'37658108898600', 'modele':'41291660900316' }) }}">Imprimer Form avec ME 'MEPere 00002' (selectPrintTemplate : HTML Form avec ME Titre Jaune)</a></li>
-					<li><a href="{{ path('online_modify', {'form': '41296233836619', 'id':'219237638150324', 'colonne':'45208949043557', 'valeur':'test modify'}) }}">Modifier le libelle de formulaire avec liste image</a></li>
-					<li><a href="{{ path('online_delete', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test delete'}) }}">supprimer formulaire avec liste image</a></li>
-					<li><a href="{{ path('online_has_changed', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test haschanged'}) }}">Has Changed (create/print)</a></li>
+					<li><a href="{{ path('online_soap_print', {'form': 'utilisateur', 'id':2}) }}">Imprimer utilisateur 2</a></li>
+					<li><a href="{{ path('online_soap_select_print_template', {'form': 'Form avec ME', 'id':'37658108898600', 'modele':'41291660900316' }) }}">Imprimer Form avec ME 'MEPere 00002' (selectPrintTemplate : HTML Form avec ME Titre Jaune)</a></li>
+					<li><a href="{{ path('online_soap_modify', {'form': '41296233836619', 'id':'219237638150324', 'colonne':'45208949043557', 'valeur':'test modify'}) }}">Modifier le libelle de formulaire avec liste image</a></li>
+					<li><a href="{{ path('online_soap_delete', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test delete'}) }}">supprimer formulaire avec liste image</a></li>
+					<li><a href="{{ path('online_soap_has_changed', {'form': '41296233836619', 'colonne':'45208949043557', 'valeur':'test haschanged'}) }}">Has Changed (create/print)</a></li>
 				</ul>
 			</div>
-		</div>
+		</div> <!-- /.row -->
+		<div class="row">
+			<h1>REST</h1>
+			<div class="col-md-6">
+				<ul>
+					<li><a href="{{ path('online_rest_test') }}">Test pour REST</a></li>
+				</ul>
+			</div>
+			<div class="col-md-6">
+			</div>
+		</div> <!-- /.row -->
+		<div class="row">
+			<h1>PHP</h1>
+			<div class="col-md-6">
+				<h2>Parsage</h2>
+				<ul>
+					<li><a href="{{ path('online_php_parser', {'file': 'champ_simple'}) }}">Champs simples</a></li>
+					<li><a href="{{ path('online_php_parser', {'file': 'multi_colonne'}) }}">Multi-Colonne</a></li>
+					<li><a href="{{ path('online_php_parser', {'file': 'FormEtatChamp_fiche_listesync'}) }}">Etat Champ Fiche Liste Async</a></li>
+					<li><a href="{{ path('online_php_parser', {'file': 'FormEtatChamp_fiche_listesync'}) }}">Etat Champ Fiche Liste Sync</a></li>
+				</ul>
+			</div>
+			<div class="col-md-6">
+				<h2>Classe outils</h2>
+				<ul>
+					<li><a href="{{ path('online_php_filenpi') }}">Test pour FileNPI</a></li>
+				</ul>
+			</div>
+		</div> <!-- /.row -->
 	</div>
 {% endblock %}

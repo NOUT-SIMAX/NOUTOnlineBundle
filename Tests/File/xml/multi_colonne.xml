@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="superviseur">2</Element>
+		</ConnectedUser>
+		<ActionContext>33979031834774</ActionContext>
+		<Action title="Créer Multi colonne" typeAction="2386" typeReturn="Record">17128383744090358893</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080511333869" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_36420837490897" simax:name="Multi colonne" simax:tableIconID="63141619046258">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_40720099759321" simax:name="Cp / ville / chp : sur 3" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="3" simax:multiColumnMode="3" simax:multiColumnWay="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element xs:name="id_40866128643112" simax:name="Ville" simax:typeElement="simax-element" simax:printed="1" simax:link="1" simax:City="1" simax:linkedTableXml="id_9494" simax:linkedTableID="9494"/>
+										<xs:element xs:name="id_45255585219493" simax:name="CP" simax:printed="1" simax:link="1" simax:textBoxSize="10" simax:postalCode="1">
+											<xs:simpleType>
+												<xs:restriction xs:base="xs:string">
+													<xs:maxLength xs:value="100"/>
+													<xs:length xs:value="8"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element xs:name="id_52466835310017" simax:name="Libellé" xs:use="required" simax:titled="1" simax:printed="1" simax:link="1">
+											<xs:simpleType>
+												<xs:restriction xs:base="xs:string">
+													<xs:maxLength xs:value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:unique xs:name="0">
+								<xs:selector xs:xpath="id_40720099759321"/>
+							</xs:unique>
+							<xs:element xs:name="id_50194797609454" simax:name="Cp / ville / chp : sur 3" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="3" simax:multiColumnMode="3" simax:multiColumnWay="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element xs:name="id_49456063239630" simax:name="CP" simax:detail="1" simax:readOnly="1" simax:printed="1" simax:computed="1" simax:textBoxSize="10" simax:postalCode="1">
+											<xs:simpleType>
+												<xs:restriction xs:base="xs:string">
+													<xs:maxLength xs:value="100"/>
+													<xs:length xs:value="8"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element xs:name="id_51981504009963" simax:name="Ville" simax:typeElement="simax-element" simax:detail="1" simax:readOnly="1" simax:printed="1" simax:computed="1" simax:withoutCreate="1" simax:City="1" simax:linkedTableXml="id_9494" simax:linkedTableID="9494"/>
+										<xs:element xs:name="id_38289148270484" simax:name="Libellé" simax:detail="1" simax:readOnly="1" simax:titled="1" simax:printed="1" simax:computed="1">
+											<xs:simpleType>
+												<xs:restriction xs:base="xs:string">
+													<xs:maxLength xs:value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:unique xs:name="1">
+								<xs:selector xs:xpath="id_50194797609454"/>
+							</xs:unique>
+							<xs:element xs:name="id_224172479538666" simax:name="Multi colonne 4" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="4" simax:multiColumnWay="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element xs:name="id_212120801307606" simax:name="Description de données externe" simax:typeElement="simax-element" simax:printed="1" simax:link="1" simax:withoutCreate="1" simax:linkedTableXml="id_14391" simax:linkedTableID="14391"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:unique xs:name="2">
+								<xs:selector xs:xpath="id_224172479538666"/>
+							</xs:unique>
+							<xs:element xs:name="id_215140170529733" simax:name="Multi colonne 2" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="2" simax:multiColumnWay="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element xs:name="id_223957738388752" simax:name="Nom de fichier avec répertoire" simax:typeElement="xs:string" simax:printed="1" simax:directory="1"/>
+										<xs:element xs:name="id_216377121111657" simax:name="Fichier" simax:typeElement="xs:base64Binary" simax:printed="1"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:unique xs:name="3">
+								<xs:selector xs:xpath="id_215140170529733"/>
+							</xs:unique>
+							<xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="17128374179198190703" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+							<xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="17128374192083092591" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="4">
+					<xs:selector xs:xpath="id_36420837490897"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Multi colonne">36420837490897</Form>
+		<Element title="Multi colonne">33987621769366</Element>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080511353772" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_36420837490897 simax:id="33987621769366" simax:title="Multi colonne">
+					<id_40720099759321>
+						<id_40866128643112/>
+						<id_45255585219493/>
+						<id_52466835310017/>
+					</id_40720099759321>
+					<id_50194797609454>
+						<id_49456063239630 simax:readOnly="1"/>
+						<id_51981504009963 simax:readOnly="1"/>
+						<id_38289148270484 simax:readOnly="1"/>
+					</id_50194797609454>
+					<id_224172479538666>
+						<id_212120801307606/>
+					</id_224172479538666>
+					<id_215140170529733>
+						<id_223957738388752/>
+						<id_216377121111657/>
+					</id_215140170529733>
+				</id_36420837490897>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>
