@@ -177,21 +177,21 @@ RESULTAT;
 	 * @param $file
 	 * @return string
 	 */
-	protected function _sGetContentFile($rep, $file)
+	protected function _sGetContentFileXML($rep, $file)
 	{
-		$path = $this->get('kernel')->locateResource("@NOUTOnlineBundle/Tests/File/$rep/$file");
+		$path = $this->get('kernel')->locateResource("@NOUTOnlineBundle/Tests/File/xml/$rep/$file");
 		return file_get_contents($path);
 	}
 
 	/**
-	 * @Route("/parser/{file}", name="online_php_parser")
+	 * @Route("/parser/xml/{rep}/{file}", name="online_php_parser_xml")
 	 *
 	 */
-	public function recordTestAction($file)
+	public function recordTestAction($rep, $file)
 	{
 		ob_start();
 
-		$sXML          = $this->_sGetContentFile('xml', $file.'.xml');
+		$sXML          = $this->_sGetContentFileXML($rep, $file.'.xml');
 		$clResponseXML = new XMLResponseWS($sXML);
 
 		$clRecordManager = new ReponseWSParser();
