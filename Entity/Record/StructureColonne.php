@@ -28,6 +28,12 @@ abstract class StructureColonne
 	 */
 	protected $m_TabOptions;
 
+	/**
+	 * structure élément du formulaire lié
+	 * @var StructureElement|null
+	 */
+	protected $m_clStructureElemLie;
+
 
 	/**
 	 * retourne le type de l'élément
@@ -46,6 +52,7 @@ abstract class StructureColonne
 		$this->m_eTypeElement =  '';
 
 		$this->m_TabOptions          = array();
+		$this->m_clStructureElemLie  = null;
 
 		$this->_InitInfoColonne($clAttribNOUT, $clAttribXS);
 	}
@@ -59,6 +66,16 @@ abstract class StructureColonne
 		{
 			$this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
 		}
+	}
+
+	/**
+	 * @param StructureElement $clStructElem
+	 * @return $this
+	 */
+	public function setStructureElementLie(StructureElement $clStructElem)
+	{
+		$this->m_clStructureElemLie = $clStructElem;
+		return $this;
 	}
 
 	public function bEstTypeSimple()

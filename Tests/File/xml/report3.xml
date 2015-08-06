@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+	<env:Header>
+		<ReturnType>Report</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="superviseur">2</Element>
+		</ConnectedUser>
+		<ActionContext>25672565265501</ActionContext>
+		<Action title="Exporter données" userConfirmation="1" typeAction="2394" typeReturn="Report">11495</Action>
+		<Filter>
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080514443694" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_8696 simax:id="11495" simax:title="Exporter données">
+					<id_15010>38293686744608</id_15010>
+					<id_11505> </id_11505>
+				</id_8696>
+				<id_14884 simax:id="38293686744608" simax:title="Exports CSV - Collaborateur (E)"/></xml>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080514442151" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_8696" simax:name="Action particulière">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_15010" simax:name="Export" simax:typeElement="simax-element" xs:use="required" simax:linkedTableXml="id_14884" simax:linkedTableID="14884"/>
+							<xs:element xs:name="id_11505" simax:name="Répertoire" simax:typeElement="xs:string" simax:directory="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_8696"/>
+				</xs:unique>
+			</xs:schema>
+		</Filter>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml>
+				<Report>&lt;br&gt;&lt;span class=NOUT_MsgSuccess&gt;Exports CSV - Collaborateur (E)&lt;/span&gt;&lt;br&gt;&lt;br&gt;
+					L'action a été effectuée avec succès.&lt;br&gt;Le résultat de l'export est dans : &lt;a href="file://///nout.local/nout/Qualite/_NOUT/_Validator/Test Files/Exports/CSV/\ .csv"&gt;//nout.local/nout/Qualite/_NOUT/_Validator/Test Files/Exports/CSV/\ .csv&lt;/a&gt;.&lt;br/&gt;
+					&lt;table border=1&gt;
+					&lt;tr class="NOUT_EnteteTableau"&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;Nb&lt;/th&gt;
+					&lt;/tr&gt;
+					&lt;tr class="NOUT_TR_Pair"&gt;
+					&lt;td&gt;Exportés&lt;/td&gt;
+					&lt;td&gt;10&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr class="NOUT_TR_Impair"&gt;
+					&lt;td&gt;Ignorés &lt;small&gt;(par condition export)&lt;/small&gt;&lt;/td&gt;
+					&lt;td&gt;0&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr class="NOUT_TR_Pair"&gt;
+					&lt;td&gt;Erreurs&lt;/td&gt;
+					&lt;td&gt;0&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;/table&gt;
+					&lt;br/&gt;Durée totale de l'export: 0 heure(s) 0 minute(s) 1 seconde(s)&lt;br&gt;&lt;h1 class="NOUT_MsgSuccess"&gt;Correspondances :&lt;/h1&gt;
+					&lt;h4&gt;Formulaire destination : Exports : Collaborateur&lt;/h4&gt;
+					&lt;table border=1 width=100%&gt;
+					&lt;tr class="NOUT_EnteteTableau"&gt;
+					&lt;th&gt;Externe&lt;/th&gt;&lt;th&gt;SIMAX&lt;/th&gt;&lt;th&gt;Type de données&lt;/th&gt;&lt;th&gt;Transformation&lt;/th&gt;&lt;th&gt;Création&lt;/th&gt;&lt;th&gt;Cons. Espace&lt;/th&gt;&lt;th&gt;Valeur Aff.&lt;/th&gt;
+					&lt;/tr&gt;
+					&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Référence libre&lt;/td&gt;&lt;td&gt;Référence libre&lt;/td&gt;&lt;td&gt;Texte&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Invalide&lt;/td&gt;&lt;td&gt;Invalide&lt;/td&gt;&lt;td&gt;Vrai/Faux&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Nom&lt;/td&gt;&lt;td&gt;Nom&lt;/td&gt;&lt;td&gt;Texte&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Prénom&lt;/td&gt;&lt;td&gt;Prénom&lt;/td&gt;&lt;td&gt;Texte&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Photo&lt;/td&gt;&lt;td&gt;Photo&lt;/td&gt;&lt;td&gt;Fichier&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Sexe&lt;/td&gt;&lt;td&gt;Sexe&lt;/td&gt;&lt;td&gt;Liste déroulante&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Numéro de téléphone&lt;/td&gt;&lt;td&gt;Numéro de téléphone&lt;/td&gt;&lt;td&gt;Entier&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Poste&lt;/td&gt;&lt;td&gt;Poste&lt;/td&gt;&lt;td&gt;Elément&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Service&lt;/td&gt;&lt;td&gt;Service&lt;/td&gt;&lt;td&gt;Elément&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Principal&lt;/td&gt;&lt;td&gt;Principal&lt;/td&gt;&lt;td&gt;Vrai/Faux&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Date d'embauche&lt;/td&gt;&lt;td&gt;Date d'embauche&lt;/td&gt;&lt;td&gt;Date&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Taux horaire&lt;/td&gt;&lt;td&gt;Taux horaire&lt;/td&gt;&lt;td&gt;Nombre à virgule&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Salaire&lt;/td&gt;&lt;td&gt;Salaire&lt;/td&gt;&lt;td&gt;Nombre à virgule&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Nombre à 3 décimales&lt;/td&gt;&lt;td&gt;Nombre à 3 décimales&lt;/td&gt;&lt;td&gt;Nombre à virgule&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Jour de l'entretient&lt;/td&gt;&lt;td&gt;Jour de l'entretient&lt;/td&gt;&lt;td&gt;Liste déroulante&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Heure de l'entretient&lt;/td&gt;&lt;td&gt;Heure de l'entretient&lt;/td&gt;&lt;td&gt;Heure&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Commentaire&lt;/td&gt;&lt;td&gt;Commentaire&lt;/td&gt;&lt;td&gt;Texte Long&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Liste Competence&lt;/td&gt;&lt;td&gt;Liste Competence&lt;/td&gt;&lt;td&gt;Liste d'éléments&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Pair"&gt;&lt;td&gt;Calcul Entier Poste&lt;/td&gt;&lt;td&gt;Calcul Entier Poste&lt;/td&gt;&lt;td&gt;Calcul : Entier&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;&lt;tr class="NOUT_TR_Impair"&gt;&lt;td&gt;Date heure&lt;/td&gt;&lt;td&gt;Date heure&lt;/td&gt;&lt;td&gt;Date Heure&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td class="NOUT_TD_Check"&gt;&amp;#x2714;&lt;/td&gt;&lt;/tr&gt;
+					&lt;/table&gt;
+					&lt;br&gt;&lt;hr/&gt;
+					&lt;i&gt;Pour de meilleures correspondances, vous pouvez :&lt;br/&gt;
+					-  Modifier le modèle du champ, il existe peut être un modèle plus approprié ou plus précis.&lt;br/&gt;
+					-  Modifier le libellé du champ, mettre le même libellé que dans l'application externe.&lt;br/&gt;&lt;/i&gt;
+					&lt;hr/&gt;</Report>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>

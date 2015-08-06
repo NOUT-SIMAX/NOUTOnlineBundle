@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+	<env:Header>
+		<ReturnType>Report</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="superviseur">2</Element>
+		</ConnectedUser>
+		<ActionContext>17941624129190</ActionContext>
+		<Action title="" typeAction="0" typeReturn="Report">0</Action>
+	</env:Header>
+	<env:Body>
+		<GetStartAutomatismResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml>
+				<Report>La modification du Automatisme SIMAX : Au démarrage a bien été effectuée</Report>
+			</xml>
+		</GetStartAutomatismResponse>
+	</env:Body>
+</env:Envelope>

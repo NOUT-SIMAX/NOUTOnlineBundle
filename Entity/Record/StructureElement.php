@@ -22,24 +22,19 @@ class StructureElement
 	protected $m_sLibelle;
 
 	/**
-	 * @var integer
+	 * @var StructureSection
 	 */
-	protected $m_nNiveau;
-
-	/**
-	 * @var array
-	 */
-	protected $m_TabStructureColonne;
-
-	/**
-	 * @var array
-	 */
-	protected $m_MapIDColonne2StructColonne;
+	protected $m_clFiche;
 
 	/**
 	 * @var array
 	 */
 	protected $m_TabBouton;
+
+	/**
+	 * @var array
+	 */
+	protected $m_MapIDColonne2Structure;
 
 
 	/**
@@ -47,27 +42,32 @@ class StructureElement
 	 * @param $sLibelle
 	 * @param $nNiv
 	 */
-	public function __construct($sID, $sLibelle, $nNiv)
+	public function __construct($sID, $sLibelle)
 	{
 		$this->m_nID                        = $sID;
 		$this->m_sLibelle                   = $sLibelle;
-		$this->m_nNiveau                    = $nNiv;
-		$this->m_TabStructureColonne        = array();
-		$this->m_MapIDColonne2StructColonne = array();
+		$this->m_clFiche					= new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
+
+		$this->m_MapIDColonne2Structure = array();
 	}
 
+	public function addColonne(StructureColonne $clColonne)
+	{
+		$this->m_MapIDColonne2Structure[$clColonne->getIDColonne()]=$clColonne;
+		return $this;
+	}
 
 	/**
 	 * @param string $sIDColonne identifiant de la colonne
 	 */
 	public function getTypeElement($sIDColonne)
 	{
-		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+		if (!isset($this->m_MapIDColonne2Structure[$sIDColonne]))
 		{
 			return;
 		}
 
-		return $this->m_MapIDColonne2StructColonne[$sIDColonne]->getTypeElement();
+		return $this->m_MapIDColonne2Structure[$sIDColonne]->getTypeElement();
 	}
 
 	/**
@@ -76,12 +76,23 @@ class StructureElement
 	 */
 	public function getStructureColonne($sIDColonne)
 	{
-		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+		if (!isset($this->m_MapIDColonne2Structure[$sIDColonne]))
 		{
 			return;
 		}
 
-		return $this->m_MapIDColonne2StructColonne[$sIDColonne];
+		return $this->m_MapIDColonne2Structure[$sIDColonne];
+	}
+
+	/**
+	 * ajoute un des boutons d'actions (non paramétré)
+	 * @param StructureBouton $clStructBouton
+	 * @return $this
+	 */
+	public function addButton(StructureBouton $clStructBouton)
+	{
+		$this->m_TabBouton[]=$clStructBouton;
+		return $this;
 	}
 
 	/**
@@ -90,9 +101,9 @@ class StructureElement
 	 */
 	public function setTypeElement($sIDColonne, $eTypeElement)
 	{
-		if (isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+		if (isset($this->m_MapIDColonne2Structure[$sIDColonne]))
 		{
-			$this->m_MapIDColonne2StructColonne[$sIDColonne]->setTypeElement($eTypeElement);
+			$this->m_MapIDColonne2Structure[$sIDColonne]->setTypeElement($eTypeElement);
 		}
 	}
 
@@ -102,9 +113,9 @@ class StructureElement
 	 */
 	public function setRestriction($sIDColonne, ColonneRestriction $clRestriction)
 	{
-		if (isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
+		if (isset($this->m_MapIDColonne2Structure[$sIDColonne]))
 		{
-			$this->m_MapIDColonne2StructColonne[$sIDColonne]->setRestriction($clRestriction);
+			$this->m_MapIDColonne2Structure[$sIDColonne]->setRestriction($clRestriction);
 		}
 	}
 
@@ -124,29 +135,9 @@ class StructureElement
 			}
 		}
 
-		$this->m_MapIDColonne2StructColonne[$clStructColonne->getIDColonne()] = $clStructColonne;
+		$this->m_MapIDColonne2Structure[$clStructColonne->getIDColonne()] = $clStructColonne;
 		return $clStructColonne->getIDColonne();
 	}
-
-	/**
-	 * @param                  $sIDColonne
-	 * @param                  $sIDColPere
-	 * @param StructureColonne $clStruct
-	 * @return this
-	 */
-	public function addColonne2TabStruct($sIDColonne, $sIDColPere, StructureColonne $clStruct = null)
-	{
-		if (!isset($sIDColPere))
-		{
-			$this->m_TabStructureColonne[] = isset($clStruct) ? $clStruct : $this->m_MapIDColonne2StructColonne[$sIDColonne];
-		}
-		else
-		{
-			$this->m_MapIDColonne2StructColonne[$sIDColPere]->addColonne2TabStruct($sIDColonne, null, $this->m_MapIDColonne2StructColonne[$sIDColonne]);
-		}
-		return $this;
-	}
-
 
 	/**
 	 * @return string
@@ -159,9 +150,9 @@ class StructureElement
 	/**
 	 * @return array
 	 */
-	public function getTabStructureColonne()
+	public function getFiche()
 	{
-		return $this->m_TabStructureColonne;
+		return $this->m_clFiche;
 	}
 
 	/**
@@ -193,7 +184,7 @@ class StructureElement
      */
     public function getTabIDColonne()
     {
-        return array_keys($this->m_MapIDColonne2StructColonne);
+        return array_keys($this->m_MapIDColonne2Structure);
     }
 
     /**
@@ -203,7 +194,7 @@ class StructureElement
     public function getTabColonneAvecOption($option)
     {
         $aRet = array();
-        foreach($this->m_MapIDColonne2StructColonne as $clStructureColonne)
+        foreach($this->m_MapIDColonne2Structure as $clStructureColonne)
         {
             if ($clStructureColonne->isOption($option))
                 $aRet[]=$clStructureColonne->getIDColonne();
