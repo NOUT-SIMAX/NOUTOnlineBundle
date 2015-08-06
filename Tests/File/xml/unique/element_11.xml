@@ -1,0 +1,37 @@
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="superviseur">2</Element>
+		</ConnectedUser>
+		<ActionContext>19797050980777</ActionContext>
+		<Action title="Créer Type de champ Element" typeAction="2386" typeReturn="Record">218018340249798</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080607411455" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_214135689813440" simax:name="Type de champ Element">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_225315531043357" simax:name="Type de champ Element 11" simax:typeElement="simax-element" simax:printed="1" simax:link="1" simax:linkedTableXml="id_216665466904904" simax:linkedTableID="216665466904904" simax:withModifyAndRemove="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_214135689813440"/>
+					<xs:field xs:xpath="id_213061947989442"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Type de champ Element">214135689813440</Form>
+		<Element title="TCE00001">19805640915369</Element>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080607411455" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_214135689813440 simax:id="19805640915369" simax:title="TCE00001">
+					<id_225315531043357/>
+				</id_214135689813440>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>

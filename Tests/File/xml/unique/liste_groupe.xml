@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="symfony">29</Element>
+		</ConnectedUser>
+		<ActionContext>20681806387810</ActionContext>
+		<Action title="Créer Type de champ liste" typeAction="2386" typeReturn="Record">218696978545816</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115173449" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_221686275782379" simax:name="Type de champ liste">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_212035484269085" simax:name="Liste utilisateur" simax:typeElement="simax-list" simax:printed="1" simax:withoutCreate="1" simax:withBtnOrder="1" simax:linkedTableXml="id_1169" simax:linkedTableID="1169" simax:withAddAndRemove="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element xs:name="id_1169" simax:name="Liste (Utilisateur)" xs:minOccurs="0" xs:maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element xs:name="id_1171" simax:name="Pseudo" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1" simax:sort="1">
+														<xs:simpleType>
+															<xs:restriction xs:base="xs:string">
+																<xs:maxLength xs:value="100"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element simax:typeElement="simax-button" simax:name="Ajouter" simax:idAction="219169424948404" simax:actionType="Ajouter" simax:typeSelection="0"/>
+										<xs:element simax:typeElement="simax-button" simax:name="Modifier" simax:idAction="1480" simax:withValidation="3" simax:actionType="Modifier" simax:typeSelection="1"/>
+										<xs:element simax:typeElement="simax-button" simax:name="Enlever" simax:idAction="213981104454838" simax:actionType="Enlever" simax:typeSelection="multi"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_221686275782379"/>
+					<xs:field xs:xpath="id_223996968187905"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Type de champ liste">221686275782379</Form>
+		<Element title="TCL0001">20690396322402</Element>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115175850" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_221686275782379 simax:id="20690396322402" simax:title="TCL0001">
+                    <id_212035484269085>
+                        <id_1169 simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">2</id_1169>
+                        <id_1169 simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">21</id_1169>
+                    </id_212035484269085>
+				</id_221686275782379>
+                <id_1169 simax:id="2" simax:title="superviseur" simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">
+                    <id_1171>superviseur</id_1171>
+                    <id_1172>Super</id_1172>
+                    <id_1173>Viseur</id_1173>
+                    <id_1174/>
+                    <id_7623>11.png</id_7623>
+                    <id_7624>1</id_7624>
+                    <id_10545>0</id_10545>
+                </id_1169>
+                <id_1169 simax:id="21" simax:title="commercial" simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">
+                    <id_1171>commercial</id_1171>
+                    <id_1172>Test</id_1172>
+                    <id_1173>Commercial</id_1173>
+                    <id_1174/>
+                    <id_7623>3.png</id_7623>
+                    <id_7624>1</id_7624>
+                    <id_10545>0</id_10545>
+                </id_1169>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>

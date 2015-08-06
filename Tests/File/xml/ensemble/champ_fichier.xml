@@ -1,0 +1,63 @@
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="symfony">29</Element>
+		</ConnectedUser>
+		<ActionContext>32514441280623</ActionContext>
+		<Action title="Créer Type de champ fichier" typeAction="2386" typeReturn="Record">219190899809474</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115095812" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_213654686942361" simax:name="Type de champ fichier">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_215651846735123" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1">
+								<xs:simpleType>
+									<xs:restriction xs:base="xs:string">
+										<xs:maxLength xs:value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element xs:name="id_214874457654754" simax:name="Fichier" simax:typeElement="xs:base64Binary" simax:printed="1"/>
+							<xs:element xs:name="id_227054984927269" simax:name="Image" simax:typeElement="xs:base64Binary" simax:detail="1" simax:printed="1" simax:typeMime="image"/>
+							<xs:element xs:name="id_226552473753839" simax:name="Vidéo" simax:detail="1" simax:printed="1" simax:typeMime="video">
+								<xs:simpleType>
+									<xs:restriction xs:base="xs:string">
+										<xs:maxLength xs:value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element xs:name="id_227132294346204" simax:name="Répertoire" simax:typeElement="xs:string" simax:printed="1" simax:directory="1"/>
+							<xs:element xs:name="id_224014148088763" simax:name="Nom de fichier avec répertoire" simax:typeElement="xs:string" simax:printed="1" simax:directory="1"/>
+							<xs:element xs:name="id_224886026449985" simax:name="Nom de fichier image" simax:typeElement="xs:string" simax:printed="1" simax:typeMime="image" simax:directory="1"/>
+							<xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="213530132913375" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+							<xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="226475164343519" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_213654686942361"/>
+					<xs:field xs:xpath="id_215651846735123"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Type de champ fichier">213654686942361</Form>
+		<Element title="TCF0001">32523031215215</Element>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115095811" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_213654686942361 simax:id="32523031215215" simax:title="TCF0001">
+					<id_215651846735123 simax:readOnly="1">TCF0001</id_215651846735123>
+					<id_214874457654754/>
+					<id_227054984927269/>
+					<id_226552473753839/>
+					<id_227132294346204/>
+					<id_224014148088763/>
+					<id_224886026449985/>
+				</id_213654686942361>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>

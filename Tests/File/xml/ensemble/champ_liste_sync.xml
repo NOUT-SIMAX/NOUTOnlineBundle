@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"
+              xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="superviseur">2</Element>
+		</ConnectedUser>
+		<ActionContext>27424912912504</ActionContext>
+		<Action title="Créer Type de champ liste" typeAction="2386" typeReturn="Record"
+				>218696978545816</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1"
+			           DATEHEURE="2015080607550413" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			           xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_221686275782379" simax:name="Type de champ liste">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_223996968187905" simax:name="Référence"
+							            xs:use="required" simax:readOnly="1" simax:titled="1"
+							            simax:printed="1">
+								<xs:simpleType>
+									<xs:restriction xs:base="xs:string">
+										<xs:maxLength xs:value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element xs:name="id_212035484269085" simax:name="Liste utilisateur"
+							            simax:typeElement="simax-list" simax:printed="1"
+							            simax:withBtnOrder="1" simax:linkedTableXml="id_1169"
+							            simax:linkedTableID="1169" simax:withAddAndRemove="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element xs:name="id_1169"
+										            simax:name="Liste (Utilisateur)" xs:minOccurs="0"
+										            xs:maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element xs:name="id_1171" simax:name="Pseudo"
+													            xs:use="required" simax:titled="1"
+													            simax:printed="1" simax:sort="1">
+														<xs:simpleType>
+															<xs:restriction xs:base="xs:string">
+																<xs:maxLength xs:value="100"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element xs:name="id_1172" simax:name="Nom"
+													            xs:use="required" simax:printed="1" simax:sort="1"
+													            simax:transform="firstUppercase">
+														<xs:simpleType>
+															<xs:restriction xs:base="xs:string">
+																<xs:maxLength xs:value="100"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element xs:name="id_1173" simax:name="Prénom"
+													            xs:use="required" simax:printed="1" simax:sort="1"
+													            simax:transform="firstUppercase">
+														<xs:simpleType>
+															<xs:restriction xs:base="xs:string">
+																<xs:maxLength xs:value="100"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element xs:name="id_1174"
+													            simax:name="Adresse email" simax:printed="1"
+													            simax:sort="1" simax:transform="url">
+														<xs:simpleType>
+															<xs:restriction xs:base="xs:string">
+																<xs:maxLength xs:value="100"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element xs:name="id_7623" simax:name="Photo"
+													            simax:typeElement="xs:base64Binary"
+													            simax:titled="1" simax:printed="1" simax:sort="1"
+													            simax:typeMime="image"/>
+													<xs:element xs:name="id_7624"
+													            simax:name="Superviseur"
+													            simax:typeElement="xs:boolean" simax:printed="1"
+													            simax:sort="1"/>
+													<xs:element xs:name="id_10545"
+													            simax:name="Invalide"
+													            simax:typeElement="xs:boolean" simax:printed="1"
+													            simax:sort="1"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Ajouter" simax:idAction="219169424948404"
+										            simax:actionType="Ajouter" simax:typeSelection="0"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Créer" simax:idAction="1478"
+										            simax:withValidation="3" simax:actionType="Créer"
+										            simax:typeSelection="0"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Consulter" simax:idAction="1484"
+										            simax:withValidation="3" simax:actionType="Détail"
+										            simax:typeSelection="1"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Modifier" simax:idAction="1480"
+										            simax:withValidation="3" simax:actionType="Modifier"
+										            simax:typeSelection="1"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Enlever" simax:idAction="213981104454838"
+										            simax:actionType="Enlever" simax:typeSelection="multi"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Imprimer" simax:idAction="1492"
+										            simax:withValidation="3" simax:actionType="Imprimer"
+										            simax:typeSelection="multi"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element xs:name="id_224752882487337"
+							            simax:name="Liste Ligne type de champ liste"
+							            simax:typeElement="simax-list" simax:detail="1" simax:printed="1"
+							            simax:linkedTableXml="id_220943246442220"
+							            simax:linkedTableID="220943246442220">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element xs:name="id_220943246442220"
+										            simax:name="Liste (Ligne type de champ liste)"
+										            xs:minOccurs="0" xs:maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element xs:name="id_218280366718823"
+													            simax:name="Type de champ liste"
+													            simax:typeElement="simax-element"
+													            xs:use="required" simax:hidden="1"
+													            simax:printed="1" simax:link="1"
+													            simax:linkedTableXml="id_221686275782379"
+													            simax:linkedTableID="221686275782379"/>
+													<xs:element xs:name="id_228498093916257"
+													            simax:name="Référence" xs:use="required"
+													            simax:readOnly="1" simax:titled="1"
+													            simax:printed="1" simax:sort="1">
+														<xs:simpleType>
+															<xs:restriction xs:base="xs:string">
+																<xs:maxLength xs:value="100"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element xs:name="id_226655552946537"
+													            simax:name="Entier" simax:typeElement="xs:integer"
+													            simax:printed="1" simax:sort="1"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Créer" simax:idAction="220118612722131"
+										            simax:withValidation="3" simax:actionType="Créer"
+										            simax:typeSelection="0"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Consulter" simax:idAction="219663346188756"
+										            simax:withValidation="3" simax:actionType="Détail"
+										            simax:typeSelection="1"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Modifier" simax:idAction="224533839102419"
+										            simax:withValidation="3" simax:actionType="Modifier"
+										            simax:typeSelection="1"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Supprimer" simax:idAction="223812284596692"
+										            simax:withValidation="3" simax:actionType="Supprimer"
+										            simax:typeSelection="multi"/>
+										<xs:element simax:typeElement="simax-button"
+										            simax:name="Imprimer" simax:idAction="228236100911588"
+										            simax:withValidation="3" simax:actionType="Imprimer"
+										            simax:typeSelection="multi"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element simax:typeElement="simax-button" simax:name="Supprimer"
+							            simax:idAction="218258891881644" simax:withValidation="3"
+							            simax:actionType="Supprimer" simax:typeSelection="multi"/>
+							<xs:element simax:typeElement="simax-button" simax:name="Imprimer"
+							            simax:idAction="216635394243744" simax:withValidation="3"
+							            simax:actionType="Imprimer" simax:typeSelection="multi"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_221686275782379"/>
+					<xs:field xs:xpath="id_223996968187905"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Type de champ liste">221686275782379</Form>
+		<Element title="TCL0001">27433502847096</Element>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080607555107"
+			     xmlns:simax="http://www.nout.fr/XML/"
+			     xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_221686275782379 simax:id="27433502847096" simax:title="TCL0001">
+					<id_223996968187905 simax:readOnly="1">TCL0001</id_223996968187905>
+					<id_212035484269085>
+						<id_1169 simax-layout:bold="1" simax-layout:italic="0"
+						         simax-layout:bgcolor="7FFF55">2</id_1169>
+						<id_1169>12</id_1169>
+					</id_212035484269085>
+					<id_224752882487337/>
+				</id_221686275782379>
+				<id_1169 simax:id="2" simax:title="superviseur" simax-layout:bold="1"
+				         simax-layout:italic="0" simax-layout:bgcolor="7FFF55">
+					<id_1171>superviseur</id_1171>
+					<id_1172>Super</id_1172>
+					<id_1173>Viseur</id_1173>
+					<id_1174/>
+					<id_7623>11.png</id_7623>
+					<id_7624>1</id_7624>
+					<id_10545>0</id_10545>
+				</id_1169>
+				<id_1169 simax:id="12" simax:title="ninon">
+					<id_1171>ninon</id_1171>
+					<id_1172>Laf</id_1172>
+					<id_1173>Ninon</id_1173>
+					<id_1174 simax-layout:bold="0" simax-layout:italic="0"
+					         simax-layout:color="FFDBAA" simax-layout:bgcolor="FF0000"
+							>ninon@nout.fr</id_1174>
+					<id_7623>9.png</id_7623>
+					<id_7624 simax-layout:bold="1" simax-layout:italic="0"
+					         simax-layout:bgcolor="7FFF55">1</id_7624>
+					<id_10545>0</id_10545>
+				</id_1169>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>

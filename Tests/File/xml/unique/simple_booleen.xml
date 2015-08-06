@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="symfony">29</Element>
+		</ConnectedUser>
+		<ActionContext>32192318731497</ActionContext>
+		<Action title="Créer Type de champ simple" typeAction="2386" typeReturn="Record">221140495352006</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115062624" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_228441939754526" simax:name="Type de champ simple">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element xs:name="id_221733204940980" simax:name="Vrai/faux" simax:typeElement="xs:boolean" simax:printed="1"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_228441939754526"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Type de champ simple">228441939754526</Form>
+		<Element title="TCS00005">32200908666089</Element>
+	</env:Header>
+	<env:Body>
+		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115075895" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_228441939754526 simax:id="32200908666089" simax:title="TCS00005">
+					<id_221733204940980>0</id_221733204940980>
+				</id_228441939754526>
+			</xml>
+		</ExecuteResponse>
+	</env:Body>
+</env:Envelope>

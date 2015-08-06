@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"
+              xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
 	<env:Header>
 		<ReturnType>Record</ReturnType>
 		<ConnectedUser>
 			<Form title="Utilisateur">1169</Form>
 			<Element title="superviseur">2</Element>
 		</ConnectedUser>
-		<ActionContext>21797975181314</ActionContext>
+		<ActionContext>27631071347573</ActionContext>
 		<Action title="Modifier Formulaire Etat de champ" typeAction="2387" typeReturn="Record"
 				>17128382653213070409</Action>
 		<XSDSchema>
 			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1"
-			           DATEHEURE="2014071812310829" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			           DATEHEURE="2015080607593473" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			           xmlns:simax="http://www.nout.fr/XMLSchema">
 				<xs:element xs:name="id_47909919412330" simax:name="Formulaire Etat de champ"
 				            simax:tableIconID="63141619046258">
@@ -619,14 +620,14 @@
 													            simax:multiColumnMode="2" simax:multiColumnWay="1">
 														<xs:complexType>
 															<xs:sequence>
-																<xs:element xs:name="id_212021941307835"
-																            simax:name="Monétaire"
-																            simax:typeElement="xs:decimal" simax:printed="1"
-																            simax:inputMask="+999 999 999 999 999,99 €"/>
 																<xs:element xs:name="id_219241781332145"
 																            simax:name="Réel" simax:typeElement="xs:float"
 																            simax:printed="1"
 																            simax:inputMask="+999 999 999 999 999,99"/>
+																<xs:element xs:name="id_212021941307835"
+																            simax:name="Monétaire"
+																            simax:typeElement="xs:decimal" simax:printed="1"
+																            simax:inputMask="+999 999 999 999 999,99 €"/>
 																<xs:element xs:name="id_223356359997570"
 																            simax:name="Liste utilisateur"
 																            simax:typeElement="simax-list" simax:printed="1"
@@ -755,16 +756,16 @@
 			</xs:schema>
 		</XSDSchema>
 		<Form title="Formulaire Etat de champ">47909919412330</Form>
-		<Element title="Janvier">33475861129246</Element>
+		<Element title="Janvier">197591479950785</Element>
 	</env:Header>
 	<env:Body>
 		<ModifyResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
-			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2014071812351242"
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080608005504"
 			     xmlns:simax="http://www.nout.fr/XML/"
 			     xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_47909919412330 simax:id="33475861129246" simax:title="Janvier">
+				<id_47909919412330 simax:id="197591479950785" simax:title="Janvier">
 					<id_40621361281185>
-						<id_37765206659802>0</id_37765206659802>
+						<id_37765206659802>1</id_37765206659802>
 						<id_44078808584672>0</id_44078808584672>
 						<id_42996476826531>0</id_42996476826531>
 					</id_40621361281185>
@@ -774,24 +775,20 @@
 						<id_40342188410125>0</id_40342188410125>
 					</id_40728735464804>
 					<id_220160904337650>
-						<id_218640485916003>0</id_218640485916003>
+						<id_218640485916003>1</id_218640485916003>
 					</id_220160904337650>
 					<id_45122485639442>
-						<id_46273536875002/>
-						<id_50504079661839/>
-						<id_204483499381357/>
-						<id_39625926692400>15/04/2014 11:23</id_39625926692400>
-						<id_52754642525240>15/04/2014</id_52754642525240>
-						<id_47069104958202>15/04/2014 11:23</id_47069104958202>
-						<id_51500512075097/>
-						<id_45792501825143>12</id_45792501825143>
-						<id_39586274083068>0,00</id_39586274083068>
-						<id_36313714833062>13415</id_36313714833062>
-						<id_46084559531447>
-							<id_1169 simax-layout:bold="1" simax-layout:italic="0">27</id_1169>
-							<id_1169 simax-layout:bold="1" simax-layout:italic="0">21</id_1169>
-							<id_1169 simax-layout:bold="1" simax-layout:italic="0">20</id_1169>
-						</id_46084559531447>
+						<id_46273536875002 simax:readOnly="1"/>
+						<id_50504079661839 simax:readOnly="1"/>
+						<id_204483499381357 simax:readOnly="1"/>
+						<id_39625926692400 simax:readOnly="1">10/07/2015 11:35</id_39625926692400>
+						<id_52754642525240 simax:readOnly="1">10/07/2015</id_52754642525240>
+						<id_47069104958202 simax:readOnly="1">10/07/2015 11:35</id_47069104958202>
+						<id_51500512075097 simax:readOnly="1"/>
+						<id_45792501825143 simax:readOnly="1">11</id_45792501825143>
+						<id_39586274083068 simax:readOnly="1">0,00</id_39586274083068>
+						<id_36313714833062 simax:readOnly="1">13415</id_36313714833062>
+						<id_46084559531447 simax:readOnly="1"/>
 						<id_38748851035108/>
 						<id_35725194059477>
 							<id_44134740026395 simax:hidden="1">Année 2011</id_44134740026395>
@@ -800,81 +797,51 @@
 					<id_43043722835837>
 						<id_51066721745866/>
 						<id_222188128899144>
-							<id_228509290911145>224502086427333</id_228509290911145>
+							<id_228509290911145>224052119613085</id_228509290911145>
 						</id_222188128899144>
 					</id_43043722835837>
-					<id_216948268798526 simax:hidden="1">
-						<id_221200286421966 simax:hidden="1"/>
-						<id_218142269707553 simax:hidden="1"/>
+					<id_216948268798526>
+						<id_221200286421966/>
+						<id_218142269707553/>
 					</id_216948268798526>
 					<id_39470311395611>
 						<id_51397435577174>
 							<id_38254835651753/>
 						</id_51397435577174>
 						<id_40780276422066>
-							<id_49512941372066>15/04/2014 11:23</id_49512941372066>
-							<id_45716190282817>15/04/2014 11:23</id_45716190282817>
-							<id_38650969081319>15/04/2014 11:23</id_38650969081319>
+							<id_49512941372066>10/07/2015 11:35</id_49512941372066>
+							<id_45716190282817>10/07/2015 11:35</id_45716190282817>
+							<id_38650969081319>10/07/2015 11:35</id_38650969081319>
 						</id_40780276422066>
 					</id_39470311395611>
 					<id_213808628631508>
-						<id_223175952304453>1</id_223175952304453>
-						<id_218052056321769 simax:readOnly="1">
-							<id_227595473652404 simax:readOnly="1">1</id_227595473652404>
-							<id_224477346461443 simax:readOnly="1">2384</id_224477346461443>
-							<id_227604082655494 simax:readOnly="1">15/04/2014</id_227604082655494>
-							<id_217850211926769 simax:readOnly="1"/>
+						<id_223175952304453>0</id_223175952304453>
+						<id_218052056321769 simax:hidden="1">
+							<id_227595473652404 simax:hidden="1">0</id_227595473652404>
+							<id_224477346461443 simax:hidden="1">2384</id_224477346461443>
+							<id_227604082655494 simax:hidden="1">10/07/2015</id_227604082655494>
+							<id_217850211926769 simax:hidden="1"/>
 						</id_218052056321769>
-						<id_220268259446617 simax:readOnly="1">
-							<id_220745000815695 simax:readOnly="1">1</id_220745000815695>
-							<id_222145179221998 simax:readOnly="1">12</id_222145179221998>
-							<id_217021283238922 simax:readOnly="1">11:23</id_217021283238922>
-							<id_223407899609002 simax:readOnly="1">0</id_223407899609002>
+						<id_220268259446617 simax:hidden="1">
+							<id_220745000815695 simax:hidden="1">0</id_220745000815695>
+							<id_222145179221998 simax:hidden="1">11</id_222145179221998>
+							<id_217021283238922 simax:hidden="1">11:35</id_217021283238922>
+							<id_223407899609002 simax:hidden="1">0</id_223407899609002>
 						</id_220268259446617>
-						<id_218636171874219>
-							<id_225173131168700>
-								<id_212021941307835>0,00 €</id_212021941307835>
-								<id_219241781332145>0,00</id_219241781332145>
-								<id_223356359997570/>
+						<id_218636171874219 simax:hidden="1">
+							<id_225173131168700 simax:hidden="1">
+								<id_219241781332145 simax:hidden="1">0,00</id_219241781332145>
+								<id_212021941307835 simax:hidden="1">0,00 €</id_212021941307835>
+								<id_223356359997570 simax:hidden="1"/>
 							</id_225173131168700>
 						</id_218636171874219>
 					</id_213808628631508>
 				</id_47909919412330>
-				<id_1169 simax:id="12" simax:title="ninon"/>
-				<id_1169 simax:id="27" simax:title="automatisme temporel" simax-layout:bold="1"
-				         simax-layout:italic="0">
-					<id_1171>automatisme temporel</id_1171>
-					<id_1172>automatisme</id_1172>
-					<id_1173>temporel</id_1173>
-					<id_1174/>
-					<id_7623/>
-					<id_7624>1</id_7624>
-					<id_10545>0</id_10545>
-				</id_1169>
-				<id_1169 simax:id="21" simax:title="commercial" simax-layout:bold="1"
-				         simax-layout:italic="0">
-					<id_1171>commercial</id_1171>
-					<id_1172>Test</id_1172>
-					<id_1173>Commercial</id_1173>
-					<id_1174/>
-					<id_7623>3.png</id_7623>
-					<id_7624>1</id_7624>
-					<id_10545>0</id_10545>
-				</id_1169>
-				<id_1169 simax:id="20" simax:title="devnout admin" simax-layout:bold="1"
-				         simax-layout:italic="0">
-					<id_1171>devnout admin</id_1171>
-					<id_1172>Devnout</id_1172>
-					<id_1173>Admin</id_1173>
-					<id_1174/>
-					<id_7623>1.png</id_7623>
-					<id_7624>1</id_7624>
-					<id_10545>0</id_10545>
-				</id_1169>
-				<id_228509290911145 simax:id="224502086427333" simax:title="Laf Ninon">
-					<id_221968055719563>12</id_221968055719563>
-					<id_227216505755370>Laf</id_227216505755370>
-					<id_227242275559224>Ninon</id_227242275559224>
+				<id_1169 simax:id="11" simax:title="Jérôme"/>
+				<id_228509290911145 simax:id="224052119613085" simax:title="Olivares Jérôme">
+					<id_221968055719563>11</id_221968055719563>
+					<id_227216505755370>Olivares</id_227216505755370>
+					<id_227242275559224>Jérôme</id_227242275559224>
 					<id_218034184815469>direction</id_218034184815469>
 					<id_224275462048599>direction</id_224275462048599>
 					<id_227745795613548/>
@@ -883,9 +850,9 @@
 					<id_215134910736706/>
 					<id_214220079894570/>
 					<id_214795605512555/>
-					<id_219065256009121>Outlook</id_219065256009121>
-					<id_224704548073887>Administrateur@devnout.local</id_224704548073887>
-					<id_228355270275723>Nout222</id_228355270275723>
+					<id_219065256009121/>
+					<id_224704548073887/>
+					<id_228355270275723/>
 				</id_228509290911145>
 			</xml>
 		</ModifyResponse>
