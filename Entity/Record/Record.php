@@ -75,14 +75,20 @@ class Record
 	protected $m_TabRecordLie;
 
 	/**
+	 * @var int
+	 */
+	protected $m_nXSDNiv;
+
+	/**
 	 * @param Form $clForm : information sur le formulaire
 	 */
-	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, StructureElement $clStruct = null)
+	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, $nNiv, StructureElement $clStruct = null)
 	{
 		$this->m_nIDTableau   = $sIDTableau;
 		$this->m_nIDEnreg     = $sIDEnreg;
 		$this->m_sTitle       = $sLibelle;
 		$this->m_clStructElem = $clStruct;
+		$this->m_nXSDNiv      = (int)$nNiv;
 
 		$this->m_TabColumnsInfo     = array();
 		$this->m_TabColumnsModified = array();
@@ -91,6 +97,16 @@ class Record
 		//tableau des éléments liés
 		$this->m_TabRecordLie = array();
 	}
+
+	/**
+	 * @param Record $clRecord
+	 * @return bool
+	 */
+	public function isBetterLevel(Record $clRecord)
+	{
+		return $this->m_nXSDNiv <= $clRecord->m_nXSDNiv;
+	}
+
 
     /**
      * renvoi l'identifiant de l'enregistrement

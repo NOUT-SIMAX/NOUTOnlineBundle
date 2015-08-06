@@ -7,7 +7,7 @@
 			<Element title="symfony">29</Element>
 		</ConnectedUser>
 		<XSDSchema>
-			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080607533673" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080615354748" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
 				<xs:element xs:name="id_11579" simax:name="Liste (Option de menu pour tous)" simax:tableType="list">
 					<xs:complexType>
 						<xs:sequence>
@@ -48,13 +48,13 @@
 		</XSDSchema>
 		<PossibleDisplayMode>List</PossibleDisplayMode>
 		<DefaultDisplayMode>List</DefaultDisplayMode>
-		<Action title="" typeAction="0" typeReturn="List">0</Action>
+		<Action title="" typeAction="0.000000" typeReturn="List">0</Action>
 		<Form title="Option de menu pour tous" typeForm="2029" checksum="137774602" sort1="11587" sort1asc="1">11579</Form>
 	</env:Header>
 	<env:Body>
 		<RequestResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
-			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080613281156" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_11579 simax:id="52108126174231" simax:title="Annuler">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080615374466" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_11579 simax:id="52108126174231" simax:title="Annuler" simax:xsdLevel="1">
 					<id_11580>52108126174231</id_11580>
 					<id_11581>10850</id_11581>
 					<id_11582>Annuler</id_11582>
@@ -62,7 +62,7 @@
 					<id_11586>60315530572323</id_11586>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="227668845642288" simax:title="Créer Type de champ simple">
+				<id_11579 simax:id="227668845642288" simax:title="Créer Type de champ simple" simax:xsdLevel="1">
 					<id_11580>227668845642288</id_11580>
 					<id_11581>221140495352006</id_11581>
 					<id_11582>Créer Type de champ simple</id_11582>
@@ -70,7 +70,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="41606931135630" simax:title="Refaire">
+				<id_11579 simax:id="41606931135630" simax:title="Refaire" simax:xsdLevel="1">
 					<id_11580>41606931135630</id_11580>
 					<id_11581>10853</id_11581>
 					<id_11582>Refaire</id_11582>
@@ -78,7 +78,7 @@
 					<id_11586>56759297646517</id_11586>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="48231676709822" simax:title="-">
+				<id_11579 simax:id="48231676709822" simax:title="-" simax:xsdLevel="1">
 					<id_11580>48231676709822</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -86,7 +86,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="50937402739152" simax:title="-">
+				<id_11579 simax:id="50937402739152" simax:title="-" simax:xsdLevel="1">
 					<id_11580>50937402739152</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -94,7 +94,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="212536427507234" simax:title="-">
+				<id_11579 simax:id="212536427507234" simax:title="-" simax:xsdLevel="1">
 					<id_11580>212536427507234</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -102,7 +102,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="224160176987937" simax:title="Créer Type de champ fichier">
+				<id_11579 simax:id="224160176987937" simax:title="Créer Type de champ fichier" simax:xsdLevel="1">
 					<id_11580>224160176987937</id_11580>
 					<id_11581>219190899809474</id_11581>
 					<id_11582>Créer Type de champ fichier</id_11582>
@@ -110,7 +110,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="41771931345539" simax:title="-">
+				<id_11579 simax:id="41771931345539" simax:title="-" simax:xsdLevel="1">
 					<id_11580>41771931345539</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -118,7 +118,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="212434263468161" simax:title="-">
+				<id_11579 simax:id="212434263468161" simax:title="-" simax:xsdLevel="1">
 					<id_11580>212434263468161</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -126,7 +126,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="217283900843357" simax:title="Créer Type de champ Element">
+				<id_11579 simax:id="217283900843357" simax:title="Créer Type de champ Element" simax:xsdLevel="1">
 					<id_11580>217283900843357</id_11580>
 					<id_11581>218018340249798</id_11581>
 					<id_11582>Créer Type de champ Element</id_11582>
@@ -134,7 +134,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="222273339988505" simax:title="-">
+				<id_11579 simax:id="222273339988505" simax:title="-" simax:xsdLevel="1">
 					<id_11580>222273339988505</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -142,7 +142,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="224433892233293" simax:title="-">
+				<id_11579 simax:id="224433892233293" simax:title="-" simax:xsdLevel="1">
 					<id_11580>224433892233293</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -150,7 +150,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="44690779835030" simax:title="Mon planning">
+				<id_11579 simax:id="44690779835030" simax:title="Mon planning" simax:xsdLevel="1">
 					<id_11580>44690779835030</id_11580>
 					<id_11581>8508</id_11581>
 					<id_11582>Mon planning</id_11582>
@@ -158,7 +158,7 @@
 					<id_11586>55737095426252</id_11586>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="211960920149138" simax:title="-">
+				<id_11579 simax:id="211960920149138" simax:title="-" simax:xsdLevel="1">
 					<id_11580>211960920149138</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -166,7 +166,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="224370630385788" simax:title="Créer Type de champ liste">
+				<id_11579 simax:id="224370630385788" simax:title="Créer Type de champ liste" simax:xsdLevel="1">
 					<id_11580>224370630385788</id_11580>
 					<id_11581>218696978545816</id_11581>
 					<id_11582>Créer Type de champ liste</id_11582>
@@ -174,7 +174,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="45377974602931" simax:title="Planning de plusieurs ressources">
+				<id_11579 simax:id="45377974602931" simax:title="Planning de plusieurs ressources" simax:xsdLevel="1">
 					<id_11580>45377974602931</id_11580>
 					<id_11581>8483</id_11581>
 					<id_11582>Planning de plusieurs ressources</id_11582>
@@ -182,7 +182,7 @@
 					<id_11586>37612341722549</id_11586>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="214431717646173" simax:title="Liste Collaborateur">
+				<id_11579 simax:id="214431717646173" simax:title="Liste Collaborateur" simax:xsdLevel="1">
 					<id_11580>214431717646173</id_11580>
 					<id_11581>223750467147877</id_11581>
 					<id_11582>Liste Collaborateur</id_11582>
@@ -190,7 +190,7 @@
 					<id_11586>51485086315423</id_11586>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="219215350447448" simax:title="-">
+				<id_11579 simax:id="219215350447448" simax:title="-" simax:xsdLevel="1">
 					<id_11580>219215350447448</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -198,7 +198,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="222407830331735" simax:title="Créer Type de champ particulier">
+				<id_11579 simax:id="222407830331735" simax:title="Créer Type de champ particulier" simax:xsdLevel="1">
 					<id_11580>222407830331735</id_11580>
 					<id_11581>213113521090685</id_11581>
 					<id_11582>Créer Type de champ particulier</id_11582>
@@ -206,7 +206,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="41811472178388" simax:title="Liste Ville_nb_habitant">
+				<id_11579 simax:id="41811472178388" simax:title="Liste Ville_nb_habitant" simax:xsdLevel="1">
 					<id_11580>41811472178388</id_11580>
 					<id_11581>45427834367112</id_11581>
 					<id_11582>Liste Ville_nb_habitant</id_11582>
@@ -214,7 +214,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="219365830823589" simax:title="-">
+				<id_11579 simax:id="219365830823589" simax:title="-" simax:xsdLevel="1">
 					<id_11580>219365830823589</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -222,7 +222,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="221281663844608" simax:title="-">
+				<id_11579 simax:id="221281663844608" simax:title="-" simax:xsdLevel="1">
 					<id_11580>221281663844608</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -230,7 +230,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="43958080882930" simax:title="-">
+				<id_11579 simax:id="43958080882930" simax:title="-" simax:xsdLevel="1">
 					<id_11580>43958080882930</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -238,7 +238,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="48484965229478" simax:title="-">
+				<id_11579 simax:id="48484965229478" simax:title="-" simax:xsdLevel="1">
 					<id_11580>48484965229478</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -246,7 +246,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="200300072606093" simax:title="Rechercher Ville_nb_habitant">
+				<id_11579 simax:id="200300072606093" simax:title="Rechercher Ville_nb_habitant" simax:xsdLevel="1">
 					<id_11580>200300072606093</id_11580>
 					<id_11581>45445014236296</id_11581>
 					<id_11582>Rechercher Ville_nb_habitant</id_11582>
@@ -254,7 +254,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="213910821248980" simax:title="-">
+				<id_11579 simax:id="213910821248980" simax:title="-" simax:xsdLevel="1">
 					<id_11580>213910821248980</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -262,7 +262,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="216038071455880" simax:title="-">
+				<id_11579 simax:id="216038071455880" simax:title="-" simax:xsdLevel="1">
 					<id_11580>216038071455880</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -270,7 +270,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="219318176778060" simax:title="-">
+				<id_11579 simax:id="219318176778060" simax:title="-" simax:xsdLevel="1">
 					<id_11580>219318176778060</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -278,7 +278,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="224145887213968" simax:title="-">
+				<id_11579 simax:id="224145887213968" simax:title="-" simax:xsdLevel="1">
 					<id_11580>224145887213968</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -286,7 +286,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="228110133664811" simax:title="Recherche globale">
+				<id_11579 simax:id="228110133664811" simax:title="Recherche globale" simax:xsdLevel="1">
 					<id_11580>228110133664811</id_11580>
 					<id_11581>15557</id_11581>
 					<id_11582>Recherche globale</id_11582>
@@ -294,7 +294,7 @@
 					<id_11586>61866013760656</id_11586>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="38535751658840" simax:title="Renseignements généraux">
+				<id_11579 simax:id="38535751658840" simax:title="Renseignements généraux" simax:xsdLevel="1">
 					<id_11580>38535751658840</id_11580>
 					<id_11581>38135642445859</id_11581>
 					<id_11582>Renseignements généraux</id_11582>
@@ -302,7 +302,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="219048484475281" simax:title="-">
+				<id_11579 simax:id="219048484475281" simax:title="-" simax:xsdLevel="1">
 					<id_11580>219048484475281</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -310,7 +310,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="211935968837063" simax:title="-">
+				<id_11579 simax:id="211935968837063" simax:title="-" simax:xsdLevel="1">
 					<id_11580>211935968837063</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -318,7 +318,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="228127164242807" simax:title="-">
+				<id_11579 simax:id="228127164242807" simax:title="-" simax:xsdLevel="1">
 					<id_11580>228127164242807</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -326,7 +326,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="40006746785735" simax:title="-">
+				<id_11579 simax:id="40006746785735" simax:title="-" simax:xsdLevel="1">
 					<id_11580>40006746785735</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -334,7 +334,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="47355405160505" simax:title="-">
+				<id_11579 simax:id="47355405160505" simax:title="-" simax:xsdLevel="1">
 					<id_11580>47355405160505</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -342,7 +342,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="206905948041825" simax:title="-">
+				<id_11579 simax:id="206905948041825" simax:title="-" simax:xsdLevel="1">
 					<id_11580>206905948041825</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -350,7 +350,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="221302459964885" simax:title="-">
+				<id_11579 simax:id="221302459964885" simax:title="-" simax:xsdLevel="1">
 					<id_11580>221302459964885</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -358,7 +358,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="218162824958295" simax:title="-">
+				<id_11579 simax:id="218162824958295" simax:title="-" simax:xsdLevel="1">
 					<id_11580>218162824958295</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -366,7 +366,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="222337693908368" simax:title="-">
+				<id_11579 simax:id="222337693908368" simax:title="-" simax:xsdLevel="1">
 					<id_11580>222337693908368</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -374,7 +374,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="228681614889730" simax:title="-">
+				<id_11579 simax:id="228681614889730" simax:title="-" simax:xsdLevel="1">
 					<id_11580>228681614889730</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -382,7 +382,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="1766596676721931" simax:title="-">
+				<id_11579 simax:id="1766596676721931" simax:title="-" simax:xsdLevel="1">
 					<id_11580>1766596676721931</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -390,7 +390,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="38607219327689" simax:title="-">
+				<id_11579 simax:id="38607219327689" simax:title="-" simax:xsdLevel="1">
 					<id_11580>38607219327689</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -398,7 +398,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="215131249920977" simax:title="-">
+				<id_11579 simax:id="215131249920977" simax:title="-" simax:xsdLevel="1">
 					<id_11580>215131249920977</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -406,7 +406,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="224614790687938" simax:title="-">
+				<id_11579 simax:id="224614790687938" simax:title="-" simax:xsdLevel="1">
 					<id_11580>224614790687938</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -414,7 +414,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="211660626392088" simax:title="-">
+				<id_11579 simax:id="211660626392088" simax:title="-" simax:xsdLevel="1">
 					<id_11580>211660626392088</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -422,7 +422,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="216414812192043" simax:title="-">
+				<id_11579 simax:id="216414812192043" simax:title="-" simax:xsdLevel="1">
 					<id_11580>216414812192043</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -430,7 +430,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="219481379917631" simax:title="-">
+				<id_11579 simax:id="219481379917631" simax:title="-" simax:xsdLevel="1">
 					<id_11580>219481379917631</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -438,7 +438,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="212695638530702" simax:title="-">
+				<id_11579 simax:id="212695638530702" simax:title="-" simax:xsdLevel="1">
 					<id_11580>212695638530702</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -446,7 +446,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="213434364654042" simax:title="-">
+				<id_11579 simax:id="213434364654042" simax:title="-" simax:xsdLevel="1">
 					<id_11580>213434364654042</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -454,7 +454,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="217007893777886" simax:title="Liste contact">
+				<id_11579 simax:id="217007893777886" simax:title="Liste contact" simax:xsdLevel="1">
 					<id_11580>217007893777886</id_11580>
 					<id_11581>26</id_11581>
 					<id_11582>Liste contact</id_11582>
@@ -462,7 +462,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="217647917125640" simax:title="-">
+				<id_11579 simax:id="217647917125640" simax:title="-" simax:xsdLevel="1">
 					<id_11580>217647917125640</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -470,7 +470,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="213804279611898" simax:title="-">
+				<id_11579 simax:id="213804279611898" simax:title="-" simax:xsdLevel="1">
 					<id_11580>213804279611898</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -478,7 +478,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="226066618380002" simax:title="-">
+				<id_11579 simax:id="226066618380002" simax:title="-" simax:xsdLevel="1">
 					<id_11580>226066618380002</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -486,7 +486,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="47647815459147" simax:title="-">
+				<id_11579 simax:id="47647815459147" simax:title="-" simax:xsdLevel="1">
 					<id_11580>47647815459147</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -494,7 +494,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="44679622868665" simax:title="-">
+				<id_11579 simax:id="44679622868665" simax:title="-" simax:xsdLevel="1">
 					<id_11580>44679622868665</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -502,7 +502,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="197762008235257" simax:title="-">
+				<id_11579 simax:id="197762008235257" simax:title="-" simax:xsdLevel="1">
 					<id_11580>197762008235257</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -510,7 +510,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="223459028693119" simax:title="-">
+				<id_11579 simax:id="223459028693119" simax:title="-" simax:xsdLevel="1">
 					<id_11580>223459028693119</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -518,7 +518,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="223913786168042" simax:title="-">
+				<id_11579 simax:id="223913786168042" simax:title="-" simax:xsdLevel="1">
 					<id_11580>223913786168042</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -526,7 +526,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="40613013054476" simax:title="-">
+				<id_11579 simax:id="40613013054476" simax:title="-" simax:xsdLevel="1">
 					<id_11580>40613013054476</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -534,7 +534,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="214770107753994" simax:title="-">
+				<id_11579 simax:id="214770107753994" simax:title="-" simax:xsdLevel="1">
 					<id_11580>214770107753994</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -542,7 +542,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="223158229956958" simax:title="-">
+				<id_11579 simax:id="223158229956958" simax:title="-" simax:xsdLevel="1">
 					<id_11580>223158229956958</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -550,7 +550,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="222432028814561" simax:title="-">
+				<id_11579 simax:id="222432028814561" simax:title="-" simax:xsdLevel="1">
 					<id_11580>222432028814561</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -558,7 +558,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="353132209983846" simax:title="-">
+				<id_11579 simax:id="353132209983846" simax:title="-" simax:xsdLevel="1">
 					<id_11580>353132209983846</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -566,7 +566,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="47974595202648" simax:title="-">
+				<id_11579 simax:id="47974595202648" simax:title="-" simax:xsdLevel="1">
 					<id_11580>47974595202648</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -574,7 +574,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="219503161696205" simax:title="-">
+				<id_11579 simax:id="219503161696205" simax:title="-" simax:xsdLevel="1">
 					<id_11580>219503161696205</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -582,7 +582,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="226263139628162" simax:title="-">
+				<id_11579 simax:id="226263139628162" simax:title="-" simax:xsdLevel="1">
 					<id_11580>226263139628162</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -590,7 +590,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="212334559982522" simax:title="-">
+				<id_11579 simax:id="212334559982522" simax:title="-" simax:xsdLevel="1">
 					<id_11580>212334559982522</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -598,7 +598,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="226757361483339" simax:title="-">
+				<id_11579 simax:id="226757361483339" simax:title="-" simax:xsdLevel="1">
 					<id_11580>226757361483339</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -606,7 +606,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="218755935706547" simax:title="-">
+				<id_11579 simax:id="218755935706547" simax:title="-" simax:xsdLevel="1">
 					<id_11580>218755935706547</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -614,7 +614,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="43692654076172" simax:title="-">
+				<id_11579 simax:id="43692654076172" simax:title="-" simax:xsdLevel="1">
 					<id_11580>43692654076172</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -622,7 +622,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="211338968383483" simax:title="-">
+				<id_11579 simax:id="211338968383483" simax:title="-" simax:xsdLevel="1">
 					<id_11580>211338968383483</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -630,7 +630,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="222990675174819" simax:title="-">
+				<id_11579 simax:id="222990675174819" simax:title="-" simax:xsdLevel="1">
 					<id_11580>222990675174819</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -638,7 +638,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="44061428330153" simax:title="-">
+				<id_11579 simax:id="44061428330153" simax:title="-" simax:xsdLevel="1">
 					<id_11580>44061428330153</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -646,7 +646,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="222191504282704" simax:title="-">
+				<id_11579 simax:id="222191504282704" simax:title="-" simax:xsdLevel="1">
 					<id_11580>222191504282704</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -654,7 +654,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="211626191705067" simax:title="-">
+				<id_11579 simax:id="211626191705067" simax:title="-" simax:xsdLevel="1">
 					<id_11580>211626191705067</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -662,7 +662,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="224963091247176" simax:title="-">
+				<id_11579 simax:id="224963091247176" simax:title="-" simax:xsdLevel="1">
 					<id_11580>224963091247176</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -670,7 +670,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="227307468586574" simax:title="-">
+				<id_11579 simax:id="227307468586574" simax:title="-" simax:xsdLevel="1">
 					<id_11580>227307468586574</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -678,7 +678,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="46247288347844" simax:title="-">
+				<id_11579 simax:id="46247288347844" simax:title="-" simax:xsdLevel="1">
 					<id_11580>46247288347844</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -686,7 +686,7 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_11579 simax:id="50757004006987" simax:title="-">
+				<id_11579 simax:id="50757004006987" simax:title="-" simax:xsdLevel="1">
 					<id_11580>50757004006987</id_11580>
 					<id_11581/>
 					<id_11582>-</id_11582>
@@ -694,46 +694,46 @@
 					<id_11586/>
 					<id_11583/>
 				</id_11579>
-				<id_10139 simax:id="10850" simax:title="Annuler"/>
-				<id_11654 simax:id="47572362849623" simax:title="Général"/>
-				<id_11508 simax:id="60315530572323" simax:title="Annuler"/>
-				<id_10139 simax:id="221140495352006" simax:title="Créer Type de champ simple"/>
-				<id_11654 simax:id="222180163527568" simax:title="Symfony 2"/>
-				<id_10139 simax:id="10853" simax:title="Refaire"/>
-				<id_11508 simax:id="56759297646517" simax:title="Refaire"/>
-				<id_11654 simax:id="52730618581685" simax:title="Paramétrage"/>
-				<id_11654 simax:id="35939374220698" simax:title="Mode déconnecté"/>
-				<id_11654 simax:id="221620283306589" simax:title="Actions Import/Export"/>
-				<id_10139 simax:id="219190899809474" simax:title="Créer Type de champ fichier"/>
-				<id_11654 simax:id="44941584208796" simax:title="Automatismes"/>
-				<id_11654 simax:id="44830704260487" simax:title="Contrôles ..."/>
-				<id_10139 simax:id="218018340249798" simax:title="Créer Type de champ Element"/>
-				<id_11654 simax:id="220134200006931" simax:title="Web Extranet"/>
-				<id_10139 simax:id="8508" simax:title="Mon planning"/>
-				<id_11508 simax:id="55737095426252" simax:title="Calendrier"/>
-				<id_11654 simax:id="217067617973675" simax:title="Synchro"/>
-				<id_10139 simax:id="218696978545816" simax:title="Créer Type de champ liste"/>
-				<id_10139 simax:id="8483" simax:title="Planning de plusieurs ressources"/>
-				<id_11508 simax:id="37612341722549" simax:title="Planning tous"/>
-				<id_10139 simax:id="223750467147877" simax:title="Liste Collaborateur"/>
-				<id_11654 simax:id="38975877195255" simax:title="Imports &amp;&amp; Exports"/>
-				<id_11508 simax:id="51485086315423" simax:title="Candidats"/>
-				<id_11654 simax:id="40127715089157" simax:title="Impression"/>
-				<id_10139 simax:id="213113521090685" simax:title="Créer Type de champ particulier"/>
-				<id_10139 simax:id="45427834367112" simax:title="Liste Ville_nb_habitant"/>
-				<id_11654 simax:id="51092773598483" simax:title="Graphe"/>
-				<id_10139 simax:id="45445014236296" simax:title="Rechercher Ville_nb_habitant"/>
-				<id_11654 simax:id="222852938916272" simax:title="Imports"/>
-				<id_11654 simax:id="222943133232522" simax:title="ManipBDD"/>
-				<id_10139 simax:id="15557" simax:title="Recherche globale"/>
-				<id_11508 simax:id="61866013760656" simax:title="Loupe"/>
-				<id_10139 simax:id="38135642445859" simax:title="Modifier Ma societe"/>
-				<id_11654 simax:id="51611767644190" simax:title="Formulaires"/>
-				<id_11654 simax:id="51315966464208" simax:title="Actions"/>
-				<id_11654 simax:id="226958927649451" simax:title="Exports"/>
-				<id_11654 simax:id="37395358389540" simax:title="Fonctions"/>
-				<id_10139 simax:id="26" simax:title="Liste contact"/>
-				<id_11654 simax:id="38786930143136" simax:title="Gestion des SMX"/></xml>
+				<id_10139 simax:id="10850" simax:title="Annuler" simax:xsdLevel="2"/>
+				<id_11654 simax:id="47572362849623" simax:title="Général" simax:xsdLevel="2"/>
+				<id_11508 simax:id="60315530572323" simax:title="Annuler" simax:xsdLevel="2"/>
+				<id_10139 simax:id="221140495352006" simax:title="Créer Type de champ simple" simax:xsdLevel="2"/>
+				<id_11654 simax:id="222180163527568" simax:title="Symfony 2" simax:xsdLevel="2"/>
+				<id_10139 simax:id="10853" simax:title="Refaire" simax:xsdLevel="2"/>
+				<id_11508 simax:id="56759297646517" simax:title="Refaire" simax:xsdLevel="2"/>
+				<id_11654 simax:id="52730618581685" simax:title="Paramétrage" simax:xsdLevel="2"/>
+				<id_11654 simax:id="35939374220698" simax:title="Mode déconnecté" simax:xsdLevel="2"/>
+				<id_11654 simax:id="221620283306589" simax:title="Actions Import/Export" simax:xsdLevel="2"/>
+				<id_10139 simax:id="219190899809474" simax:title="Créer Type de champ fichier" simax:xsdLevel="2"/>
+				<id_11654 simax:id="44941584208796" simax:title="Automatismes" simax:xsdLevel="2"/>
+				<id_11654 simax:id="44830704260487" simax:title="Contrôles ..." simax:xsdLevel="2"/>
+				<id_10139 simax:id="218018340249798" simax:title="Créer Type de champ Element" simax:xsdLevel="2"/>
+				<id_11654 simax:id="220134200006931" simax:title="Web Extranet" simax:xsdLevel="2"/>
+				<id_10139 simax:id="8508" simax:title="Mon planning" simax:xsdLevel="2"/>
+				<id_11508 simax:id="55737095426252" simax:title="Calendrier" simax:xsdLevel="2"/>
+				<id_11654 simax:id="217067617973675" simax:title="Synchro" simax:xsdLevel="2"/>
+				<id_10139 simax:id="218696978545816" simax:title="Créer Type de champ liste" simax:xsdLevel="2"/>
+				<id_10139 simax:id="8483" simax:title="Planning de plusieurs ressources" simax:xsdLevel="2"/>
+				<id_11508 simax:id="37612341722549" simax:title="Planning tous" simax:xsdLevel="2"/>
+				<id_10139 simax:id="223750467147877" simax:title="Liste Collaborateur" simax:xsdLevel="2"/>
+				<id_11654 simax:id="38975877195255" simax:title="Imports &amp;&amp; Exports" simax:xsdLevel="2"/>
+				<id_11508 simax:id="51485086315423" simax:title="Candidats" simax:xsdLevel="2"/>
+				<id_11654 simax:id="40127715089157" simax:title="Impression" simax:xsdLevel="2"/>
+				<id_10139 simax:id="213113521090685" simax:title="Créer Type de champ particulier" simax:xsdLevel="2"/>
+				<id_10139 simax:id="45427834367112" simax:title="Liste Ville_nb_habitant" simax:xsdLevel="2"/>
+				<id_11654 simax:id="51092773598483" simax:title="Graphe" simax:xsdLevel="2"/>
+				<id_10139 simax:id="45445014236296" simax:title="Rechercher Ville_nb_habitant" simax:xsdLevel="2"/>
+				<id_11654 simax:id="222852938916272" simax:title="Imports" simax:xsdLevel="2"/>
+				<id_11654 simax:id="222943133232522" simax:title="ManipBDD" simax:xsdLevel="2"/>
+				<id_10139 simax:id="15557" simax:title="Recherche globale" simax:xsdLevel="2"/>
+				<id_11508 simax:id="61866013760656" simax:title="Loupe" simax:xsdLevel="2"/>
+				<id_10139 simax:id="38135642445859" simax:title="Modifier Ma societe" simax:xsdLevel="2"/>
+				<id_11654 simax:id="51611767644190" simax:title="Formulaires" simax:xsdLevel="2"/>
+				<id_11654 simax:id="51315966464208" simax:title="Actions" simax:xsdLevel="2"/>
+				<id_11654 simax:id="226958927649451" simax:title="Exports" simax:xsdLevel="2"/>
+				<id_11654 simax:id="37395358389540" simax:title="Fonctions" simax:xsdLevel="2"/>
+				<id_10139 simax:id="26" simax:title="Liste contact" simax:xsdLevel="2"/>
+				<id_11654 simax:id="38786930143136" simax:title="Gestion des SMX" simax:xsdLevel="2"/></xml>
 		</RequestResponse>
 	</env:Body>
 </env:Envelope>

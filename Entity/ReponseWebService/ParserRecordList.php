@@ -29,17 +29,15 @@ class ParserRecordList extends Parser
 	public $m_MapRef2Data;
 
 	/**
-	 * @var array
-	 * map qui contient l'association IDTableau=>IDEnreg=>Objet Record
-	 */
-	public $m_MapIDTableauIDEnreg2Record;
-
-	/**
 	 * @var array;
 	 * tableau qui contient l'ordre des enregistrements avec conservation de l'ordre de la réponse
 	 */
 	public $m_TabEnregTableau;
 
+	/**
+	 * @var RecordCache
+	 */
+	protected $m_clRecordCache;
 
 	/**
 	 * @var \SimpleXMLElement
@@ -51,9 +49,9 @@ class ParserRecordList extends Parser
 	 * @param Element $clElement
 	 * @return null|Record
 	 */
-	public function clGetRecord(Form $clForm, Element $clElement)
+	public function getRecord(Form $clForm, Element $clElement)
 	{
-		return $this->clGetRecordFromId($clForm->getID(), $clElement->getID());
+		return $this->m_clRecordCache->getRecord($clForm->getID(), $clElement->getID());
 	}
 
 	/**
@@ -61,53 +59,10 @@ class ParserRecordList extends Parser
 	 * @param $sIDEreng
 	 * @return null|Record
 	 */
-	public function clGetRecordFromId($sIDForm, $sIDEnreg)
+	public function getRecordFromID($sIDForm, $sIDEnreg)
 	{
-		if (!isset($this->m_MapIDTableauIDEnreg2Record)
-			||  !isset($this->m_MapIDTableauIDEnreg2Record[$sIDForm])
-			||  !isset($this->m_MapIDTableauIDEnreg2Record[$sIDForm][$sIDEnreg]))
-		{
-			return null;
-		}
-
-		return $this->m_MapIDTableauIDEnreg2Record[$sIDForm][$sIDEnreg];
+		return $this->m_clRecordCache->getRecord($sIDForm, $sIDEnreg);
 	}
-
-	/**
-	 * @param Record $clRecord
-	 */
-	protected function _SetRecord(Record $clRecord)
-	{
-		$sIDForm=$clRecord->getIDTableau();
-		if (!isset($this->m_MapIDTableauIDEnreg2Record[$sIDForm]))
-		{
-			$this->m_MapIDTableauIDEnreg2Record[$sIDForm]=array();
-		}
-
-		$this->m_MapIDTableauIDEnreg2Record[$sIDForm][$clRecord->getIDEnreg()]=$clRecord;
-		return $this;
-	}
-
-	/**
-	 * @param $form
-	 * @return array : tableau des identifiants des enregistrements
-	 */
-	public function GetTabIDEnregFromForm($form)
-	{
-		if ($form instanceof Form)
-		{
-			$form = $form->getID();
-		}
-
-		if (!isset($this->m_MapIDTableauIDEnreg2Record)
-			||  !isset($this->m_MapIDTableauIDEnreg2Record[$form]))
-		{
-			return array();
-		}
-
-		return array_keys($this->m_MapIDTableauIDEnreg2Record[$form]);
-	}
-
 
 	/**
 	 * @param $form
@@ -116,23 +71,6 @@ class ParserRecordList extends Parser
 	public function GetTabEnregTableau()
 	{
 		return $this->m_TabEnregTableau;
-	}
-
-	/**
-	 * @param $nRef
-	 * @return Data
-	 */
-	public function clGetData($nRef)
-	{
-		return $this->m_MapRef2Data[$nRef];
-	}
-
-	/**
-	 * @return array
-	 */
-	public function GetTabData()
-	{
-		return $this->m_MapRef2Data;
 	}
 
 	/**
@@ -192,13 +130,16 @@ class ParserRecordList extends Parser
 	 */
 	public function ParseXML(\SimpleXMLElement $ndXML, $sIDForm, $nNiv)
 	{
-		$this->m_clXML = $ndXML;
+		$this->m_clXML = new \SimpleXMLElement($ndXML->asXML());
+		$this->m_clRecordCache = new RecordCache();
+		$this->m_TabEnregTableau = new EnregTableauArray();
 
 		//on commence par parser les balises data s'il y en a
 		$this->m_MapRef2Data = array();
 
+
 		$this->m_clXML->registerXPathNamespace('n', self::NAMESPACE_NOUT_XML);
-		$aData = $this->m_clXML->xpath('/xml/n:Data');
+		$aData = $this->m_clXML->xpath('/n:Data');
 		if (is_array($aData) && !empty($aData))
 		{
 			foreach($aData as $ndData)
@@ -207,16 +148,12 @@ class ParserRecordList extends Parser
 			}
 		}
 
-
-		$this->m_MapIDTableauIDEnreg2Record       = array();
-		$this->m_TabEnregTableau                  = new EnregTableauArray();
-
-		$aRecords = $this->m_clXML->xpath('/xml/id_'.$sIDForm);
+		$aRecords = $this->m_clXML->xpath("/xml/id_{$sIDForm}[@n:xsdLevel=\"{$nNiv}\"]");
 		if (is_array($aRecords) && !empty($aRecords))
 		{
 			foreach ($aRecords as $clNoeud)
 			{
-				$clRecord = $this->__clParseRecord($clNoeud);
+				$clRecord = $this->__clParseRecord($nNiv, $clNoeud);
 				if (!is_null($clRecord))
 				{
 					$this->m_TabEnregTableau->Add($clRecord->getIDTableau(), $clRecord->getIDEnreg());
@@ -230,12 +167,12 @@ class ParserRecordList extends Parser
 	 * @param string $sIDEnreg
 	 * @return Record
 	 */
-	protected function _clParseRecord($sIDForm, $sIDEnreg)
+	protected function _clParseRecord($nNiv, $sIDForm, $sIDEnreg)
 	{
-		$aRecords = $this->m_clXML->xpath('/xml/id_'.$sIDForm.'[@n:id="'.$sIDEnreg.'"]');
+		$aRecords = $this->m_clXML->xpath("/xml/id_{$sIDForm}[@n:id=\"{$sIDEnreg}\"][@n:xsdLevel=\"{$nNiv}\"]");
 		if (is_array($aRecords) && !empty($aRecords))
 		{
-			return $this->__clParseRecord($aRecords[0]);
+			return $this->__clParseRecord($nNiv, $aRecords[0]);
 		}
 		return null;
 	}
@@ -247,7 +184,7 @@ class ParserRecordList extends Parser
 	 * @param $TabFormPresent
 	 * @return Record
 	 */
-	protected function __clParseRecord(\SimpleXMLElement $clXML)
+	protected function __clParseRecord($nNiv, \SimpleXMLElement $clXML)
 	{
 		//<id_47909919412330 simax:id="33475861129246" simax:title="Janvier">
 
@@ -256,11 +193,11 @@ class ParserRecordList extends Parser
 		$sIDTableau = str_replace('id_', '', $clXML->getName());
 		$sIDEnreg   = (string) $TabAttrib['id'];
 
-		$clStructureElement = $this->clGetStructureElement($sIDTableau);
-		$clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $clStructureElement);
+		$clStructureElement = $this->m_clParserXSD->clGetStructureElement($sIDTableau);
+		$clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $nNiv, $clStructureElement);
 
-		$this->_SetRecord($clRecord)
-			 ->_ParseColumns($clRecord, $clStructureElement, $clXML, $sIDTableau, $sIDEnreg);
+		$this->m_clRecordCache->SetRecord($nNiv, $clRecord);
+		$this->_ParseColumns($nNiv, $clRecord, $clStructureElement, $clXML, $sIDTableau, $sIDEnreg);
 
 		return $clRecord;
 	}
@@ -271,17 +208,20 @@ class ParserRecordList extends Parser
 	 * @param $sIDTableau
 	 * @param $sIDEnreg
 	 */
-	protected function _ParseColumns(Record $clRecord, $clStructureElement,\SimpleXMLElement $clXML)
+	protected function _ParseColumns($nNiv, Record $clRecord, $clStructureElement,\SimpleXMLElement $clXML)
 	{
-		foreach ($clXML->children() as $ndColonne)
+		if (count($clXML->children())>0)
 		{
-			if (!is_null($clStructureElement))
+			foreach ($clXML->children() as $ndColonne)
 			{
-				$this->__ParseColumn($clRecord, $clStructureElement, $ndColonne);
-				continue;
-			}
+				if (!is_null($clStructureElement))
+				{
+					$this->__ParseColumn($nNiv, $clRecord, $clStructureElement, $ndColonne);
+					continue;
+				}
 
-			$this->__ParseColumnWithoutStruct($clRecord, $ndColonne);
+				$this->__ParseColumnWithoutStruct($nNiv, $clRecord, $ndColonne);
+			}
 		}
 	}
 
@@ -291,7 +231,7 @@ class ParserRecordList extends Parser
 	 * @param $sIDTableau
 	 * @param $sIDEnreg
 	 */
-	protected function __ParseColumn(Record $clRecord, StructureElement $clStructureElement,\SimpleXMLElement $ndColonne)
+	protected function __ParseColumn($nNiv, Record $clRecord, StructureElement $clStructureElement,\SimpleXMLElement $ndColonne)
 	{
 		$sNom            = $ndColonne->getName();
 		$TabAttribNOUT   = $ndColonne->attributes(self::NAMESPACE_NOUT_XML);
@@ -301,11 +241,20 @@ class ParserRecordList extends Parser
 		$clInfoColonne = new InfoColonne($sIDColonne, $TabAttribNOUT, $TabAttribLayout);
 
 		$clStructureColonne = $clStructureElement->getStructureColonne($sIDColonne);
-		$eTypeElement = $clStructureColonne->getTypeElement();
+		//la colonne n'est pas forcément décrite dans le xsd ???
+		if (!is_null($clStructureColonne))
+		{
+			$eTypeElement = $clStructureColonne->getTypeElement();
+		}
+		else
+		{
+			$eTypeElement = '';
+		}
+
 		switch($eTypeElement)
 		{
 			case StructureColonne::TM_Separateur:
-				$this->_ParseColumns($clRecord, $clStructureElement, $ndColonne);
+				$this->_ParseColumns($nNiv, $clRecord, $clStructureElement, $ndColonne);
 				break;
 
 			case StructureColonne::TM_ListeElem:
@@ -320,19 +269,23 @@ class ParserRecordList extends Parser
 				{
 					foreach ($ndColonne->children() as $ndValeur)
 					{
-						$sIDEnreg = (string) $ndValeur;
-						$ValeurColonne[] = $sIDEnreg;
+						$sIDEnregLie = (string) $ndValeur;
+						$Valeur[] = $sIDEnregLie;
 
-						$clRecordLie = $this->clGetRecordFromId($sIDFormLie, $Valeur);
+						$clRecordLie = $this->m_clRecordCache->getRecordFromIdLevel($sIDFormLie, $sIDEnregLie, $nNiv+1);
 						if (is_null($clRecordLie))
 						{
-							$clRecordLie = $this->_clParseRecord($sIDFormLie, $Valeur);
+							$clRecordLie = $this->_clParseRecord($nNiv+1, $sIDFormLie, $sIDEnregLie);
 						}
 						if (!is_null($clRecordLie))
 						{
 							$aRecordLie[]=$clRecordLie;
 						}
 					}
+				}
+				if (!empty($aRecordLie))
+				{
+					$clRecord->addTabRecordLie($aRecordLie);
 				}
 				$clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false); //false car pas modifier par l'utilisateur ici
 				break;
@@ -342,10 +295,10 @@ class ParserRecordList extends Parser
 			{
 				$Valeur = (string) $ndColonne;
 				$sIDFormLie = $clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID);
-				$clRecordLie = $this->clGetRecordFromId($sIDFormLie, $Valeur);
+				$clRecordLie = $this->m_clRecordCache->getRecordFromIdLevel($sIDFormLie, $Valeur, StructureElement::NV_XSD_LienElement);
 				if (is_null($clRecordLie))
 				{
-					$clRecordLie = $this->_clParseRecord($sIDFormLie, $Valeur);
+					$clRecordLie = $this->_clParseRecord(StructureElement::NV_XSD_LienElement, $sIDFormLie, $Valeur);
 				}
 
 				if (!is_null($clRecordLie))

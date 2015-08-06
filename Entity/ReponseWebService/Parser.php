@@ -15,4 +15,5 @@ class Parser
 	const NAMESPACE_NOUT_XSD = 'http://www.nout.fr/XMLSchema';
 	const NAMESPACE_NOUT_XML = 'http://www.nout.fr/XML/';
 	const NAMESPACE_NOUT_LAYOUT = 'http://www.nout.fr/XML/layout';
+	const NAMESPACE_NOUTONLINE = 'http://www.nout.fr/wsdl/SimaxService.wsdl/';
 }
