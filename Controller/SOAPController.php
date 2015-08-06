@@ -58,14 +58,13 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route; // this imports the annotations
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * Class DefaultController
  * @package NOUT\Bundle\NOUTOnlineBundle\Controller
  * @Route("/soap")
  */
-class SOAPController extends Controller
+class SOAPController extends ProxyController
 {
 	/**
 	 * @param $host
