@@ -33,6 +33,8 @@ class StructureSection extends StructureColonne
 
 		$this->m_TabStructureColonne = array();
 		$this->m_MapIDColonne2Colonne = array();
+
+		$this->m_eTypeElement = self::TM_Separateur;
 	}
 
 	/**

@@ -148,7 +148,7 @@ class StructureElement
 	}
 
 	/**
-	 * @return array
+	 * @return StructureSection
 	 */
 	public function getFiche()
 	{
