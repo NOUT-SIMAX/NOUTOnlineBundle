@@ -70,6 +70,11 @@ class Record
 	protected $m_clStructElem;
 
 	/**
+	 * @var array
+	 */
+	protected $m_TabRecordLie;
+
+	/**
 	 * @param Form $clForm : information sur le formulaire
 	 */
 	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, StructureElement $clStruct = null)
@@ -82,6 +87,9 @@ class Record
 		$this->m_TabColumnsInfo     = array();
 		$this->m_TabColumnsModified = array();
 		$this->m_TabColumnsValues   = array();
+
+		//tableau des éléments liés
+		$this->m_TabRecordLie = array();
 	}
 
     /**
@@ -91,6 +99,14 @@ class Record
 	public function getIDEnreg()
 	{
 		return $this->m_nIDEnreg;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIDTableau()
+	{
+		return $this->m_nIDTableau;
 	}
 
     /**
@@ -163,6 +179,33 @@ class Record
 		$this->m_TabColumnsValues[$idcolonne]   = $value;
 		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser;
 
+		return $this;
+	}
+
+	/**
+	 * @param Record $clRecordLie
+	 * @return $this
+	 */
+	public function addRecordLie(Record $clRecordLie)
+	{
+		$sCle = $clRecordLie->getIDTableau().'/'.$clRecordLie->getIDEnreg();
+		if (!isset($this->m_TabRecordLie[$sCle]))
+		{
+			$this->m_TabRecordLie[$sCle]=$clRecordLie;
+		}
+		return $this;
+	}
+
+	/**
+	 * @param array $clRecordLie
+	 * @return $this
+	 */
+	public function addTabRecordLie($aRecordsLies)
+	{
+		foreach($aRecordsLies as $clRecord)
+		{
+			$this->addRecordLie($clRecord);
+		}
 		return $this;
 	}
 

@@ -18,9 +18,35 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 
 class ParserXSDSchema extends Parser
 {
+	/**
+	 * @var array
+	 * map qui contient la structure des formulaires
+	 */
+	protected $m_MapIDTableauNiv2StructureElement;
+
+	/**
+	 * @param $sIDTableau
+	 * @return StructureElement
+	 */
+	public function clGetStructureElement($sIDTableau)
+	{
+		$aNiv = array(StructureElement::NV_XSD_Enreg, StructureElement::NV_XSD_List);
+		foreach($aNiv as $nNiv)
+		{
+			if (isset($this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]))
+			{
+				return $this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv];
+			}
+		}
+
+		return null;
+	}
+
 
 	public function Parse($nNiv, \SimpleXMLElement $clSchema)
 	{
+		$this->m_MapIDTableauNiv2StructureElement=array();
+
 		//récupération du noeud element fils de schema
 		$ndElement = $clSchema->children(self::NAMESPACE_XSD)->element;
 		$this->_clParseXSDElementComplex($nNiv, $ndElement);
@@ -49,6 +75,8 @@ class ParserXSDSchema extends Parser
 			->children(self::NAMESPACE_XSD)->sequence;
 
 		$this->__ParseXSDSequence($nNiv, $clStructureElement, $clStructureElement->getFiche(), $ndSequence);
+
+		$this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]=$clStructureElement;
 		return $clStructureElement;
 	}
 
@@ -119,7 +147,7 @@ class ParserXSDSchema extends Parser
 					$aType2Methode = array(
 						StructureColonne::TM_Combo     => '_ParseXSDCombo',
 						StructureColonne::TM_ListeElem => '_ParseXSDListeElem',
-						StructureColonne::TM_Tableau   => '_ParseXSDTableau',
+						//StructureColonne::TM_Tableau   => '_ParseXSDTableau',
 						''                             => '_ParseXSDColonne',
 					);
 
@@ -137,14 +165,14 @@ class ParserXSDSchema extends Parser
 	}
 
 
-	/**
-	 * @param StructureColonne  $structColonne
-	 * @param \SimpleXMLElement $ndNoeud
-	 */
-	protected function _ParseXSDTableau($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud)
-	{
-
-	}
+//	/**
+//	 * @param StructureColonne  $structColonne
+//	 * @param \SimpleXMLElement $ndNoeud
+//	 */
+//	protected function _ParseXSDTableau($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud)
+//	{
+//
+//	}
 
 
 	/**

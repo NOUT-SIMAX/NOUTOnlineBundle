@@ -155,6 +155,20 @@ abstract class StructureColonne
 		return !empty($this->m_TabOptions[$sOption]);
 	}
 
+	/**
+	 * @param $sOption
+	 * @return string|null
+	 */
+	public function getOption($sOption)
+	{
+		if (!isset($this->m_TabOptions[$sOption]))
+		{
+			return null;
+		}
+
+		return $this->m_TabOptions[$sOption];
+	}
+
 	//////////////////////////////////////////
 	// POUR LE MOTEUR DE FORMULAIRE PAR DEFAUT
 	//////////////////////////////////////////
