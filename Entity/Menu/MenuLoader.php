@@ -12,6 +12,7 @@ namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
@@ -24,11 +25,11 @@ class MenuLoader
 	 */
 	static public function s_aGetTabMenu(XMLResponseWS $clReponseOptionMenu, XMLResponseWS $clReponseMenu)
 	{
-		$clParserOption = new ReponseWSParser();
-		$clParserOption->InitFromXmlXsd($clReponseOptionMenu);
+		$clResponseParserOption = new ReponseWSParser();
+		$clParserOption = $clResponseParserOption->InitFromXmlXsd($clReponseOptionMenu);
 
-		$clParserMenu = new ReponseWSParser();
-		$clParserMenu->InitFromXmlXsd($clReponseMenu);
+		$clResponseParserMenu = new ReponseWSParser();
+		$clParserMenu = $clResponseParserMenu->InitFromXmlXsd($clReponseMenu);
 
 		//on récupère tous les id des options de menu et des menus depuis les différentes réponses
 		$aTabIDEnregOptionMenu = $clParserOption->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_OptionMenuPourTous);
@@ -55,9 +56,9 @@ class MenuLoader
 	 * @param array $aTabIDEnregOptionMenu
 	 * @return Menu
 	 */
-	static protected function _s_aGetMenu(ReponseWSParser $clParserOption, ReponseWSParser $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, $bUniquementRacine)
+	static protected function _s_aGetMenu(ParserRecordList $clParserOption, ParserRecordList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, $bUniquementRacine)
 	{
-		$clRecordMenu = $clParserMenu->clGetRecordFromId(Langage::TABL_MenuPourTous, $sIDMenu);
+		$clRecordMenu = $clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
 
 		$sIDMenuPere = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_IDMenuParent);
 		if ($bUniquementRacine && !empty($sIDMenuPere))
@@ -82,7 +83,7 @@ class MenuLoader
 			if (!in_array($sIDOptionMenu, $aTabIDEnregOptionMenu))
 				continue;
 
-			$clRecordOption = $clParserOption->clGetRecordFromId(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
+			$clRecordOption = $clParserOption->getRecordFromID(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
 
 			$clOptionMenu = new OptionMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent));
 			$clOptionMenu->setIDAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction));
