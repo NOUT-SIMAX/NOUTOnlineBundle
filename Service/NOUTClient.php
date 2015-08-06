@@ -625,10 +625,10 @@ class NOUTClient
 		case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
 		case XMLResponseWS::RETURNTYPE_RECORD:
 			{
-				$clParser = new ReponseWSParser();
-				$clParser->InitFromXmlXsd($clReponseXML);
+				$clResponseParser = new ReponseWSParser();
+				$clParser=$clResponseParser->InitFromXmlXsd($clReponseXML);
 
-				$clActionResult->setData($clParser->clGetRecord($clReponseXML->clGetForm(), $clReponseXML->clGetElement()));
+				$clActionResult->setData($clParser->getRecord($clReponseXML->clGetForm(), $clReponseXML->clGetElement()));
 				$clActionResult->setValidateError($clReponseXML->getValidateError());
 				break;
 			}
