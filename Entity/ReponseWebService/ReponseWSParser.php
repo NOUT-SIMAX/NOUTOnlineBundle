@@ -26,17 +26,14 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 class ReponseWSParser
 {
 
-
-
 	/**
 	 * @param $sReturnType
 	 * @param \SimpleXMLElement $clXML
 	 * @param \SimpleXMLElement $clSchema
+	 * @return Parser
 	 */
 	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS)
 	{
-		$this->_Init();
-
 		$aPtrFct = array(
 			XMLResponseWS::RETURNTYPE_RECORD          => '_ParseRecord',
 			XMLResponseWS::RETURNTYPE_VALIDATERECORD  => '_ParseRecord',
@@ -57,7 +54,7 @@ class ReponseWSParser
 			throw new \Exception('type de retour "'.$sReturnType.'" non gérée au niveau du parseur');
 		}
 
-		if (is_null($this->$aPtrFct[$sReturnType]))
+		if (is_null($aPtrFct[$sReturnType]))
 		{
 			return null;
 		}
@@ -70,7 +67,7 @@ class ReponseWSParser
 	 */
 	protected function _ParseRecord(XMLResponseWS $clXMLReponseWS)
 	{
-		$this->__ParseRecordList($clXMLReponseWS, StructureElement::NV_XSD_Enreg);
+		return $this->__ParseRecordList($clXMLReponseWS, StructureElement::NV_XSD_Enreg);
 	}
 
 	/**
@@ -78,7 +75,7 @@ class ReponseWSParser
 	 */
 	protected function _ParseList(XMLResponseWS $clXMLReponseWS)
 	{
-		$this->__ParseRecordList($clXMLReponseWS, StructureElement::NV_XSD_List);
+		return $this->__ParseRecordList($clXMLReponseWS, StructureElement::NV_XSD_List);
 	}
 
 	/**

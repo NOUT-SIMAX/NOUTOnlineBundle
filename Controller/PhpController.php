@@ -196,9 +196,9 @@ RESULTAT;
 
 		$clRecordManager = new ReponseWSParser();
 
-		$clRecordManager->InitFromXmlXsd($clResponseXML);
+		$clParser = $clRecordManager->InitFromXmlXsd($clResponseXML);
 
-		var_dump($clRecordManager);
+		var_dump($clParser);
 
 		$containt = ob_get_contents();
 		ob_get_clean();

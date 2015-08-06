@@ -142,7 +142,7 @@ class ParserRecordList extends Parser
 	public function ParseXSD(\SimpleXMLElement $ndSchema, $nNiv)
 	{
 		$this->m_clParserXSD = new ParserXSDSchema();
-		$this->m_clParserXSD->Parse($ndSchema, $nNiv);
+		$this->m_clParserXSD->Parse($nNiv, $ndSchema);
 	}
 
 	/**
