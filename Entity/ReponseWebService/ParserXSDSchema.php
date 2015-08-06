@@ -58,7 +58,8 @@ class ParserXSDSchema extends Parser
 	 */
 	protected function _clParseXSDElementComplex($nNiv, \SimpleXMLElement $ndElement)
 	{
-		if (empty($ndElement->children(self::NAMESPACE_XSD)))
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($ndElement->children(self::NAMESPACE_XSD))==0)
 		{
 			return null;
 		}
@@ -71,10 +72,14 @@ class ParserXSDSchema extends Parser
 		$TabAttribSIMAX = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
 		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name']);
 
-		$ndSequence = $ndElement->children(self::NAMESPACE_XSD)->complexType
-			->children(self::NAMESPACE_XSD)->sequence;
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($ndElement->children(self::NAMESPACE_XSD))>0)
+		{
+			$ndSequence = $ndElement->children(self::NAMESPACE_XSD)->complexType
+									->children(self::NAMESPACE_XSD)->sequence;
+			$this->__ParseXSDSequence($nNiv, $clStructureElement, $clStructureElement->getFiche(), $ndSequence);
+		}
 
-		$this->__ParseXSDSequence($nNiv, $clStructureElement, $clStructureElement->getFiche(), $ndSequence);
 
 		$this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]=$clStructureElement;
 		return $clStructureElement;
@@ -88,7 +93,8 @@ class ParserXSDSchema extends Parser
 	 */
 	protected function __ParseXSDSequence($nNiv, StructureElement $clStructElem, StructureSection $clStructSection, \SimpleXMLElement $clSequence)
 	{
-		if (empty($clSequence->children(self::NAMESPACE_XSD)))
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($clSequence->children(self::NAMESPACE_XSD))==0)
 		{
 			//pas de fils, on sort
 			return;
@@ -151,7 +157,8 @@ class ParserXSDSchema extends Parser
 						''                             => '_ParseXSDColonne',
 					);
 
-					if (!empty($ndNoeud->children(self::NAMESPACE_XSD)) && array_key_exists($eTypeElement, $aType2Methode))
+					//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+					if ((count($ndNoeud->children(self::NAMESPACE_XSD))>0) && array_key_exists($eTypeElement, $aType2Methode))
 					{
 						$this->$aType2Methode[$eTypeElement]($nNiv, $clStructColonne, $ndNoeud);
 					}
@@ -179,12 +186,13 @@ class ParserXSDSchema extends Parser
 	 * @param StructureColonne  $structColonne
 	 * @param \SimpleXMLElement $ndNoeud
 	 */
-	protected function _ParseXSDListeElem($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud)
+	protected function _ParseXSDListeElem($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndElement)
 	{
-		$ndSequence = $ndNoeud->children(self::NAMESPACE_XSD)->complexType
-			->children(self::NAMESPACE_XSD)->sequence;
+		$ndElementLie = $ndElement->children(self::NAMESPACE_XSD)->complexType
+			->children(self::NAMESPACE_XSD)->sequence
+			->children(self::NAMESPACE_XSD)->element;
 
-		$clStructColonne->setStructureElementLie($this->_clParseXSDElementComplex($nNiv+1, $ndSequence));
+		$clStructColonne->setStructureElementLie($this->_clParseXSDElementComplex($nNiv+1, $ndElementLie));
 	}
 
 	/**
@@ -197,7 +205,8 @@ class ParserXSDSchema extends Parser
 
 		$clStructColonne->setTypeElement((string) $ndSimpleType->attributes(self::NAMESPACE_XSD)['base']);
 
-		if (!empty($ndSimpleType->children(self::NAMESPACE_XSD)))
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($ndSimpleType->children(self::NAMESPACE_XSD))>0)
 		{
 			$clRestriction = new ColonneRestriction();
 
@@ -225,7 +234,8 @@ class ParserXSDSchema extends Parser
 		$ndSimpleType = $ndNoeud->children(self::NAMESPACE_XSD)->simpleType
 			->children(self::NAMESPACE_XSD)->restriction;
 
-		if (!empty($ndSimpleType->children(self::NAMESPACE_XSD)))
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($ndSimpleType->children(self::NAMESPACE_XSD))>0)
 		{
 			$clRestriction = new ColonneRestriction();
 

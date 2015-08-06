@@ -199,7 +199,7 @@ class ParserRecordList extends Parser
 
 		$this->m_clXML->registerXPathNamespace('n', self::NAMESPACE_NOUT_XML);
 		$aData = $this->m_clXML->xpath('/xml/n:Data');
-		if (!empty($aData))
+		if (is_array($aData) && !empty($aData))
 		{
 			foreach($aData as $ndData)
 			{
@@ -212,7 +212,7 @@ class ParserRecordList extends Parser
 		$this->m_TabEnregTableau                  = new EnregTableauArray();
 
 		$aRecords = $this->m_clXML->xpath('/xml/id_'.$sIDForm);
-		if (!empty($aRecords))
+		if (is_array($aRecords) && !empty($aRecords))
 		{
 			foreach ($aRecords as $clNoeud)
 			{
@@ -233,7 +233,7 @@ class ParserRecordList extends Parser
 	protected function _clParseRecord($sIDForm, $sIDEnreg)
 	{
 		$aRecords = $this->m_clXML->xpath('/xml/id_'.$sIDForm.'[@n:id="'.$sIDEnreg.'"]');
-		if (!empty($aRecords))
+		if (is_array($aRecords) && !empty($aRecords))
 		{
 			return $this->__clParseRecord($aRecords[0]);
 		}
@@ -314,7 +314,9 @@ class ParserRecordList extends Parser
 
 				$Valeur = array();
 				$aRecordLie = array();
-				if (!empty($ndColonne->children()))
+
+				//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+				if (count($ndColonne->children())>0)
 				{
 					foreach ($ndColonne->children() as $ndValeur)
 					{

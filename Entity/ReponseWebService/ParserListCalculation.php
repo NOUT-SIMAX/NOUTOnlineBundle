@@ -29,15 +29,20 @@ class ParserListCalculation extends Parser
 			</col>
 		*/
 		$this->m_MapColonne2Calcul = array();
-		foreach ($ndXML->children() as $ndCol)
-		{
-			$clCalculation = new Calculation((string) $ndCol->attributes(self::NAMESPACE_NOUT_XML)['id']);
-			foreach ($ndCol->children() as $ndCalcul)
-			{
-				$clCalculation->AddCacul((string) $ndCalcul->getName(), (string) $ndCalcul);
-			}
 
-			$this->m_MapColonne2Calcul[$clCalculation->getIDColonne()] = $clCalculation;
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($ndXML->children())>0)
+		{
+			foreach ($ndXML->children() as $ndCol)
+			{
+				$clCalculation = new Calculation((string) $ndCol->attributes(self::NAMESPACE_NOUT_XML)['id']);
+				foreach ($ndCol->children() as $ndCalcul)
+				{
+					$clCalculation->AddCacul((string) $ndCalcul->getName(), (string) $ndCalcul);
+				}
+
+				$this->m_MapColonne2Calcul[$clCalculation->getIDColonne()] = $clCalculation;
+			}
 		}
 	}
 }

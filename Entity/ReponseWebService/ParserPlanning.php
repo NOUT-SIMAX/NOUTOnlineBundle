@@ -30,12 +30,17 @@ class ParserPlanning extends Parser
 			->children(self::NAMESPACE_NOUT_XSD)->layout;
 
 		$this->m_MapTypeEvent2Color = array();
-		foreach ($ndLayout->children(self::NAMESPACE_XSD) as $ndFils)
+
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($ndLayout->children(self::NAMESPACE_XSD))>0)
 		{
-			if (strcmp($ndFils->getName(), 'element') == 0)
+			foreach ($ndLayout->children(self::NAMESPACE_XSD) as $ndFils)
 			{
-				$TabAttributes = $ndFils->attributes(self::NAMESPACE_NOUT_XSD);
-				$this->m_MapTypeEvent2Color[(string) $TabAttributes['typeOfEvent']] = (string) $TabAttributes['colorRGB'];
+				if (strcmp($ndFils->getName(), 'element') == 0)
+				{
+					$TabAttributes = $ndFils->attributes(self::NAMESPACE_NOUT_XSD);
+					$this->m_MapTypeEvent2Color[(string) $TabAttributes['typeOfEvent']] = (string) $TabAttributes['colorRGB'];
+				}
 			}
 		}
 	}
@@ -43,13 +48,17 @@ class ParserPlanning extends Parser
 
 	public function Parse(\SimpleXMLElement $clXML)
 	{
-		foreach ($clXML->children() as $clNoeud)
+		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+		if (count($clXML->children())>0)
 		{
-			$sTagName = $clNoeud->getName();
-			if (strcmp($sTagName, 'event') == 0)
+			foreach ($clXML->children() as $clNoeud)
 			{
-				$this->_ParseEvent($clNoeud);
-				continue;
+				$sTagName = $clNoeud->getName();
+				if (strcmp($sTagName, 'event') == 0)
+				{
+					$this->_ParseEvent($clNoeud);
+					continue;
+				}
 			}
 		}
 	}
