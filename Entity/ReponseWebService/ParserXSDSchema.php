@@ -192,7 +192,12 @@ class ParserXSDSchema extends Parser
 			->children(self::NAMESPACE_XSD)->sequence
 			->children(self::NAMESPACE_XSD)->element;
 
-		$clStructColonne->setStructureElementLie($this->_clParseXSDElementComplex($nNiv+1, $ndElementLie));
+		$clStructureElemLie = $this->_clParseXSDElementComplex($nNiv+1, $ndElementLie);
+		if (!is_null($clStructureElemLie))
+		{
+			$clStructColonne->setStructureElementLie($clStructureElemLie);
+		}
+
 	}
 
 	/**
