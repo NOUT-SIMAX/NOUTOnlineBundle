@@ -3,6 +3,6 @@ nout_session_manager:
     prefix:     /
     type:       annotation
 login_check:
-    pattern:    /check_login
+    path:    /check_login
 logout:
-    pattern:    /logout
+    path:    /logout
