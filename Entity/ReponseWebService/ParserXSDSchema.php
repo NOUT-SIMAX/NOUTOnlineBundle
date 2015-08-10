@@ -121,7 +121,7 @@ class ParserXSDSchema extends Parser
 				{
 					$clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS);
 
-					if (empty($sIDColonne)) //si vide, c'est un bouton d'action sur le formulaire (supprimer, imprimer...)
+					if (empty($clStructureBouton->getIDColonne())) //si vide, c'est un bouton d'action sur le formulaire (supprimer, imprimer...)
 					{
 						$clStructElem->addButton($clStructureBouton);
 						break;
