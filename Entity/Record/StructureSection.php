@@ -56,107 +56,18 @@ class StructureSection extends StructureColonne
 		return $this;
 	}
 
-//	public function addColonne($sIDColonne)
-//	{
-//
-//	}
-//
-//
-//	/**
-//	 * @param                  $sIDColonne
-//	 * @param                  $sIDColPere
-//	 * @param StructureColonne $clStruct
-//	 * @return this
-//	 */
-//	public function addColonne2($sIDColonne, $sIDColPere, StructureColonne $clStruct = null)
-//	{
-//		if (!isset($sIDColPere))
-//		{
-//			$this->m_TabStructureColonne[] = isset($clStruct) ? $clStruct : $this->m_MapIDColonne2StructColonne[$sIDColonne];
-//		}
-//		else
-//		{
-//			if (!isset($this->m_MapIDColonne2StructColonne[$sIDColPere]) || !($this->m_MapIDColonne2StructColonne[$sIDColPere] instanceof StructureSection))
-//			{
-//				throw new \Exception('La colonne père n\'est pas une section');
-//			}
-//
-//			$this->m_MapIDColonne2StructColonne[$sIDColPere]->addColonne2TabStruct($sIDColonne, null, $this->m_MapIDColonne2StructColonne[$sIDColonne]);
-//		}
-//		return $this;
-//	}
-//
-//
-//
-//	/**
-//	 * @param StructureColonne $clStructColonne
-//	 * @return mixed|void
-//	 */
-//	public function setStructureColonne(StructureColonne $clStructColonne)
-//	{
-//		if ($clStructColonne instanceof StructureBouton)
-//		{
-//			if (empty($clStructColonne->getIDColonne()))
-//			{
-//				//c'est pas un bouton par programmation, il faut le sortir des structures colonnes
-//				$this->m_TabBouton[]=$clStructColonne;
-//				return;
-//			}
-//		}
-//
-//		$this->m_MapIDColonne2StructColonne[$clStructColonne->getIDColonne()] = $clStructColonne;
-//		return $clStructColonne->getIDColonne();
-//	}
-//
-//	/**
-//	 * @param $sIDColonne string
-//	 * @param ColonneRestriction $clRestriction
-//	 */
-//	public function setRestriction($sIDColonne, ColonneRestriction $clRestriction)
-//	{
-//		if (isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
-//		{
-//			$this->m_MapIDColonne2StructColonne[$sIDColonne]->setRestriction($clRestriction);
-//		}
-//	}
-//
-//	/**
-//	 * @param $sIDColonne string
-//	 * @param $eTypeElement string
-//	 */
-//	public function setTypeElement($sIDColonne, $eTypeElement)
-//	{
-//		if (isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
-//		{
-//			$this->m_MapIDColonne2StructColonne[$sIDColonne]->setTypeElement($eTypeElement);
-//		}
-//	}
-//
-//	/**
-//	 * @param string $sIDColonne identifiant de la colonne
-//	 * @return StructureColonne|null
-//	 */
-//	public function getStructureColonne($sIDColonne)
-//	{
-//		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
-//		{
-//			return;
-//		}
-//
-//		return $this->m_MapIDColonne2StructColonne[$sIDColonne];
-//	}
-//
-//	/**
-//	 * @param string $sIDColonne identifiant de la colonne
-//	 */
-//	public function getTypeElement($sIDColonne)
-//	{
-//		if (!isset($this->m_MapIDColonne2StructColonne[$sIDColonne]))
-//		{
-//			return;
-//		}
-//
-//		return $this->m_MapIDColonne2StructColonne[$sIDColonne]->getTypeElement();
-//	}
 
+    const LEVEL_FICHE   = 0;
+    const LEVEL_PRINCIPAL = 1;
+    const LEVEL_SECONDAIRE = 2;
+    const LEVEL_SEQUENCE = 3;
+
+    const MODE_1COlONNE = 1;
+    const MODE_2COlONNE = 2;
+    const MODE_3COlONNE = 3;
+    const MODE_4COlONNE = 4;
+    const MODE_5COlONNE = 5;
+
+    const SENS_HORIZONTAL = 1;
+    const SENS_VERTICAL = 2;
 }
