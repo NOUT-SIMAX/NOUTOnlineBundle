@@ -20,7 +20,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
-use Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Role\SwitchUserRole;
@@ -40,7 +41,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
  * Class NOUTOnlineAuthenticationProvider
  * @package NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider
  */
-class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
+class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterface
 {
 	/**
 	 * @var \Symfony\Component\Security\Core\User\UserProviderInterface
@@ -70,6 +71,8 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 	 */
 	private $m_clClientInformation;
 
+
+
 	/**
 	 * @param ClientInformation $$clClientInfo
 	 * @param OnlineServiceFactory $serviceFactory
@@ -80,7 +83,14 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 	 * @param EncoderFactoryInterface $encoderFactory
 	 * @param bool $hideUserNotFoundExceptions
 	 */
-	public function __construct(ClientInformation $clClientInfo, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, EncoderFactoryInterface $encoderFactory, $hideUserNotFoundExceptions = true )
+	public function __construct(ClientInformation $clClientInfo,
+                                OnlineServiceFactory $serviceFactory,
+                                ConfigurationDialogue $configurationDialogue,
+                                UserProviderInterface $userProvider,
+                                UserCheckerInterface $userChecker,
+                                $providerKey,
+                                EncoderFactoryInterface $encoderFactory,
+                                $hideUserNotFoundExceptions = true )
 	{
 		if (empty($providerKey))
 		{
@@ -104,7 +114,7 @@ class NOUTOnlineAuthenticationProvider extends AuthenticationProviderManager
 	/**
 	 * {@inheritdoc}
 	 */
-	public function authenticate(TokenInterface $token)
+    public function authenticate(TokenInterface $token)
 	{
 		if (!$this->supports($token))
 		{
