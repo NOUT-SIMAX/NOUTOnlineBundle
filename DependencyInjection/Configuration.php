@@ -15,27 +15,28 @@ use Symfony\Component\Translation\Translator;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * @return TreeBuilder
+     * {@inheritDoc}
      */
-    public static function s_getConfigTreeBuilder()
+    public function getConfigTreeBuilder()
     {
+
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('nout_online');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
-	    $rootNode
-		    ->addDefaultsIfNotSet()
-		    ->children()
-		        ->booleanNode('debug')->end()
-                ->enumNode('protocole')
-                    ->values(array('http://', 'https://'))
-                    ->defaultValue('http://')
-                ->end()//enumNode('protocole')
-                ->scalarNode('address')
-                    ->defaultValue('127.0.0.1')
-                    ->cannotBeEmpty()
+        $rootNode
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('debug')->end()
+            ->enumNode('protocole')
+            ->values(array('http://', 'https://'))
+            ->defaultValue('http://')
+            ->end()//enumNode('protocole')
+            ->scalarNode('address')
+            ->defaultValue('127.0.0.1')
+            ->cannotBeEmpty()
 //                    ->validate()
 //                        ->ifTrue(
 //                            function ($ip)
@@ -48,22 +49,14 @@ class Configuration implements ConfigurationInterface
 //                        )
 //                        ->thenInvalid('%s should be an IPv4 or IPv6 address') //la valeur "%s" n'est pas valide pour le param�tre address, la valeur doit �tre une adresse IPv4 ou IPv6
 //                    ->end()//validate
-                ->end()//scalarNode('adresse')
-                ->integerNode('port')
-                    ->cannotBeEmpty()
-                    ->defaultValue('8052')
-                ->end()//integerNode('port')
-                ->scalarNode('apiuuid')->end()
-		    ->end()//children
-	    ;
-	    return $treeBuilder;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getConfigTreeBuilder()
-    {
-        return static::s_getConfigTreeBuilder();
+            ->end()//scalarNode('adresse')
+            ->integerNode('port')
+            ->cannotBeEmpty()
+            ->defaultValue('8052')
+            ->end()//integerNode('port')
+            ->scalarNode('apiuuid')->end()
+            ->end()//children
+        ;
+        return $treeBuilder;
     }
 }
