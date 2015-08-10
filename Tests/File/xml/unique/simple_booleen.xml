@@ -28,7 +28,7 @@
 	<env:Body>
 		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115075895" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_228441939754526 simax:id="32200908666089" simax:title="TCS00005">
+				<id_228441939754526 simax:id="32200908666089" simax:title="TCS00005" simax:xsdLevel="0">
 					<id_221733204940980>0</id_221733204940980>
 				</id_228441939754526>
 			</xml>

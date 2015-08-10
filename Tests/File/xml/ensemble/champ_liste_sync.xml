@@ -194,7 +194,7 @@
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080607555107"
 			     xmlns:simax="http://www.nout.fr/XML/"
 			     xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_221686275782379 simax:id="27433502847096" simax:title="TCL0001">
+				<id_221686275782379 simax:id="27433502847096" simax:title="TCL0001" simax:xsdLevel="0">
 					<id_223996968187905 simax:readOnly="1">TCL0001</id_223996968187905>
 					<id_212035484269085>
 						<id_1169 simax-layout:bold="1" simax-layout:italic="0"
@@ -204,7 +204,7 @@
 					<id_224752882487337/>
 				</id_221686275782379>
 				<id_1169 simax:id="2" simax:title="superviseur" simax-layout:bold="1"
-				         simax-layout:italic="0" simax-layout:bgcolor="7FFF55">
+				         simax-layout:italic="0" simax-layout:bgcolor="7FFF55" simax:xsdLevel="1">
 					<id_1171>superviseur</id_1171>
 					<id_1172>Super</id_1172>
 					<id_1173>Viseur</id_1173>
@@ -213,7 +213,7 @@
 					<id_7624>1</id_7624>
 					<id_10545>0</id_10545>
 				</id_1169>
-				<id_1169 simax:id="12" simax:title="ninon">
+				<id_1169 simax:id="12" simax:title="ninon" simax:xsdLevel="2">
 					<id_1171>ninon</id_1171>
 					<id_1172>Laf</id_1172>
 					<id_1173>Ninon</id_1173>

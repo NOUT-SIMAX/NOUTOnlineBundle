@@ -50,13 +50,13 @@
 	<env:Body>
 		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115175850" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_221686275782379 simax:id="20690396322402" simax:title="TCL0001">
+				<id_221686275782379 simax:id="20690396322402" simax:title="TCL0001" simax:xsdLevel="0">
                     <id_212035484269085>
                         <id_1169 simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">2</id_1169>
                         <id_1169 simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">21</id_1169>
                     </id_212035484269085>
 				</id_221686275782379>
-                <id_1169 simax:id="2" simax:title="superviseur" simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">
+                <id_1169 simax:id="2" simax:title="superviseur" simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55" simax:xsdLevel="1">
                     <id_1171>superviseur</id_1171>
                     <id_1172>Super</id_1172>
                     <id_1173>Viseur</id_1173>
@@ -65,7 +65,7 @@
                     <id_7624>1</id_7624>
                     <id_10545>0</id_10545>
                 </id_1169>
-                <id_1169 simax:id="21" simax:title="commercial" simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55">
+                <id_1169 simax:id="21" simax:title="commercial" simax-layout:bold="1" simax-layout:italic="0" simax-layout:bgcolor="7FFF55" simax:xsdLevel="1">
                     <id_1171>commercial</id_1171>
                     <id_1172>Test</id_1172>
                     <id_1173>Commercial</id_1173>

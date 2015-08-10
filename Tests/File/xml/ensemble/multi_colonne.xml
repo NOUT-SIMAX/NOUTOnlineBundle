@@ -100,7 +100,7 @@
 	<env:Body>
 		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080511353772" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_36420837490897 simax:id="33987621769366" simax:title="Multi colonne">
+				<id_36420837490897 simax:id="33987621769366" simax:title="Multi colonne" simax:xsdLevel="0">
 					<id_40720099759321>
 						<id_40866128643112/>
 						<id_45255585219493/>

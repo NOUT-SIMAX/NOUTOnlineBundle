@@ -28,10 +28,10 @@
 	<env:Body>
 		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080607411455" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_214135689813440 simax:id="19805640915369" simax:title="TCE00001">
+				<id_214135689813440 simax:id="19805640915369" simax:title="TCE00001" simax:xsdLevel="0">
 					<id_223455768846395>210244030461289</id_223455768846395>
 				</id_214135689813440>
-				<id_9494 simax:id="210244030461289" simax:title=" Montpellier"/>
+				<id_9494 simax:id="210244030461289" simax:title=" Montpellier" simax:xsdLevel="2"/>
 			</xml>
 		</ExecuteResponse>
 	</env:Body>

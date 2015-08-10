@@ -451,7 +451,7 @@
 	<env:Body>
 		<ModifyResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080607593470" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_47909919412330 simax:id="197591479950785" simax:title="Janvier">
+				<id_47909919412330 simax:id="197591479950785" simax:title="Janvier" simax:xsdLevel="0">
 					<id_40621361281185>
 						<id_37765206659802>1</id_37765206659802>
 						<id_44078808584672>0</id_44078808584672>
@@ -525,7 +525,7 @@
 						</id_218636171874219>
 					</id_213808628631508>
 				</id_47909919412330>
-				<id_1169 simax:id="11" simax:title="Jérôme"/></xml>
+				<id_1169 simax:id="11" simax:title="Jérôme" simax:xsdLevel="2"/></xml>
 		</ModifyResponse>
 	</env:Body>
 </env:Envelope>

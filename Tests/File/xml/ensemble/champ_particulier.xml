@@ -110,7 +110,7 @@
 	<env:Body>
 		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115183712" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-				<id_227763654533233 simax:id="34503011146973" simax:title="TCP0001">
+				<id_227763654533233 simax:id="34503011146973" simax:title="TCP0001" simax:xsdLevel="0">
 					<id_212757038802391 simax:readOnly="1">TCP0001</id_212757038802391>
 					<id_221600376465030/>
 					<id_228244690872083/>
