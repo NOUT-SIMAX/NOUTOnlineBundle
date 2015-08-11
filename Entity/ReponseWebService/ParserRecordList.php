@@ -239,6 +239,7 @@ class ParserRecordList extends Parser
 
 		$sIDColonne = str_replace('id_', '', $sNom);
 		$clInfoColonne = new InfoColonne($sIDColonne, $TabAttribNOUT, $TabAttribLayout);
+        $clRecord->setInfoColonne($clInfoColonne);
 
 		$clStructureColonne = $clStructureElement->getStructureColonne($sIDColonne);
 		//la colonne n'est pas forcément décrite dans le xsd ???

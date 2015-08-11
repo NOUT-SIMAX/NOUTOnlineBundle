@@ -215,23 +215,6 @@ abstract class StructureColonne
         return str_replace(array(':','-'), array('_','_'), self::TM_Texte);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getFormOption()
-	{
-		$aOptions = array(
-			'label'     => $this->m_sLibelle,
-			'read_only' => $this->isOption(self::OPTION_ReadOnly),
-			'required'  => $this->m_bRequired,
-			'disabled'  => $this->isOption(self::OPTION_Disabled),
-		);
-	}
-
-	/**
-	 *
-	 */
-
 
 	const TM_Invalide = null;
 

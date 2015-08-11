@@ -51,7 +51,7 @@ class Record
 	protected $m_nIDTableau;
 
 	/**
-	 * @var array $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
+	 * @var InfoColonne[] $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
 	 */
 	protected $m_TabColumnsInfo;
 
@@ -152,6 +152,20 @@ class Record
 
 		return $this;
 	}
+
+    /**
+     * @param $idColonne
+     * @return InfoColonne|null
+     */
+    public function getInfoColonne($idColonne)
+    {
+        if (!isset($this->m_TabColumnsInfo[$idColonne]))
+        {
+            return null;
+        }
+
+        return $this->m_TabColumnsInfo[$idColonne];
+    }
 
 	/**
 	 * @return bool

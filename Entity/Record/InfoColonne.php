@@ -12,115 +12,76 @@ class InfoColonne
 {
 	protected $m_nIDColonne;
 
-	//mise en forme
-	protected $m_bBold;
-	protected $m_bItalic;
-	protected $m_Color;
-	protected $m_BackgroundColor;
-
-	//controle d'etat de champ
-	protected $m_bHidden;
-	protected $m_bDisabled;
-	protected $m_bReadOnly;
-
+    /**
+     * @var array
+     */
+    protected $m_TabOptions;
 
 	public function __construct($sIDColonne, $TabAttrib, $tabAttribLayout)
 	{
 		$this->m_nIDColonne = $sIDColonne;
 
-		$this->m_bBold           = 0;
-		$this->m_bItalic         = 0;
-		$this->m_Color           = null;
-		$this->m_BackgroundColor = null;
+        $this->m_TabOptions          = array();
 
-		$this->m_bHidden   = 0;
-		$this->m_bDisabled = 0;
-		$this->m_bReadOnly = 0;
-
-		$this->InitInfoColonne($TabAttrib);
-		$this->InitInfoColonne($tabAttribLayout);
+		$this->_InitInfoColonne($TabAttrib);
+		$this->_InitInfoColonne($tabAttribLayout);
 	}
 
-	public function InitInfoColonne($TabAttrib)
+    /**
+     * @return int
+     */
+    public function getIDColonne()
+    {
+        return $this->m_nIDColonne;
+    }
+
+	protected function _InitInfoColonne($TabAttrib)
 	{
-		foreach ($TabAttrib as $sName => $ndAttrib)
-		{
-			switch ($sName)
-			{
-			case 'bold':
-				$this->m_bBold = (int) $ndAttrib;
-				break;
-			case 'italic':
-				$this->m_bItalic = (int) $ndAttrib;
-				break;
-			case 'hidden':
-				$this->m_bHidden = (int) $ndAttrib;
-				break;
-			}
-		}
+
+        foreach ($TabAttrib as $sAttribName => $ndAttrib)
+        {
+            switch($sAttribName)
+            {
+            case self::OPTION_BgColor:
+            case self::OPTION_Color:
+                $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
+                break;
+
+            default:
+                $this->m_TabOptions[$sAttribName] = (int) $ndAttrib;
+                break;
+            }
+        }
 	}
 
-	/**
-	 * @return null
-	 */
-	public function getBackgroundColor()
-	{
-		return $this->m_BackgroundColor;
-	}
+    /**
+     * @param $dwOption
+     * @return bool
+     */
+    public function isOption($dwOption)
+    {
+        if (!isset($this->m_TabOptions[$dwOption]))
+            return false;
 
-	/**
-	 * @return null
-	 */
-	public function getColor()
-	{
-		return $this->m_Color;
-	}
+        return !empty($this->m_TabOptions[$dwOption]);
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getBold()
-	{
-		return $this->m_bBold;
-	}
+    /**
+     * @param $dwOption
+     * @return bool
+     */
+    public function getOption($dwOption)
+    {
+        if (!isset($this->m_TabOptions[$dwOption]))
+            return null;
 
-	/**
-	 * @return int
-	 */
-	public function getDisabled()
-	{
-		return $this->m_bDisabled;
-	}
+        return $this->m_TabOptions[$dwOption];
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getHidden()
-	{
-		return $this->m_bHidden;
-	}
 
-	/**
-	 * @return int
-	 */
-	public function getItalic()
-	{
-		return $this->m_bItalic;
-	}
+    const OPTION_Bold   = 'bold';
+    const OPTION_Italic = 'italic';
+    const OPTION_Color  = 'color';
+    const OPTION_BgColor= 'bgcolor';
 
-	/**
-	 * @return int
-	 */
-	public function getReadOnly()
-	{
-		return $this->m_bReadOnly;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getIDColonne()
-	{
-		return $this->m_nIDColonne;
-	}
 }
