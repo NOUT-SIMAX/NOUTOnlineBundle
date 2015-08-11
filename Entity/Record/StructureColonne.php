@@ -94,6 +94,28 @@ abstract class StructureColonne
 		return in_array($this->m_eTypeElement, $aTypeSimple);
 	}
 
+    public function bAvecValeur()
+    {
+        $aTypeSimple = array(
+            self::TM_Booleen,
+            self::TM_Entier,
+            self::TM_Texte,
+            self::TM_DateHeure,
+            self::TM_Date,
+            self::TM_Heure,
+            self::TM_Reel,
+            self::TM_Monetaire,
+            self::TM_TexteLong,
+            self::TM_Tableau,
+            self::TM_ListeElem,
+            self::TM_Combo,
+            self::TM_Fichier,
+        );
+
+        return in_array($this->m_eTypeElement, $aTypeSimple);
+    }
+
+
 	/**
 	 * @return mixed
 	 */
