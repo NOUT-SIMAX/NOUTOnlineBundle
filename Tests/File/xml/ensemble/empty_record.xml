@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+	<env:Header>
+		<ReturnType>Record</ReturnType>
+		<ConnectedUser>
+			<Form title="Utilisateur">1169</Form>
+			<Element title="superviseur">2</Element>
+		</ConnectedUser>
+		<ActionContext>19127036205708</ActionContext>
+		<Action title="Modifier Type de champ Element" typeAction="2387" typeReturn="Record">222158688723142</Action>
+		<XSDSchema>
+			<xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080609492836" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+				<xs:element xs:name="id_214135689813440" simax:name="Type de champ Element">
+					<xs:complexType>
+						<xs:sequence>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:unique xs:name="0">
+					<xs:selector xs:xpath="id_214135689813440"/>
+				</xs:unique>
+			</xs:schema>
+		</XSDSchema>
+		<Form title="Type de champ Element">214135689813440</Form>
+		<Element title="TCE00001">26278156752963</Element>
+	</env:Header>
+	<env:Body>
+		<ModifyResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015080609492835" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+				<id_214135689813440 simax:id="26278156752963" simax:title="TCE00001" simax:xsdLevel="0">
+				</id_214135689813440>
+			</xml>
+		</ModifyResponse>
+	</env:Body>
+</env:Envelope>

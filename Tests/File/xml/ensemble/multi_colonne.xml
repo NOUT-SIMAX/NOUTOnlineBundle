@@ -13,7 +13,7 @@
                 <xs:element xs:name="id_36420837490897" simax:name="Multi colonne">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element xs:name="id_226732876011095" simax:name="2 Colonnes" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="1" simax:multiColumnMode="1" simax:multiColumnWay="1">
+                            <xs:element xs:name="id_226732876011095" simax:name="2 Colonnes" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="1" simax:multiColumnMode="1" simax:multiColumnWay="1" simax:backgroundColor="80FF80">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element xs:name="id_212370505374535" simax:name="2 Col Gch=&gt;Drt" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="2" simax:multiColumnWay="1">
@@ -53,7 +53,7 @@
                             <xs:element xs:name="id_214715557517691" simax:name="3 Colonnes" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="1" simax:multiColumnMode="1" simax:multiColumnWay="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element xs:name="id_212181526814045" simax:name="3 Col Gch=&gt;drt" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="3" simax:multiColumnWay="1">
+                                        <xs:element xs:name="id_212181526814045" simax:name="3 Col Gch=&gt;drt" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="3" simax:multiColumnWay="1" simax:backgroundColor="FEDBFF">
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element xs:name="id_218228840780519" simax:name="Vrai/faux 1" simax:typeElement="xs:boolean" simax:printed="1"/>
