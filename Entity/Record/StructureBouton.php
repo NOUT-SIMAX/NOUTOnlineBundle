@@ -27,11 +27,7 @@ class StructureBouton extends StructureColonne
 		parent::__construct('', $clAttribNOUT, $clAttribXS);
 
 		$this->m_nIDColonne = (string)$clAttribNOUT['idButton'];
-		$this->m_clInfoBouton = new InfoButton(
-			(string)$clAttribNOUT['typeSelection'],
-			(string)$clAttribNOUT['idAction'],
-			(string)$clAttribNOUT['icon'],
-			(string)$clAttribNOUT['withValidation']);
+		$this->m_clInfoBouton = new InfoButton($clAttribNOUT);
 	}
 
 	/**

@@ -42,7 +42,7 @@ abstract class StructureColonne
 	 */
 	static function s_getTypeColonne(\SimpleXMLElement $clAttribNOUT)
 	{
-		return (string) $clAttribNOUT['typeElement'];
+		return (string) $clAttribNOUT[self::OPTION_TypeElement];
 	}
 
 	public function __construct($sID, \SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
@@ -59,8 +59,8 @@ abstract class StructureColonne
 
 	protected function _InitInfoColonne(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
-		$this->m_sLibelle     = (string) $clAttribNOUT['name'];
-		$this->m_eTypeElement = (string) $clAttribNOUT['typeElement'];
+		$this->m_sLibelle     = (string) $clAttribNOUT[self::OPTION_Name];
+		$this->m_eTypeElement = (string) $clAttribNOUT[self::OPTION_TypeElement];
 
 		foreach ($clAttribNOUT as $sAttribName => $ndAttrib)
 		{
@@ -238,6 +238,9 @@ abstract class StructureColonne
 	const TM_Combo      = 'simax-choice';
 	const TM_Fichier    = 'xs:base64Binary';
 
+
+    const OPTION_Name       = 'name';
+    const OPTION_TypeElement= 'typeElement';
 
 	// attributs communs à toutes les colonnes
 	const OPTION_Detail      = 'detail';

@@ -171,6 +171,9 @@ class OnlineServiceProxy
 			curl_exec($curl);
 			fclose($fp);
 
+            $info = curl_getinfo($curl);
+
+
 			// Vérifie si une erreur survient
 			if(curl_errno($curl))
 			{
@@ -181,7 +184,7 @@ class OnlineServiceProxy
 			curl_close($curl);
 
 			//si le fichier est vide on le supprime
-			if (is_file($sDestination) && filesize($sDestination) == 0)
+			if (is_file($sDestination) && ((filesize($sDestination) == 0) || ($info['http_code']!=200)))
 			{
 				unlink($sDestination);
 				return '';

@@ -11,65 +11,51 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 class InfoButton 
 {
-
-	/**
-	 * @var string
-	 */
-	private $m_eTypeSelection;
-
-	/**
-	 * @var string
-	 */
-	private $m_IDAction;
-
-	/**
-	 * @var string|null
-	 */
-	private $m_IDIcon;
-
-	/**
-	 * @var string
-	 */
-	private $m_nWithValidation;
+    /**
+     * @var array
+     */
+    private $m_TabOptions;
 
 
-	public function __construct($selection, $idaction, $icon, $withvalidation)
+	public function __construct(\SimpleXMLElement $clAttribNOUT)
 	{
-		$this->m_eTypeSelection=$selection;
-		$this->m_IDAction=$idaction;
-		$this->m_IDIcon=$icon;
-		$this->m_nWithValidation=$withvalidation;
+        $this->m_TabOptions = array();
+
+        foreach ($clAttribNOUT as $sAttribName => $ndAttrib)
+        {
+            if (($sAttribName == StructureColonne::OPTION_IDBouton)
+                || ($sAttribName == StructureColonne::OPTION_TypeElement)
+                || ($sAttribName == StructureColonne::OPTION_Name))
+            {
+                continue;
+            }
+
+            $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
+        }
+
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTypeSelection()
-	{
-		return $this->m_eTypeSelection;
-	}
+    /**
+     * @param string $option
+     */
+    public function getOption($option)
+    {
+        if (isset($this->m_TabOptions[$option]))
+        {
+            return $this->m_TabOptions[$option];
+        }
+        return null;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getIDAction()
-	{
-		return $this->m_IDAction;
-	}
+    /**
+     * @return array
+     */
+    public function getTabOption()
+    {
+        return $this->m_TabOptions;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getIDIcon()
-	{
-		return $this->m_IDIcon;
-	}
 
-	/**
-	 * @return string
-	 */
-	public function getWithValidation()
-	{
-		return $this->m_nWithValidation;
-	}
+    const TYPE_Imprimer = 'Imprimer';
+    const TYPE_Supprimer = 'Supprimer';
 }
