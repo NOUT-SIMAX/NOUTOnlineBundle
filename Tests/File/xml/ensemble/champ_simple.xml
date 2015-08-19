@@ -75,7 +75,15 @@
 					<id_217047669220519 simax:ref="1"/>
 					<id_223339796382030/>
 				</id_228441939754526>
-				<simax:Data simax:ref="1" simax:encoding="quoted-printable" simax:size="1926" simax:typemime="text/plain">=0ADonn=E9e non-groupe (pas ajouter/enlever)
+				<simax:Data simax:ref="1" simax:encoding="quoted-printable" simax:size="1926" simax:typemime="text/plain">
+
+                    Seuils en vigueur =E0 l'IRT M2P:
+                    -Montant du march=E9 inf=E9rieur =E0 15 000 =80 hors taxe: 2 devis si possible
+                    -Montant du march=E9 entre 15 000 et 90 000 =80 hors taxe: 3 devis minimum et champs ' crit=E8res de s=E9lection ou fichier de ' S=E9lection du fournisseur ' rempli (cf. ci-dessous)
+                    -Montant du march=E9 sup=E9rieur =E0 90 000 =80 hors taxe: validation pr=E9alable du CA et mise en concurrence avec publicit=E9 adapt=E9e au montant (par exemple, sur le site internet de l'IRT ou dans un journal d'Annonces L=E9gales) et fichier de s=E9lection du fournisseur annex=E9 =E0 la demande d'achat: Contacter le service administratif.
+
+
+                    =0ADonn=E9e non-groupe (pas ajouter/enlever)
 
 					----- Message d'origine ----- =20
 					De : "J=E9r=F4me"=20

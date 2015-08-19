@@ -31,60 +31,69 @@
 				<id_228441939754526 simax:id="32200908666089" simax:title="TCS00005" simax:xsdLevel="0">
 					<id_217047669220519 simax:ref="1"/>
 				</id_228441939754526>
-				<simax:Data simax:ref="1" simax:encoding="quoted-printable" simax:size="1926" simax:typemime="text/plain">=0ADonn=E9e non-groupe (pas ajouter/enlever)
+				<simax:Data simax:ref="1" simax:encoding="quoted-printable" simax:size="1926" simax:typemime="text/plain">
 
-					----- Message d'origine ----- =20
-					De : "J=E9r=F4me"=20
-					Envoy=E9 : 06/08/2015 10:58:40=20
-					Objet : RE : RE : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
 
-					&gt;=20
-					groupe ou non groupe ?=20
-					&gt;=20
-					&gt;=20
-					&gt; quand je demande le type il me faut tout... je vais pas poser toutes les questions
-					&gt;=20
-					&gt; ----- Message d'origine ----- =20
-					&gt; De : "Christophe"=20
-					&gt; Envoy=E9 : 06/08/2015 10:54:11=20
-					&gt; Objet : RE : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
-					&gt;=20
-					&gt; &gt;=20
-					&gt; donn=E9e
-					&gt; &gt;=20
-					&gt; &gt; ----- Message d'origine ----- =20
-					&gt; &gt; De : "J=E9r=F4me"=20
-					&gt; &gt; Envoy=E9 : 06/08/2015 10:53:01=20
-					&gt; &gt; Objet : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
-					&gt; &gt;=20
-					&gt; &gt; &gt;=20
-					&gt; &gt; quel est le type de la colonne Demande ? donn=E9e ou calcul ?
-					&gt; &gt; &gt;=20
-					&gt; &gt; &gt; ----- Message d'origine ----- =20
-					&gt; &gt; &gt; De : "Christophe"=20
-					&gt; &gt; &gt; Envoy=E9 : 06/08/2015 10:47:38=20
-					&gt; &gt; &gt; Objet : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
-					&gt; &gt; &gt;=20
-					&gt; &gt; &gt; &gt; Pour : Lafourcade Ninon
-					&gt; &gt; &gt; &gt; Poste Client : Client Web PHP
-					&gt; &gt; &gt; &gt; Dead line :=20
-					&gt; &gt; &gt; &gt; Test effectu=E9 sur serveur du client =E0 l'adresse http://46.18.209.215/simax
-					&gt; &gt; &gt; &gt; Non reproduit sur base locale
-					&gt; &gt; &gt; &gt;=20
-					&gt; &gt; &gt; &gt; Log r=E9cup=E9r=E9 sur serveur client : "Q:\Sydec\DS04373\logRequete.txt"
-					&gt; &gt; &gt; &gt;=20
-					&gt; &gt; &gt; &gt; Reproduction du probl=E8me=20
-					&gt; &gt; &gt; &gt; Menu 'Achat' -&gt; 'Demande d'achat'
-					&gt; &gt; &gt; &gt;     - Vider les filtres et modifier un enregistrement (exemple le 15.07.011)
-					&gt; &gt; &gt; &gt;     - Liste 'Demande' -&gt; Bouton cr=E9er
-					&gt; &gt; &gt; &gt;         - Quantit=E9 150 -&gt; Enregistrer
-					&gt; &gt; &gt; &gt;    =20
-					&gt; &gt; &gt; &gt; R=E9sultat :=20
-					&gt; &gt; &gt; &gt; La sous-liste ne se rafra=EEchit pas.=20
-					&gt; &gt; &gt; &gt; La ligne cr=E9=E9 n'appara=EEt pas dans la liste, il faut enregistrer le formulaire 'Demande d'achat' et le r=E9-ouvrir pour que la ligne apparaisse.
-					&gt; &gt; &gt;=20
-					&gt; &gt;=20
-					&gt;=20
+                    Seuils en vigueur =E0 l'IRT M2P:
+                    -Montant du march=E9 inf=E9rieur =E0 15 000 =80 hors taxe: 2 devis si possible
+                    -Montant du march=E9 entre 15 000 et 90 000 =80 hors taxe: 3 devis minimum et champs ' crit=E8res de s=E9lection ou fichier de ' S=E9lection du fournisseur ' rempli (cf. ci-dessous)
+                    -Montant du march=E9 sup=E9rieur =E0 90 000 =80 hors taxe: validation pr=E9alable du CA et mise en concurrence avec publicit=E9 adapt=E9e au montant (par exemple, sur le site internet de l'IRT ou dans un journal d'Annonces L=E9gales) et fichier de s=E9lection du fournisseur annex=E9 =E0 la demande d'achat: Contacter le service administratif.
+
+
+                    =0ADonn=E9e non-groupe (pas ajouter/enlever)
+
+                    ----- Message d'origine ----- =20
+                    De : "J=E9r=F4me"=20
+                    Envoy=E9 : 06/08/2015 10:58:40=20
+                    Objet : RE : RE : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+
+                    &gt;=20
+                    groupe ou non groupe ?=20
+                    &gt;=20
+                    &gt;=20
+                    &gt; quand je demande le type il me faut tout... je vais pas poser toutes les questions
+                    &gt;=20
+                    &gt; ----- Message d'origine ----- =20
+                    &gt; De : "Christophe"=20
+                    &gt; Envoy=E9 : 06/08/2015 10:54:11=20
+                    &gt; Objet : RE : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+                    &gt;=20
+                    &gt; &gt;=20
+                    &gt; donn=E9e
+                    &gt; &gt;=20
+                    &gt; &gt; ----- Message d'origine ----- =20
+                    &gt; &gt; De : "J=E9r=F4me"=20
+                    &gt; &gt; Envoy=E9 : 06/08/2015 10:53:01=20
+                    &gt; &gt; Objet : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+                    &gt; &gt;=20
+                    &gt; &gt; &gt;=20
+                    &gt; &gt; quel est le type de la colonne Demande ? donn=E9e ou calcul ?
+                    &gt; &gt; &gt;=20
+                    &gt; &gt; &gt; ----- Message d'origine ----- =20
+                    &gt; &gt; &gt; De : "Christophe"=20
+                    &gt; &gt; &gt; Envoy=E9 : 06/08/2015 10:47:38=20
+                    &gt; &gt; &gt; Objet : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+                    &gt; &gt; &gt;=20
+                    &gt; &gt; &gt; &gt; Pour : Lafourcade Ninon
+                    &gt; &gt; &gt; &gt; Poste Client : Client Web PHP
+                    &gt; &gt; &gt; &gt; Dead line :=20
+                    &gt; &gt; &gt; &gt; Test effectu=E9 sur serveur du client =E0 l'adresse http://46.18.209.215/simax
+                    &gt; &gt; &gt; &gt; Non reproduit sur base locale
+                    &gt; &gt; &gt; &gt;=20
+                    &gt; &gt; &gt; &gt; Log r=E9cup=E9r=E9 sur serveur client : "Q:\Sydec\DS04373\logRequete.txt"
+                    &gt; &gt; &gt; &gt;=20
+                    &gt; &gt; &gt; &gt; Reproduction du probl=E8me=20
+                    &gt; &gt; &gt; &gt; Menu 'Achat' -&gt; 'Demande d'achat'
+                    &gt; &gt; &gt; &gt;     - Vider les filtres et modifier un enregistrement (exemple le 15.07.011)
+                    &gt; &gt; &gt; &gt;     - Liste 'Demande' -&gt; Bouton cr=E9er
+                    &gt; &gt; &gt; &gt;         - Quantit=E9 150 -&gt; Enregistrer
+                    &gt; &gt; &gt; &gt;    =20
+                    &gt; &gt; &gt; &gt; R=E9sultat :=20
+                    &gt; &gt; &gt; &gt; La sous-liste ne se rafra=EEchit pas.=20
+                    &gt; &gt; &gt; &gt; La ligne cr=E9=E9 n'appara=EEt pas dans la liste, il faut enregistrer le formulaire 'Demande d'achat' et le r=E9-ouvrir pour que la ligne apparaisse.
+                    &gt; &gt; &gt;=20
+                    &gt; &gt;=20
+                    &gt;=20
 				</simax:Data>
 			</xml>
 		</ExecuteResponse>
