@@ -139,7 +139,7 @@ class ParserRecordList extends Parser
 
 
 		$this->m_clXML->registerXPathNamespace('n', self::NAMESPACE_NOUT_XML);
-		$aData = $this->m_clXML->xpath('/n:Data');
+		$aData = $this->m_clXML->xpath('/xml/n:Data');
 		if (is_array($aData) && !empty($aData))
 		{
 			foreach($aData as $ndData)
@@ -311,12 +311,20 @@ class ParserRecordList extends Parser
 
 				break;
 			}
-
 			default:
 			{
-				$Valeur = (string) $ndColonne;
-				$clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false); //false car pas modifier par l'utilisateur ici
-				break;
+                $ref = (string)$TabAttribNOUT['ref'];
+                if (!empty($ref) && isset($this->m_MapRef2Data[$ref]))
+                {
+                    $Valeur = $this->m_MapRef2Data[$ref];
+                }
+                else
+                {
+                    $Valeur = (string) $ndColonne;
+                }
+
+                $clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false); //false car pas modifier par l'utilisateur ici
+                break;
 			}
 		}
 	}

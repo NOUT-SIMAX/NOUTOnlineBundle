@@ -35,7 +35,12 @@ class Data
 			return base64_decode($this->m_sContent);
 
 		case self::ENC_QUOTEDPRINTABLE:
-			return quoted_printable_decode($this->m_sContent);
+        {
+            //str_replace : hack pour probleme encodage euro
+            $sToReturn = utf8_encode(quoted_printable_decode(str_replace('=80', '=E2=82=AC', $this->m_sContent)));
+            $sToReturn = str_replace('â¬', '€', $sToReturn);//hack pour probleme encodage euro
+            return $sToReturn;
+        }
 
 		case self::ENC_BINARY:
 		default:
