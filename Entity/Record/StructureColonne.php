@@ -207,7 +207,7 @@ abstract class StructureColonne
         }
         //dans le cas d'un texte, il faut vérifier s'il y a pas des restrictions
         if (    is_null($this->m_clRestriction)
-            || !$this->m_clRestriction->isTypeRestriction(ColonneRestriction::R_MAXLENGTH))
+            || !$this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH))
         {
             return str_replace(array(':','-'), array('_','_'), self::TM_TexteLong);
         }

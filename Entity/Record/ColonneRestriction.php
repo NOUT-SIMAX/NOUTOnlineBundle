@@ -11,13 +11,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 class ColonneRestriction
 {
 	/**
-	 * @var string
+	 * @var string[]
 	 */
-	protected $m_sTypeRestriction;
-	/**
-	 * @var string|array
-	 */
-	protected $m_ValeurRestriction;
+	protected $m_TabRestriction;
 
 	/**
 	 * @var string|array
@@ -26,22 +22,17 @@ class ColonneRestriction
 
 	public function __construct()
 	{
-		$this->m_sTypeRestriction  = '';
-		$this->m_ValeurRestriction = '';
+		$this->m_TabRestriction  = array();
 	}
 
 	/**
-	 * @param string $ValeurRestriction
+	 * @param string $Type
+     * @param string $Valeur
 	 * @return $this
 	 */
-	public function setValeurRestriction($ValeurRestriction, $Icon=null)
+	public function addRestrictionSimple($Type, $Valeur)
 	{
-		$this->m_ValeurRestriction = $ValeurRestriction;
-		if (!empty($Icon))
-		{
-			$this->m_IconRestriction = $Icon;
-		}
-		return $this;
+        $this->m_TabRestriction[$Type]=$Valeur;
 	}
 
 	/**
@@ -50,12 +41,18 @@ class ColonneRestriction
 	 * @param $icon
 	 * @return $this
 	 */
-	public function addValeurRestriction($key, $value, $icon=null)
+	public function addRestrictionArray($Type, $key, $value, $icon=null)
 	{
-		$this->m_ValeurRestriction[$key] = $value;
+        if (!isset($this->m_TabRestriction[$Type]))
+        {
+            $this->m_TabRestriction[$Type] = array();
+            $this->m_IconRestriction[$Type] = array();
+        }
+
+		$this->m_TabRestriction[$Type][$key] = $value;
 		if (!empty($icon))
 		{
-			$this->m_IconRestriction[$key] = $icon;
+			$this->m_IconRestriction[$Type][$key] = $icon;
 		}
 		return $this;
 	}
@@ -63,48 +60,39 @@ class ColonneRestriction
 	/**
 	 * @return string|array
 	 */
-	public function getValeurRestriction()
+	public function getIconRestriction($Type)
 	{
-		return $this->m_ValeurRestriction;
-	}
+        if (isset($this->m_IconRestriction[$Type]))
+        {
+            return $this->m_IconRestriction[$Type];
+        }
 
-	/**
-	 * @return string|array
-	 */
-	public function getIconRestriction()
-	{
-		return $this->m_IconRestriction;
-	}
-
-
-	/**
-	 * @param string $sTypeRestriction
-	 * @return $this
-	 */
-	public function setTypeRestriction($sTypeRestriction)
-	{
-		$this->m_sTypeRestriction = $sTypeRestriction;
-
-		return $this;
+		return null;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getTypeRestriction()
+	public function getRestriction($type)
 	{
-		return $this->m_sTypeRestriction;
+        if (isset($this->m_TabRestriction[$type]))
+        {
+            return $this->m_TabRestriction[$type];
+        }
+
+        return null;
 	}
 
     /**
      * @param $type
      * @return bool
      */
-    public function isTypeRestriction($type)
+    public function hasTypeRestriction($type)
     {
-        return $type==$this->m_sTypeRestriction;
+        return isset($this->m_TabRestriction[$type]);
     }
 
 	const R_MAXLENGTH   = 'maxLength';
 	const R_ENUMERATION = 'enumeration';
+    const R_LENGTH      = 'length';
 }

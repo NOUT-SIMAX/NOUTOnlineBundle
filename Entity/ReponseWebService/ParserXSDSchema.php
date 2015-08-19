@@ -217,13 +217,13 @@ class ParserXSDSchema extends Parser
 
 			foreach ($ndSimpleType->children(self::NAMESPACE_XSD) as $ndFils)
 			{
-				$clRestriction->setTypeRestriction($ndFils->getName());
 				switch ($ndFils->getName())
 				{
+                    case ColonneRestriction::R_LENGTH:
 					case ColonneRestriction::R_MAXLENGTH:
-						$clRestriction->setValeurRestriction((int) $ndFils->attributes(self::NAMESPACE_XSD)['value']);
+						$clRestriction->addRestrictionSimple($ndFils->getName(), (int) $ndFils->attributes(self::NAMESPACE_XSD)['value']);
 						break;
-				}
+                }
 			}
 
 			$clStructColonne->setRestriction($clRestriction);
@@ -246,11 +246,10 @@ class ParserXSDSchema extends Parser
 
 			foreach ($ndSimpleType->children(self::NAMESPACE_XSD) as $ndFils)
 			{
-				$clRestriction->setTypeRestriction($ndFils->getName());
 				switch ($ndFils->getName())
 				{
 					case ColonneRestriction::R_ENUMERATION:
-						$clRestriction->addValeurRestriction(
+                        $clRestriction->addRestrictionArray($ndFils->getName(),
 							(string) $ndFils->attributes(self::NAMESPACE_XSD)['id'],
 							(string) $ndFils->attributes(self::NAMESPACE_XSD)['value'],
 							(string) $ndFils->attributes(self::NAMESPACE_NOUT_XSD)['icon']);
