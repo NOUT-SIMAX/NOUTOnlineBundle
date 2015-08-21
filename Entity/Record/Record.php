@@ -288,7 +288,9 @@ class Record
 		foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
 		{
 			if ($this->m_TabColumnsModified[$sIDColonne])
-				$clParamUpdate->UpdateData.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
+            {
+                $clParamUpdate->UpdateData.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
+            }
 		}
 
 		$clParamUpdate->UpdateData.= '</id_'.$sIDForm.'></xml>';
