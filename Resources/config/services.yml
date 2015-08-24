@@ -2,6 +2,13 @@ parameters:
 #    noutnout_online.example.class: NOUT\Bundle\NOUTOnlineBundle\Example
 
 services:
+    #http://symfony.com/fr/doc/current/cookbook/session/locale_sticky_session.html
+    nout_session.locale_listener:
+        class:  NOUT\Bundle\SessionManagerBundle\EventListener\LocaleListener
+        arguments: ['%kernel.default_locale%']
+        tags:
+            - { name: kernel.event_listener }
+
     #http://blog.vandenbrand.org/2012/06/19/symfony2-authentication-provider-authenticate-against-webservice/
     nout_session.user_provider:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Core\User\NOUTOnlineUserProvider
