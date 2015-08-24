@@ -78,6 +78,20 @@ abstract class StructureColonne
 		return $this;
 	}
 
+    /**
+     * pour savoir si fusion de colonne pour le multi-colonne
+     * @return bool
+     */
+    public function bFusionMulticolonne()
+    {
+        if ($this->m_eTypeElement == self::TM_Bouton)
+            return true;
+
+
+
+        return false;
+    }
+
 	public function bEstTypeSimple()
 	{
 		$aTypeSimple = array(
