@@ -82,14 +82,15 @@ abstract class StructureColonne
      * pour savoir si fusion de colonne pour le multi-colonne
      * @return bool
      */
-    public function bFusionMulticolonne()
+    public function eGetFusionTypeMulticolonne()
     {
         if ($this->m_eTypeElement == self::TM_Bouton)
-            return true;
+            return self::FUSIONTYPE_Bouton;
 
+        if ($this->isOption(self::OPTION_Modele_City) || $this->isOption(self::OPTION_Modele_PostalCode))
+            return self::FUSIONTYPE_VilleCP;
 
-
-        return false;
+        return self::FUSIONTYPE_Aucun;
     }
 
 	public function bEstTypeSimple()
@@ -326,4 +327,8 @@ abstract class StructureColonne
 	const OPTION_Modele_WithSecond    = "withSecond";
 	const OPTION_Modele_PositionVideo = "videoPosition";
 	const OPTION_Modele_IDColLinked   = "columnLinked";
+
+    const FUSIONTYPE_Aucun = 0;
+    const FUSIONTYPE_Bouton = 1;
+    const FUSIONTYPE_VilleCP = 2;
 }
