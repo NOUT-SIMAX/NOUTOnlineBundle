@@ -120,7 +120,7 @@ abstract class StructureColonne
             self::TM_Heure,
             self::TM_Reel,
             self::TM_Monetaire,
-            self::TM_TexteLong,
+            self::TM_TexteMultiLigne,
             self::TM_Tableau,
             self::TM_ListeElem,
             self::TM_Combo,
@@ -224,7 +224,7 @@ abstract class StructureColonne
         if (    is_null($this->m_clRestriction)
             || !$this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH))
         {
-            return str_replace(array(':','-'), array('_','_'), self::TM_TexteLong);
+            return str_replace(array(':','-'), array('_','_'), self::TM_TexteMultiLigne);
         }
 
         return str_replace(array(':','-'), array('_','_'), self::TM_Texte);
@@ -243,7 +243,7 @@ abstract class StructureColonne
 	const TM_Reel      = 'xs:float';
 	const TM_Monetaire = 'xs:decimal';
     //n'existe dans le xsd, pour cohérence de code
-    const TM_TexteLong = 'xs:longstring';
+    const TM_TexteMultiLigne = 'xs:multilinestring';
 
 	//type complexe
 	const TM_Tableau    = 'simax-element';
