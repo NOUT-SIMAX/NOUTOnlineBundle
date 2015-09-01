@@ -13,7 +13,7 @@
 				<xs:element xs:name="id_228441939754526" simax:name="Type de champ simple">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element xs:name="id_226947295242069" simax:name="Heure" simax:typeElement="xs:time" simax:printed="1" startTime="1"/>
+							<xs:element xs:name="id_226947295242069" simax:name="Heure" simax:typeElement="xs:time" simax:printed="1" simax:inputMask="23:59:59" startTime="1"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
