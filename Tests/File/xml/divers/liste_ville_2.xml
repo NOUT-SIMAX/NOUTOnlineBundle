@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+    <env:Header>
+        <ReturnType>List</ReturnType>
+        <ConnectedUser>
+            <Form title="Utilisateur">1169</Form>
+            <Element title="superviseur">2</Element>
+        </ConnectedUser>
+        <XSDSchema>
+            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090113425755" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+                <xs:element xs:name="id_9494" simax:name="Liste (Ville)" simax:tableType="list">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element xs:name="id_15910" simax:name="Calculs" simax:typeElement="simax-autoComputed"/>
+                            <xs:element xs:name="id_9489" simax:name="Nom ville" xs:use="required" simax:titled="1" simax:printed="1" simax:link="1" simax:sort="1">
+                                <xs:simpleType>
+                                    <xs:restriction xs:base="xs:string">
+                                        <xs:maxLength xs:value="100"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element xs:name="id_9490" simax:name="Code postal" simax:printed="1" simax:link="1" simax:sort="1" simax:textBoxSize="10" simax:postalCode="1">
+                                <xs:simpleType>
+                                    <xs:restriction xs:base="xs:string">
+                                        <xs:maxLength xs:value="100"/>
+                                        <xs:length xs:value="8"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element xs:name="id_52176367525111" simax:name="Pays" simax:typeElement="simax-element" xs:use="required" simax:printed="1" simax:link="1" simax:linkedTableXml="id_9495" simax:linkedTableID="9495"/>
+                            <xs:element xs:name="id_45957764764076" simax:name="Département" simax:typeElement="simax-element" xs:use="required" simax:printed="1" simax:link="1" simax:linkedTableXml="id_40619030499034" simax:linkedTableID="40619030499034"/>
+                            <xs:element xs:name="id_204736645126176" simax:name="Ref sur Nom" simax:readOnly="1" simax:printed="1" simax:computed="1">
+                                <xs:simpleType>
+                                    <xs:restriction xs:base="xs:string">
+                                        <xs:maxLength xs:value="100"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element simax:typeElement="simax-button" simax:name="Créer" simax:idAction="38522223849894" simax:withValidation="3" simax:actionType="Créer" simax:typeSelection="0"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Consulter" simax:idAction="42731291799974" simax:withValidation="3" simax:actionType="Détail" simax:typeSelection="1"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Modifier" simax:idAction="38539403719078" simax:withValidation="3" simax:actionType="Modifier" simax:typeSelection="1"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="42757061603750" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="42782831407526" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:unique xs:name="0">
+                    <xs:selector xs:xpath="id_9494"/>
+                </xs:unique>
+            </xs:schema>
+        </XSDSchema>
+        <PossibleDisplayMode>List</PossibleDisplayMode>
+        <DefaultDisplayMode>List</DefaultDisplayMode>
+        <ActionContext>27944640231140</ActionContext>
+        <Action title="Liste Ville" typeAction="2388.000000" typeReturn="List">38565173522854</Action>
+        <Form title="Ville" typeForm="2029" checksum="0" sort1="9489" sort1asc="1">9494</Form>
+        <Count>
+            <NbCalculation>3</NbCalculation>
+            <NbLine>35437</NbLine>
+            <NbFiltered>35434</NbFiltered>
+            <NbTotal>35434</NbTotal>
+        </Count>
+    </env:Header>
+    <env:Body>
+        <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090113431124" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+                <id_9494 simax:id="201014228955380" simax:title="69760" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>69760</id_9489>
+                    <id_9490/>
+                    <id_52176367525111/>
+                    <id_45957764764076/>
+                    <id_204736645126176>69760</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="73904206307292" simax:title="Aast" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Aast</id_9489>
+                    <id_9490>64460</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>36925358625931</id_45957764764076>
+                    <id_204736645126176>Aast</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="87347453942869" simax:title="Abainville" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abainville</id_9489>
+                    <id_9490>55130</id_9490>
+                    <id_52176367525111>70790356397240</id_52176367525111>
+                    <id_45957764764076>40906793309293</id_45957764764076>
+                    <id_204736645126176>Abainville</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="77846986284442" simax:title="Abancourt" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abancourt</id_9489>
+                    <id_9490>59265</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>35563853993082</id_45957764764076>
+                    <id_204736645126176>Abancourt</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="78276483014172" simax:title="Abancourt" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abancourt</id_9489>
+                    <id_9490>60220</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>47216100267133</id_45957764764076>
+                    <id_204736645126176>Abancourt</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="86454100745199" simax:title="Abaucourt" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abaucourt</id_9489>
+                    <id_9490>54610</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>42173808661610</id_45957764764076>
+                    <id_204736645126176>Abaucourt</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="79513433592503" simax:title="Abbans-Dessous" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbans-Dessous</id_9489>
+                    <id_9490>25320</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>38510201558026</id_45957764764076>
+                    <id_204736645126176>Abbans-Dessous</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="83920070038199" simax:title="Abbans-Dessus" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbans-Dessus</id_9489>
+                    <id_9490>25440</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>38510201558026</id_45957764764076>
+                    <id_204736645126176>Abbans-Dessus</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="80604355287420" simax:title="Abbaretz" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbaretz</id_9489>
+                    <id_9490>44170</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>44123723813958</id_45957764764076>
+                    <id_204736645126176>Abbaretz</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="78285072948764" simax:title="Abbecourt" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbecourt</id_9489>
+                    <id_9490>60430</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>47216100267133</id_45957764764076>
+                    <id_204736645126176>Abbecourt</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="73826896891508" simax:title="Abbécourt" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbécourt</id_9489>
+                    <id_9490>2300</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>50115203191811</id_45957764764076>
+                    <id_204736645126176>Abbécourt</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="70459642532536" simax:title="Abbenans" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbenans</id_9489>
+                    <id_9490>25340</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>38510201558026</id_45957764764076>
+                    <id_204736645126176>Abbenans</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="81557838030027" simax:title="Abbeville" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbeville</id_9489>
+                    <id_9490>80132</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>46065049031886</id_45957764764076>
+                    <id_204736645126176>Abbeville</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="85157020624791" simax:title="Abbéville-la-Rivière" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbéville-la-Rivière</id_9489>
+                    <id_9490>91150</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>40923973178592</id_45957764764076>
+                    <id_204736645126176>Abbéville-la-Rivière</id_204736645126176>
+                </id_9494>
+                <id_9494 simax:id="72993673239520" simax:title="Abbéville-lès-Conflans" simax:xsdLevel="1">
+                    <id_15910/>
+                    <id_9489>Abbéville-lès-Conflans</id_9489>
+                    <id_9490>54800</id_9490>
+                    <id_52176367525111/>
+                    <id_45957764764076>42173808661610</id_45957764764076>
+                    <id_204736645126176>Abbéville-lès-Conflans</id_204736645126176>
+                </id_9494>
+                <id_40619030499034 simax:id="36925358625931" simax:title="64 Pyrénées-Atlantiques" simax:xsdLevel="2"/>
+                <id_9495 simax:id="70790356397240" simax:title="France" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="40906793309293" simax:title="55 Meuse" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="35563853993082" simax:title="59 Nord" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="47216100267133" simax:title="60 Oise" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="42173808661610" simax:title="54 Meurthe-et-Moselle" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="38510201558026" simax:title="25 Doubs" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="44123723813958" simax:title="44 Loire-Atlantique" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="50115203191811" simax:title="23 Creuse" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="46065049031886" simax:title="80 Somme" simax:xsdLevel="2"/>
+                <id_40619030499034 simax:id="40923973178592" simax:title="91 Essonne" simax:xsdLevel="2"/></xml>
+        </ExecuteResponse>
+    </env:Body>
+</env:Envelope>
