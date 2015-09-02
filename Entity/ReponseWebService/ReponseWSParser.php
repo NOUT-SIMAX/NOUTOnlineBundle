@@ -64,37 +64,34 @@ class ReponseWSParser
 
 	/**
 	 * @param XMLResponseWS $clXMLReponseWS
+     * @return ParserRecordList
 	 */
 	protected function _ParseRecord(XMLResponseWS $clXMLReponseWS)
 	{
-		return $this->__ParseRecordList($clXMLReponseWS, StructureElement::NV_XSD_Enreg);
+        $clParser = new ParserRecordList();
+
+        $ndSchema    = $clXMLReponseWS->getNodeSchema();
+        if (isset($ndSchema))
+        {
+            $clParser->ParseXSD($ndSchema, StructureElement::NV_XSD_Enreg);
+        }
+
+        $ndXML = $clXMLReponseWS->getNodeXML();
+        $clParser->ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID(), StructureElement::NV_XSD_Enreg);
+
+        return $clParser;
 	}
 
 	/**
 	 * @param XMLResponseWS $clXMLReponseWS
+     * @return ParserRecordList
 	 */
 	protected function _ParseList(XMLResponseWS $clXMLReponseWS)
 	{
-		return $this->__ParseRecordList($clXMLReponseWS, StructureElement::NV_XSD_List);
-	}
-
-	/**
-	 * @param XMLResponseWS $clXMLReponseWS
-	 */
-	protected function __ParseRecordList(XMLResponseWS $clXMLReponseWS, $nNiv)
-	{
-		$clParser = new ParserRecordList();
-
-		$ndSchema    = $clXMLReponseWS->getNodeSchema();
-		if (isset($ndSchema))
-		{
-			$clParser->ParseXSD($ndSchema, $nNiv);
-		}
-
-		$ndXML = $clXMLReponseWS->getNodeXML();
-		$clParser->ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID(), $nNiv);
-
-		return $clParser;
+        $clParser = new ParserList();
+        $clParser->ParseList($clXMLReponseWS);
+        $clParser->ParseParam($clXMLReponseWS);
+        return $clParser;
 	}
 
 	/**

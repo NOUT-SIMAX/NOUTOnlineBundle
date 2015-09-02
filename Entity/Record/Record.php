@@ -10,29 +10,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
- * Class Record
+ * Class Record, Description d'un enregistrement
  * @package NOUT\Bundle\NOUTOnlineBundle\Entity
  *
- *
- * classe qui gère un enregistrement NOUT
- * les membres ne commence pas par m_ et ne sont pas préfixé pour le json_encode et json_decode
- *
- * format du json :
- * {
- *      "title": "mini desc du datasource",
- *      "id": 12345,
- *      "columns": [
- *      {
- *          "<id de la colonne>":
- *          {
- *              "value": "valeur de la colonne",
- *              "formatting": { "bold":false, "italic":true, "color": "#ffeeff", "bgcolor": "#ffeeff"},
- *              "fcs": "(hidden|readonly|disabled)",
- *              "file": { "encoding": "base64", "size":1254, "mimtype":"text/javascript", "filename": "test.js"}
- *          },...
- *      }
- *      ]
- * }
  */
 class Record
 {

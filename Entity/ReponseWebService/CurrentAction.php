@@ -30,16 +30,22 @@ class CurrentAction
 	 */
 	protected $m_nTypeAction;
 
+    /**
+     * @var string
+     */
+    protected $m_nIDForm;
+
 	/**
 	 * @param $sID : identifiant de l'action
 	 * @param $sTitle ; libellé de l'action
 	 * @param int $nTypeAction : type de l'action, voir constante ci-dessus
 	 */
-	public function __construct($sID, $sTitle, $nTypeAction)
+	public function __construct(\SimpleXMLElement $clAction)
 	{
-		$this->m_sID         = (string) $sID;
-		$this->m_sTitle      = (string) $sTitle;
-		$this->m_nTypeAction = (int) $nTypeAction;
+		$this->m_sID         = (string) $clAction;
+		$this->m_sTitle      = (string) $clAction['title'];
+		$this->m_nTypeAction = (int) $clAction['typeAction'];
+        $this->m_nIDForm     = (string) $clAction['actionForm'];
 	}
 
 	/**
@@ -58,7 +64,16 @@ class CurrentAction
 		return $this->m_sID;
 	}
 
-	/**
+
+    /**
+     * @return string
+     */
+    public function getIDForm()
+    {
+        return $this->m_nIDForm;
+    }
+
+    /**
 	 * @return string
 	 */
 	public function getTitle()

@@ -52,8 +52,29 @@
         <PossibleDisplayMode>List</PossibleDisplayMode>
         <DefaultDisplayMode>List</DefaultDisplayMode>
         <ActionContext>27944640231140</ActionContext>
-        <Action title="Liste Ville" typeAction="2388.000000" typeReturn="List">38565173522854</Action>
+        <Action title="Liste Ville" typeAction="2388" typeReturn="List" actionForm="8685">38565173522854</Action>
         <Form title="Ville" typeForm="2029" checksum="0" sort1="9489" sort1asc="1">9494</Form>
+        <Filter>
+            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090113431075" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+                <id_8685 simax:id="38565173522854" simax:title="Liste Ville" simax:xsdLevel="0">
+                    <id_46279377427800/>
+                    <id_36985578084127/>
+                </id_8685>
+            </xml>
+            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090113431075" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+                <xs:element xs:name="id_8685" simax:name="Action classique">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element xs:name="id_46279377427800" simax:name="Pays" simax:typeElement="simax-element" simax:linkedTableXml="id_9495" simax:linkedTableID="9495"/>
+                            <xs:element xs:name="id_36985578084127" simax:name="Département" simax:typeElement="simax-element" simax:linkedTableXml="id_40619030499034" simax:linkedTableID="40619030499034"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:unique xs:name="0">
+                    <xs:selector xs:xpath="id_8685"/>
+                </xs:unique>
+            </xs:schema>
+        </Filter>
         <Count>
             <NbCalculation>3</NbCalculation>
             <NbLine>35437</NbLine>

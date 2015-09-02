@@ -197,7 +197,7 @@ class XMLResponseWS
 	{
 		$clAction = $this->m_ndHeader->children()->Action;
 
-		return new CurrentAction($clAction, $clAction['title'], $clAction['typeAction']);
+		return new CurrentAction($clAction);
 	}
 
 	/**
@@ -312,6 +312,21 @@ class XMLResponseWS
 		return $this->m_ndBody->children()[0];
 	}
 
+    /**
+     * récupère le noeud xml des filtres
+     * @return \SimpleXMLElement
+     */
+    public function getNodeXMLParam()
+    {
+        $clNodeFilter = $this->m_ndHeader->children()->Filter;
+        if (isset($clNodeFilter))
+        {
+            return $clNodeFilter->xml;
+        }
+
+        return;
+    }
+
 	/**
 	 * récupère le noeud xml dans la réponse
 	 * @param string $sOperation : operation lancée
@@ -354,6 +369,20 @@ class XMLResponseWS
 		return $clXSDSchema->children('http://www.w3.org/2001/XMLSchema', false)->schema;
 	}
 
+    /**
+     * récupère le noeud schema des filtres
+     * @return \SimpleXMLElement
+     */
+    public function getNodeXSDParam()
+    {
+        $clNodeFilter = $this->m_ndHeader->children()->Filter;
+        if (isset($clNodeFilter))
+        {
+            return $clNodeFilter->children('http://www.w3.org/2001/XMLSchema', false)->schema;
+        }
+
+        return;
+    }
 
 	/**
 	 * @return ValidateError|null
