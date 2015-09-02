@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
     <env:Header>
         <ReturnType>Record</ReturnType>
@@ -6,14 +5,14 @@
             <Form title="Utilisateur">1169</Form>
             <Element title="symfony">29</Element>
         </ConnectedUser>
-        <ActionContext>34709187377275</ActionContext>
+        <ActionContext>22661831827920</ActionContext>
         <Action title="Créer Multi colonne" typeAction="2386.000000" typeReturn="Record">17128383744090358893</Action>
         <XSDSchema>
-            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015081312193932" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090213293971" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
                 <xs:element xs:name="id_36420837490897" simax:name="Multi colonne">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element xs:name="id_221192372373419" simax:name="Texte" simax:printed="1">
+                            <xs:element xs:name="id_215896705369377" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1">
                                 <xs:simpleType>
                                     <xs:restriction xs:base="xs:string">
                                         <xs:maxLength xs:value="100"/>
@@ -23,61 +22,19 @@
                             <xs:element xs:name="id_213955352477677" simax:name="Avant 1er onglet H" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="3" simax:multiColumnWay="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 1" simax:idAction="225031735722183" simax:idButton="212400574332072" simax:typeSelection="0"/>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 2" simax:idAction="225031735722183" simax:idButton="220676976311523" simax:typeSelection="0"/>
-                                        <xs:element xs:name="id_221192372373410" simax:name="Texte 2.1" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element xs:name="id_220698451133828" simax:name="Texte 3.1" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element xs:name="id_215733468940518" simax:name="Texte 1.2" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 1" simax:idAction="225031735722183" simax:icon="55737095426252" simax:idButton="214470748556358" simax:typeSelection="0"/>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 2" simax:idAction="225031735722183" simax:idButton="222944719033667" simax:typeSelection="0"/>
-                                        <xs:element xs:name="id_213796438704442" simax:name="Texte 3.2" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element xs:name="id_212194415903187" simax:name="Texte 1.3" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element xs:name="id_212791416357550" simax:name="Texte 2.3" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 1" simax:idAction="225031735722183" simax:idButton="219302586766804" simax:typeSelection="0"/>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 2" simax:idAction="225031735722183" simax:idButton="223962626295032" simax:typeSelection="0"/>
-                                        <xs:element xs:name="id_226604031178293" simax:name="Texte 1.4" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 1.1 : Btn 1" simax:idAction="225031735722183" simax:idButton="212400574332072" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 1.1 : Btn 2" simax:idAction="225031735722183" simax:idButton="220676976311523" simax:typeSelection="0"/>
+                                        <xs:element xs:name="id_221192372373410" simax:name="Col 2.1 : Date" simax:typeElement="xs:date" simax:printed="1" startDate="1"/>
+                                        <xs:element xs:name="id_220698451133828" simax:name="Col 3.1 : Heure" simax:typeElement="xs:time" simax:printed="1" startTime="1"/>
+                                        <xs:element xs:name="id_215733468940518" simax:name="Col 1.2 : Entier" simax:typeElement="xs:integer" simax:printed="1"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 2.2 Btn 1" simax:idAction="225031735722183" simax:icon="55737095426252" simax:idButton="214470748556358" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 2.2 Btn 2" simax:idAction="225031735722183" simax:idButton="222944719033667" simax:typeSelection="0"/>
+                                        <xs:element xs:name="id_213796438704442" simax:name="Col 3.2 : Date heure" simax:typeElement="xs:dateTime" simax:printed="1"/>
+                                        <xs:element xs:name="id_212194415903187" simax:name="Col 1.3 : Réel" simax:typeElement="xs:float" simax:printed="1" simax:inputMask="+999 999 999 999 999,99"/>
+                                        <xs:element xs:name="id_212791416357550" simax:name="Col 2.3 : Durée" simax:typeElement="simax-duration" simax:printed="1"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 3.3 Btn 1" simax:idAction="225031735722183" simax:idButton="219302586766804" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 3.3 Btn 2" simax:idAction="225031735722183" simax:idButton="223962626295032" simax:typeSelection="0"/>
+                                        <xs:element xs:name="id_226604031178293" simax:name="Col 1.4 : Monétaire" simax:typeElement="xs:decimal" simax:printed="1" simax:inputMask="+999 999 999 999 999,99 €"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -87,61 +44,63 @@
                             <xs:element xs:name="id_224147309878195" simax:name="Avant 1er Onglet V" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="3" simax:multiColumnWay="2">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 1" simax:idAction="225031735722183" simax:idButton="220195939978047" simax:typeSelection="0"/>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 2" simax:idAction="225031735722183" simax:idButton="211704789633907" simax:typeSelection="0"/>
-                                        <xs:element xs:name="id_221235322065708" simax:name="Texte 1.2" simax:printed="1">
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 1.1 : Btn 1" simax:idAction="225031735722183" simax:idButton="220195939978047" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 1.1 : Btn 2" simax:idAction="225031735722183" simax:idButton="211704789633907" simax:typeSelection="0"/>
+                                        <xs:element xs:name="id_221235322065708" simax:name="Col 1.2 : Sexe" simax:typeElement="simax-choice" simax:detail="1" simax:printed="1">
+                                            <xs:simpleType>
+                                                <xs:restriction xs:base="xs:string">
+                                                    <xs:enumeration xs:value="M" xs:id="2384" simax:icon="215603944026026"/>
+                                                    <xs:enumeration xs:value="F" xs:id="2385" simax:icon="217304751075869"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element xs:name="id_216382009021791" simax:name="Col 1.3 : Civilité" simax:typeElement="simax-choice" simax:detail="1" simax:printed="1">
+                                            <xs:simpleType>
+                                                <xs:restriction xs:base="xs:string">
+                                                    <xs:enumeration xs:value="M." xs:id="2377"/>
+                                                    <xs:enumeration xs:value="Mme" xs:id="2376"/>
+                                                    <xs:enumeration xs:value="Melle" xs:id="2375"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element xs:name="id_216193030460989" simax:name="Col 1.4 : Mois" simax:typeElement="simax-choice" simax:printed="1">
+                                            <xs:simpleType>
+                                                <xs:restriction xs:base="xs:string">
+                                                    <xs:enumeration xs:value="Janvier" xs:id="13415"/>
+                                                    <xs:enumeration xs:value="Février" xs:id="13416"/>
+                                                    <xs:enumeration xs:value="Mars" xs:id="13417"/>
+                                                    <xs:enumeration xs:value="Avril" xs:id="13418"/>
+                                                    <xs:enumeration xs:value="Mai" xs:id="13419"/>
+                                                    <xs:enumeration xs:value="Juin" xs:id="13420"/>
+                                                    <xs:enumeration xs:value="Juillet" xs:id="13421"/>
+                                                    <xs:enumeration xs:value="Août" xs:id="13422"/>
+                                                    <xs:enumeration xs:value="Septembre" xs:id="13423"/>
+                                                    <xs:enumeration xs:value="Octobre" xs:id="13424"/>
+                                                    <xs:enumeration xs:value="Novembre" xs:id="13425"/>
+                                                    <xs:enumeration xs:value="Décembre" xs:id="13426"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element xs:name="id_228339197973208" simax:name="Col 2.1 : Vrai/Faux" simax:typeElement="xs:boolean" simax:printed="1"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 2.2 : Btn 3" simax:sentence="Liste Type de champ simple" simax:idButton="220200234946646"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 2.2 : Btn 4" simax:sentence="Liste Type de champ simple" simax:idButton="226552491577500"/>
+                                        <xs:element xs:name="id_222472272647629" simax:name="Col 2.3 : Imprimante" simax:detail="1" simax:printed="1">
                                             <xs:simpleType>
                                                 <xs:restriction xs:base="xs:string">
                                                     <xs:maxLength xs:value="100"/>
                                                 </xs:restriction>
                                             </xs:simpleType>
                                         </xs:element>
-                                        <xs:element xs:name="id_216382009021791" simax:name="Texte 1.3" simax:printed="1">
+                                        <xs:element xs:name="id_221420005659221" simax:name="Col 3.1 : Ville" simax:typeElement="simax-element" simax:printed="1" simax:link="1" simax:City="1" simax:linkedTableXml="id_9494" simax:linkedTableID="9494"/>
+                                        <xs:element xs:name="id_215785008567502" simax:name="Col 3.2 : NOM maj" simax:printed="1" simax:transform="uppercase">
                                             <xs:simpleType>
                                                 <xs:restriction xs:base="xs:string">
                                                     <xs:maxLength xs:value="100"/>
                                                 </xs:restriction>
                                             </xs:simpleType>
                                         </xs:element>
-                                        <xs:element xs:name="id_216193030460989" simax:name="Texte 1.4" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element xs:name="id_228339197973208" simax:name="Texte 2.1" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 3" simax:sentence="Liste Type de champ simple" simax:idButton="220200234946646"/>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 4" simax:sentence="Liste Type de champ simple" simax:idButton="226552491577500"/>
-                                        <xs:element xs:name="id_222472272647629" simax:name="Texte 2.3" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element xs:name="id_221420005659221" simax:name="Texte 3.1" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element xs:name="id_215785008567502" simax:name="Texte 3.2" simax:printed="1">
-                                            <xs:simpleType>
-                                                <xs:restriction xs:base="xs:string">
-                                                    <xs:maxLength xs:value="100"/>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:element>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 5" simax:sentence="Liste Type de champ simple" simax:idButton="225757922627794"/>
-                                        <xs:element simax:typeElement="simax-button" simax:name="Btn 6" simax:sentence="Liste Type de champ simple" simax:idButton="222764330422554"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 3.3 : Btn 5" simax:sentence="Liste Type de champ simple" simax:idButton="225757922627794"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Col 3.3 : Btn 6" simax:sentence="Liste Type de champ simple" simax:idButton="222764330422554"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -154,11 +113,43 @@
                                         <xs:element xs:name="id_212370505374535" simax:name="2 Col Gch=&gt;Drt" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="2" simax:multiColumnWay="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element xs:name="id_214827226677535" simax:name="Vrai/faux 1" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_222025591866382" simax:name="Vrai/faux 2" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_225367076422770" simax:name="Vrai/faux 3" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_212490764469459" simax:name="Vrai/faux 4" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_223528830420316" simax:name="Vrai/faux 5" simax:typeElement="xs:boolean" simax:printed="1"/>
+                                                    <xs:element xs:name="id_214827226677535" simax:name="Col 1.1 : numéro de téléphone" simax:printed="1" simax:phoneNumber="1" simax:textBoxSize="15">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                                <xs:length xs:value="15"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_222025591866382" simax:name="Col 2.1 : numéro de fax" simax:printed="1" simax:textBoxSize="15">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                                <xs:length xs:value="15"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_225367076422770" simax:name="Col 1.2 : IP" simax:printed="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_212490764469459" simax:name="Col 2.2 : IPv6" simax:printed="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_223528830420316" simax:name="Col 1.3 : CB" simax:printed="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -168,16 +159,41 @@
                                         <xs:element xs:name="id_214337600396382" simax:name="2 Col ht=&gt;bas" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="2" simax:multiColumnWay="2">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element xs:name="id_218074221954990" simax:name="Vrai/faux 1" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_225547465050335" simax:name="Vrai/faux 2" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_220926080240230" simax:name="Vrai/faux 3" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_223442931075784" simax:name="Vrai/faux 4" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_214964665633567" simax:name="Vrai/faux 5" simax:typeElement="xs:boolean" simax:printed="1"/>
+                                                    <xs:element xs:name="id_218074221954990" simax:name="Col 1.1 : email" simax:printed="1" simax:transform="url">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_225547465050335" simax:name="Col 1.2 : url" simax:typeElement="xs:string" simax:printed="1" simax:transform="url"/>
+                                                    <xs:element xs:name="id_220926080240230" simax:name="Col 1.3 : site internet" simax:printed="1" simax:transform="url">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_223442931075784" simax:name="Col 2.1 : Num Sécu" simax:detail="1" simax:printed="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_214964665633567" simax:name="Col 2.2 : RIB" simax:printed="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
                                         <xs:unique xs:name="3">
                                             <xs:selector xs:xpath="id_214337600396382"/>
+                                            <xs:field xs:xpath="id_223442931075784"/>
                                         </xs:unique>
                                     </xs:sequence>
                                 </xs:complexType>
@@ -191,11 +207,25 @@
                                         <xs:element xs:name="id_212181526814045" simax:name="3 Col Gch=&gt;drt" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="3" simax:multiColumnWay="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element xs:name="id_218228840780519" simax:name="Vrai/faux 1" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_226024206422881" simax:name="Vrai/faux 2" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_212890196431944" simax:name="Vrai/faux 3" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_221445771285709" simax:name="Vrai/faux 4" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_214333305443602" simax:name="Vrai/faux 5" simax:typeElement="xs:boolean" simax:printed="1"/>
+                                                    <xs:element xs:name="id_218228840780519" simax:name="Col 1.1 : couleur" simax:typeElement="xs:integer" simax:printed="1" simax:transform="colorRGB"/>
+                                                    <xs:element xs:name="id_226024206422881" simax:name="Col 2.1 : latitude" simax:typeElement="xs:float" simax:detail="1" simax:printed="1" simax:inputMask="+999 999 999 999 999,999999"/>
+                                                    <xs:element xs:name="id_212890196431944" simax:name="Col 3.1 : Boite postale" simax:printed="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                                <xs:length xs:value="8"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_221445771285709" simax:name="Col 1.2 : CP" simax:printed="1" simax:textBoxSize="10" simax:postalCode="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                                <xs:length xs:value="8"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_214333305443602" simax:name="Col 2.2 : longitude" simax:typeElement="xs:float" simax:detail="1" simax:printed="1" simax:inputMask="+999 999 999 999 999,999999"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -205,11 +235,11 @@
                                         <xs:element xs:name="id_216059882282733" simax:name="3 Col Ht=&gt;Bas" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:multiColumnMode="3" simax:multiColumnWay="2">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element xs:name="id_225878177535766" simax:name="Vrai/faux 1" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_214371960149857" simax:name="Vrai/faux 2" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_221828023375793" simax:name="Vrai/faux 3" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_224611162183689" simax:name="Vrai/faux 4" simax:typeElement="xs:boolean" simax:printed="1"/>
-                                                    <xs:element xs:name="id_218327625029698" simax:name="Vrai/faux 5" simax:typeElement="xs:boolean" simax:printed="1"/>
+                                                    <xs:element xs:name="id_225878177535766" simax:name="Col 1.1 : Image" simax:typeElement="xs:base64Binary" simax:detail="1" simax:printed="1" simax:typeMime="image"/>
+                                                    <xs:element xs:name="id_214371960149857" simax:name="Col 2.1 : Fichier" simax:typeElement="xs:base64Binary" simax:printed="1"/>
+                                                    <xs:element xs:name="id_221828023375793" simax:name="Col 2.1 : Image (L)" simax:typeElement="xs:string" simax:printed="1" simax:typeMime="image" simax:directory="1"/>
+                                                    <xs:element xs:name="id_224611162183689" simax:name="Col 2.2 : Fichier (L)" simax:typeElement="xs:string" simax:printed="1" simax:directory="1"/>
+                                                    <xs:element xs:name="id_218327625029698" simax:name="Col 3.1 : Signature" simax:typeElement="xs:base64Binary" simax:detail="1" simax:printed="1"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -320,13 +350,6 @@
                                         <xs:element xs:name="id_223885312702501" simax:name="Ville Cp Champ" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="2" simax:icon="40897992019514" simax:multiColumnMode="1" simax:multiColumnWay="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element xs:name="id_38289148270485" simax:name="Libellé" simax:detail="1" simax:readOnly="1" simax:titled="1" simax:printed="1" simax:computed="1">
-                                                        <xs:simpleType>
-                                                            <xs:restriction xs:base="xs:string">
-                                                                <xs:maxLength xs:value="100"/>
-                                                            </xs:restriction>
-                                                        </xs:simpleType>
-                                                    </xs:element>
                                                     <xs:element xs:name="id_50194797609454" simax:name="Cp / ville / chp : sur 3" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="3" simax:icon="49728436464410" simax:multiColumnMode="3" simax:multiColumnWay="1">
                                                         <xs:complexType>
                                                             <xs:sequence>
@@ -352,7 +375,7 @@
                                                     <xs:unique xs:name="14">
                                                         <xs:selector xs:xpath="id_50194797609454"/>
                                                     </xs:unique>
-                                                    <xs:element xs:name="id_40720099759321" simax:name="Cp / ville / chp : sur 3 bis" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="3" simax:icon="42581611009161" simax:multiColumnMode="3" simax:multiColumnWay="1">
+                                                    <xs:element xs:name="id_40720099759321" simax:name="Cp / ville / chp : sur 3" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="3" simax:icon="42581611009161" simax:multiColumnMode="3" simax:multiColumnWay="1">
                                                         <xs:complexType>
                                                             <xs:sequence>
                                                                 <xs:element xs:name="id_49456063239630" simax:name="CP" simax:detail="1" simax:readOnly="1" simax:printed="1" simax:computed="1" simax:textBoxSize="10" simax:postalCode="1">
@@ -371,8 +394,6 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
-                                                                <xs:element xs:name="id_217597480580899" simax:name="Ville" simax:typeElement="simax-element" simax:detail="1" simax:readOnly="1" simax:printed="1" simax:computed="1" simax:withoutCreate="1" simax:City="1" simax:linkedTableXml="id_9494" simax:linkedTableID="9494"/>
-
                                                             </xs:sequence>
                                                         </xs:complexType>
                                                     </xs:element>
@@ -398,39 +419,40 @@
                 </xs:element>
                 <xs:unique xs:name="18">
                     <xs:selector xs:xpath="id_36420837490897"/>
+                    <xs:field xs:xpath="id_215896705369377"/>
                 </xs:unique>
             </xs:schema>
         </XSDSchema>
         <Form title="Multi colonne">36420837490897</Form>
-        <Element title="Multi colonne">34717777311867</Element>
+        <Element title="MC0003">22670421762512</Element>
     </env:Header>
     <env:Body>
         <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
-            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015081312202390" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
-                <id_36420837490897 simax:id="34717777311867" simax:title="Multi colonne" simax:xsdLevel="0">
-                    <id_221192372373419></id_221192372373419>
+            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090213310977" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+                <id_36420837490897 simax:id="22670421762512" simax:title="MC0003" simax:xsdLevel="0">
+                    <id_215896705369377 simax:readOnly="1">MC0003</id_215896705369377>
                     <id_213955352477677>
                         <id_212400574332072/>
                         <id_220676976311523/>
-                        <id_221192372373410/>
-                        <id_220698451133828/>
-                        <id_215733468940518/>
+                        <id_221192372373410>20150902</id_221192372373410>
+                        <id_220698451133828>153100</id_220698451133828>
+                        <id_215733468940518>0</id_215733468940518>
                         <id_214470748556358/>
                         <id_222944719033667/>
-                        <id_213796438704442/>
-                        <id_212194415903187/>
-                        <id_212791416357550/>
+                        <id_213796438704442>20150902153100</id_213796438704442>
+                        <id_212194415903187>0.00</id_212194415903187>
+                        <id_212791416357550>0:00:00:00</id_212791416357550>
                         <id_219302586766804/>
                         <id_223962626295032/>
-                        <id_226604031178293/>
+                        <id_226604031178293>0.00</id_226604031178293>
                     </id_213955352477677>
                     <id_224147309878195>
                         <id_220195939978047/>
                         <id_211704789633907/>
-                        <id_221235322065708/>
-                        <id_216382009021791/>
-                        <id_216193030460989/>
-                        <id_228339197973208/>
+                        <id_221235322065708>2384</id_221235322065708>
+                        <id_216382009021791>2377</id_216382009021791>
+                        <id_216193030460989>13415</id_216193030460989>
+                        <id_228339197973208>0</id_228339197973208>
                         <id_220200234946646/>
                         <id_226552491577500/>
                         <id_222472272647629/>
@@ -441,34 +463,34 @@
                     </id_224147309878195>
                     <id_226732876011095>
                         <id_212370505374535>
-                            <id_214827226677535>0</id_214827226677535>
-                            <id_222025591866382>0</id_222025591866382>
-                            <id_225367076422770>0</id_225367076422770>
-                            <id_212490764469459>0</id_212490764469459>
-                            <id_223528830420316>0</id_223528830420316>
+                            <id_214827226677535/>
+                            <id_222025591866382/>
+                            <id_225367076422770/>
+                            <id_212490764469459/>
+                            <id_223528830420316/>
                         </id_212370505374535>
                         <id_214337600396382>
-                            <id_218074221954990>0</id_218074221954990>
-                            <id_225547465050335>0</id_225547465050335>
-                            <id_220926080240230>0</id_220926080240230>
-                            <id_223442931075784>0</id_223442931075784>
-                            <id_214964665633567>0</id_214964665633567>
+                            <id_218074221954990/>
+                            <id_225547465050335/>
+                            <id_220926080240230/>
+                            <id_223442931075784/>
+                            <id_214964665633567/>
                         </id_214337600396382>
                     </id_226732876011095>
                     <id_214715557517691>
                         <id_212181526814045>
-                            <id_218228840780519>0</id_218228840780519>
-                            <id_226024206422881>0</id_226024206422881>
-                            <id_212890196431944>0</id_212890196431944>
-                            <id_221445771285709>0</id_221445771285709>
-                            <id_214333305443602>0</id_214333305443602>
+                            <id_218228840780519>000000</id_218228840780519>
+                            <id_226024206422881>0.000000</id_226024206422881>
+                            <id_212890196431944/>
+                            <id_221445771285709/>
+                            <id_214333305443602>0.000000</id_214333305443602>
                         </id_212181526814045>
                         <id_216059882282733>
-                            <id_225878177535766>0</id_225878177535766>
-                            <id_214371960149857>0</id_214371960149857>
-                            <id_221828023375793>0</id_221828023375793>
-                            <id_224611162183689>0</id_224611162183689>
-                            <id_218327625029698>0</id_218327625029698>
+                            <id_225878177535766/>
+                            <id_214371960149857/>
+                            <id_221828023375793/>
+                            <id_224611162183689/>
+                            <id_218327625029698/>
                         </id_216059882282733>
                     </id_214715557517691>
                     <id_223829478119964>
@@ -510,7 +532,6 @@
                         <id_40866128643112/>
                         <id_52466835310017/>
                         <id_223885312702501>
-                            <id_38289148270485></id_38289148270485>
                             <id_50194797609454>
                                 <id_225156623021753 simax:readOnly="1"/>
                                 <id_217597480580898 simax:readOnly="1"/>
@@ -520,7 +541,6 @@
                                 <id_49456063239630 simax:readOnly="1"/>
                                 <id_51981504009963 simax:readOnly="1"/>
                                 <id_38289148270484 simax:readOnly="1"/>
-                                <id_217597480580899></id_217597480580899>
                             </id_40720099759321>
                         </id_223885312702501>
                     </id_225113673346496>
