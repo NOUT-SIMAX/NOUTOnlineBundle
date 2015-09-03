@@ -90,4 +90,11 @@ class RecordList
         return $this->m_sTitle;
     }
 
+    /**
+     * @return StructureElement
+     */
+    public function getStructElem()
+    {
+        return $this->m_clStructElem;
+    }
 }
