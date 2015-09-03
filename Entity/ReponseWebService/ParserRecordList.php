@@ -18,7 +18,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 class ParserRecordList extends Parser
 {
 	/**
-	 * @var null
+	 * @var ParserXSDSchema
 	 */
 	protected $m_clParserXSD=null;
 
@@ -45,24 +45,34 @@ class ParserRecordList extends Parser
 	protected $m_clXML;
 
 	/**
-	 * @param Form $clForm
-	 * @param Element $clElement
+	 * @param XMLResponseWS $clResponseXML
 	 * @return null|Record
 	 */
-	public function getRecord(Form $clForm, Element $clElement)
+	public function getRecord(XMLResponseWS $clResponseXML)
 	{
-		return $this->m_clRecordCache->getRecord($clForm->getID(), $clElement->getID());
+		return $this->m_clRecordCache->getRecord($clResponseXML->clGetForm()->getID(), $clResponseXML->clGetElement()->getID());
 	}
 
-	/**
-	 * @param $sIDForm
-	 * @param $sIDEreng
-	 * @return null|Record
-	 */
-	public function getRecordFromID($sIDForm, $sIDEnreg)
-	{
-		return $this->m_clRecordCache->getRecord($sIDForm, $sIDEnreg);
-	}
+    /**
+     * @param $sIDForm
+     * @param $sIDEreng
+     * @return null|Record
+     */
+    public function getRecordFromID($sIDForm, $sIDEnreg)
+    {
+        return $this->m_clRecordCache->getRecord($sIDForm, $sIDEnreg);
+    }
+
+    public function getStructureElem($sIDForm, $nNiv)
+    {
+        if (is_null($this->m_clParserXSD))
+        {
+            return ;
+        }
+
+        return $this->m_clParserXSD->clGetStructureElement($sIDForm, $nNiv);
+    }
+
 
 	/**
 	 * @param $form

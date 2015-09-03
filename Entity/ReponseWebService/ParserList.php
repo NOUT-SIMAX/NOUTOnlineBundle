@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 
 class ParserList extends Parser
@@ -60,6 +61,25 @@ class ParserList extends Parser
 
         $ndXML = $clReponseXML->getNodeXMLParam();
         $this->m_clParserParam->ParseXML($ndXML, $clReponseXML->clGetAction()->getIDForm(), StructureElement::NV_XSD_Enreg);
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @return RecordList
+     */
+    public function getList(XMLResponseWS $clReponseXML)
+    {
+        $sIDForm = $clReponseXML->clGetForm()->getID();
+        $sIDFormAction = $clReponseXML->clGetAction()->getIDForm();
+        $sIDAction = $clReponseXML->clGetAction()->getID();
+        $sTitre = $clReponseXML->clGetAction()->getTitle();
+
+        $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
+
+        $clList = new RecordList($sTitre, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
+        $clList->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));
+
+        return $clList;
     }
 
 }
