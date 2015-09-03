@@ -22,6 +22,11 @@ class RecordList
     protected $m_sTitle;
 
     /**
+     * @var string $m_sIDAction : identifiant de l'action
+     */
+    protected $m_sIDAction;
+
+    /**
      * @var Record $m_clRecordParam : contient l'enregistrement qui correspond à la fiche
      */
     protected $m_clRecordParam;
@@ -43,17 +48,46 @@ class RecordList
     protected $m_TabEnregTableau;
 
 
-    public function __construct($sTitle, $sIDForm, $TabIDEnreg, StructureElement $clStructElem=null)
+    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, StructureElement $clStructElem=null)
     {
         $this->m_sTitle = $sTitle;
+        $this->m_sIDAction = $sIDAction;
         $this->m_nIDTableau = $sIDForm;
         $this->m_clStructElem = $clStructElem;
         $this->m_TabEnregTableau = $TabIDEnreg;
     }
 
+    /**
+     * @param Record $clRecordParam
+     * @return this
+     */
     public function setParam(Record $clRecordParam=null)
     {
         $this->m_clRecordParam = $clRecordParam;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIDAction()
+    {
+        return $this->m_sIDAction;
+    }
+    /**
+     * @return Record
+     */
+    public function getRecordParam()
+    {
+        return $this->m_clRecordParam;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->m_sTitle;
     }
 
 }

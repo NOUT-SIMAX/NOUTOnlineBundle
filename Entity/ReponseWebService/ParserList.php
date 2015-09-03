@@ -76,7 +76,7 @@ class ParserList extends Parser
 
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
-        $clList = new RecordList($sTitre, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
         $clList->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));
 
         return $clList;
