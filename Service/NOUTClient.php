@@ -628,7 +628,7 @@ class NOUTClient
 				$clResponseParser = new ReponseWSParser();
 				$clParser=$clResponseParser->InitFromXmlXsd($clReponseXML);
 
-				$clActionResult->setData($clParser->getRecord($clReponseXML->clGetForm(), $clReponseXML->clGetElement()));
+				$clActionResult->setData($clParser->getRecord($clReponseXML));
 				$clActionResult->setValidateError($clReponseXML->getValidateError());
 				break;
 			}
