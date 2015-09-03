@@ -68,18 +68,19 @@ class RecordList
     }
 
     /**
+     * @return Record
+     */
+    public function getParameters()
+    {
+        return $this->m_clRecordParam;
+    }
+
+    /**
      * @return string
      */
     public function getIDAction()
     {
         return $this->m_sIDAction;
-    }
-    /**
-     * @return Record
-     */
-    public function getRecordParam()
-    {
-        return $this->m_clRecordParam;
     }
 
     /**
