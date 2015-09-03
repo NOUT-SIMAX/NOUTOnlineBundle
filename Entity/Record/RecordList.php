@@ -59,7 +59,7 @@ class RecordList
 
     /**
      * @param Record $clRecordParam
-     * @return this
+     * @return $this
      */
     public function setParam(Record $clRecordParam=null)
     {
