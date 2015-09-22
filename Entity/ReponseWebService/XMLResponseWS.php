@@ -371,17 +371,15 @@ class XMLResponseWS
 
     /**
      * récupère le noeud schema des filtres
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|null
      */
     public function getNodeXSDParam()
     {
         $clNodeFilter = $this->m_ndHeader->children()->Filter;
-        if (isset($clNodeFilter))
+        if ($clNodeFilter->count()>0)
         {
             return $clNodeFilter->children('http://www.w3.org/2001/XMLSchema', false)->schema;
         }
-
-        return;
     }
 
 	/**
@@ -390,12 +388,11 @@ class XMLResponseWS
 	public function getValidateError()
 	{
 		$clValidateError = $this->m_ndHeader->children()->ValidateError;
-		if (empty($clValidateError))
+		if ($clValidateError->count()>0)
 		{
-			return null;
+            return new ValidateError($clValidateError);
 		}
 
-		return new ValidateError($clValidateError);
 	}
 
 
