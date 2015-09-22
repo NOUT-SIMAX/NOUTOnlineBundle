@@ -30,6 +30,23 @@ class ParserList extends Parser
         $this->m_clParserParam = new ParserRecordList();
     }
 
+    /**
+     * @return array|\NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray
+     */
+    public function GetTabEnregTableau()
+    {
+        return $this->m_clParserList->GetTabEnregTableau();
+    }
+
+    /**
+     * @param $sIDForm
+     * @param $sIDEnreg
+     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record|null
+     */
+    public function getRecordFromID($sIDForm, $sIDEnreg)
+    {
+        return $this->m_clParserList->getRecordFromID($sIDForm, $sIDEnreg);
+    }
 
     /**
      * Parse la liste
@@ -54,13 +71,16 @@ class ParserList extends Parser
     public function ParseParam(XMLResponseWS $clReponseXML)
     {
         $ndSchema    = $clReponseXML->getNodeXSDParam();
-        if (isset($ndSchema))
+        if (!is_null($ndSchema) && $ndSchema->count()>0)
         {
             $this->m_clParserParam->ParseXSD($ndSchema, StructureElement::NV_XSD_Enreg);
         }
 
         $ndXML = $clReponseXML->getNodeXMLParam();
-        $this->m_clParserParam->ParseXML($ndXML, $clReponseXML->clGetAction()->getIDForm(), StructureElement::NV_XSD_Enreg);
+        if (!is_null($ndXML) && $ndXML->count()>0)
+        {
+            $this->m_clParserParam->ParseXML($ndXML, $clReponseXML->clGetAction()->getIDForm(), StructureElement::NV_XSD_Enreg);
+        }
     }
 
     /**
