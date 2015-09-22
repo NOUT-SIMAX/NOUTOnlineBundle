@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+
     <env:Header>
         <ReturnType>List</ReturnType>
         <ConnectedUser>
@@ -11,14 +12,17 @@
                 <xs:element xs:name="id_9494" simax:name="Liste (Ville)" simax:tableType="list">
                     <xs:complexType>
                         <xs:sequence>
+						
                             <xs:element xs:name="id_15910" simax:name="Calculs" simax:typeElement="simax-autoComputed"/>
+							
                             <xs:element xs:name="id_9489" simax:name="Nom ville" xs:use="required" simax:titled="1" simax:printed="1" simax:link="1" simax:sort="1">
-                                <xs:simpleType>
-                                    <xs:restriction xs:base="xs:string">
-                                        <xs:maxLength xs:value="100"/>
-                                    </xs:restriction>
+								<xs:simpleType>
+									<xs:restriction xs:base="xs:string">
+										<xs:maxLength xs:value="100"/>
+									</xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
+							
                             <xs:element xs:name="id_9490" simax:name="Code postal" simax:printed="1" simax:link="1" simax:sort="1" simax:textBoxSize="10" simax:postalCode="1">
                                 <xs:simpleType>
                                     <xs:restriction xs:base="xs:string">
@@ -27,8 +31,11 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
+							
                             <xs:element xs:name="id_52176367525111" simax:name="Pays" simax:typeElement="simax-element" xs:use="required" simax:printed="1" simax:link="1" simax:linkedTableXml="id_9495" simax:linkedTableID="9495"/>
+							
                             <xs:element xs:name="id_45957764764076" simax:name="Département" simax:typeElement="simax-element" xs:use="required" simax:printed="1" simax:link="1" simax:linkedTableXml="id_40619030499034" simax:linkedTableID="40619030499034"/>
+							
                             <xs:element xs:name="id_204736645126176" simax:name="Ref sur Nom" simax:readOnly="1" simax:printed="1" simax:computed="1">
                                 <xs:simpleType>
                                     <xs:restriction xs:base="xs:string">
@@ -36,6 +43,7 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
+							
                             <xs:element simax:typeElement="simax-button" simax:name="Créer" simax:idAction="38522223849894" simax:withValidation="3" simax:actionType="Créer" simax:typeSelection="0"/>
                             <xs:element simax:typeElement="simax-button" simax:name="Consulter" simax:idAction="42731291799974" simax:withValidation="3" simax:actionType="Détail" simax:typeSelection="1"/>
                             <xs:element simax:typeElement="simax-button" simax:name="Modifier" simax:idAction="38539403719078" simax:withValidation="3" simax:actionType="Modifier" simax:typeSelection="1"/>
@@ -82,11 +90,13 @@
             <NbTotal>35434</NbTotal>
         </Count>
     </env:Header>
+
     <env:Body>
         <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
             <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090113431075" xmlns:simax="http://www.nout.fr/XML/"/>
         </ExecuteResponse>
     </env:Body>
+    
 </env:Envelope>
 
 

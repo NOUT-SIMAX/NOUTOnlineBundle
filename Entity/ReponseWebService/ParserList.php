@@ -65,19 +65,23 @@ class ParserList extends Parser
     }
 
     /**
-     * Parse la liste
+     * Parse les paramètres
      * @param XMLResponseWS $clReponseXML
      */
     public function ParseParam(XMLResponseWS $clReponseXML)
     {
         $ndSchema    = $clReponseXML->getNodeXSDParam();
-        if (!is_null($ndSchema) && $ndSchema->count()>0)
+
+        // Ne pas utiliser isSet
+        if (!is_null($ndSchema))
         {
             $this->m_clParserParam->ParseXSD($ndSchema, StructureElement::NV_XSD_Enreg);
         }
 
         $ndXML = $clReponseXML->getNodeXMLParam();
-        if (!is_null($ndXML) && $ndXML->count()>0)
+
+        // Ne pas utiliser isSet
+        if (!is_null($ndXML))
         {
             $this->m_clParserParam->ParseXML($ndXML, $clReponseXML->clGetAction()->getIDForm(), StructureElement::NV_XSD_Enreg);
         }
@@ -89,15 +93,46 @@ class ParserList extends Parser
      */
     public function getList(XMLResponseWS $clReponseXML)
     {
+        // Appel depuis le testController
+        // GetRecord sur non-objet = ERREUR
+
         $sIDForm = $clReponseXML->clGetForm()->getID();
         $sIDFormAction = $clReponseXML->clGetAction()->getIDForm();
         $sIDAction = $clReponseXML->clGetAction()->getID();
         $sTitre = $clReponseXML->clGetAction()->getTitle();
 
+
+        // Contrôle des variables OK
+//        dump($sIDForm);
+//        dump($sIDFormAction);
+//        dump($sIDAction);
+//        dump($sTitre);
+
+
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
+
+        // Instance d'une nouvelle clList avec toutes les données précédentes
         $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
+
+        // Paramètres pour la clList
         $clList->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));
+
+        // TODO
+
+
+        // Instance de ParserRecordList->getRecord()
+        // Faire un getter du RecordCache du parserRecordList (get(get())
+        // $this->m_clParserParam->
+
+        // Deux méthodes dans ParserRecordList
+        // GetFullCache et GetRecord
+        // $this->m_clParserList est un ParserRecordList
+
+
+        // Données pour la clList
+        //// Il faut donner le cache en paramètre
+        $clList->setRecordCache($this->m_clParserList->getFullCache());
 
         return $clList;
     }
