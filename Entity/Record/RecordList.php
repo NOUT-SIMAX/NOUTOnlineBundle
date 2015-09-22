@@ -32,6 +32,11 @@ class RecordList
     protected $m_clRecordParam;
 
     /**
+     * @var RecordCache $m_clRecordCache : Contient les données de la fiche
+     */
+    protected $m_clRecordCache;
+
+    /**
      * @var string $m_nIDTableau : identifiant du formulaire
      */
     protected $m_nIDTableau;
@@ -43,7 +48,7 @@ class RecordList
 
     /**
      * @var array;
-     * tableau qui contient l'ordre des enregistrements avec conservation de l'ordre de la réponse
+     * tableau qui contient les identifiants des enregistrements avec conservation de l'ordre de la réponse
      */
     protected $m_TabEnregTableau;
 
@@ -64,6 +69,16 @@ class RecordList
     public function setParam(Record $clRecordParam=null)
     {
         $this->m_clRecordParam = $clRecordParam;
+        return $this;
+    }
+
+    /**
+     * @param $clRecordCache
+     * @return $this
+     */
+    public function setRecordCache($clRecordCache=null)
+    {
+        $this->m_clRecordCache = $clRecordCache;
         return $this;
     }
 
@@ -98,4 +113,21 @@ class RecordList
     {
         return $this->m_clStructElem;
     }
+
+    /**
+     * @return RecordCache
+     */
+    public function getRecordCache()
+    {
+        return $this->m_clRecordCache;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTabIDEnreg()
+    {
+        return $this->m_TabEnregTableau;
+    }
+
 }

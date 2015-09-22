@@ -17,6 +17,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 
 class ParserRecordList extends Parser
 {
+
 	/**
 	 * @var ParserXSDSchema
 	 */
@@ -44,6 +45,13 @@ class ParserRecordList extends Parser
 	 */
 	protected $m_clXML;
 
+
+	public function __construct()
+	{
+		$this->m_clRecordCache = new RecordCache();
+		$this->m_TabEnregTableau = new EnregTableauArray();
+	}
+
 	/**
 	 * @param XMLResponseWS $clResponseXML
 	 * @return null|Record
@@ -53,6 +61,14 @@ class ParserRecordList extends Parser
 		return $this->m_clRecordCache->getRecord($clResponseXML->clGetForm()->getID(), $clResponseXML->clGetElement()->getID());
 	}
 
+	/**
+	 * @return RecordCache
+	 */
+	public function getFullCache()
+	{
+		return $this->m_clRecordCache;
+	}
+
     /**
      * @param $sIDForm
      * @param $sIDEreng
@@ -60,17 +76,24 @@ class ParserRecordList extends Parser
      */
     public function getRecordFromID($sIDForm, $sIDEnreg)
     {
-        return $this->m_clRecordCache->getRecord($sIDForm, $sIDEnreg);
+		if(!is_null($this->m_clRecordCache))
+		{
+			return $this->m_clRecordCache->getRecord($sIDForm, $sIDEnreg);
+		}
+
     }
 
+	/**
+	 * @param $sIDForm
+	 * @param $nNiv
+	 * @return null|StructureElement
+	 */
     public function getStructureElem($sIDForm, $nNiv)
     {
-        if (is_null($this->m_clParserXSD))
+        if (!is_null($this->m_clParserXSD))
         {
-            return ;
+			return $this->m_clParserXSD->clGetStructureElement($sIDForm, $nNiv);
         }
-
-        return $this->m_clParserXSD->clGetStructureElement($sIDForm, $nNiv);
     }
 
 
@@ -141,8 +164,7 @@ class ParserRecordList extends Parser
 	public function ParseXML(\SimpleXMLElement $ndXML, $sIDForm, $nNiv)
 	{
 		$this->m_clXML = new \SimpleXMLElement($ndXML->asXML());
-		$this->m_clRecordCache = new RecordCache();
-		$this->m_TabEnregTableau = new EnregTableauArray();
+
 
 		//on commence par parser les balises data s'il y en a
 		$this->m_MapRef2Data = array();

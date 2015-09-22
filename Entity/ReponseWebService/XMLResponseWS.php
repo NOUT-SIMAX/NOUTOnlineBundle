@@ -375,9 +375,15 @@ class XMLResponseWS
      */
     public function getNodeXSDParam()
     {
-        $clNodeFilter = $this->m_ndHeader->children()->Filter;
-        if (isset($clNodeFilter))
+		// Provoque l'erreur "Node no longer exists" avec ajax_ville
+		$clNodeFilter = $this->m_ndHeader->children()->Filter;
+
+        if (isset($clNodeFilter) && ($clNodeFilter->count()>0))
         {
+			dump($clNodeFilter);
+
+			// Erreur : "Node no longer exists" alors que dans le isSet
+			// Données mal parsées ?
             return $clNodeFilter->children('http://www.w3.org/2001/XMLSchema', false)->schema;
         }
 

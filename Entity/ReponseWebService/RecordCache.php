@@ -68,10 +68,12 @@ class RecordCache
 	public function getRecord($sIDForm, $sIDEnreg)
 	{
 		$sKey2Record = $sIDForm.'/'.$sIDEnreg;
+
 		if (!isset($this->m_MapIDTableauIDEnreg2Record[$sKey2Record]))
 		{
 			return null;
 		}
+
 		return $this->m_MapIDTableauIDEnreg2Record[$sKey2Record];
 	}
 

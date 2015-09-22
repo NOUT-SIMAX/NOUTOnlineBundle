@@ -47,6 +47,7 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_PLANNING        => '_ParsePlanning',
 			XMLResponseWS::RETURNTYPE_CHART           => '_ParseChart',
 		);
+		// Tableau de pointeur de méthodes
 
 		$sReturnType = $clXMLReponseWS->sGetReturnType();
 		if (!array_key_exists($sReturnType, $aPtrFct))
@@ -59,7 +60,11 @@ class ReponseWSParser
 			return null;
 		}
 
+		// Appel des fonctions à la volée grâce au tableau de méthodes
 		return $this->$aPtrFct[$sReturnType]($clXMLReponseWS);
+
+		// Dans le bug c'est _ParseList qui est renvoyé
+		// Le type de paramètre était donc RETURNTYPE_LIST (liste de villes)
 	}
 
 	/**
@@ -88,9 +93,17 @@ class ReponseWSParser
 	 */
 	protected function _ParseList(XMLResponseWS $clXMLReponseWS)
 	{
+		// Cette méthode est appelée par InitFromXmlXsd
+
+		// Création d'un Parser de liste
         $clParser = new ParserList();
+
+		// Parser la liste
         $clParser->ParseList($clXMLReponseWS);
+
+		// Parser les paramètres
         $clParser->ParseParam($clXMLReponseWS);
+
         return $clParser;
 	}
 
