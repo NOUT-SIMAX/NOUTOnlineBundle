@@ -12,7 +12,7 @@ namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
@@ -27,9 +27,11 @@ class MenuLoader
 	{
 		$clResponseParserOption = new ReponseWSParser();
 		$clParserOption = $clResponseParserOption->InitFromXmlXsd($clReponseOptionMenu);
+        /** @var ParserList $clParserOption */
 
 		$clResponseParserMenu = new ReponseWSParser();
 		$clParserMenu = $clResponseParserMenu->InitFromXmlXsd($clReponseMenu);
+        /** @var ParserList $clParserMenu */
 
 		//on récupère tous les id des options de menu et des menus depuis les différentes réponses
 		$aTabIDEnregOptionMenu = $clParserOption->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_OptionMenuPourTous);
@@ -50,13 +52,15 @@ class MenuLoader
 	}
 
 	/**
-	 * @param ReponseWSParser $clParserOption
-	 * @param ReponseWSParser $clParserMenu
+	 * @param ParserList $clParserOption
+	 * @param ParserList $clParserMenu
 	 * @param $sIDMenu
+     * @param array $aTabIDEnregMenu
 	 * @param array $aTabIDEnregOptionMenu
+     * @param bool $bUniquementRacine
 	 * @return Menu
 	 */
-	static protected function _s_aGetMenu(ParserRecordList $clParserOption, ParserRecordList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, $bUniquementRacine)
+	static protected function _s_aGetMenu(ParserList $clParserOption, ParserList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, $bUniquementRacine)
 	{
 		$clRecordMenu = $clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
 
