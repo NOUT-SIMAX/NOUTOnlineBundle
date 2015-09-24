@@ -156,6 +156,7 @@ class Record
 	}
 
 	/**
+     * retourne la valeur stockée
 	 * @param $idColonne
 	 * @return mixed
 	 */
@@ -168,6 +169,52 @@ class Record
 
 		return $this->m_TabColumnsValues[$idColonne];
 	}
+
+
+
+    /**
+     * retourne la valeur affichée
+     * @param $idColonne
+     * @return mixed
+     */
+    public function getDisplayValCol($idColonne)
+    {
+        if (!isset($this->m_TabColumnsValues[$idColonne]))
+        {
+            return;
+        }
+
+        $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
+
+        switch($clStructureColonne->getTypeElement())
+        {
+        case StructureColonne::TM_Tableau:
+        {
+            $valStockee = $this->m_TabColumnsValues[$idColonne];
+            if (empty($valStockee) || ($valStockee=='0'))
+            {
+                return '';
+            }
+            $sCle = $clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID).'/'.$valStockee;
+            if (!isset($this->m_TabRecordLie[$sCle]) || is_null($this->m_TabRecordLie[$sCle]))
+            {
+                return "#{$valStockee}#";
+            }
+
+            $clRecordLie = $this->m_TabRecordLie[$sCle];
+            /** @var Record $clRecordLie */
+            return $clRecordLie->getTitle();
+
+
+        }
+        default:
+        {
+            return $this->m_TabColumnsValues[$idColonne];
+        }
+        }
+
+    }
+
 
     /**
      * @param $idColonne
