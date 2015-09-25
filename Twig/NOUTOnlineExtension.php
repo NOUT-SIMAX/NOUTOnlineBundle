@@ -13,10 +13,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
- * This class contains the needed functions in order to do the query highlighting
- *
- * @author Florin Patan <florinpatan@gmail.com>
- * @author Christophe Coevoet <stof@notk.org>
+ * This class contains the needed functions
+ * - in order to do the query highlighting
+ * - get the version and state of noutonline
  */
 class NOUTOnlineExtension extends \Twig_Extension
 {

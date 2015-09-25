@@ -9,10 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Twig;
 
 /**
- * This class contains the needed functions in order to do the query highlighting
- *
- * @author Florin Patan <florinpatan@gmail.com>
- * @author Christophe Coevoet <stof@notk.org>
+ * This class contains tools functions
  */
 class ToolsExtension extends \Twig_Extension
 {

@@ -40,6 +40,7 @@ services:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
         arguments:  [@nout_online.client_information, @nout_online.logger, @nout_online.cache]
 
+    #les extension twigs
     nout_online.twig.nout_online_extension:
         class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension
         arguments:
