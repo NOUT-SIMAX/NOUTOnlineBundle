@@ -37,7 +37,7 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
-                            <xs:element xs:name="id_223455768846395" simax:name="Ville" simax:typeElement="simax-element" simax:printed="1" simax:link="1" simax:City="1" simax:linkedTableXml="id_9494" simax:linkedTableID="9494"/>
+                            <xs:element xs:name="id_223455768846395" simax:name="Ville" simax:typeElement="simax-element" simax:printed="1" simax:City="1" simax:linkedTableXml="id_9494" simax:linkedTableID="9494"/>
                             <xs:element xs:name="id_225315531043357" simax:name="Type de champ Element 11" simax:typeElement="simax-element" simax:printed="1" simax:link="1" simax:linkedTableXml="id_216665466904904" simax:linkedTableID="216665466904904" simax:withModifyAndRemove="1"/>
                             <xs:element xs:name="id_225723590535171" simax:name="Mois" simax:typeElement="simax-choice" simax:printed="1">
                                 <xs:simpleType>
