@@ -318,7 +318,7 @@ class ParserRecordList extends Parser
 				}
 				if (!empty($aRecordLie))
 				{
-					$clRecord->addTabRecordLie($aRecordLie);
+					$clRecord->addTabRecordLie($nNiv+1, $aRecordLie);
 				}
 				$clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false); //false car pas modifier par l'utilisateur ici
 				break;
@@ -336,7 +336,7 @@ class ParserRecordList extends Parser
 
 				if (!is_null($clRecordLie))
 				{
-					$clRecord->addRecordLie($clRecordLie);
+					$clRecord->addRecordLie(StructureElement::NV_XSD_LienElement, $clRecordLie);
 				}
 
 				$clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false); //false car pas modifier par l'utilisateur ici

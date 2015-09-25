@@ -7,6 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
@@ -50,7 +51,7 @@ class Record
 	protected $m_clStructElem;
 
 	/**
-	 * @var array
+	 * @var RecordCache
 	 */
 	protected $m_TabRecordLie;
 
@@ -75,7 +76,7 @@ class Record
 		$this->m_TabColumnsValues   = array();
 
 		//tableau des éléments liés
-		$this->m_TabRecordLie = array();
+		$this->m_TabRecordLie = new RecordCache();
 	}
 
 	/**
@@ -96,6 +97,14 @@ class Record
 	{
 		return $this->m_nIDEnreg;
 	}
+
+    /**
+     * @return RecordCache
+     */
+    public function getRecordLie()
+    {
+        return $this->m_TabRecordLie;
+    }
 
 	/**
 	 * @return string
@@ -194,7 +203,6 @@ class Record
         }
 
         $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
-
         switch($clStructureColonne->getTypeElement())
         {
         case StructureColonne::TM_Tableau:
@@ -204,17 +212,14 @@ class Record
             {
                 return '';
             }
-            $sCle = $clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID).'/'.$valStockee;
-            if (!isset($this->m_TabRecordLie[$sCle]) || is_null($this->m_TabRecordLie[$sCle]))
+
+            $clRecordLie = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $valStockee);
+            /** @var Record|null $clRecordLie */
+            if (is_null($clRecordLie))
             {
                 return "#{$valStockee}#";
             }
-
-            $clRecordLie = $this->m_TabRecordLie[$sCle];
-            /** @var Record $clRecordLie */
             return $clRecordLie->getTitle();
-
-
         }
         default:
         {
@@ -249,28 +254,26 @@ class Record
 	}
 
 	/**
+     * @param $nNiv
 	 * @param Record $clRecordLie
 	 * @return $this
 	 */
-	public function addRecordLie(Record $clRecordLie)
+	public function addRecordLie($nNiv, Record $clRecordLie)
 	{
-		$sCle = $clRecordLie->getIDTableau().'/'.$clRecordLie->getIDEnreg();
-		if (!isset($this->m_TabRecordLie[$sCle]))
-		{
-			$this->m_TabRecordLie[$sCle]=$clRecordLie;
-		}
+        $this->m_TabRecordLie->SetRecord($nNiv, $clRecordLie);
 		return $this;
 	}
 
 	/**
+     * @param $nNiv
 	 * @param array $clRecordLie
 	 * @return $this
 	 */
-	public function addTabRecordLie($aRecordsLies)
+	public function addTabRecordLie($nNiv, $aRecordsLies)
 	{
 		foreach($aRecordsLies as $clRecord)
 		{
-			$this->addRecordLie($clRecord);
+            $this->addRecordLie($nNiv, $clRecord);
 		}
 		return $this;
 	}
