@@ -79,6 +79,14 @@ abstract class StructureColonne
 	}
 
     /**
+     * @return StructureElement|null
+     */
+    public function getStructureElementLie()
+    {
+        return $this->m_clStructureElemLie;
+    }
+
+    /**
      * pour savoir si fusion de colonne pour le multi-colonne
      * @return bool
      */
