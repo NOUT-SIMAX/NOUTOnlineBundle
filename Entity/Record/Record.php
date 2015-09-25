@@ -114,7 +114,16 @@ class Record
         return $this->m_sTitle;
     }
 
-	/**
+    /**
+     * @return StructureColonne
+     */
+    public function clGetStructColonne($idColonne)
+    {
+        return $this->m_clStructElem->getStructureColonne($idColonne);
+    }
+
+
+    /**
 	 * @return StructureElement
 	 */
 	public function clGetStructElem()
