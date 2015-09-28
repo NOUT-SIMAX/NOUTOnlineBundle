@@ -380,8 +380,6 @@ class XMLResponseWS
 
         if (isset($clNodeFilter) && ($clNodeFilter->count()>0))
         {
-			dump($clNodeFilter);
-
 			// Erreur : "Node no longer exists" alors que dans le isSet
 			// Données mal parsées ?
             return $clNodeFilter->children('http://www.w3.org/2001/XMLSchema', false)->schema;

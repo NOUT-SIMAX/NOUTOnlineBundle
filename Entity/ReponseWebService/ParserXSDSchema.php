@@ -203,16 +203,48 @@ class ParserXSDSchema extends Parser
 	 */
 	protected function _ParseXSDListeElem($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndElement)
 	{
-		$ndElementLie = $ndElement->children(self::NAMESPACE_XSD)->complexType
+		$ndSequence = $ndElement->children(self::NAMESPACE_XSD)->complexType
 			->children(self::NAMESPACE_XSD)->sequence
-			->children(self::NAMESPACE_XSD)->element;
+        ;
 
-		$clStructureElemLie = $this->_clParseXSDElementComplex($nNiv+1, $ndElementLie);
+        $nIndice = 0;
+        $clStructureElemLie = null;
+        foreach ($ndSequence->children(self::NAMESPACE_XSD) as $ndElement)
+        {
+            if ($nIndice == 0)
+            {
+                //c'est le premier élément
+                $clStructureElemLie = $this->_clParseXSDElementComplex($nNiv+1, $ndElement);
+            }
+            else
+            {
+                //les autres éléments sont les boutons
+                $eTypeElement = (string)$ndElement->attributes(self::NAMESPACE_NOUT_XSD)['typeElement'];
+                if ($eTypeElement != StructureColonne::TM_Bouton)
+                {
+                    throw new \Exception("Ici on devrait avoir un bouton");
+                }
+
+                $clAttribXS   = $ndElement->attributes(self::NAMESPACE_XSD);
+                $clAttribNOUT = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
+                $clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS);
+                if (empty($clStructureBouton->getIDColonne())) //si vide, c'est un bouton d'action sur le formulaire (supprimer, imprimer...)
+                {
+                    $clStructureElemLie->addButton($clStructureBouton);
+                }
+                else
+                {
+                    throw new \Exception("Ici on ne devrait pas avoir de colonne bouton");
+                }
+            }
+            $nIndice++;
+        }
+
+
 		if (!is_null($clStructureElemLie))
 		{
 			$clStructColonne->setStructureElementLie($clStructureElemLie);
 		}
-
 	}
 
 	/**
