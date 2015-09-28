@@ -1,5 +1,11 @@
-Login: Identifiant
-Password: Mot de passe
-Connection: Connexion
-Sign In: Connectez-vous
-No Answer from NOUTOnline: NOUTOnline ne réponds pas
+login:
+    login: Identifiant
+    password: Mot de passe
+    connection: Connexion
+    sign_in: Connectez-vous
+    noutonline_no_answer: NOUTOnline ne réponds pas
+
+error:
+    page_shouldnt_show: Cette page ne devrait pas s'afficher
+    configure_firewall: Veuillez configurer le pare-feu symfony correctement
+    contact_presta: ou contacter votre prestataire de service
