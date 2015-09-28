@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+    <env:Header>
+        <ReturnType>AmbiguousAction</ReturnType>
+        <ConnectedUser>
+            <Form title="Utilisateur">1169</Form>
+            <Element title="superviseur">2</Element>
+        </ConnectedUser>
+        <ActionContext>17688295283280</ActionContext>
+        <Action title="Créer Planification sans réservation de ressource" typeAction="2386" typeReturn="AmbiguousAction" actionForm="8685">17159</Action>
+        <XSDSchema>
+            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015092807175816" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+                <xs:element xs:name="id_2029" simax:name="Liste (Formulaire)" simax:tableType="list">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element xs:name="id_2100" simax:name="Intitulé" xs:use="required" simax:titled="1" simax:printed="1" simax:sort="1">
+                                <xs:simpleType>
+                                    <xs:restriction xs:base="xs:string">
+                                        <xs:maxLength xs:value="100"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element xs:name="id_2105" simax:name="Domaine" simax:typeElement="simax-element" xs:use="required" simax:printed="1" simax:link="1" simax:linkedTableXml="id_2023" simax:linkedTableID="2023"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:unique xs:name="0">
+                    <xs:selector xs:xpath="id_2029"/>
+                    <xs:field xs:xpath="id_2100"/>
+                </xs:unique>
+            </xs:schema>
+        </XSDSchema>
+        <Form title="Formulaire" typeForm="2029" checksum="0" sort1="2100" sort1asc="1">2029</Form>
+    </env:Header>
+    <env:Body>
+        <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015092807175799" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+                <id_2029 simax:id="38169258523166" simax:title="Formulaire avec date de debut non modifiable par testeur 3" simax:xsdLevel="1" simax:recordColor="A45BA5">
+                    <id_2100>Formulaire avec date de debut non modifiable par testeur 3</id_2100>
+                    <id_2105>51998218235035</id_2105>
+                </id_2029>
+                <id_2029 simax:id="39032550724434" simax:title="Planning - evenement un jour" simax:xsdLevel="1" simax:recordColor="925A81">
+                    <id_2100>Planning - evenement un jour</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="39479386551144" simax:title="Evenement avec champ couleur" simax:xsdLevel="1" simax:recordColor="6EB780">
+                    <id_2100>Evenement avec champ couleur</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="41665365669543" simax:title="Planning - Evenement avec périodicité" simax:xsdLevel="1" simax:recordColor="6D9292">
+                    <id_2100>Planning - Evenement avec périodicité</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="43065684178986" simax:title="Evenement avec mise en forme" simax:xsdLevel="1" simax:recordColor="6EB780">
+                    <id_2100>Evenement avec mise en forme</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="44414144738049" simax:title="Formulaire avec date de debut et créneau horaire non modifiable par testeur 3" simax:xsdLevel="1" simax:recordColor="A45BA5">
+                    <id_2100>Formulaire avec date de debut et créneau horaire non modifiable par testeur 3</id_2100>
+                    <id_2105>51998218235035</id_2105>
+                </id_2029>
+                <id_2029 simax:id="47927472474794" simax:title="Planning - réunion" simax:xsdLevel="1" simax:recordColor="7FFF80">
+                    <id_2100>Planning - réunion</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="49580990404874" simax:title="Planning - evenement plusieurs jours" simax:xsdLevel="1" simax:recordColor="37B77F">
+                    <id_2100>Planning - evenement plusieurs jours</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="52170916870580" simax:title="Evenement du planning dans un autre domaine" simax:xsdLevel="1" simax:recordIconID="37612341722549" simax:recordColor="A45BA5">
+                    <id_2100>Evenement du planning dans un autre domaine</id_2100>
+                    <id_2105>48206662047009</id_2105>
+                </id_2029>
+                <id_2029 simax:id="195434308698937" simax:title="Planning - Conflit DD" simax:xsdLevel="1" simax:recordIconID="37612341722549" simax:recordColor="FF0000">
+                    <id_2100>Planning - Conflit DD</id_2100>
+                    <id_2105>48206662047009</id_2105>
+                </id_2029>
+                <id_2029 simax:id="200055693767121" simax:title="Planning - Conflit DHD DHF" simax:xsdLevel="1" simax:recordIconID="37612341722549" simax:recordColor="7F9100">
+                    <id_2100>Planning - Conflit DHD DHF</id_2100>
+                    <id_2105>48206662047009</id_2105>
+                </id_2029>
+                <id_2029 simax:id="207503166816216" simax:title="Planning - Conflit DHD" simax:xsdLevel="1" simax:recordIconID="37612341722549" simax:recordColor="FF00AA">
+                    <id_2100>Planning - Conflit DHD</id_2100>
+                    <id_2105>48206662047009</id_2105>
+                </id_2029>
+                <id_2029 simax:id="213468425908371" simax:title="ManipBDD : Exchange - Calendrier" simax:xsdLevel="1" simax:recordColor="6EFF6D">
+                    <id_2100>ManipBDD : Exchange - Calendrier</id_2100>
+                    <id_2105>216290234790379</id_2105>
+                </id_2029>
+                <id_2029 simax:id="213533068657259" simax:title="Planning - evenement avec duree (h)" simax:xsdLevel="1" simax:recordColor="BF76A8">
+                    <id_2100>Planning - evenement avec duree (h)</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="214490517655099" simax:title="Synchros : Rendez-vous" simax:xsdLevel="1" simax:recordColor="929100">
+                    <id_2100>Synchros : Rendez-vous</id_2100>
+                    <id_2105>35750356615363</id_2105>
+                </id_2029>
+                <id_2029 simax:id="215865235900275" simax:title="Planning - evenement plusieurs jours date heure" simax:xsdLevel="1" simax:recordColor="43E39E">
+                    <id_2100>Planning - evenement plusieurs jours date heure</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="220276817418755" simax:title="Rendez-vous" simax:xsdLevel="1" simax:recordColor="6EA480">
+                    <id_2100>Rendez-vous</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="220537951874138" simax:title="ManipBDD : Exchange - Calendrier[Congé]" simax:xsdLevel="1" simax:recordColor="6EFF6D">
+                    <id_2100>ManipBDD : Exchange - Calendrier[Congé]</id_2100>
+                    <id_2105>216290234790379</id_2105>
+                </id_2029>
+                <id_2029 simax:id="220632456116563" simax:title="Synchros : Exchange - Calendar" simax:xsdLevel="1" simax:recordColor="6EFF6D">
+                    <id_2100>Synchros : Exchange - Calendar</id_2100>
+                    <id_2105>35750356615363</id_2105>
+                </id_2029>
+                <id_2029 simax:id="222870000331879" simax:title="ManipBDD : Rendez-vous" simax:xsdLevel="1" simax:recordColor="929100">
+                    <id_2100>ManipBDD : Rendez-vous</id_2100>
+                    <id_2105>216290234790379</id_2105>
+                </id_2029>
+                <id_2029 simax:id="223501487289325" simax:title="Imports : Exchange - Calendar" simax:xsdLevel="1" simax:recordColor="6EFF6D">
+                    <id_2100>Imports : Exchange - Calendar</id_2100>
+                    <id_2105>35750356615363</id_2105>
+                </id_2029>
+                <id_2029 simax:id="223759185319506" simax:title="Exports : Exchange - Calendar" simax:xsdLevel="1" simax:recordColor="6EFF6D">
+                    <id_2100>Exports : Exchange - Calendar</id_2100>
+                    <id_2105>35750356615363</id_2105>
+                </id_2029>
+                <id_2029 simax:id="226585294747502" simax:title="Exports : Exchange - Calendar Bcp" simax:xsdLevel="1" simax:recordColor="6EFF6D">
+                    <id_2100>Exports : Exchange - Calendar Bcp</id_2100>
+                    <id_2105>35750356615363</id_2105>
+                </id_2029>
+                <id_2029 simax:id="226757274628311" simax:title="Planning - evenement avec duree (min)" simax:xsdLevel="1" simax:recordColor="BF76A8">
+                    <id_2100>Planning - evenement avec duree (min)</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2029 simax:id="372605738084278" simax:title="Imports : Exchange - Calendar (Bcp)" simax:xsdLevel="1" simax:recordColor="6EFF6D">
+                    <id_2100>Imports : Exchange - Calendar (Bcp)</id_2100>
+                    <id_2105>35750356615363</id_2105>
+                </id_2029>
+                <id_2029 simax:id="39153080990258" simax:title="Planning - Sans reservation - evenement un jour" simax:xsdLevel="1" simax:recordColor="925A81">
+                    <id_2100>Planning - Sans reservation - evenement un jour</id_2100>
+                    <id_2105>39260183984253</id_2105>
+                </id_2029>
+                <id_2023 simax:id="51998218235035" simax:title="Qualité - Gestion des droits" simax:xsdLevel="2"/>
+                <id_2023 simax:id="39260183984253" simax:title="Qualite - Planning" simax:xsdLevel="2"/>
+                <id_2023 simax:id="48206662047009" simax:title="Planning" simax:xsdLevel="2"/>
+                <id_2023 simax:id="216290234790379" simax:title="Qualité - Manip BDD" simax:xsdLevel="2"/>
+                <id_2023 simax:id="35750356615363" simax:title="Qualité - Imports &amp; Exports" simax:xsdLevel="2"/></xml>
+        </ExecuteResponse>
+    </env:Body>
+</env:Envelope>
