@@ -31,6 +31,11 @@ class Record
 	 */
 	protected $m_nIDTableau;
 
+    /**
+     * @var array
+     */
+    protected $m_TabOptionsRecord;
+
 	/**
 	 * @var InfoColonne[] $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
 	 */
@@ -74,6 +79,7 @@ class Record
 		$this->m_TabColumnsInfo     = array();
 		$this->m_TabColumnsModified = array();
 		$this->m_TabColumnsValues   = array();
+        $this->m_TabOptionsRecord   = array();
 
 		//tableau des éléments liés
 		$this->m_TabRecordLie = new RecordCache();
@@ -88,6 +94,46 @@ class Record
 		return $this->m_nXSDNiv <= $clRecord->m_nXSDNiv;
 	}
 
+
+    /**
+     * @param $option
+     * @param $valeur
+     * @return $this
+     */
+    public function addOption($option, $valeur)
+    {
+        $this->m_TabOptionsRecord[$option]=$valeur;
+        return $this;
+    }
+    /**
+     * @param $option
+     * @param $valeur
+     * @return $this
+     */
+    public function addOptions(\SimpleXMLElement $tabAttribut)
+    {
+        foreach($tabAttribut as $name=>$attr)
+        {
+            $nCmp = strncasecmp($name, 'record', strlen('record'));
+            if ($nCmp==0)
+            {
+                $this->addOption($name, (string)$attr);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @param $option
+     * @return mixed
+     */
+    public function getOption($option)
+    {
+        if (isset($this->m_TabOptionsRecord[$option]))
+        {
+            return $this->m_TabOptionsRecord[$option];
+        }
+    }
 
     /**
      * renvoi l'identifiant de l'enregistrement
@@ -378,4 +424,7 @@ class Record
         return $this;
     }
 
+
+    const OPTION_Icon = 'recordIconID';
+    const OPTION_Color = 'recordColor';
 }

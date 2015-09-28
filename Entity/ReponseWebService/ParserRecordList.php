@@ -227,6 +227,7 @@ class ParserRecordList extends Parser
 
 		$clStructureElement = $this->m_clParserXSD->clGetStructureElement($sIDTableau);
 		$clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $nNiv, $clStructureElement);
+        $clRecord->addOptions($TabAttrib);
 
 		$this->m_clRecordCache->SetRecord($nNiv, $clRecord);
 		$this->_ParseColumns($nNiv, $clRecord, $clStructureElement, $clXML, $sIDTableau, $sIDEnreg);

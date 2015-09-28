@@ -65,7 +65,7 @@ class ParserList extends Parser
     }
 
     /**
-     * Parse les paramètres
+     * Parse les paramÃ¨tres
      * @param XMLResponseWS $clReponseXML
      */
     public function ParseParam(XMLResponseWS $clReponseXML)
@@ -102,7 +102,7 @@ class ParserList extends Parser
         $sTitre = $clReponseXML->clGetAction()->getTitle();
 
 
-        // Contrôle des variables OK
+        // ContrÃ´le des variables OK
 //        dump($sIDForm);
 //        dump($sIDFormAction);
 //        dump($sIDAction);
@@ -112,10 +112,10 @@ class ParserList extends Parser
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
 
-        // Instance d'une nouvelle clList avec toutes les données précédentes
+        // Instance d'une nouvelle clList avec toutes les donnÃ©es prÃ©cÃ©dentes
         $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
 
-        // Paramètres pour la clList
+        // ParamÃ¨tres pour la clList
         $clList->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));
 
         // TODO
@@ -125,13 +125,13 @@ class ParserList extends Parser
         // Faire un getter du RecordCache du parserRecordList (get(get())
         // $this->m_clParserParam->
 
-        // Deux méthodes dans ParserRecordList
+        // Deux mÃ©thodes dans ParserRecordList
         // GetFullCache et GetRecord
         // $this->m_clParserList est un ParserRecordList
 
 
-        // Données pour la clList
-        //// Il faut donner le cache en paramètre
+        // DonnÃ©es pour la clList
+        //// Il faut donner le cache en paramÃ¨tre
         $clList->setRecordCache($this->m_clParserList->getFullCache());
 
         return $clList;
