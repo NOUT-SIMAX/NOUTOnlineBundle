@@ -15,6 +15,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\SessionManagerBundle\Entity\ConnectionInfos;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
 
@@ -96,9 +97,8 @@ class DefaultController extends Controller
      *
      * @Route("/login/", name="login")
      */
-    public function loginAction()
+    public function loginAction(Request $request)
     {
-	    $request = $this->get('request');
 	    $session = $request->getSession();
 
 	    // get the login error if there is one
