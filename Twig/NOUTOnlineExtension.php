@@ -60,7 +60,7 @@ class NOUTOnlineExtension extends \Twig_Extension
 	public function getFilters()
 	{
 		return array(
-			'noutonline_beautify_soap_query' => new \Twig_Filter_Method($this, 'beautifySOAPQuery'),
+            new \Twig_SimpleFilter('noutonline_beautify_soap_query', array($this, 'beautifySOAPQuery')),
 		);
 	}
 
@@ -93,8 +93,8 @@ class NOUTOnlineExtension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			'noutonline_version' => new \Twig_Function_Method($this, 'version'),
-			'noutonline_is_started' => new \Twig_Function_Method($this, 'isStarted'),
+			 new \Twig_SimpleFunction('noutonline_version', array($this, 'version')),
+			 new \Twig_SimpleFunction('noutonline_is_started', array($this, 'isStarted')),
 		);
 	}
 

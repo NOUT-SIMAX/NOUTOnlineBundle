@@ -38,7 +38,7 @@ class ToolsExtension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			'uniqueid' => new \Twig_Function_Method($this, 'tools_uniqueid'),
+			new \Twig_SimpleFunction('uniqueid', array($this, 'tools_uniqueid')),
 		);
 	}
 
