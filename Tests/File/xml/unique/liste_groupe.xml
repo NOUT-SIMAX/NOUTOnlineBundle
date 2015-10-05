@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+
 	<env:Header>
 		<ReturnType>Record</ReturnType>
 		<ConnectedUser>
@@ -24,6 +25,7 @@
                                                     xs:maxOccurs="unbounded">
                                             <xs:complexType>
                                                 <xs:sequence>
+
                                                     <xs:element xs:name="id_1171" simax:name="Pseudo"
                                                                 xs:use="required" simax:titled="1"
                                                                 simax:printed="1" simax:sort="1">
@@ -33,6 +35,7 @@
                                                             </xs:restriction>
                                                         </xs:simpleType>
                                                     </xs:element>
+
                                                     <xs:element xs:name="id_1172" simax:name="Nom"
                                                                 xs:use="required" simax:printed="1" simax:sort="1"
                                                                 simax:transform="firstUppercase">
@@ -42,6 +45,7 @@
                                                             </xs:restriction>
                                                         </xs:simpleType>
                                                     </xs:element>
+
                                                     <xs:element xs:name="id_1173" simax:name="Prénom"
                                                                 xs:use="required" simax:printed="1" simax:sort="1"
                                                                 simax:transform="firstUppercase">
@@ -51,6 +55,7 @@
                                                             </xs:restriction>
                                                         </xs:simpleType>
                                                     </xs:element>
+
                                                     <xs:element xs:name="id_1174"
                                                                 simax:name="Adresse email" simax:printed="1"
                                                                 simax:sort="1" simax:transform="url">
@@ -60,18 +65,22 @@
                                                             </xs:restriction>
                                                         </xs:simpleType>
                                                     </xs:element>
+
                                                     <xs:element xs:name="id_7623" simax:name="Photo"
                                                                 simax:typeElement="xs:base64Binary"
                                                                 simax:titled="1" simax:printed="1" simax:sort="1"
                                                                 simax:typeMime="image"/>
+
                                                     <xs:element xs:name="id_7624"
                                                                 simax:name="Superviseur"
                                                                 simax:typeElement="xs:boolean" simax:printed="1"
                                                                 simax:sort="1"/>
+
                                                     <xs:element xs:name="id_10545"
                                                                 simax:name="Invalide"
                                                                 simax:typeElement="xs:boolean" simax:printed="1"
                                                                 simax:sort="1"/>
+
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -112,27 +121,32 @@
 		<Form title="Type de champ liste">221686275782379</Form>
 		<Element title="TCL0001">20690396322402</Element>
 	</env:Header>
+
 	<env:Body>
 		<ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
 			<xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015073115175850" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
 				<id_221686275782379 simax:id="20690396322402" simax:title="TCL0001" simax:xsdLevel="0">
                     <id_212035484269085>
-                        <id_1169 simax-layout:bold="1" simax-layout:italic="0"
-                                 simax-layout:bgcolor="7FFF55">2</id_1169>
-                        <id_1169>12</id_1169>
+                        <id_1169>1</id_1169>
+                        <id_1169>2</id_1169>
+                        <id_1169>3</id_1169>
+                        <id_1169>4</id_1169>
+                        <id_1169>5</id_1169>
                     </id_212035484269085>
 				</id_221686275782379>
-                <id_1169 simax:id="2" simax:title="superviseur" simax-layout:bold="1"
-                         simax-layout:italic="0" simax-layout:bgcolor="7FFF55" simax:xsdLevel="1">
+
+                <id_1169 simax:id="1" simax:title="superviseur" simax-layout:bold="1"
+                         simax-layout:italic="1" simax-layout:bgcolor="7FFF55" simax:xsdLevel="1">
                     <id_1171>superviseur</id_1171>
                     <id_1172>Super</id_1172>
                     <id_1173>Viseur</id_1173>
-                    <id_1174/>
+                    <id_1174>super@viseur.fr</id_1174>
                     <id_7623>11.png</id_7623>
                     <id_7624>1</id_7624>
                     <id_10545>0</id_10545>
                 </id_1169>
-                <id_1169 simax:id="12" simax:title="ninon" simax:xsdLevel="1">
+
+                <id_1169 simax:id="2" simax:title="ninon" simax:xsdLevel="1" simax-layout:italic="1">
                     <id_1171>ninon</id_1171>
                     <id_1172>Laf</id_1172>
                     <id_1173>Ninon</id_1173>
@@ -144,7 +158,39 @@
                              simax-layout:bgcolor="7FFF55">1</id_7624>
                     <id_10545>0</id_10545>
                 </id_1169>
+
+				<id_1169 simax:id="3" simax:title="whatisthat" simax:xsdLevel="1">
+                    <id_1171>Paulo</id_1171>
+                    <id_1172>Dupont</id_1172>
+                    <id_1173>Paul</id_1173>
+                    <id_1174>paul@hotmail.com</id_1174>
+                    <id_7623>1_4221.png</id_7623>
+                    <id_7624>1</id_7624>
+                    <id_10545>0</id_10545>
+                </id_1169>
+
+                <id_1169 simax:id="4" simax:title="simaxtitle" simax:xsdLevel="1">
+                    <id_1171>Zozo</id_1171>
+                    <id_1172>Adam</id_1172>
+                    <id_1173>Zoé</id_1173>
+                    <id_1174>zozo@facebook.com</id_1174>
+                    <id_7623>DCIM441.png</id_7623>
+                    <id_7624>1</id_7624>
+                    <id_10545>0</id_10545>
+                </id_1169>
+
+    			<id_1169 simax:id="5" simax:title="onemore" simax:xsdLevel="1">
+                    <id_1171>Soso</id_1171>
+                    <id_1172>Dibos</id_1172>
+                    <id_1173>Solène</id_1173>
+                    <id_1174>solene@dibos.fr</id_1174>
+                    <id_7623>koala.png</id_7623>
+                    <id_7624>1</id_7624>
+                    <id_10545>0</id_10545>
+                </id_1169>
+
 			</xml>
 		</ExecuteResponse>
 	</env:Body>
+
 </env:Envelope>
