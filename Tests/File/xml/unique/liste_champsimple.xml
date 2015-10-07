@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?><env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+    <env:Header>
+        <ReturnType>Record</ReturnType>
+        <ConnectedUser>
+            <Form title="Utilisateur">1169</Form>
+            <Element title="symfony">29</Element>
+        </ConnectedUser>
+        <ActionContext>26626124120092</ActionContext>
+        <Action title="Créer Type de champ liste" typeAction="2386" typeReturn="Record" actionForm="8685">218696978545816</Action>
+        <XSDSchema>
+            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015092916104137" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+                <xs:element xs:name="id_221686275782379" simax:name="Type de champ liste">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element xs:name="id_223996968187905" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1">
+                                <xs:simpleType>
+                                    <xs:restriction xs:base="xs:string">
+                                        <xs:maxLength xs:value="100"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element xs:name="id_219259702201401" simax:name="Liste Type de champ simple" simax:typeElement="simax-list" simax:detail="1" simax:printed="1" simax:withBtnOrder="1" simax:linkedTableXml="id_228441939754526" simax:linkedTableID="228441939754526" simax:withAddAndRemove="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element xs:name="id_228441939754526" simax:name="Liste (Type de champ simple)" xs:minOccurs="0" xs:maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element xs:name="id_215045936758430" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1" simax:sort="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_218640824396054" simax:name="Texte" simax:printed="1" simax:sort="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_226904345564985" simax:name="Entier" simax:typeElement="xs:integer" xs:use="required" simax:printed="1" simax:link="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_211786060686999" simax:name="Réel" simax:typeElement="xs:float" simax:printed="1" simax:link="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_218211730212402" simax:name="Nombre à 3 décimales" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_224031410898800" simax:name="Nombre à 4 décimales" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_218031341586370" simax:name="Nombre à 5 décimales" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_227415845128222" simax:name="Nombre à 6 décimales" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_221625830761687" simax:name="Monétaire" simax:typeElement="xs:decimal" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_212082413430520" simax:name="Date" simax:typeElement="xs:date" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_226947295242069" simax:name="Heure" simax:typeElement="xs:time" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_220642283251630" simax:name="Date heure" simax:typeElement="xs:dateTime" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_220745723305669" simax:name="Durée" simax:typeElement="simax-duration" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_221733204940980" simax:name="Vrai/faux" simax:typeElement="xs:boolean" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_217047669220519" simax:name="Texte long" simax:typeElement="xs:string" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_223339796382030" simax:name="Texte 2" simax:printed="1" simax:sort="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Ajouter" simax:idAction="220127285595474" simax:actionType="Ajouter" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Créer" simax:idAction="221140495352006" simax:withValidation="3" simax:actionType="Créer" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Consulter" simax:idAction="211880545861832" simax:withValidation="3" simax:actionType="Détail" simax:typeSelection="1"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Modifier" simax:idAction="216484750803143" simax:withValidation="3" simax:actionType="Modifier" simax:typeSelection="1"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Enlever" simax:idAction="219886767426899" simax:actionType="Enlever" simax:typeSelection="multi"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="224576469188824" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="218258891881644" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="216635394243744" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:unique xs:name="6">
+                    <xs:selector xs:xpath="id_221686275782379"/>
+                    <xs:field xs:xpath="id_223996968187905"/>
+                </xs:unique>
+            </xs:schema>
+        </XSDSchema>
+        <Form title="Type de champ liste">221686275782379</Form>
+        <Element title="TCL0001">31032760565788</Element>
+    </env:Header>
+    <env:Body>
+        <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015092916104125" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+                <id_221686275782379 simax:id="31032760565788" simax:title="TCL0001" simax:xsdLevel="0">
+                    <id_223996968187905 simax:readOnly="1">TCL0001</id_223996968187905>
+                    <id_219259702201401>
+                        <id_228441939754526>31882776964271</id_228441939754526>
+                        <id_228441939754526>18770241828477</id_228441939754526>
+                    </id_219259702201401>
+                </id_221686275782379>
+                <id_228441939754526 simax:id="31882776964271" simax:title="TCM00001" simax:xsdLevel="1">
+                    <id_215045936758430>TCM00001</id_215045936758430>
+                    <id_218640824396054>totoqdfqsdfqsdf</id_218640824396054>
+                    <id_226904345564985>6441</id_226904345564985>
+                    <id_211786060686999>1250.100000</id_211786060686999>
+                    <id_218211730212402>10.000000</id_218211730212402>
+                    <id_224031410898800>1.250000</id_224031410898800>
+                    <id_218031341586370>12.652800</id_218031341586370>
+                    <id_227415845128222>12548.258400</id_227415845128222>
+                    <id_221625830761687>1.250000</id_221625830761687>
+                    <id_212082413430520>20141223</id_212082413430520>
+                    <id_226947295242069>164000</id_226947295242069>
+                    <id_220642283251630>20141223151400</id_220642283251630>
+                    <id_220745723305669>2503536</id_220745723305669>
+                    <id_221733204940980>0</id_221733204940980>
+                    <id_217047669220519 simax:ref="1"/>
+                    <id_223339796382030>qfqsfqsdf</id_223339796382030>
+                </id_228441939754526>
+                <id_228441939754526 simax:id="18770241828477" simax:title="TCM00002" simax:xsdLevel="1">
+                    <id_215045936758430>TCM00002</id_215045936758430>
+                    <id_218640824396054>totoqffqsdf</id_218640824396054>
+                    <id_226904345564985>123</id_226904345564985>
+                    <id_211786060686999>0.000000</id_211786060686999>
+                    <id_218211730212402/>
+                    <id_224031410898800/>
+                    <id_218031341586370/>
+                    <id_227415845128222/>
+                    <id_221625830761687>0.000000</id_221625830761687>
+                    <id_212082413430520>20141223</id_212082413430520>
+                    <id_226947295242069>163000</id_226947295242069>
+                    <id_220642283251630>20141223153300</id_220642283251630>
+                    <id_220745723305669/>
+                    <id_221733204940980>0</id_221733204940980>
+                    <id_217047669220519>qqfdf</id_217047669220519>
+                    <id_223339796382030/>
+                </id_228441939754526>
+                <simax:Data simax:ref="1" simax:encoding="quoted-printable" simax:size="1922" simax:typemime="text/plain">Donn=E9e non-groupe (pas ajouter/enlever)
+
+                ----- Message d'origine ----- =20
+                De : "J=E9r=F4me"=20
+                Envoy=E9 : 06/08/2015 10:58:40=20
+                Objet : RE : RE : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+
+                &gt;=20
+                groupe ou non groupe ?=20
+                &gt;=20
+                &gt;=20
+                &gt; quand je demande le type il me faut tout... je vais pas poser toutes les questions
+                &gt;=20
+                &gt; ----- Message d'origine ----- =20
+                &gt; De : "Christophe"=20
+                &gt; Envoy=E9 : 06/08/2015 10:54:11=20
+                &gt; Objet : RE : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+                &gt;=20
+                &gt; &gt;=20
+                &gt; donn=E9e
+                &gt; &gt;=20
+                &gt; &gt; ----- Message d'origine ----- =20
+                &gt; &gt; De : "J=E9r=F4me"=20
+                &gt; &gt; Envoy=E9 : 06/08/2015 10:53:01=20
+                &gt; &gt; Objet : RE : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+                &gt; &gt;=20
+                &gt; &gt; &gt;=20
+                &gt; &gt; quel est le type de la colonne Demande ? donn=E9e ou calcul ?
+                &gt; &gt; &gt;=20
+                &gt; &gt; &gt; ----- Message d'origine ----- =20
+                &gt; &gt; &gt; De : "Christophe"=20
+                &gt; &gt; &gt; Envoy=E9 : 06/08/2015 10:47:38=20
+                &gt; &gt; &gt; Objet : Cr=E9ation de : INC201508N00003 Rafra=EEchissement de sous-liste ne se fait pas (09.00.1523.01)
+                &gt; &gt; &gt;=20
+                &gt; &gt; &gt; &gt; Pour : Lafourcade Ninon
+                &gt; &gt; &gt; &gt; Poste Client : Client Web PHP
+                &gt; &gt; &gt; &gt; Dead line :=20
+                &gt; &gt; &gt; &gt; Test effectu=E9 sur serveur du client =E0 l'adresse http://46.18.209.215/simax
+                &gt; &gt; &gt; &gt; Non reproduit sur base locale
+                &gt; &gt; &gt; &gt;=20
+                &gt; &gt; &gt; &gt; Log r=E9cup=E9r=E9 sur serveur client : "Q:\Sydec\DS04373\logRequete.txt"
+                &gt; &gt; &gt; &gt;=20
+                &gt; &gt; &gt; &gt; Reproduction du probl=E8me=20
+                &gt; &gt; &gt; &gt; Menu 'Achat' -&gt; 'Demande d'achat'
+                &gt; &gt; &gt; &gt; - Vider les filtres et modifier un enregistrement (exemple le 15.07.011)
+                &gt; &gt; &gt; &gt; - Liste 'Demande' -&gt; Bouton cr=E9er
+                &gt; &gt; &gt; &gt; - Quantit=E9 150 -&gt; Enregistrer
+                &gt; &gt; &gt; &gt; =20
+                &gt; &gt; &gt; &gt; R=E9sultat :=20
+                &gt; &gt; &gt; &gt; La sous-liste ne se rafra=EEchit pas.=20
+                &gt; &gt; &gt; &gt; La ligne cr=E9=E9 n'appara=EEt pas dans la liste, il faut enregistrer le formulaire 'Demande d'achat' et le r=E9-ouvrir pour que la ligne apparaisse.
+                &gt; &gt; &gt;=20
+                &gt; &gt;=20
+                &gt;</simax:Data>
+            </xml>
+        </ExecuteResponse>
+    </env:Body>
+</env:Envelope>

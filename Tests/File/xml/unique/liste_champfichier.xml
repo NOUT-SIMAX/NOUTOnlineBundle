@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?><env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+    <env:Header>
+        <ReturnType>Record</ReturnType>
+        <ConnectedUser>
+            <Form title="Utilisateur">1169</Form>
+            <Element title="symfony">29</Element>
+        </ConnectedUser>
+        <ActionContext>26626124120092</ActionContext>
+        <Action title="Créer Type de champ liste" typeAction="2386" typeReturn="Record" actionForm="8685">218696978545816</Action>
+        <XSDSchema>
+            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015092916104137" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+                <xs:element xs:name="id_221686275782379" simax:name="Type de champ liste">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element xs:name="id_223996968187905" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1">
+                                <xs:simpleType>
+                                    <xs:restriction xs:base="xs:string">
+                                        <xs:maxLength xs:value="100"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element xs:name="id_213208093282862" simax:name="Liste Type de champ fichier" simax:typeElement="simax-list" simax:detail="1" simax:printed="1" simax:withBtnOrder="1" simax:linkedTableXml="id_213654686942361" simax:linkedTableID="213654686942361" simax:withAddAndRemove="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element xs:name="id_213654686942361" simax:name="Liste (Type de champ fichier)" xs:minOccurs="0" xs:maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element xs:name="id_215651846735123" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1" simax:sort="1">
+                                                        <xs:simpleType>
+                                                            <xs:restriction xs:base="xs:string">
+                                                                <xs:maxLength xs:value="100"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element xs:name="id_214874457654754" simax:name="Fichier" simax:typeElement="xs:base64Binary" simax:printed="1" simax:sort="1"/>
+                                                    <xs:element xs:name="id_227132294346204" simax:name="Répertoire" simax:typeElement="xs:string" simax:printed="1" simax:sort="1" simax:directory="1"/>
+                                                    <xs:element xs:name="id_224014148088763" simax:name="Nom de fichier avec répertoire" simax:typeElement="xs:string" simax:printed="1" simax:sort="1" simax:directory="1"/>
+                                                    <xs:element xs:name="id_224886026449985" simax:name="Nom de fichier image" simax:typeElement="xs:string" simax:printed="1" simax:sort="1" simax:typeMime="image" simax:directory="1"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Ajouter" simax:idAction="220397868536964" simax:actionType="Ajouter" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Créer" simax:idAction="219190899809474" simax:withValidation="3" simax:actionType="Créer" simax:typeSelection="0"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Consulter" simax:idAction="226973380549854" simax:withValidation="3" simax:actionType="Détail" simax:typeSelection="1"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Modifier" simax:idAction="225255393631432" simax:withValidation="3" simax:actionType="Modifier" simax:typeSelection="1"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Enlever" simax:idAction="220432228275332" simax:actionType="Enlever" simax:typeSelection="multi"/>
+                                        <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="226475164343519" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="218258891881644" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="216635394243744" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:unique xs:name="6">
+                    <xs:selector xs:xpath="id_221686275782379"/>
+                    <xs:field xs:xpath="id_223996968187905"/>
+                </xs:unique>
+            </xs:schema>
+        </XSDSchema>
+        <Form title="Type de champ liste">221686275782379</Form>
+        <Element title="TCL0001">31032760565788</Element>
+    </env:Header>
+    <env:Body>
+        <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015092916104125" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+                <id_221686275782379 simax:id="31032760565788" simax:title="TCL0001" simax:xsdLevel="0">
+                    <id_223996968187905 simax:readOnly="1">TCL0001</id_223996968187905>
+                    <id_213208093282862>
+                        <id_213654686942361>226956283642155</id_213654686942361>
+                        <id_213654686942361>215450066257218</id_213654686942361>
+                    </id_213208093282862>
+                </id_221686275782379>
+                <id_213654686942361 simax:id="226956283642155" simax:title="TCF0001" simax:xsdLevel="1">
+                    <id_215651846735123>TCF0001</id_215651846735123>
+                    <id_214874457654754>CSV.png</id_214874457654754>
+                    <id_227132294346204>\\nout.local\Nout\Qualite\_NOUT\_Validator\Test Files\Images Planning\</id_227132294346204>
+                    <id_224014148088763>\\nout.local\Nout\Qualite\_NOUT\_Validator\Test Files\Images Planning\Planning de tous.png</id_224014148088763>
+                    <id_224886026449985>\\nout.local\Nout\Qualite\_NOUT\_Validator\Test Files\Images Planning\Planning de tous.png</id_224886026449985>
+                </id_213654686942361>
+                <id_213654686942361 simax:id="215450066257218" simax:title="TCF0002" simax:xsdLevel="1">
+                    <id_215651846735123>TCF0002</id_215651846735123>
+                    <id_214874457654754/>
+                    <id_227132294346204/>
+                    <id_224014148088763/>
+                    <id_224886026449985/>
+                </id_213654686942361>
+            </xml>
+        </ExecuteResponse>
+    </env:Body>
+</env:Envelope>
