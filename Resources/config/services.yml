@@ -33,7 +33,7 @@ services:
 
     nout_online.configuration_dialogue:
         class:      NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
-        arguments:  ['%nout_online.address%', '%nout_online.port%', '%nout_online.protocole%', '%nout_online.apiuuid%', '%noutweb_version%', '%noutweb_client% %societe%']
+        arguments:  ['%nout_online.address%', '%nout_online.port%', '%nout_online.protocole%', '%nout_online.apiuuid%', '%nout_web.version%', '%nout_web.client% %societe%']
 
     #factory pour les proxy
     nout_online.service_factory:
