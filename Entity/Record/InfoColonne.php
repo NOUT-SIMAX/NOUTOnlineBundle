@@ -78,6 +78,15 @@ class InfoColonne
         return $this->m_TabOptions[$dwOption];
     }
 
+    // Renvoyer tout le tableau des options
+    /**
+     * @return array
+     */
+    public function getTabOptions()
+    {
+        return $this->m_TabOptions;
+    }
+
 
     const OPTION_Bold   = 'bold';
     const OPTION_Italic = 'italic';

@@ -221,6 +221,7 @@ class ParserRecordList extends Parser
 		//<id_47909919412330 simax:id="33475861129246" simax:title="Janvier">
 
 		$TabAttrib = $clXML->attributes(self::NAMESPACE_NOUT_XML);
+		$TabAttribLayout = $clXML->attributes(self::NAMESPACE_NOUT_LAYOUT);
 
 		$sIDTableau = str_replace('id_', '', $clXML->getName());
 		$sIDEnreg   = (string) $TabAttrib['id'];
@@ -228,6 +229,7 @@ class ParserRecordList extends Parser
 		$clStructureElement = $this->m_clParserXSD->clGetStructureElement($sIDTableau);
 		$clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $nNiv, $clStructureElement);
         $clRecord->addOptions($TabAttrib);
+        $clRecord->addOptionsLayout($TabAttribLayout); // Les attributs HTML sont ajoutés dans le record
 
 		$this->m_clRecordCache->SetRecord($nNiv, $clRecord);
 		$this->_ParseColumns($nNiv, $clRecord, $clStructureElement, $clXML, $sIDTableau, $sIDEnreg);
