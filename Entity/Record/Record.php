@@ -299,28 +299,30 @@ class Record
         }
 
         $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
+
         switch($clStructureColonne->getTypeElement())
         {
-        case StructureColonne::TM_Tableau:
-        {
-            $valStockee = $this->m_TabColumnsValues[$idColonne];
-            if (empty($valStockee) || ($valStockee=='0'))
+            case StructureColonne::TM_Tableau:
             {
-                return '';
+                $valStockee = $this->m_TabColumnsValues[$idColonne];
+                if (empty($valStockee) || ($valStockee=='0'))
+                {
+                    return '';
+                }
+
+                $clRecordLie = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $valStockee);
+                /** @var Record|null $clRecordLie */
+                if (is_null($clRecordLie))
+                {
+                    return "#{$valStockee}#";
+                }
+                return $clRecordLie->getTitle();
             }
 
-            $clRecordLie = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $valStockee);
-            /** @var Record|null $clRecordLie */
-            if (is_null($clRecordLie))
+            default:
             {
-                return "#{$valStockee}#";
+                return $this->m_TabColumnsValues[$idColonne];
             }
-            return $clRecordLie->getTitle();
-        }
-        default:
-        {
-            return $this->m_TabColumnsValues[$idColonne];
-        }
         }
 
     }
