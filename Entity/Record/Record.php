@@ -36,6 +36,11 @@ class Record
      */
     protected $m_TabOptionsRecord;
 
+    /**
+     * @var array
+     */
+    protected $m_TabOptionsLayout;
+
 	/**
 	 * @var InfoColonne[] $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
 	 */
@@ -135,6 +140,43 @@ class Record
         }
     }
 
+
+    /**
+     * @param $option
+     * @param $valeur
+     * @return $this
+     */
+    public function addOptionLayout($option, $valeur)
+    {
+        $this->m_TabOptionsLayout[$option]=$valeur;
+        return $this;
+    }
+    /**
+     * @param $option
+     * @param $valeur
+     * @return $this
+     */
+    public function addOptionsLayout(\SimpleXMLElement $tabAttribut)
+    {
+        foreach($tabAttribut as $name=>$attr)
+        {
+            $this->addOptionLayout($name, (string)$attr);
+        }
+        return $this;
+    }
+
+    /**
+     * @param $option
+     * @return mixed
+     */
+    public function getOptionLayout($option)
+    {
+        if (isset($this->m_TabOptionsLayout[$option]))
+        {
+            return $this->m_TabOptionsLayout[$option];
+        }
+    }
+
     /**
      * renvoi l'identifiant de l'enregistrement
      * @return string
@@ -185,6 +227,14 @@ class Record
 	{
 		return $this->m_clStructElem;
 	}
+
+    /**
+     * @return array
+     */
+    public function aGetTabOptionsLayout()
+    {
+        return $this->m_TabOptionsLayout;
+    }
 
 	/**
 	 * @param InfoColonne $clInfoColonne
@@ -424,7 +474,50 @@ class Record
         return $this;
     }
 
+    public function transformOption2CSSProperty($option)
+    {
+
+        $SIMAXStyleToCSS = array(
+            "color"     => "color",         // Couleur du texte
+            "bgcolor"   => "background",    // Couleur de fond
+            "bold"      => "font-weight",   // Epaisseur (blod..)
+            "italic"    => "font-style"     // Normal, italique..
+        );
+
+        return $SIMAXStyleToCSS[$option];
+
+    }
+
+    public function transformOptionValue2CSSValue($option, $value=null)
+    {
+        if (is_null($value))
+        {
+            $value = $this->getOptionLayout($option);
+        }
+
+        // Si c'est une couleur on doit rajouter le #
+        // Si c'est un 0 ou un 1 on doit envoyer la bonne valeur..
+        // donc ça dépend aussi de l'option
+
+        switch($option)
+        {
+            case "bold":
+            case "italic":
+                return $option;
+
+            case "color":
+            case "bgcolor":
+                return '#'.$value;
+        }
+    }
+
 
     const OPTION_Icon = 'recordIconID';
-    const OPTION_Color = 'recordColor';
+    const OPTION_RColor = 'recordColor';
+
+    const OPTION_Bold = 'bold';
+    const OPTION_Color = 'color';
+    const OPTION_BGColor = 'bgcolor';
+    const OPTION_Italic = 'italic';
+
 }
