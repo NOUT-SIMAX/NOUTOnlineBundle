@@ -12,19 +12,23 @@
                 <xs:element xs:name="id_221686275782379" simax:name="Type de champ liste">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element xs:name="id_223996968187905" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1">
+
+                            <xs:element xs:name="id_223996968187905" simax:name="Réféggrence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1">
                                 <xs:simpleType>
                                     <xs:restriction xs:base="xs:string">
                                         <xs:maxLength xs:value="100"/>
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
+
                             <xs:element xs:name="id_212765711700889" simax:name="Liste Type de champ texte particulier" simax:typeElement="simax-list" simax:detail="1" simax:printed="1" simax:withBtnOrder="1" simax:linkedTableXml="id_227763654533233" simax:linkedTableID="227763654533233" simax:withAddAndRemove="1">
                                 <xs:complexType>
                                     <xs:sequence>
+
                                         <xs:element xs:name="id_227763654533233" simax:name="Liste (Type de champ texte particulier)" xs:minOccurs="0" xs:maxOccurs="unbounded">
                                             <xs:complexType>
                                                 <xs:sequence>
+
                                                     <xs:element xs:name="id_212757038802391" simax:name="Référence" xs:use="required" simax:readOnly="1" simax:titled="1" simax:printed="1" simax:sort="1">
                                                         <xs:simpleType>
                                                             <xs:restriction xs:base="xs:string">
@@ -32,9 +36,11 @@
                                                             </xs:restriction>
                                                         </xs:simpleType>
                                                     </xs:element>
+
                                                     <xs:element xs:name="id_212525193529474" simax:name="Type Texte" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="1" simax:multiColumnMode="1" simax:multiColumnWay="1">
                                                         <xs:complexType>
                                                             <xs:sequence>
+
                                                                 <xs:element xs:name="id_221600376465030" simax:name="NOM (en majuscule)" xs:use="required" simax:titled="1" simax:printed="1" simax:sort="1" simax:transform="uppercase">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -42,6 +48,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_228244690872083" simax:name="Adresse email" simax:printed="1" simax:sort="1" simax:transform="url">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -49,6 +56,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_221419987838868" simax:name="Numéro de téléphone" simax:printed="1" simax:sort="1" simax:phoneNumber="1" simax:textBoxSize="15">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -57,6 +65,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_216794308061233" simax:name="Adresse IP" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -64,6 +73,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_212993262004370" simax:name="Adresse IPV6" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -71,6 +81,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_216888797341969" simax:name="Numéro de Carte Bleu" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -78,6 +89,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_215849415256515" simax:name="Numéro de sécurité sociale" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -85,6 +97,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_224967630826055" simax:name="Site internet" simax:printed="1" simax:sort="1" simax:transform="url">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -92,7 +105,9 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_219792195234449" simax:name="URL" simax:typeElement="xs:string" simax:printed="1" simax:sort="1" simax:transform="url"/>
+
                                                                 <xs:element xs:name="id_211859390638839" simax:name="Code barre" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -100,6 +115,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_212181513186318" simax:name="Domiciliation (RIB)" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -107,6 +123,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_218864527631556" simax:name="Code postal" simax:printed="1" simax:sort="1" simax:textBoxSize="10" simax:postalCode="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -115,6 +132,7 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                                 <xs:element xs:name="id_219534542529955" simax:name="Boîte Postale" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
@@ -123,21 +141,31 @@
                                                                         </xs:restriction>
                                                                     </xs:simpleType>
                                                                 </xs:element>
+
                                                             </xs:sequence>
                                                         </xs:complexType>
                                                     </xs:element>
+
                                                     <xs:unique xs:name="0">
                                                         <xs:selector xs:xpath="id_212525193529474"/>
                                                     </xs:unique>
+
                                                     <xs:element xs:name="id_214479403649419" simax:name="Type Numérique" simax:typeElement="simax-section" simax:printed="1" simax:sectionLevel="1" simax:multiColumnMode="1" simax:multiColumnWay="1">
                                                     <xs:complexType>
+
                                                         <xs:sequence>
+                                                            
                                                             <xs:element xs:name="id_220071413441206" simax:name="Couleur (rvb)" simax:typeElement="xs:integer" simax:printed="1" simax:sort="1" simax:transform="colorRGB"/>
+
                                                             <xs:element xs:name="id_223932589173926" simax:name="Latitude" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+
                                                             <xs:element xs:name="id_223284049112637" simax:name="Longitude" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+
                                                         </xs:sequence>
+
                                                     </xs:complexType>
                                                     </xs:element>
+
                                                     <xs:unique xs:name="0">
                                                         <xs:selector xs:xpath="id_214479403649419"/>
                                                     </xs:unique>
