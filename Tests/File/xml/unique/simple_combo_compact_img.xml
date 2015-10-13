@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+    <env:Header>
+        <ReturnType>Record</ReturnType>
+        <ConnectedUser>
+            <Form title="Utilisateur">1169</Form>
+            <Element title="symfony">29</Element>
+        </ConnectedUser>
+        <ActionContext>29469355014272</ActionContext>
+        <Action title="Créer Type de champ Element" typeAction="2386.000000" typeReturn="Record">218018340249798</Action>
+        <XSDSchema>
+            <xs:schema VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090213541635" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:simax="http://www.nout.fr/XMLSchema">
+                <xs:element xs:name="id_214135689813440" simax:name="Type de champ Element">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element xs:name="id_225723590535171" simax:name="Mois" simax:typeElement="simax-choice" simax:printed="1">
+                                <xs:simpleType>
+                                    <xs:restriction xs:base="xs:string">
+                                        <xs:enumeration xs:value="Janvier" xs:id="13415" simax:icon="228408001798481"/>
+                                        <xs:enumeration xs:value="Février" xs:id="13416"/>
+                                        <xs:enumeration xs:value="Mars" xs:id="13417"/>
+                                        <xs:enumeration xs:value="Avril" xs:id="13418"/>
+                                        <xs:enumeration xs:value="Mai" xs:id="13419"/>
+                                        <xs:enumeration xs:value="Juin" xs:id="13420"/>
+                                        <xs:enumeration xs:value="Juillet" xs:id="13421"/>
+                                        <xs:enumeration xs:value="Août" xs:id="13422"/>
+                                        <xs:enumeration xs:value="Septembre" xs:id="13423"/>
+                                        <xs:enumeration xs:value="Octobre" xs:id="13424"/>
+                                        <xs:enumeration xs:value="Novembre" xs:id="13425"/>
+                                        <xs:enumeration xs:value="Décembre" xs:id="13426" simax:icon="223631998150927"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="226101468700871" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="212933098971336" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:schema>
+        </XSDSchema>
+        <Form title="Type de champ Element">214135689813440</Form>
+        <Element title="TCE00002">29477944948864</Element>
+    </env:Header>
+    <env:Body>
+        <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
+            <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090213541635" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
+                <id_214135689813440 simax:id="29477944948864" simax:title="TCE00002" simax:xsdLevel="0">
+                    <id_225723590535171>13415</id_225723590535171>
+                </id_214135689813440>
+            </xml>
+        </ExecuteResponse>
+    </env:Body>
+</env:Envelope>
