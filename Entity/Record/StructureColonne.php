@@ -221,21 +221,45 @@ abstract class StructureColonne
 
 	/**
 	 * @return string
+	 *
+	 * Retourne le type de formulaire Symfony correspondant
 	 */
 	public function getFormType()
 	{
-        if ($this->m_eTypeElement != self::TM_Texte)
-        {
-            return str_replace(array(':','-'), array('_','_'), $this->m_eTypeElement);
-        }
-        //dans le cas d'un texte, il faut vérifier s'il y a pas des restrictions
-        if (    is_null($this->m_clRestriction)
-            || !$this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH))
-        {
-            return str_replace(array(':','-'), array('_','_'), self::TM_TexteMultiLigne);
-        }
+		switch ($this->m_eTypeElement)
+		{
+			case self::TM_Entier :
+			{
+				if ($this->getOption(self::OPTION_Transform) == self::OPTION_Transform_Color)
+				{
+					return 'simax_color';
+				}
+				else
+				{
+					return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
+				}
 
-        return str_replace(array(':','-'), array('_','_'), self::TM_Texte);
+			}
+			case self::TM_Texte :
+			{
+				if (!is_null($this->m_clRestriction) &&
+					($this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH))
+				)
+				{
+					// Texte mono-ligne
+					return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
+				}
+				else
+				{
+					// Texte multi-ligne (car pas de restriction de nombre de caractères)
+					return str_replace(array(':', '-'), array('_', '_'), self::TM_TexteMultiLigne);
+				}
+			}
+			default : // Correspond au != self::TM_Texte
+			{
+				return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
+			}
+		}
 	}
 
 
@@ -279,6 +303,7 @@ abstract class StructureColonne
 	const OPTION_Disabled = "disabled";
 
 	const OPTION_Required = "required";
+	const OPTION_Transform = "transform";
 
 
 	// Attributs pour element d'un tableau
@@ -335,6 +360,7 @@ abstract class StructureColonne
 	const OPTION_Modele_WithSecond    = "withSecond";
 	const OPTION_Modele_PositionVideo = "videoPosition";
 	const OPTION_Modele_IDColLinked   = "columnLinked";
+	const OPTION_Transform_Color	  = "colorRGB";
 
     const FUSIONTYPE_Aucun = 0;
     const FUSIONTYPE_Bouton = 1;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:simax="http://www.nout.fr/soap">
+
     <env:Header>
         <ReturnType>Record</ReturnType>
         <ConnectedUser>
@@ -26,13 +27,15 @@
         <Form title="Type de champ numérique particulier">224332021133723</Form>
         <Element title="TCNP0001">18426994095436</Element>
     </env:Header>
+
     <env:Body>
         <ExecuteResponse xmlns="http://www.nout.fr/wsdl/SimaxService.wsdl/">
             <xml VERSION="1" VERSION_LECTECRIT="1" VERSION_LECTURE="1" DATEHEURE="2015090213532485" xmlns:simax="http://www.nout.fr/XML/" xmlns:simax-layout="http://www.nout.fr/XML/layout">
                 <id_224332021133723 simax:id="18426994095436" simax:title="TCNP0001" simax:xsdLevel="0">
-                    <id_220071413441206>000000</id_220071413441206>
+                    <id_220071413441206>11141290</id_220071413441206>
                 </id_224332021133723>
             </xml>
         </ExecuteResponse>
     </env:Body>
+
 </env:Envelope>
