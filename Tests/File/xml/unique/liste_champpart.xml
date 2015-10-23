@@ -82,7 +82,7 @@
                                                                     </xs:simpleType>
                                                                 </xs:element>
 
-                                                                <xs:element xs:name="id_216888797341969" simax:name="Numéro de Carte Bleu" simax:printed="1" simax:sort="1">
+                                                                <xs:element xs:name="id_216888797341969" simax:name="Numéro de Carte Bleu" simax:creditCard="1" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
                                                                             <xs:maxLength xs:value="100"/>
@@ -90,7 +90,7 @@
                                                                     </xs:simpleType>
                                                                 </xs:element>
 
-                                                                <xs:element xs:name="id_215849415256515" simax:name="Numéro de sécurité sociale" simax:printed="1" simax:sort="1">
+                                                                <xs:element xs:name="id_215849415256515" simax:name="Numéro de sécurité sociale" simax:socialSecurity="1" simax:printed="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
                                                                             <xs:maxLength xs:value="100"/>
@@ -116,7 +116,7 @@
                                                                     </xs:simpleType>
                                                                 </xs:element>
 
-                                                                <xs:element xs:name="id_212181513186318" simax:name="Domiciliation (RIB)" simax:printed="1" simax:sort="1">
+                                                                <xs:element xs:name="id_212181513186318" simax:name="Domiciliation (RIB)" simax:printed="1" simax:bankDetails="1" simax:sort="1">
                                                                     <xs:simpleType>
                                                                         <xs:restriction xs:base="xs:string">
                                                                             <xs:maxLength xs:value="100"/>
@@ -157,9 +157,9 @@
                                                             
                                                             <xs:element xs:name="id_220071413441206" simax:name="Couleur (rvb)" simax:typeElement="xs:integer" simax:printed="1" simax:sort="1" simax:transform="colorRGB"/>
 
-                                                            <xs:element xs:name="id_223932589173926" simax:name="Latitude" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+                                                            <xs:element xs:name="id_223932589173926" simax:name="Latitude" simax:typeElement="xs:float" simax:printed="1" simax:latitude="1" simax:sort="1"/>
 
-                                                            <xs:element xs:name="id_223284049112637" simax:name="Longitude" simax:typeElement="xs:float" simax:printed="1" simax:sort="1"/>
+                                                            <xs:element xs:name="id_223284049112637" simax:name="Longitude" simax:typeElement="xs:float" simax:printed="1" simax:longitude="1" simax:sort="1"/>
 
                                                         </xs:sequence>
 
@@ -224,8 +224,8 @@
                     </id_212525193529474>
                     <id_214479403649419>
                         <id_220071413441206>0</id_220071413441206>
-                        <id_223932589173926>0.000000</id_223932589173926>
-                        <id_223284049112637>0.000000</id_223284049112637>
+                        <id_223932589173926>40.76</id_223932589173926>
+                        <id_223284049112637>-73.984</id_223284049112637>
                     </id_214479403649419>
                 </id_227763654533233>
                 <id_227763654533233 simax:id="213160848699302" simax:title="TCTP0002 LAFOURCADE" simax:xsdLevel="1">
@@ -237,8 +237,8 @@
                         <id_216794308061233/>
                         <id_212993262004370/>
                         <id_216888797341969/>
-                        <id_215849415256515/>
-                        <id_224967630826055/>
+                        <id_215849415256515>188093403204963</id_215849415256515>
+                        <id_224967630826055>http://www.nout.fr</id_224967630826055>
                         <id_219792195234449/>
                         <id_211859390638839/>
                         <id_212181513186318/>

@@ -79,12 +79,22 @@ abstract class StructureColonne
 	}
 
     /**
-     * @return StructureElement|null
+     * @return array|null
      */
     public function getStructureElementLie()
     {
         return $this->m_clStructureElemLie;
     }
+
+	/**
+     * @return StructureElement|null
+     */
+    public function getTabOptions()
+    {
+        return $this->m_TabOptions;
+    }
+
+
 
     /**
      * pour savoir si fusion de colonne pour le multi-colonne
@@ -352,15 +362,18 @@ abstract class StructureColonne
 	const OPTION_AttributID = "id";
 
 	// Attributs liés au modele
-	const OPTION_Modele_PhoneNumber   = "phoneNumber";
-	const OPTION_Modele_Directory     = "directory";
-	const OPTION_Modele_PostalCode    = "postalCode";
-	const OPTION_Modele_City          = "City";
-	const OPTION_Modele_InputMask     = "inputMask";
-	const OPTION_Modele_WithSecond    = "withSecond";
-	const OPTION_Modele_PositionVideo = "videoPosition";
-	const OPTION_Modele_IDColLinked   = "columnLinked";
-	const OPTION_Transform_Color	  = "colorRGB";
+	const OPTION_Modele_PhoneNumber		= "phoneNumber";
+	const OPTION_Modele_CreditCard    	= "creditCard";
+	const OPTION_Modele_SocialSecurity	= "socialSecurity";
+	const OPTION_Modele_BankDetails		= "bankDetails";
+	const OPTION_Modele_Directory		= "directory";
+	const OPTION_Modele_PostalCode		= "postalCode";
+	const OPTION_Modele_City			= "city";
+	const OPTION_Modele_InputMask		= "inputMask";
+	const OPTION_Modele_WithSecond		= "withSecond";
+	const OPTION_Modele_PositionVideo	= "videoPosition";
+	const OPTION_Modele_IDColLinked		= "columnLinked";
+	const OPTION_Transform_Color		= "colorRGB";
 
     const FUSIONTYPE_Aucun = 0;
     const FUSIONTYPE_Bouton = 1;
