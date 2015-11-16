@@ -71,7 +71,7 @@ class ColonneRestriction
 	}
 
 	/**
-	 * @return string
+	 * @return mixed
 	 */
 	public function getRestriction($type)
 	{

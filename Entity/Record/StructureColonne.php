@@ -276,14 +276,15 @@ abstract class StructureColonne
 	const TM_Invalide = null;
 
 	//type simple
-	const TM_Booleen   = 'xs:boolean';
-	const TM_Entier    = 'xs:integer';
-	const TM_Texte     = 'xs:string';
-	const TM_DateHeure = 'xs:dateTime';
-	const TM_Date      = 'xs:date';
-	const TM_Heure     = 'xs:time';
-	const TM_Reel      = 'xs:float';
-	const TM_Monetaire = 'xs:decimal';
+	const TM_Booleen   	= 'xs:boolean';
+	const TM_Entier    	= 'xs:integer';
+	const TM_Texte     	= 'xs:string';
+	const TM_DateHeure 	= 'xs:dateTime';
+	const TM_Date      	= 'xs:date';
+	const TM_Heure     	= 'xs:time';
+	const TM_Reel      	= 'xs:float';
+	const TM_Monetaire 	= 'xs:decimal';
+	const TM_Duree 		= 'xs:duration';
     //n'existe dans le xsd, pour cohérence de code
     const TM_TexteMultiLigne = 'xs:multilinestring';
 
@@ -345,6 +346,7 @@ abstract class StructureColonne
 	const OPTION_IDBouton       = "idButton";
 	const OPTION_Sentence       = "sentence";
 	const OPTION_TypeAction     = "actionType";
+	const OPTION_IDTypeAction   = "actionTypeID";
 	const OPTION_TypeSelection  = "typeSelection";
 	const OPTION_Icone          = "icon";
 	const OPTION_WithValidation = "withValidation";
@@ -373,7 +375,17 @@ abstract class StructureColonne
 	const OPTION_Modele_WithSecond		= "withSecond";
 	const OPTION_Modele_PositionVideo	= "videoPosition";
 	const OPTION_Modele_IDColLinked		= "columnLinked";
-	const OPTION_Transform_Color		= "colorRGB";
+	const OPTION_Modele_Company			= "siret";
+	const OPTION_Modele_Latitude		= "latitude";
+	const OPTION_Modele_Longitude		= "longitude";
+
+	// Attributs de transformation
+	const OPTION_Transform_Color			= "colorRGB";
+	const OPTION_Transform_Uppercase		= "uppercase";
+	const OPTION_Transform_FirstUppercase	= "firstUppercase";
+	const OPTION_Transform_Url				= "url";
+	const OPTION_Transform_Video			= "video";
+	const OPTION_Transform_Secret			= "secret";
 
     const FUSIONTYPE_Aucun = 0;
     const FUSIONTYPE_Bouton = 1;
