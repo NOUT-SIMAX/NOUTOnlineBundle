@@ -31,6 +31,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
@@ -565,6 +566,45 @@ class NOUTClient
 	}
 
 	/**
+	 * Execute une action via son id
+	 * @param $sIDAction
+	 * @param string $sIDContexte
+	 * @param array $aTabParam
+	 * @param string $sIDCallingColumn
+	 * @param SpecialParamListType $oParamListe
+	 * @param string $sDisplayMode
+	 * @param string $sChecksum
+	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+	 */
+	public function oExecList($sIDTableau, $sIDContexte = '', $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+	{
+		//paramètre de l'action liste
+		$clParamListe     = new ListParams();
+        $clParamListe->Table = $sIDTableau;
+
+		//$clParamExecute->Sentence                            // phrase de l'action
+        $clParamListe->SpecialParamList = $oParamListe;      //paramètre supplémentaire pour les listes
+        $clParamListe->Checksum         = $sChecksum;        // checksum pour utilisation du cache
+        $clParamListe->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
+        $clParamListe->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
+        // $clParamListe->ParamXML         = $aTabParam;               // paramètre de l'action -  valeurs des filtres
+
+		//header
+		$aTabHeaderSuppl = array();
+		if (!empty($sIDContexte))
+		{
+			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+		}
+
+//        $clParamListe->SpecialParamList->First=0;
+//        $clParamListe->SpecialParamList->Length=0;
+
+        $clReponseXML = $this->m_clSOAPProxy->listAction($clParamListe, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+	}
+
+	/**
 	 * @param Execute $clParamExecute
 	 * @param array   $aTabHeaderSuppl
 	 * @return ActionResult
@@ -587,51 +627,74 @@ class NOUTClient
 
 		switch ($clActionResult->ReturnType)
 		{
-		case XMLResponseWS::RETURNTYPE_EMPTY:
+            case XMLResponseWS::RETURNTYPE_EMPTY:
                 break; //on ne fait rien de plus
-		case XMLResponseWS::RETURNTYPE_VALUE:
-		case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
-		case XMLResponseWS::RETURNTYPE_CHART:
-		case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
 
-		case XMLResponseWS::RETURNTYPE_LIST:
+            case XMLResponseWS::RETURNTYPE_VALUE:
+            case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
+            case XMLResponseWS::RETURNTYPE_CHART:
+            case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
 
-		case XMLResponseWS::RETURNTYPE_XSD:
-		case XMLResponseWS::RETURNTYPE_IDENTIFICATION:
-		case XMLResponseWS::RETURNTYPE_PLANNING:
-		case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
-		case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
-		case XMLResponseWS::RETURNTYPE_EXCEPTION:
+            case XMLResponseWS::RETURNTYPE_XSD:
+            case XMLResponseWS::RETURNTYPE_IDENTIFICATION:
+            case XMLResponseWS::RETURNTYPE_PLANNING:
+            case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
+            case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
+            case XMLResponseWS::RETURNTYPE_EXCEPTION:
 
-		case XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION:
-		case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
-		case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
-		case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
+            case XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION:
+            case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
+            case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
+            case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
 
-		case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
-		case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
-		case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
-		case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
-			{
-				throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
-			}
+            case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
+            case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
+            case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
+            case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
+            {
+                throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
+            }
 
-		case XMLResponseWS::RETURNTYPE_REPORT:
-			{
-				$clActionResult->setData($clReponseXML->sGetReport());
-				break;
-			}
+            case XMLResponseWS::RETURNTYPE_REPORT:
+            {
+                $clActionResult->setData($clReponseXML->sGetReport());
+                break;
+            }
 
-		case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
-		case XMLResponseWS::RETURNTYPE_RECORD:
-			{
+            case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
+            case XMLResponseWS::RETURNTYPE_RECORD:
+            {
+                $clResponseParser = new ReponseWSParser();
+                $clParser=$clResponseParser->InitFromXmlXsd($clReponseXML);
+
+                $clActionResult->setData($clParser->getRecord($clReponseXML));
+                $clActionResult->setValidateError($clReponseXML->getValidateError());
+
+                break;
+            }
+
+            case XMLResponseWS::RETURNTYPE_LIST:
+            {
+                // Données à disposition
+                // $clActionResult
+                // $clReponseXML
+
+                // Instance d'un parseur
 				$clResponseParser = new ReponseWSParser();
 				$clParser=$clResponseParser->InitFromXmlXsd($clReponseXML);
 
-				$clActionResult->setData($clParser->getRecord($clReponseXML));
-				$clActionResult->setValidateError($clReponseXML->getValidateError());
-				break;
-			}
+                // dump($clParser);
+                // clParser est bien du type ParserList mais n'a pas encore les données
+
+                // getList renvoit un RecordList
+                $list = $clParser->getList($clReponseXML);
+                // dump($list);
+
+                $clActionResult->setData($list);
+                $clActionResult->setValidateError($clReponseXML->getValidateError());
+
+                break;
+            }
 		}
 
 		return $clActionResult;
