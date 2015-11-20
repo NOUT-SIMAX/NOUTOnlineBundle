@@ -17,7 +17,8 @@ class ListParams
 {
 	public $Table; // string
 	public $ParamXML; // string
-	public $SpecialParamList; // SpecialParamListType
+	/** @var  SpecialParamListType */
+	public $SpecialParamList;
 	public $CallingColumn; // string
 	public $NoCache; // integer
 	public $Checksum; // integer
