@@ -16,13 +16,13 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 
 class SpecialParamListType
 {
-	public $First; // integer
-	public $Length; // integer
-	public $WithBreakRow; // integer
-	public $WithEndCalculation; // integer
-	public $ChangePage; // integer
-	public $Sort1; // SortType
-	public $Sort2; // SortType
-	public $Sort3; // SortType
+	public $First; 				// integer
+	public $Length; 			// integer
+	public $WithBreakRow; 		// integer
+	public $WithEndCalculation;	// integer
+	public $ChangePage; 		// integer
+	public $Sort1; 				// SortType
+	public $Sort2; 				// SortType
+	public $Sort3; 				// SortType
 }
 //***
