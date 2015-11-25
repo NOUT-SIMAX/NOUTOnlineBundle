@@ -582,10 +582,10 @@ class NOUTClient
 		$clParamListe     = new ListParams();
         $clParamListe->Table = $sIDTableau;
 
-		//$clParamExecute->Sentence                            // phrase de l'action
-        $clParamListe->SpecialParamList = $oParamListe;      //paramètre supplémentaire pour les listes
-        $clParamListe->Checksum         = $sChecksum;        // checksum pour utilisation du cache
-        $clParamListe->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
+		//$clParamExecute->Sentence								// phrase de l'action
+        $clParamListe->SpecialParamList = $oParamListe;      	//paramètre supplémentaire pour les listes
+        $clParamListe->Checksum         = $sChecksum;        	// checksum pour utilisation du cache
+        $clParamListe->CallingColumn    = $sIDCallingColumn; 	// identifiant de la colonne d'appel
         $clParamListe->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
         // $clParamListe->ParamXML         = $aTabParam;               // paramètre de l'action -  valeurs des filtres
 
@@ -596,8 +596,27 @@ class NOUTClient
 			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
 		}
 
-//        $clParamListe->SpecialParamList->First=0;
-//        $clParamListe->SpecialParamList->Length=0;
+        // TODO
+		// ICI on doit récupérer l'URL
+
+        // The type of URL made by webix on "Scroll" or "Next"
+        // e.g. "data/data_dyn.php?continue=true&count=100&start=130
+
+        // Le composant Webix fabrique alors l'URL
+        // On en récupère les paramètres
+        /*
+        $continue   = $_GET["continue"];
+        $count      = $_GET["count"];
+        $start      = $_GET["start"];
+        */
+
+        $start = 0;
+        $count = 20;
+
+        // à faire de la forme ?first=___&size=___
+        // Dans webix : size // group //page
+        $clParamListe->SpecialParamList->First = $start;
+        $clParamListe->SpecialParamList->Length = $count;
 
         $clReponseXML = $this->m_clSOAPProxy->listAction($clParamListe, $this->_aGetTabHeader($aTabHeaderSuppl));
 
