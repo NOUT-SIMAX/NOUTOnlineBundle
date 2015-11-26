@@ -208,7 +208,12 @@ class NOUTClient
 		$oToken = $this->_oGetToken();
 		$oUser  =  $oToken->getUser();
 
-		$clIdentification->m_clUsernameToken   = new UsernameToken($oUser->getUsername(), $oUser->getPassword());
+		$clIdentification->m_clUsernameToken   = new UsernameToken(
+            $oUser->getUsername(),
+            $oUser->getPassword(),
+            $this->m_clConfigurationDialogue->getModeAuth(),
+            $this->m_clConfigurationDialogue->getSecret()
+            );
 		$clIdentification->m_sTokenSession     = $oToken->getSessionToken();
 		$clIdentification->m_sIDContexteAction = $sIDContexteAction;
 		$clIdentification->m_bAPIUser          = $bAPIUser;
@@ -228,7 +233,11 @@ class NOUTClient
 		$oUser  =  $oToken->getUser();
 
 		$aTabHeader = array(
-			SOAPProxy::HEADER_UsernameToken  => new UsernameToken($oUser->getUsername(), $oUser->getPassword()),
+			SOAPProxy::HEADER_UsernameToken  => new UsernameToken(
+                $oUser->getUsername(),
+                $oUser->getPassword(),
+                $this->m_clConfigurationDialogue->getModeAuth(),
+                $this->m_clConfigurationDialogue->getSecret()),
 			SOAPProxy::HEADER_SessionToken   => $oToken->getSessionToken(),
 			SOAPProxy::HEADER_OptionDialogue => $this->_clGetOptionDialogue(),
 		);
