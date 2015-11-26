@@ -71,6 +71,11 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 	 */
 	private $m_clClientInformation;
 
+    /**
+     * @var ConfigurationDialogue
+     */
+    private $m_clConfigDialogue;
+
 
 
 	/**
@@ -107,6 +112,7 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		$this->encoderFactory = $encoderFactory; // usually this is responsible for validating passwords
 
 		$this->m_clClientInformation = $clClientInfo;
+        $this->m_clConfigDialogue = $configurationDialogue;
 		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
 		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 	}
@@ -169,7 +175,12 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 			$authenticatedToken->setIP($this->m_clClientInformation->getIP());
 
 			$clIdentification = new Identification();
-			$clIdentification->m_clUsernameToken = new UsernameToken($user->getUsername(), $user->getPassword());
+			$clIdentification->m_clUsernameToken = new UsernameToken(
+                $user->getUsername(),
+                $user->getPassword(),
+                $this->m_clConfigDialogue->getModeAuth(),
+                $this->m_clConfigDialogue->getSecret()
+            );
 			$clIdentification->m_sTokenSession = $sTokenSession;
 			$clIdentification->m_sIDContexteAction = '';
 			$clIdentification->m_bAPIUser = true;
@@ -227,8 +238,13 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		{
 			$presentedPassword = $token->getCredentials();
 
-			$oTokenSession = new GetTokenSession();
-			$oTokenSession->UsernameToken = new UsernameToken($user->getUsername(), $presentedPassword);
+            $UsernameToken = new UsernameToken(
+                $user->getUsername(),
+                $presentedPassword,
+                $this->m_clConfigDialogue->getModeAuth(),
+                $this->m_clConfigDialogue->getSecret());
+
+            $oTokenSession = $this->m_clSOAPProxy->GenereTokenSession($UsernameToken);
 
 			try
 			{
