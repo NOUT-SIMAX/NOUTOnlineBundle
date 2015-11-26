@@ -13,8 +13,20 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 
 class ConnectionManager
 {
-	public function __construct()
+    /**
+     * @var string
+     */
+    protected $m_sModeAuth;
+
+    /**
+     * @var string
+     */
+    protected $m_sSecret;
+
+	public function __construct($mode, $secret)
 	{
+        $this->m_sModeAuth = $mode;
+        $this->m_sSecret = $secret;
 	}
 
 	/**
@@ -29,13 +41,13 @@ class ConnectionManager
 		{
 		default:
 		case 0:
-			$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', '');
+			$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', '', $this->m_sModeAuth, $this->m_sSecret);
 			break;
 		case 1:
-			$clGetTokenSession->UsernameToken = new UsernameToken('superviseureeeeeeeee', '');
+			$clGetTokenSession->UsernameToken = new UsernameToken('superviseureeeeeeeee', '', $this->m_sModeAuth, $this->m_sSecret);
 			break;
 		case 2:
-			$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', 'aze');
+			$clGetTokenSession->UsernameToken = new UsernameToken('superviseur', 'aze', $this->m_sModeAuth, $this->m_sSecret);
 			break;
 		}
 
@@ -44,6 +56,6 @@ class ConnectionManager
 
 	public function getUsernameToken()
 	{
-		return new UsernameToken('superviseur', '');
+		return new UsernameToken('superviseur', '', $this->m_sModeAuth, $this->m_sSecret);
 	}
 }

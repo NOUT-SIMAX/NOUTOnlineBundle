@@ -5,6 +5,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
@@ -110,11 +111,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	private $__sVersionWSDL;
 
-	/**
-	 * système de cache
-	 * @var NOUTCache
-	 */
-	private $__clCache;
+    /**
+     * @var GestionWSDL
+     */
+    private $__clGestionWSDL;
 
 	/**
 	 * @var ClientInformation
@@ -142,15 +142,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    $this->__clLogger = $_clLogger;
 
 	    //il faut lire le début de endpoint pour avoir la version de la wsdl
-	    $this->__clCache = $cache;
-	    if (file_exists($clConfig->getWSDLUri()))
-	    {
-		    $fHandle = fopen($clConfig->getWSDLUri(), "r");
-		    $sDebutWSDL = fgets($fHandle, 250);
-		    fclose($fHandle);
-
-		    $this->__sVersionWSDL = md5($sDebutWSDL, false);
-	    }
+        $this->__clGestionWSDL = new GestionWSDL($cache, $clConfig->getWSDLUri());
     }
 
 
@@ -179,13 +171,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	function _loadWSDLFromCache()
 	{
-		if (!isset($this->__clCache) || empty($this->__sVersionWSDL))
-			return false;
-
-		if ($this->__clCache->contains($this->__sVersionWSDL))
-			return $this->__clCache->fetch($this->__sVersionWSDL);
-
-		return false;
+        return $this->__clGestionWSDL->load();
 	}
 
 	/**
@@ -193,10 +179,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	function _saveWSDLInCache()
 	{
-		if (!isset($this->__clCache) || empty($this->__sVersionWSDL))
-			return ;
-
-		$this->__clCache->save($this->__sVersionWSDL, $this->wsdl, $this->__ConfigurationDialogue->getDureeSession());
+        $this->__clGestionWSDL->save($this->wsdl, $this->__ConfigurationDialogue->getDureeSession());
 	}
 
 	/**
@@ -494,7 +477,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    catch(\Exception $e)
 	    {
 		    if (isset($this->__clLogger)) //log des requetes
-		        $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true);
+            {
+                $sError = empty($this->response) ? $this->error_str : $this->response;
+                $this->__clLogger->stopQuery($this->request, $sError, $sOperation, true);
+            }
 
 		    throw $e;
 	    }
@@ -516,7 +502,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	public function getXMLResponseWS()
 	{
 		if (empty($this->responseData))
-			throw new SOAPException('La réponse du service est vide');
+        {
+            throw new SOAPException('La réponse du service est vide ('.$this->error_str.')');
+        }
 
 		//retourne un XMLResponseWS qui permet de manipuler la réponse
 		return new XMLResponseWS($this->responseData);
@@ -1021,6 +1009,29 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
 	    return $this->call('GetTokenSession', array($clWsdlType_GetTokenSession) , null, null , $aHeaders);
     }
+
+    /**
+     * @param UsernameToken $username
+     * @param UsernameToken $extranetUser
+     * @param null          $defaultLangage
+     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession
+     */
+    public function GenereTokenSession(UsernameToken $username, UsernameToken $extranetUser=null, $defaultLangage=null)
+    {
+        $GetTokenSession = new \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession();
+        $GetTokenSession->UsernameToken = $this->__clGestionWSDL->getParamForGetTokenSession($username);
+        if (!is_null($extranetUser))
+        {
+            $GetTokenSession->ExtranetUser = $extranetUser;
+        }
+        if (!is_null($defaultLangage))
+        {
+            $GetTokenSession->DefaultClientLanguageCode = $defaultLangage;
+        }
+
+        return $GetTokenSession;
+    }
+
     //---
 
     /**

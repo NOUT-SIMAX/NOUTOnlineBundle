@@ -55,6 +55,7 @@ class Configuration implements ConfigurationInterface
             ->defaultValue('8052')
             ->end()//integerNode('port')
             ->scalarNode('apiuuid')->end()
+            ->scalarNode('mode_auth')->end()
             ->end()//children
         ;
         return $treeBuilder;

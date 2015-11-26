@@ -60,7 +60,27 @@ class ConfigurationDialogue
 	 */
 	protected $m_sSociete;
 
-	public function __construct($sHost = '', $sPort = 0, $sProtocolPrefix = 'http://', $sAPIUUID = '', $sVersion='', $sSociete='')
+
+    /**
+     * @var string
+     */
+    protected $m_sModeAuth;
+
+    /**
+     * @var string
+     */
+    protected $m_sSecret;
+
+	public function __construct(
+        $sHost = '',
+        $sPort = 0,
+        $sProtocolPrefix = 'http://',
+        $sAPIUUID = '',
+        $sVersion='',
+        $sSociete='',
+        $sModeAuth='',
+        $sSecret=''
+    )
 	{
 		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
@@ -75,6 +95,9 @@ class ConfigurationDialogue
 
 		$this->m_sVersion=$sVersion;
 		$this->m_sSociete=$sSociete;
+
+        $this->m_sModeAuth = $sModeAuth;
+        $this->m_sSecret = $sSecret;
 	}
 
 	public function Init($sWSDLUri, $bWsdl = false, $sHost = false, $sPort = false, $sProtocolPrefix = 'http://')
@@ -94,6 +117,22 @@ class ConfigurationDialogue
 		$this->m_sServiceAddress = $this->m_sProtocolPrefix.$sAddress.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
 	}
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->m_sSecret;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModeAuth()
+    {
+        return $this->m_sModeAuth;
+    }
 
 	/**
 	 * @return boolean
