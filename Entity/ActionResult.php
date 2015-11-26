@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\ContextsBundle\Entity;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
@@ -43,6 +44,12 @@ class ActionResult
 	 * @var ValidateError
 	 */
 	private $m_clValidateError;
+
+
+    /**
+     * @var Count
+     */
+    private $m_clCount;
 
 
 	/**
@@ -214,4 +221,21 @@ class ActionResult
 	{
 		return $this->m_clCache;
 	}
+
+    /**
+     * @return Count
+     */
+    public function getCount()
+    {
+        return $this->m_clCount;
+    }
+
+    /**
+     * @param Count $m_clCount
+     */
+    public function setCount(Count $m_clCount)
+    {
+        $this->m_clCount = $m_clCount;
+        return $this;
+    }
 }

@@ -718,8 +718,10 @@ class NOUTClient
                 $list = $clParser->getList($clReponseXML);
                 // dump($list);
 
-                $clActionResult->setData($list);
-                $clActionResult->setValidateError($clReponseXML->getValidateError());
+                $clActionResult
+                    ->setData($list)
+                    ->setValidateError($clReponseXML->getValidateError())
+                    ->setCount($clReponseXML->clGetCount());
 
                 break;
             }
