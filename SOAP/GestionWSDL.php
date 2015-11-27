@@ -117,28 +117,26 @@ class GestionWSDL
 
     public function getParamForGetTokenSession(UsernameToken $Username)
     {
-        if ($this->m_dVersion >= 1548.01)
+        if (($this->m_dVersion >= 1548.01) && $Username->bCrypted())
         {
             $aParamTokenSession = array(
                 'Username'=>$Username->Username,
                 'Nonce'=>$Username->Nonce,
                 'Created'=>$Username->Created,
-                'Password'=>array(
-                    '!'=>$Username->Password,
-                )
+                'Password'=>$Username->Password,
             );
 
             if ($Username->bCrypted())
             {
-                $aParamTokenSession['Password']['md5']=$Username->CryptMd5;
-                $aParamTokenSession['Password']['encryption']=$Username->getMode();
+                $aParamTokenSession['Encryption']['!']=$Username->getMode();
+                $aParamTokenSession['Encryption']['md5']=$Username->CryptMd5;
                 if (isset($Username->CryptIV))
                 {
-                    $aParamTokenSession['Password']['iv']=$Username->CryptIV;
+                    $aParamTokenSession['Encryption']['iv']=$Username->CryptIV;
                 }
                 if (isset($Username->CryptKS))
                 {
-                    $aParamTokenSession['Password']['ks']=$Username->CryptKS;
+                    $aParamTokenSession['Encryption']['ks']=$Username->CryptKS;
                 }
             }
             return $aParamTokenSession;

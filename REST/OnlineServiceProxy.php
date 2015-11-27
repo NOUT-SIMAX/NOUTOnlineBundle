@@ -118,8 +118,8 @@ class OnlineServiceProxy
 
         if ($usernameToken->bCrypted())
         {
-            $sBottom .= '&md5=' . urlencode($usernameToken->CryptMd5);
             $sBottom .= '&encryption=' . urlencode($usernameToken->getMode());
+            $sBottom .= '&md5=' . urlencode($usernameToken->CryptMd5);
             if (isset($usernameToken->CryptIV))
             {
                 $sBottom .= '&iv=' . urlencode($usernameToken->CryptIV);
