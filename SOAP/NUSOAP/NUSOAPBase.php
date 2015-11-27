@@ -410,8 +410,26 @@ class NUSOAPBase {
 			$type_prefix = 'ns'.rand(1000,9999);
 			$xmlns .= " xmlns:$type_prefix=\"$type_ns\"";
 		}
-		// serialize attributes if present
-		$atts = '';
+
+        //on regarde s'il faut pas sortir des attributs du tableau
+        if (is_array($val) && isset($val['!']))        {
+            if (!is_array($attributes)){
+                $attributes = array();
+            }
+            foreach($val as $k => $v){
+                if ($k == '!') {
+                    continue;
+                }
+                $attributes[$k]=$v;
+            }
+
+            $val = $val['!'];
+        }
+
+
+
+        // serialize attributes if present
+        $atts = '';
 		if($attributes){
 			foreach($attributes as $k => $v){
 				$atts .= " $k=\"".$this->expandEntities($v).'"';

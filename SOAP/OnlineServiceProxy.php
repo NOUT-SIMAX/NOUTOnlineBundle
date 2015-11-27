@@ -466,7 +466,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 	    //
 	    if (isset($this->__clLogger)) //log des requetes
-		    $this->__clLogger->startQuery();
+        {
+            $this->__clLogger->startQuery();
+        }
 
 	    try
 	    {
@@ -488,7 +490,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 
 	    if (isset($this->__clLogger)) //log des requetes
-		    $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true);
+        {
+            $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true);
+        }
 
 	    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
         return $this->getXMLResponseWS();
@@ -1012,24 +1016,11 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
     /**
      * @param UsernameToken $username
-     * @param UsernameToken $extranetUser
-     * @param null          $defaultLangage
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession
+     * @return array|UsernameToken
      */
-    public function GenereTokenSession(UsernameToken $username, UsernameToken $extranetUser=null, $defaultLangage=null)
+    public function getUsernameTokenForWdsl(UsernameToken $username)
     {
-        $GetTokenSession = new \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession();
-        $GetTokenSession->UsernameToken = $this->__clGestionWSDL->getParamForGetTokenSession($username);
-        if (!is_null($extranetUser))
-        {
-            $GetTokenSession->ExtranetUser = $extranetUser;
-        }
-        if (!is_null($defaultLangage))
-        {
-            $GetTokenSession->DefaultClientLanguageCode = $defaultLangage;
-        }
-
-        return $GetTokenSession;
+        return $this->__clGestionWSDL->getParamForGetTokenSession($username);
     }
 
     //---

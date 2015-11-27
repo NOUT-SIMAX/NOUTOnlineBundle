@@ -10,6 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 
 class GestionWSDL
 {
@@ -114,7 +115,7 @@ class GestionWSDL
     }
 
 
-    public function getParamForGetTokenSession($Username)
+    public function getParamForGetTokenSession(UsernameToken $Username)
     {
         if ($this->m_dVersion >= 1548.01)
         {
@@ -127,10 +128,10 @@ class GestionWSDL
                 )
             );
 
-            if (!empty($Username->CryptMode))
+            if ($Username->bCrypted())
             {
                 $aParamTokenSession['Password']['md5']=$Username->CryptMd5;
-                $aParamTokenSession['Password']['encryption']=$Username->CryptMode;
+                $aParamTokenSession['Password']['encryption']=$Username->getMode();
                 if (isset($Username->CryptIV))
                 {
                     $aParamTokenSession['Password']['iv']=$Username->CryptIV;

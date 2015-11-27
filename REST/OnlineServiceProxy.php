@@ -79,12 +79,7 @@ class OnlineServiceProxy
 			return '';
 		}
 
-		$sBottom = '!';
-
-		$sBottom .= 'Username='.urlencode($clIdentification->m_clUsernameToken->Username);
-		$sBottom .= '&Password='.urlencode($clIdentification->m_clUsernameToken->Password);
-		$sBottom .= '&nonce='.urlencode($clIdentification->m_clUsernameToken->Nonce);
-		$sBottom .= '&created='.urlencode($clIdentification->m_clUsernameToken->Created);
+		$sBottom = '!'.$this->__sGetUsernameToken($clIdentification->m_clUsernameToken);
 
 		if (!empty($clIdentification->m_sTokenSession))
 		{
@@ -109,6 +104,34 @@ class OnlineServiceProxy
 
 		return $sBottom;
 	}
+
+    /**
+     * @param UsernameToken $usernameToken
+     * @return string la partie username token
+     */
+    private function __sGetUsernameToken(UsernameToken $usernameToken)
+    {
+        $sBottom = 'Username='.urlencode($usernameToken->Username);
+        $sBottom .= '&Password='.urlencode($usernameToken->Password);
+        $sBottom .= '&nonce='.urlencode($usernameToken->Nonce);
+        $sBottom .= '&created='.urlencode($usernameToken->Created);
+
+        if ($usernameToken->bCrypted())
+        {
+            $sBottom .= '&md5=' . urlencode($usernameToken->CryptMd5);
+            $sBottom .= '&encryption=' . urlencode($usernameToken->getMode());
+            if (isset($usernameToken->CryptIV))
+            {
+                $sBottom .= '&iv=' . urlencode($usernameToken->CryptIV);
+            }
+            if (isset($usernameToken->CryptKS))
+            {
+                $sBottom .= '&ks=' . urlencode($usernameToken->CryptKS);
+            }
+        }
+
+        return $sBottom;
+    }
 
 
 	/**

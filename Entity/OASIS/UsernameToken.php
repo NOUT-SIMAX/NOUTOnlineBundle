@@ -31,14 +31,24 @@ class UsernameToken extends WSDLUsernameToken
 		$this->Username         = $sUsername;
 		$this->m_sClearPassword = $sPassword;
         $this->m_sMode          = $sMode;
-        $this->m_sSecret        = utf8_decode($sSecret); //il nous faut du latin1 pour NOUTOnline
-        $this->CryptMd5         = base64_encode(md5($this->m_sSecret.$this->Nonce.$this->Created, true));
+
+        $this->Created = date('r');
+        $this->Nonce   = base64_encode(microtime());
+
 
         if (empty($this->m_sMode))
             $this->m_sMode='';
 
+        $this->_setSecret($sSecret);
 		$this->ComputeCryptedPassword();
 	}
+
+    protected function _setSecret($sSecret)
+    {
+        //utf8_decode => il nous faut du latin1 pour NOUTOnline
+        $this->m_sSecret        = utf8_decode(trim(str_replace("\r", "", $sSecret)));
+        $this->CryptMd5         = base64_encode(md5($this->m_sSecret.$this->Nonce.$this->Created, true));
+    }
 
 	/**
 	 * @return bool
@@ -80,7 +90,21 @@ class UsernameToken extends WSDLUsernameToken
 		return $this->Username;
 	}
 
-	
+    /**
+     * @return bool
+     */
+	public function bCrypted()
+    {
+        return !empty($this->m_sMode);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMode()
+    {
+        return $this->m_sMode;
+    }
 	/**
 	 * fonction permettant de générer le mot de passe encrypter compatible avec la norme oasis.
 	 * elle initialise au passage, le nonce et le created
@@ -89,9 +113,6 @@ class UsernameToken extends WSDLUsernameToken
 	 */
 	public function ComputeCryptedPassword()
 	{
-        $this->Created = date('r');
-        $this->Nonce   = base64_encode(microtime());
-
         switch($this->m_sMode)
         {
         default:
