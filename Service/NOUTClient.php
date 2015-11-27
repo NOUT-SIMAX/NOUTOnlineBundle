@@ -195,6 +195,33 @@ class NOUTClient
 		return new ConnectionInfos($oUser->getUsername());
 	}
 
+
+    /**
+     * @param $oUser
+     * @return UsernameToken
+     */
+    protected function _oGetUsernameToken($oUser)
+    {
+        $oUsernameToken = new UsernameToken(
+            $oUser->getUsername(),
+            $oUser->getPassword(),
+            $this->m_clConfigurationDialogue->getModeAuth(),
+            $this->m_clConfigurationDialogue->getSecret()
+        );
+
+        return $oUsernameToken;
+    }
+
+    /**
+     * @param $oUser
+     * @return array|UsernameToken
+     */
+    protected function _oGetUsernameTokenSOAP($oUser)
+    {
+        $oUsernameToken = $this->_oGetUsernameToken($oUser);
+        return $this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken);
+    }
+
 	/**
 	 * @param $sIDContexteAction
 	 * @param $bAPIUser
@@ -206,14 +233,9 @@ class NOUTClient
 
 		// récupération de l'utilsateur connecté
 		$oToken = $this->_oGetToken();
-		$oUser  =  $oToken->getUser();
+        $oUser  =  $oToken->getUser();
 
-		$clIdentification->m_clUsernameToken   = new UsernameToken(
-            $oUser->getUsername(),
-            $oUser->getPassword(),
-            $this->m_clConfigurationDialogue->getModeAuth(),
-            $this->m_clConfigurationDialogue->getSecret()
-            );
+		$clIdentification->m_clUsernameToken   = $this->_oGetUsernameToken($oUser);
 		$clIdentification->m_sTokenSession     = $oToken->getSessionToken();
 		$clIdentification->m_sIDContexteAction = $sIDContexteAction;
 		$clIdentification->m_bAPIUser          = $bAPIUser;
@@ -233,11 +255,7 @@ class NOUTClient
 		$oUser  =  $oToken->getUser();
 
 		$aTabHeader = array(
-			SOAPProxy::HEADER_UsernameToken  => new UsernameToken(
-                $oUser->getUsername(),
-                $oUser->getPassword(),
-                $this->m_clConfigurationDialogue->getModeAuth(),
-                $this->m_clConfigurationDialogue->getSecret()),
+			SOAPProxy::HEADER_UsernameToken  => $this->_oGetUsernameTokenSOAP($oUser),
 			SOAPProxy::HEADER_SessionToken   => $oToken->getSessionToken(),
 			SOAPProxy::HEADER_OptionDialogue => $this->_clGetOptionDialogue(),
 		);
