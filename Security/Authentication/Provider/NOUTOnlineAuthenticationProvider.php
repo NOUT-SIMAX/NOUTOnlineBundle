@@ -238,17 +238,18 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		{
 			$presentedPassword = $token->getCredentials();
 
-            $UsernameToken = new UsernameToken(
+            $oUsernameToken = new UsernameToken(
                 $user->getUsername(),
                 $presentedPassword,
                 $this->m_clConfigDialogue->getModeAuth(),
                 $this->m_clConfigDialogue->getSecret());
 
-            $oTokenSession = $this->m_clSOAPProxy->GenereTokenSession($UsernameToken);
+            $oGetTokenSessionParam = new GetTokenSession();
+            $oGetTokenSessionParam->UsernameToken = $this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken);
 
 			try
 			{
-				$clReponseXML = $this->m_clSOAPProxy->getTokenSession($oTokenSession);
+				$clReponseXML = $this->m_clSOAPProxy->getTokenSession($oGetTokenSessionParam);
 			}
 			catch(\Exception $e)
 			{

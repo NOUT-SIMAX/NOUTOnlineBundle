@@ -33,6 +33,11 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
      */
     private $__eventDispatcher;
 
+    /**
+     * @var ConfigurationDialogue
+     */
+    private $m_clConfigurationDialogue;
+
 	/**
 	 * @param OnlineServiceFactory $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
@@ -40,6 +45,7 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 	 */
 	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, EventDispatcherInterface $eventDispatcher)
 	{
+        $this->m_clConfigurationDialogue = $configurationDialogue;
 		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
         $this->__eventDispatcher = $eventDispatcher;
 	}
@@ -55,7 +61,18 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 	public function logout(Request $request, Response $response, TokenInterface $oToken)
 	{
 		$oUser=$oToken->getUser();
-		$TabHeader=array('UsernameToken'=>new UsernameToken($oUser->getUsername(), $oUser->getPassword()), 'SessionToken'=>$oToken->getSessionToken());
+
+
+        $oUsernameToken = new UsernameToken(
+            $oUser->getUsername(),
+            $oUser->getPassword(),
+            $this->m_clConfigurationDialogue->getModeAuth(),
+            $this->m_clConfigurationDialogue->getSecret()
+        );
+
+		$TabHeader=array(
+            'UsernameToken'=>$this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken),
+            'SessionToken'=>$oToken->getSessionToken());
 
 		try
 		{
