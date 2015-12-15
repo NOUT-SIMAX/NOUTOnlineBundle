@@ -547,7 +547,7 @@ class NOUTClient
 		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
 		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
 		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-		//$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
+		$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
 
 		//header
 		$aTabHeaderSuppl = array();
@@ -580,7 +580,7 @@ class NOUTClient
 		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
 		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
 		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-		//$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
+		$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
 
 		//header
 		$aTabHeaderSuppl = array();
