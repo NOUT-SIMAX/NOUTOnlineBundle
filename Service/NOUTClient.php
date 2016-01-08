@@ -580,7 +580,7 @@ class NOUTClient
 		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
 		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
 		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-		$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
+		//$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
 
 		//header
 		$aTabHeaderSuppl = array();
@@ -690,7 +690,6 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION:
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
-            case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
             case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
 
             case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
@@ -743,6 +742,35 @@ class NOUTClient
 
                 break;
             }
+
+            case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
+			{
+
+                // Plus tard
+
+                throw new \Exception("Type de retour RETURNTYPE_VALIDATEACTION non géré", 1);
+
+                /*
+				// Instance d'un parseur
+				$clResponseParser = new ReponseWSParser();
+				$clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+				// dump($clParser);
+				// clParser est bien du type ParserList mais n'a pas encore les données
+
+				// getList renvoit un RecordList
+				$list = $clParser->getList($clReponseXML);
+				// dump($list);
+
+				$clActionResult
+					->setData($list)
+					->setValidateError($clReponseXML->getValidateError())
+					->setCount($clReponseXML->clGetCount());
+
+				break;
+                 */
+			}
+
 		}
 
 		return $clActionResult;
