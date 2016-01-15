@@ -25,17 +25,17 @@ class MessageBox
 
 		/*
 		 <xml>
-<MessageBox>
-<Message> - Formulaire avec liste images : test delete
+			<MessageBox>
+			<Message> - Formulaire avec liste images : test delete
 
-Confirmez-vous cette action ?</Message>
-<ButtonList>
-<TypeConfirmation title ="OK" >1</TypeConfirmation >
-<TypeConfirmation title ="Annuler" >2</TypeConfirmation >
-</ButtonList>
-</MessageBox>
-</xml>
-		 */
+			Confirmez-vous cette action ?</Message>
+			<ButtonList>
+				<TypeConfirmation title ="OK" >1</TypeConfirmation >
+				<TypeConfirmation title ="Annuler" >2</TypeConfirmation >
+			</ButtonList>
+			</MessageBox>
+		</xml>
+		*/
 	}
 
 
