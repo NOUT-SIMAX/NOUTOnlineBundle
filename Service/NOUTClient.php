@@ -30,6 +30,7 @@ use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -580,7 +581,10 @@ class NOUTClient
 		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
 		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
 		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-		//$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
+		if (!is_null($aTabParam))
+		{
+			$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
+		}
 
 		//header
 		$aTabHeaderSuppl = array();
@@ -689,7 +693,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_EXCEPTION:
 
             case XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION:
-            case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
+
             case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
 
             case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
@@ -750,8 +754,7 @@ class NOUTClient
 
                 throw new \Exception("Type de retour RETURNTYPE_VALIDATEACTION non géré", 1);
 
-                /*
-				// Instance d'un parseur
+                // Instance d'un parseur
 				$clResponseParser = new ReponseWSParser();
 				$clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
@@ -768,8 +771,13 @@ class NOUTClient
 					->setCount($clReponseXML->clGetCount());
 
 				break;
-                 */
 			}
+
+            case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
+            {
+                return $this->oConfirmResponse($clActionResult->getIDContexte(), 1);
+                break;
+            }
 
 		}
 
@@ -852,6 +860,26 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+
+    /**
+     * @param $sIDContexte
+     * @param $ResponseValue
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oConfirmResponse($sIDContexte, $ResponseValue)
+    {
+        //header
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+        $oConfirmResponse = new ConfirmResponse();
+        $oConfirmResponse->TypeConfirmation = $ResponseValue;
+
+        $clReponseXML = $this->m_clSOAPProxy->ConfirmResponse($oConfirmResponse, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $oRet;
+    }
 
 	const REPCACHE      = 'NOUTClient';
 	const REPCACHE_IHM  = 'ihm';
