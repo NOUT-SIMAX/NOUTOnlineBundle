@@ -713,8 +713,9 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
             case XMLResponseWS::RETURNTYPE_RECORD:
             {
+                // Instance d'un parseur
                 $clResponseParser = new ReponseWSParser();
-                $clParser=$clResponseParser->InitFromXmlXsd($clReponseXML);
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
                 $clActionResult->setData($clParser->getRecord($clReponseXML));
                 $clActionResult->setValidateError($clReponseXML->getValidateError());
@@ -730,7 +731,7 @@ class NOUTClient
 
                 // Instance d'un parseur
 				$clResponseParser = new ReponseWSParser();
-				$clParser=$clResponseParser->InitFromXmlXsd($clReponseXML);
+				$clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
                 // dump($clParser);
                 // clParser est bien du type ParserList mais n'a pas encore les données
@@ -775,6 +776,8 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
             {
+				// TODO faire la vraie messageBox
+
                 return $this->oConfirmResponse($clActionResult->getIDContexte(), 1);
                 break;
             }
