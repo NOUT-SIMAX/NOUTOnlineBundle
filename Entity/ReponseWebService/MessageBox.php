@@ -18,11 +18,18 @@ class MessageBox
 	{
 		$this->m_sMessage = $clXML->children()->MessageBox->Children()->Message;
 
-		foreach ($clXML->children()->MessageBox->Children()->ButtonList as $ndTypeConfirmation)
+        // Besoin d'aller chercher les boutons en profondeur
+		foreach ($clXML->children()->MessageBox->Children()->ButtonList->Children()->TypeConfirmation as $noeudTypeConfirmation)
 		{
-			$this->m_TabButton[(int) $ndTypeConfirmation] = (string) $ndTypeConfirmation->attributes()['title'];
+			/** @var \SimpleXMLElement $noeudTypeConfirmation */
+			$nTypeConfirmation = (int)$noeudTypeConfirmation;
+			$aTabAttributes = $noeudTypeConfirmation->attributes();
+			$sLibelle = (string)$aTabAttributes['title'];
+
+			$this->m_TabButton[$nTypeConfirmation] = $sLibelle;
 		}
 
+        // Code XML pour référence
 		/*
 		 <xml>
 			<MessageBox>
@@ -37,7 +44,6 @@ class MessageBox
 		</xml>
 		*/
 	}
-
 
 	const IDOK          = 1;    //The OK button was selected.
 	const IDCANCEL      = 2;    //The Cancel button was selected.
