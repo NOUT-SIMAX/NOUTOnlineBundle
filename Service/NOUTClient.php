@@ -253,7 +253,7 @@ class NOUTClient
 	{
 		// récupération de l'utilsateur connecté
 		$oToken = $this->_oGetToken();
-		$oUser  =  $oToken->getUser();
+		$oUser  = $oToken->getUser();
 
 		$aTabHeader = array(
 			SOAPProxy::HEADER_UsernameToken  => $this->_oGetUsernameTokenSOAP($oUser),
@@ -777,8 +777,24 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
             {
 				// TODO faire la vraie messageBox
+				// On doit utiliser un Bootstrap Modals
 
-                return $this->oConfirmResponse($clActionResult->getIDContexte(), 1);
+                // Fabriquer le bon clActionResult
+                // setData
+                // Récupérer avec un getMessageBox (dans clReponseXML)
+
+                // Puis dans le render
+                // Créer le bon json avec les infosn du clActionResult
+
+                // Dans le contextModel
+                // Trouver le type messageBox
+                // Et là appeler api.js
+
+                // On fabrique la messageBox avec les données XML
+                $clActionResult->setData($clReponseXML->clGetMessageBox());
+
+                // Avant
+                // return $this->oConfirmResponse($clActionResult->getIDContexte(), 1);
                 break;
             }
 
