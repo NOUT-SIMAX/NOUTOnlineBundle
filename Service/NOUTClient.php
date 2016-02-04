@@ -525,11 +525,30 @@ class NOUTClient
 		return strtolower($filename);
 	}
 
+    /**
+     * Convertit un tableau de paramètres en string pour l'API
+     * @param array $aTabParam
+     */
+    protected function _sParamArray2ParamString(array $aTabParam = array())
+    {
+        $XMLString = '';
+
+        foreach ($aTabParam as $key => $value)
+        {
+            $XMLString .= '<id_'.$key.'>';
+            $XMLString .= $value;
+            $XMLString .= '</id_'.$key.'>';
+        }
+
+        return $XMLString;
+    }
+
 
 	/**
-	 * Execute une action via la phrase
+	 * Execute une action via la phrase OU par son ID
 	 *
-	 * @param $sPhrase
+	 * @param string $sPhrase
+     * @param string $sIDAction
 	 * @param string $sIDContexte
 	 * @param array $aTabParam
 	 * @param string $sIDCallingColumn
@@ -538,17 +557,34 @@ class NOUTClient
 	 * @param string $sChecksum
 	 * @return ActionResult
 	 */
-	public function oExecSentence($sPhrase, $sIDContexte = '', array $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+	public function oExecAction($sPhrase, $sIDAction, $sIDContexte = '', array $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
 	{
-		//paramètre de l'action
+        //--------------------------------------------------------------------------------------------
+        // Création de $clParamExecute
 		$clParamExecute = new Execute();
-		//$clParamExecute->ID = $sIDAction;                    // identifiant de l'action
-		$clParamExecute->Sentence         = $sPhrase;          // phrase de l'action
-		$clParamExecute->SpecialParamList = $oParamListe;      //paramètre supplémentaire pour les listes
-		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
-		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
-		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-		$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
+
+        if (!empty($sIDAction))
+        {
+            $clParamExecute->ID           = $sIDAction;             // identifiant de l'action (String)
+        }
+
+        if (!empty($sPhrase))
+        {
+            $clParamExecute->Sentence     = $sPhrase;               // phrase de l'action (Sting)
+        }
+
+        if (!is_null($aTabParam))
+        {
+            // $aTabParam est à transformer en string
+            $clParamExecute->ParamXML     = $this->_sParamArray2ParamString($aTabParam);
+        }
+
+		$clParamExecute->SpecialParamList = $oParamListe;           // paramètre supplémentaire pour les listes (SpecialParamListType)
+		$clParamExecute->Checksum         = $sChecksum;             // checksum pour utilisation du cache (Integer)
+		$clParamExecute->CallingColumn    = $sIDCallingColumn;      // identifiant de la colonne d'appel (String)
+		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste); // (DisplayModeParamEnum)
+
+        //--------------------------------------------------------------------------------------------
 
 		//header
 		$aTabHeaderSuppl = array();
@@ -562,7 +598,7 @@ class NOUTClient
 
 	/**
 	 * Execute une action via son id
-	 * @param $sIDAction
+	 * @param string $sIDAction
 	 * @param string $sIDContexte
 	 * @param array $aTabParam
 	 * @param string $sIDCallingColumn
@@ -573,31 +609,33 @@ class NOUTClient
 	 */
 	public function oExecIDAction($sIDAction, $sIDContexte = '', $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
 	{
-		//paramètre de l'action
-		$clParamExecute     = new Execute();
-		$clParamExecute->ID = $sIDAction;                      // identifiant de l'action
-		//$clParamExecute->Sentence                            // phrase de l'action
-		$clParamExecute->SpecialParamList = $oParamListe;      //paramètre supplémentaire pour les listes
-		$clParamExecute->Checksum         = $sChecksum;        // checksum pour utilisation du cache
-		$clParamExecute->CallingColumn    = $sIDCallingColumn; // identifiant de la colonne d'appel
-		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-		if (!is_null($aTabParam))
-		{
-			$clParamExecute->ParamXML = $aTabParam;               // paramètre de l'action
-		}
-
-		//header
-		$aTabHeaderSuppl = array();
-		if (!empty($sIDContexte))
-		{
-			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
-		}
-
-		return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+        // On recopie les paramètres
+        return $this->oExecAction(null, $sIDAction, $sIDContexte, $aTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
 	}
 
+
+
+    /**
+     * Execute une action via sa phrase
+     * @param string $sPhrase
+     * @param string $sIDContexte
+     * @param array $aTabParam
+     * @param string $sIDCallingColumn
+     * @param SpecialParamListType $oParamListe
+     * @param string $sDisplayMode
+     * @param string $sChecksum
+     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     */
+    public function oExecPhraseAction($sPhrase, $sIDContexte = '', $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+    {
+        // On recopie les paramètres
+        return $this->oExecAction($sPhrase, null, $sIDContexte, $aTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
+    }
+
+
+
 	/**
-	 * Execute une action via son id
+	 * Affichage d'une liste
 	 * @param $sIDAction
 	 * @param string $sIDContexte
 	 * @param array $aTabParam
@@ -626,20 +664,6 @@ class NOUTClient
 		{
 			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
 		}
-
-        // TODO
-		// ICI on doit récupérer l'URL
-
-        // The type of URL made by webix on "Scroll" or "Next"
-        // e.g. "data/data_dyn.php?continue=true&count=100&start=130
-
-        // Le composant Webix fabrique alors l'URL
-        // On en récupère les paramètres
-        /*
-        $continue   = $_GET["continue"];
-        $count      = $_GET["count"];
-        $start      = $_GET["start"];
-        */
 
         $start = 0;
         $count = 20;
@@ -692,7 +716,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
             case XMLResponseWS::RETURNTYPE_EXCEPTION:
 
-            case XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION:
+            case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
 
             case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
 
