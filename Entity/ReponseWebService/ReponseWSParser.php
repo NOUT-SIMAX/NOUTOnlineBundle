@@ -39,7 +39,7 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_VALIDATERECORD  => '_ParseRecord',
 			// XMLResponseWS::RETURNTYPE_VALIDATEACTION  => plus tard
 
-			XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION => '_ParseList',
+			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
 			XMLResponseWS::RETURNTYPE_LIST            => '_ParseList',
 			XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   => '_ParseList',
 

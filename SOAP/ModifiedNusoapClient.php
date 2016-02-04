@@ -123,7 +123,18 @@ class ModifiedNusoapClient extends SOAPClient
 				$sErrCode = -1;
 			}
 
+
 			throw new SOAPException($this->getError(), $sErrCode);
+            // Appeler la fenêtre modale Bootstrap
+
+            // Se fait en JS
+//            app.api.modal.show(
+//                'Suppression',                      // Titre de la fenêtre
+//                jsonDataFromPhp.data.boxMessage,    // Message de la fenêtre
+//                'info',                             // Type de fenêtre
+//                callbacksTab,                       // Les boutons. La key est le type et la value le callack
+//                true                                // Les boutons contiennent des objets pour appel Ajax
+//            );
 		}
 
 		return $mReturn;

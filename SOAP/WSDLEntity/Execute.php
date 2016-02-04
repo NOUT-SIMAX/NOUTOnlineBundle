@@ -15,12 +15,12 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 
 class Execute
 {
-	public $ID; // string
-	public $Sentence; // string
-	public $ParamXML; // string
-	public $SpecialParamList; // SpecialParamListType
-	public $Checksum; // integer
-	public $CallingColumn; // string
-	public $DisplayMode; // DisplayModeParamEnum
+	public $ID; 				// string
+	public $Sentence; 			// string
+	public $ParamXML; 			// string
+	public $SpecialParamList; 	// SpecialParamListType
+	public $Checksum; 			// integer
+	public $CallingColumn; 		// string
+	public $DisplayMode; 		// DisplayModeParamEnum
 }
 //***
