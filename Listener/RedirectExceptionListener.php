@@ -41,7 +41,7 @@ class RedirectExceptionListener
 		$exception = $event->getException();
 		if ($exception instanceof SOAPException)
 		{
-			if ($exception->getCode()==OnlineError::ERR_UTIL_DECONNECTE)
+			if ($exception->getCode() == OnlineError::ERR_UTIL_DECONNECTE)
 			{
 				$request = $event->getRequest();
 				$session = $request->getSession();
@@ -60,6 +60,10 @@ class RedirectExceptionListener
 					//c'est l'erreur utilisateur déconnecté, il faut redirigé sur la page de login
 					$event->setResponse(new RedirectResponse($this->_router->generate('login', array())));
 				}
+			}
+			else // Toutes les autres erreurs
+			{
+				// Pas le droit pour respecter la hiérarchie des bundles
 			}
 		}
 	}
