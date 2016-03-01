@@ -130,4 +130,12 @@ class RecordList
         return $this->m_TabEnregTableau;
     }
 
+    /**
+     * @return string
+     */
+    public function getIDTableau()
+    {
+        return $this->m_nIDTableau;
+    }
+
 }

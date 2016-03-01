@@ -84,7 +84,7 @@ class Langage
 	}
 
 	//typeAction
-	const eTYPEACTION_Unknown               = 0;		//Action inconnue (ne manipule pas un objet de façon générique
+	const eTYPEACTION_Unknown               = 0;		//Action inconnue (ne manipule pas un objet de façon générique)
 	const eTYPEACTION_DescEnreg             = 1;		//Description d'un enreg
 	const eTYPEACTION_Creation              = 2386;
 	const eTYPEACTION_Modification          = 2387;

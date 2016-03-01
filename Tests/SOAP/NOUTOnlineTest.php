@@ -1033,7 +1033,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 
 		$form = '48918773563102';
 
-		$clReponseXML = $this->__sCreate($sTokenSession, $form, XMLResponseWS::RETURNTYPE_AMBIGUOUSACTION);
+		$clReponseXML = $this->__sCreate($sTokenSession, $form, XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION);
 		$sActionContexte = $clReponseXML->sGetActionContext();
 
 		//on parse le XML pour avoir les enregistrement

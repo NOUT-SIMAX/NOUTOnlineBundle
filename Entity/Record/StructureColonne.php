@@ -309,7 +309,7 @@ abstract class StructureColonne
 	const OPTION_Link        = 'link';
 	const OPTION_LinkControl = 'linkControl';    // pour les colonnes (controles de validité)
 
-	const OPTION_Hidden   = "hidden";
+	const OPTION_Hidden   = "hidden"; // Namespace déjà géré
 	const OPTION_ReadOnly = "readOnly";
 	const OPTION_Disabled = "disabled";
 

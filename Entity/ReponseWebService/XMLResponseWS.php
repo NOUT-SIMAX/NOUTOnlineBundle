@@ -496,7 +496,7 @@ class XMLResponseWS
 	const RETURNTYPE_EXCEPTION          = 'Exception';
 
 	//réponse intermédiaire
-	const RETURNTYPE_AMBIGUOUSACTION    = 'AmbiguousAction';
+	const RETURNTYPE_AMBIGUOUSCREATION  = 'AmbiguousAction';
 	const RETURNTYPE_MESSAGEBOX         = 'MessageBox';
 	const RETURNTYPE_VALIDATEACTION     = 'ValidateAction';
 	const RETURNTYPE_VALIDATERECORD     = 'ValidateEnreg';
