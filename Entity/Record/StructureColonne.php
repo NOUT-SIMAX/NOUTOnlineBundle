@@ -8,16 +8,20 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+
 abstract class StructureColonne
 {
 	/**
 	 * @var string identifiant de la colonne
 	 */
 	protected $m_nIDColonne;
+
 	/**
 	 * @var string nom de la colonne
 	 */
 	protected $m_sLibelle;
+
 	/**
 	 * @var string type modèle de la colonne
 	 */
@@ -98,15 +102,56 @@ abstract class StructureColonne
 
     /**
      * pour savoir si fusion de colonne pour le multi-colonne
-     * @return bool
+     * @return integer
+	 * Ajouter le paramètre pour ModeFiche ou ModeParametre
      */
-    public function eGetFusionTypeMulticolonne()
+    public function eGetFusionTypeMulticolonne($isParamcard)
     {
-        if ($this->m_eTypeElement == self::TM_Bouton)
-            return self::FUSIONTYPE_Bouton;
+		// Règles fusion fiche et règles paramètres sont différentes
+		// à séparer avec if .. else
 
-        if ($this->isOption(self::OPTION_Modele_City) || $this->isOption(self::OPTION_Modele_PostalCode))
-            return self::FUSIONTYPE_VilleCP;
+        // Si on est en mode filtres + liste
+        if($isParamcard)
+        {
+
+            // Pour mettre ensemble toutes les dates
+            if ($this->m_eTypeElement == self::TM_Date)
+                return self::FUSIONTYPE_Dates;
+
+            // Pour mettre ensemble toutes les dates
+            if ($this->m_eTypeElement == self::TM_Texte)
+                return self::FUSIONTYPE_String;
+
+            // Permet de faire le whole et la fusion avec le champ de recherche
+            if ($this->m_nIDColonne == Langage::PA_Recherche_Global)
+                return self::FUSIONTYPE_GlobalSearch;
+
+
+            // *******************************
+            // @@@ TODO
+            // Ajouter l'attribut whole
+
+            // Il faut ajouter le même ID de fusion pour
+
+            // if ($this->m_eTypeElement == self::TM_Search)
+            //    return self::FUSIONTYPE_Search;
+
+            // si ID = recherche  OU si RechercheGlobale (toujours le même ID) -> fusion
+            // const PA_Recherche_Global = 16990;
+
+            // *******************************
+
+        }
+        else
+        {
+            // Pour mettre ensemble tous les boutons
+            if ($this->m_eTypeElement == self::TM_Bouton)
+                return self::FUSIONTYPE_Bouton;
+
+            // Pour mettre ensemble la ville et le code postal
+            if ($this->isOption(self::OPTION_Modele_City) || $this->isOption(self::OPTION_Modele_PostalCode))
+                return self::FUSIONTYPE_VilleCP;
+        }
 
         return self::FUSIONTYPE_Aucun;
     }
@@ -387,7 +432,12 @@ abstract class StructureColonne
 	const OPTION_Transform_Video			= "video";
 	const OPTION_Transform_Secret			= "secret";
 
-    const FUSIONTYPE_Aucun = 0;
-    const FUSIONTYPE_Bouton = 1;
-    const FUSIONTYPE_VilleCP = 2;
+    // Constantes pour les fusions
+    const FUSIONTYPE_Aucun          = 0;
+    const FUSIONTYPE_Bouton         = 1;
+    const FUSIONTYPE_VilleCP        = 2;
+    const FUSIONTYPE_Dates          = 3;  // Par exemple pour date début - date fin
+    const FUSIONTYPE_GlobalSearch   = 10; // Entraine automatiquement une fusion et un whole
+    const FUSIONTYPE_String         = 11; // Pour pouvoir faire la fusion avec GlobalSearch
+
 }
