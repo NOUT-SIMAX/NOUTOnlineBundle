@@ -27,6 +27,7 @@ class InfoButton
                 || ($sAttribName == StructureColonne::OPTION_TypeElement)
                 || ($sAttribName == StructureColonne::OPTION_Name))
             {
+                // On ignore ces options
                 continue;
             }
 

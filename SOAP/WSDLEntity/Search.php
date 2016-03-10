@@ -17,11 +17,11 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 
 class Search
 {
-	public $Table; // string
-	public $ParamXML; // string
-	public $SpecialParamList; // SpecialParamListType
-	public $CallingColumn; // string
-	public $Checksum; // integer
-	public $DisplayMode; // DisplayModeParamEnum
+	public $Table; 				// string
+	public $ParamXML; 			// string
+	public $SpecialParamList; 	// SpecialParamListType
+	public $CallingColumn; 		// string
+	public $Checksum; 			// integer
+	public $DisplayMode; 		// DisplayModeParamEnum
 }
 //***
