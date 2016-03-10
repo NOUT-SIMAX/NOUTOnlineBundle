@@ -34,6 +34,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
@@ -550,14 +551,14 @@ class NOUTClient
 	 * @param string $sPhrase
      * @param string $sIDAction
 	 * @param string $sIDContexte
-	 * @param array $aTabParam
+	 * @param string $sTabParam
 	 * @param string $sIDCallingColumn
 	 * @param SpecialParamListType $oParamListe
 	 * @param string $sDisplayMode
 	 * @param string $sChecksum
 	 * @return ActionResult
 	 */
-	public function oExecAction($sPhrase, $sIDAction, $sIDContexte = '', array $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+	public function oExecAction($sPhrase, $sIDAction, $sIDContexte = '', $sTabParam = '' , $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
 	{
         //--------------------------------------------------------------------------------------------
         // Création de $clParamExecute
@@ -573,10 +574,13 @@ class NOUTClient
             $clParamExecute->Sentence     = $sPhrase;               // phrase de l'action (Sting)
         }
 
-        if (!is_null($aTabParam))
+        if (!is_null($sTabParam))
         {
             // $aTabParam est à transformer en string
-            $clParamExecute->ParamXML     = $this->_sParamArray2ParamString($aTabParam);
+			// $clParamExecute->ParamXML     = $this->_sParamArray2ParamString($aTabParam);
+
+			// Il semble que la transformation soit déjà faire dans s_GetTabParam de Request2APIParam.php
+			$clParamExecute->ParamXML     = $sTabParam;
         }
 
 		$clParamExecute->SpecialParamList = $oParamListe;           // paramètre supplémentaire pour les listes (SpecialParamListType)
@@ -600,17 +604,17 @@ class NOUTClient
 	 * Execute une action via son id
 	 * @param string $sIDAction
 	 * @param string $sIDContexte
-	 * @param array $aTabParam
+	 * @param string $sTabParam
 	 * @param string $sIDCallingColumn
 	 * @param SpecialParamListType $oParamListe
 	 * @param string $sDisplayMode
 	 * @param string $sChecksum
 	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
 	 */
-	public function oExecIDAction($sIDAction, $sIDContexte = '', $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+	public function oExecIDAction($sIDAction, $sIDContexte = '', $sTabParam = '', $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
 	{
         // On recopie les paramètres
-        return $this->oExecAction(null, $sIDAction, $sIDContexte, $aTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
+        return $this->oExecAction(null, $sIDAction, $sIDContexte, $sTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
 	}
 
 
@@ -619,17 +623,17 @@ class NOUTClient
      * Execute une action via sa phrase
      * @param string $sPhrase
      * @param string $sIDContexte
-     * @param array $aTabParam
+     * @param string $aTabParam
      * @param string $sIDCallingColumn
      * @param SpecialParamListType $oParamListe
      * @param string $sDisplayMode
      * @param string $sChecksum
      * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
      */
-    public function oExecPhraseAction($sPhrase, $sIDContexte = '', $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+    public function oExecPhraseAction($sPhrase, $sIDContexte = '', $sTabParam = '', $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
     {
         // On recopie les paramètres
-        return $this->oExecAction($sPhrase, null, $sIDContexte, $aTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
+        return $this->oExecAction($sPhrase, null, $sIDContexte, $sTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
     }
 
 
@@ -923,6 +927,35 @@ class NOUTClient
         $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
         return $oRet;
     }
+
+    /**
+     * @param $sIDContexte
+     * @param $ResponseValue
+     * @return ActionResult
+     */
+    public function oSelectElem($sIDFormulaire, $sIDContexte)
+	{
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+
+        // On doit appeler search avec comme argument
+//        public $Table; 				// string
+//        public $ParamXML; 			// string
+//        public $SpecialParamList; 	// SpecialParamListType
+//        public $CallingColumn; 		// string
+//        public $Checksum; 			// integer
+//        public $DisplayMode; 		    // DisplayModeParamEnum
+
+        // Création du Search
+        $clParamSearch          = new Search();
+        $clParamSearch->Table   = $sIDFormulaire;
+
+        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
 
 	const REPCACHE      = 'NOUTClient';
 	const REPCACHE_IHM  = 'ihm';
