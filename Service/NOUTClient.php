@@ -574,12 +574,13 @@ class NOUTClient
             $clParamExecute->Sentence     = $sPhrase;               // phrase de l'action (Sting)
         }
 
-        if (!is_null($sTabParam))
+        //if (!is_null($sTabParam))
+		if($sTabParam != '')
         {
             // $aTabParam est à transformer en string
 			// $clParamExecute->ParamXML     = $this->_sParamArray2ParamString($aTabParam);
 
-			// Il semble que la transformation soit déjà faire dans s_GetTabParam de Request2APIParam.php
+			// Transformation déjà faire dans s_GetTabParam de Request2APIParam.php
 			$clParamExecute->ParamXML     = $sTabParam;
         }
 
@@ -928,9 +929,12 @@ class NOUTClient
         return $oRet;
     }
 
+    // ------------------------------------------------------------------------------------
+    // pour les Elements liés et les sous-listes
+
     /**
+     * @param $sIDFormulaire
      * @param $sIDContexte
-     * @param $ResponseValue
      * @return ActionResult
      */
     public function oSelectElem($sIDFormulaire, $sIDContexte)
@@ -955,6 +959,55 @@ class NOUTClient
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
+
+    /**
+     * @param $sIDFormulaire
+     * @param $sIDContexte
+     * @return ActionResult
+     */
+    public function oCreateElem($sIDFormulaire, $sIDContexte)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+
+        // On doit appeler le formulaire de création dans le contexte donné
+
+        // Création du Search
+        $clParamSearch          = new Search();
+        $clParamSearch->Table   = $sIDFormulaire;
+
+        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param $sIDFormulaire
+     * @param $sIDContexte
+     * @param $sIDEnreg
+     * @return ActionResult
+     */
+    public function oModifyElem($sIDFormulaire, $sIDContexte, $sIDEnreg)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+        $clParamSearch          = new Search();
+        $clParamSearch->Table   = $sIDFormulaire;
+
+        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+
+
+
+
+    // Fin Elements liés et les sous-listes
+    // ------------------------------------------------------------------------------------
+
 
 
 	const REPCACHE      = 'NOUTClient';
