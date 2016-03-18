@@ -23,12 +23,17 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
@@ -754,13 +759,25 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_LIST:
             {
-                // Données à disposition
-                // $clActionResult
-                // $clReponseXML
+                // Bug dans InitFromXmlXsd si trop volumineux
+                // OutOfMemoryException in ParserRecordList.php line 183:
+                // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
+
+                /** @var Count $totalElements */
+				$totalElements = $clReponseXML->clGetCount();
+
+                // Par sécurité quand on affiche une liste
+                if($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
+                {
+                    //@@@ TODO trad
+                    throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel", OnlineError::ERR_MEMORY_OVERFLOW);
+                }
 
                 // Instance d'un parseur
-				$clResponseParser = new ReponseWSParser();
-				$clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+                $clResponseParser = new ReponseWSParser();
+
+                /** @var ParserList $clParser */
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
                 // dump($clParser);
                 // clParser est bien du type ParserList mais n'a pas encore les données
@@ -779,28 +796,7 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
 			{
-
-                // Plus tard
-
                 throw new \Exception("Type de retour RETURNTYPE_VALIDATEACTION non géré", 1);
-
-                // Instance d'un parseur
-				$clResponseParser = new ReponseWSParser();
-				$clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
-
-				// dump($clParser);
-				// clParser est bien du type ParserList mais n'a pas encore les données
-
-				// getList renvoit un RecordList
-				$list = $clParser->getList($clReponseXML);
-				// dump($list);
-
-				$clActionResult
-					->setData($list)
-					->setValidateError($clReponseXML->getValidateError())
-					->setCount($clReponseXML->clGetCount());
-
-				break;
 			}
 
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
@@ -933,29 +929,43 @@ class NOUTClient
     // pour les Elements liés et les sous-listes
 
     /**
+     * @param $tabParamQuery
      * @param $sIDFormulaire
      * @param $sIDContexte
      * @return ActionResult
      */
-    public function oSelectElem($sIDFormulaire, $sIDContexte)
+    public function oSelectElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte)
 	{
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
         $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
 
 
-        // On doit appeler search avec comme argument
 //        public $Table; 				// string
 //        public $ParamXML; 			// string
 //        public $SpecialParamList; 	// SpecialParamListType
-//        public $CallingColumn; 		// string
+//        public $CallingColumn; 		// string ! Todo
 //        public $Checksum; 			// integer
 //        public $DisplayMode; 		    // DisplayModeParamEnum
+        $clParamSearch                      = new Search();
 
-        // Création du Search
-        $clParamSearch          = new Search();
-        $clParamSearch->Table   = $sIDFormulaire;
+        // Ajout des paramètres
+        $clParamSearch->Table               = $sIDFormulaire;
 
-        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $aTabHeaderSuppl);
+//        public $First; 				// integer
+//        public $Length; 			    // integer
+//        public $WithBreakRow; 		// integer
+//        public $WithEndCalculation;	// integer
+//        public $ChangePage; 		    // integer
+//        public $Sort1; 				// SortType
+//        public $Sort2; 				// SortType
+//        public $Sort3; 				// SortType
+        $clParamSearch->SpecialParamList                = new SpecialParamListType();
+        $clParamSearch->SpecialParamList->First         = $tabParamQuery['SpecialParamList']->First;
+        $clParamSearch->SpecialParamList->Length        = $tabParamQuery['SpecialParamList']->Length;
+        $clParamSearch->SpecialParamList->ChangePage    = 0; //$tabParamQuery['SpecialParamList']->ChangePage;
+
+
+        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
@@ -1013,6 +1023,7 @@ class NOUTClient
 	const REPCACHE      = 'NOUTClient';
 	const REPCACHE_IHM  = 'ihm';
 
-	const TP_NotEmpty = 1;
-	const TP_InArray  = 2;
+	const TP_NotEmpty   = 1;
+	const TP_InArray    = 2;
+    const MaxEnregs     = 200;	// Nombre maximum d'éléments sur une page
 }
