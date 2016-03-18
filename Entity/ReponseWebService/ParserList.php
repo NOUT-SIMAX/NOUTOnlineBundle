@@ -50,11 +50,14 @@ class ParserList extends Parser
 
     /**
      * Parse la liste
+     * Ne doit pas être trop volumineuse
      * @param XMLResponseWS $clReponseXML
      */
     public function ParseList(XMLResponseWS $clReponseXML)
     {
+
         $ndSchema    = $clReponseXML->getNodeSchema();
+
         if (isset($ndSchema))
         {
             $this->m_clParserList->ParseXSD($ndSchema, StructureElement::NV_XSD_List);

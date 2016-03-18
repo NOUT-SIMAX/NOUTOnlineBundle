@@ -35,18 +35,18 @@ class ReponseWSParser
 	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS)
 	{
 		$aPtrFct = array(
-			XMLResponseWS::RETURNTYPE_RECORD          => '_ParseRecord',
-			XMLResponseWS::RETURNTYPE_VALIDATERECORD  => '_ParseRecord',
+			XMLResponseWS::RETURNTYPE_RECORD          	=> '_ParseRecord',
+			XMLResponseWS::RETURNTYPE_VALIDATERECORD  	=> '_ParseRecord',
 			// XMLResponseWS::RETURNTYPE_VALIDATEACTION  => plus tard
 
 			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
-			XMLResponseWS::RETURNTYPE_LIST            => '_ParseList',
-			XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   => '_ParseList',
+			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
+			XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
 
-			XMLResponseWS::RETURNTYPE_LISTCALCULATION => '_ParseListCaculation',
-			XMLResponseWS::RETURNTYPE_REPORT          => null,
-			XMLResponseWS::RETURNTYPE_PLANNING        => '_ParsePlanning',
-			XMLResponseWS::RETURNTYPE_CHART           => '_ParseChart',
+			XMLResponseWS::RETURNTYPE_LISTCALCULATION 	=> '_ParseListCaculation',
+			XMLResponseWS::RETURNTYPE_REPORT          	=> null,
+			XMLResponseWS::RETURNTYPE_PLANNING        	=> '_ParsePlanning',
+			XMLResponseWS::RETURNTYPE_CHART           	=> '_ParseChart',
 		);
 		// Tableau de pointeur de méthodes
 
@@ -90,7 +90,7 @@ class ReponseWSParser
 
 	/**
 	 * @param XMLResponseWS $clXMLReponseWS
-     * @return ParserRecordList
+     * @return ParserList
 	 */
 	protected function _ParseList(XMLResponseWS $clXMLReponseWS)
 	{
@@ -99,11 +99,13 @@ class ReponseWSParser
 		// Création d'un Parser de liste
         $clParser = new ParserList();
 
+        // Parser les paramètres
+        // Permet de savoir combien on a d'éléments avant de traiter les données ?
+        $clParser->ParseParam($clXMLReponseWS);
+
 		// Parser la liste
         $clParser->ParseList($clXMLReponseWS);
 
-		// Parser les paramètres
-        $clParser->ParseParam($clXMLReponseWS);
 
         return $clParser;
 	}
@@ -143,6 +145,7 @@ class ReponseWSParser
 	/**
 	 * Parse les calculs de fin de liste
 	 * @param \XMLResponseWS $clXMLReponseWS
+	 * @return ParserListCalculation
 	 */
 	protected function _ParseListCaculation(XMLResponseWS $clXMLReponseWS)
 	{

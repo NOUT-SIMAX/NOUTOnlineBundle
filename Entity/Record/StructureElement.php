@@ -196,6 +196,7 @@ class StructureElement
         $aRet = array();
         foreach($this->m_MapIDColonne2Structure as $clStructureColonne)
         {
+            /** @var StructureColonne $clStructureColonne */
             if ($clStructureColonne->isOption($option))
                 $aRet[]=$clStructureColonne->getIDColonne();
         }
@@ -203,9 +204,27 @@ class StructureElement
         return $aRet;
     }
 
+	/**
+	 * @param $option
+	 * @return array
+	 */
+	public function getTabColonneTmTab()
+	{
+        // OPTION_LinkedTableID // Ne marche pas
+        // On cherche les éléments avec l'ID StructureColonne::TM_Tableau
 
+        // Tableau de retour
+		$aRet = array();
 
+		foreach($this->m_MapIDColonne2Structure as $clStructureColonne)
+		{
+            /** @var StructureColonne $clStructureColonne */
+			if ($clStructureColonne->getTypeElement() == StructureColonne::TM_Tableau)
+				$aRet[$clStructureColonne->getIDColonne()] = $clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID);
+		}
 
+		return $aRet;
+	}
 
 	const NV_XSD_Enreg                  = 0;
 	const NV_XSD_List                   = 1;

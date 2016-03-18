@@ -264,11 +264,12 @@ class XMLResponseWS
 			return;
 		}
 
-		$clCount                  = new Count();
-		$clCount->m_nNbCaculation = (int) $ndCount->children()->NbCalculation;
-		$clCount->m_nNbLine       = (int) $ndCount->children()->NbLine;
-		$clCount->m_nNbFiltered   = (int) $ndCount->children()->NbFiltered;
-		$clCount->m_nNbTotal      = (int) $ndCount->children()->NbTotal;
+		$clCount                    = new Count();
+		$clCount->m_nNbCalculation  = (int) $ndCount->children()->NbCalculation;
+		$clCount->m_nNbLine         = (int) $ndCount->children()->NbLine;
+		$clCount->m_nNbFiltered     = (int) $ndCount->children()->NbFiltered;
+		$clCount->m_nNbTotal        = (int) $ndCount->children()->NbTotal;
+		$clCount->m_nNbDisplay      = (int) $ndCount->children()->NbDisplay;
 
 		return $clCount;
 	}

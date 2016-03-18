@@ -444,6 +444,17 @@ class Record
     }
 
     /**
+     * Tableau clé->valeur pour les colonne/liste élements
+     * Appelé dans transformViewRecord2JSON
+     * @return array
+     */
+    public function getLinkedElems()
+    {
+        // Récupère un tableau associatif [Id Colonne] -> [Id TmTab] pour tout le formulaire
+        return $this->m_clStructElem->getTabColonneTmTab();
+    }
+
+    /**
      * enlève toutes les colonnes modifiées
      * @return $this
      */
