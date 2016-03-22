@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\ContextsBundle\Entity;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
@@ -52,6 +53,7 @@ class ActionResult
     private $m_clCount;
 
 
+
 	/**
 	 * @param string $sReturnType
 	 */
@@ -70,9 +72,10 @@ class ActionResult
             $this->m_clAction    = null;
 		}
 
-		$this->m_Data     = null;
-		$this->m_clCache  = new ActionResultCache();
-		$this->m_clValidateError = null;
+		$this->m_Data               = null;
+		$this->m_clCache            = new ActionResultCache();
+		$this->m_clValidateError    = null;
+        $this->m_sTypeAction        = CurrentAction::ETYPEACTION_NONE;
 	}
 
 	/**
@@ -237,5 +240,13 @@ class ActionResult
     {
         $this->m_clCount = $m_clCount;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeAction()
+    {
+        return $this->getAction()->getTypeAction();
     }
 }
