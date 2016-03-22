@@ -81,20 +81,20 @@ class CurrentAction
 		return $this->m_sTitle;
 	}
 
+	const ETYPEACTION_CREATE  	= 2386; //retourne un enreg en édition
+	const ETYPEACTION_LIST    	= 2388; //retourne une liste
+	const ETYPEACTION_SEARCH  	= 2389; //retourne une liste
+	const ETYPEACTION_DISPLAY 	= 2390; //retourne un enreg en affichage
+	const ETYPEACTION_MODIFY  	= 2387; //retourne un enreg en édition
+	const ETYPEACTION_NONE  	= 0;    //rien du tout
 
-	const ETYPEACTION_CREATE  = 2386;
-	const ETYPEACTION_LIST    = 2388;
-	const ETYPEACTION_SEARCH  = 2389;
-	const ETYPEACTION_DISPLAY = 2390;
-	const ETYPEACTION_MODIFY  = 2387;
-
-	const ETYPEACTION_AFFTABRECAP      = 9338;
-	const ETYPEACTION_AFFVUE           = 15135;
-	const ETYPEACTION_CREATEFROM       = 5303;
-	const ETYPEACTION_TRANSFORMIN      = 8720;
-	const ETYPEACTION_PRINT            = 2392;
-	const ETYPEACTION_DELETE           = 2391;
-	const ETYPEACTION_STARTEXE         = 8684;
-	const ETYPEACTION_ADDTO            = 3182;
-	const ETYPEACTION_PARTICULARACTION = 2394;
+	const ETYPEACTION_AFFTABRECAP      = 9338; //retourne une liste
+	const ETYPEACTION_AFFVUE           = 15135; //retourne une liste
+	const ETYPEACTION_CREATEFROM       = 5303; //retourne un enreg en édition
+	const ETYPEACTION_TRANSFORMIN      = 8720; //retourne un enreg en édition
+	const ETYPEACTION_PRINT            = 2392; //nc
+	const ETYPEACTION_DELETE           = 2391; //nc
+	const ETYPEACTION_STARTEXE         = 8684; //nc
+	const ETYPEACTION_ADDTO            = 3182; //nc
+	const ETYPEACTION_PARTICULARACTION = 2394; //????
 }
