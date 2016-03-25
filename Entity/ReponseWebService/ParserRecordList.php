@@ -165,13 +165,13 @@ class ParserRecordList extends Parser
 	{
 		$this->m_clXML = new \SimpleXMLElement($ndXML->asXML());
 
-
 		//on commence par parser les balises data s'il y en a
 		$this->m_MapRef2Data = array();
 
-
 		$this->m_clXML->registerXPathNamespace('n', self::NAMESPACE_NOUT_XML);
+
 		$aData = $this->m_clXML->xpath('/xml/n:Data');
+
 		if (is_array($aData) && !empty($aData))
 		{
 			foreach($aData as $ndData)

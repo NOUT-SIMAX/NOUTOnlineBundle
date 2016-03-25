@@ -272,6 +272,7 @@ class OnlineError
 	const ERR_RPF_NOEMAIL					= 2001;
 	//-----------------
 
+
 	//---------------------------------------
 	//gestion des licences
 	const ERR_NOSERVEUR                         = 4001;
@@ -286,7 +287,9 @@ class OnlineError
 	const ERR_EXTRANET_HORSLICENCE              = 4202;
 	const ERR_EXTRANET_NOCONFIG                 = 4203;
 
-
+	//-------------------------------------------
+	// Erreurs perso
+	const ERR_MEMORY_OVERFLOW					= 100001;
 
 	const CAT_GLOBAL        = 0;
 	const CAT_ROUTAGE       = 1;
@@ -309,4 +312,6 @@ class OnlineError
 	const CAT_GRAPHE        = 18;
 	const CAT_GRAPHEDOT     = 19;
 	const CAT_MESSAGERIE    = 20;
+
+
 }

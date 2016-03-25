@@ -22,6 +22,7 @@ class Count
 	public $m_nNbLine;
 	public $m_nNbFiltered;
 	public $m_nNbTotal;
+	public $m_nNbDisplay;
 
 	public function __construct()
 	{
@@ -29,5 +30,6 @@ class Count
 		$this->m_nNbLine       = 0;
 		$this->m_nNbFiltered   = 0;
 		$this->m_nNbTotal      = 0;
+		$this->m_nNbDisplay    = 0;
 	}
 }

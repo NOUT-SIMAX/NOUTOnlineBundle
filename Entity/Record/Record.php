@@ -444,6 +444,17 @@ class Record
     }
 
     /**
+     * Tableau clé->valeur pour les colonne/liste élements
+     * Appelé dans transformViewRecord2JSON
+     * @return array
+     */
+    public function getLinkedElems()
+    {
+        // Récupère un tableau associatif [Id Colonne] -> [Id TmTab] pour tout le formulaire
+        return $this->m_clStructElem->getTabColonneTmTab();
+    }
+
+    /**
      * enlève toutes les colonnes modifiées
      * @return $this
      */
@@ -511,15 +522,17 @@ class Record
             case "bgcolor":
                 return '#'.$value;
         }
+
+        return 0;
     }
 
 
-    const OPTION_Icon = 'recordIconID';
-    const OPTION_RColor = 'recordColor';
+    const OPTION_Icon       = 'recordIconID';
+    const OPTION_RColor     = 'recordColor';
 
-    const OPTION_Bold = 'bold';
-    const OPTION_Color = 'color';
-    const OPTION_BGColor = 'bgcolor';
-    const OPTION_Italic = 'italic';
+    const OPTION_Bold       = 'bold';
+    const OPTION_Color      = 'color';
+    const OPTION_BGColor    = 'bgcolor';
+    const OPTION_Italic     = 'italic';
 
 }
