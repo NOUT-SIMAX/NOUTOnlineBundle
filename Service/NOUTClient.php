@@ -36,6 +36,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -970,24 +971,25 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
-    /**
-     * @param $sIDFormulaire
-     * @param $sIDContexte
-     * @return ActionResult
-     */
-    public function oCreateElem($sIDFormulaire, $sIDContexte)
+	/**
+	 * @param $tabParamQuery
+	 * @param $sIDFormulaire
+	 * @param $sIDContexte
+	 * @return ActionResult
+	 */
+    public function oCreateElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
         $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
 
+        $clParamCreate = new Create();
 
-        // On doit appeler le formulaire de création dans le contexte donné
+        // Ajout des paramètres
+        $clParamCreate->Table               = $sIDFormulaire;
+        $clParamCreate->SpecialParamList    = new SpecialParamListType();	// Pas besoin de ces paramètres ?
 
-        // Création du Search
-        $clParamSearch          = new Search();
-        $clParamSearch->Table   = $sIDFormulaire;
 
-        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $aTabHeaderSuppl);
+        $clReponseXML = $this->m_clSOAPProxy->create($clParamCreate, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
