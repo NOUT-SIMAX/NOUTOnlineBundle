@@ -39,6 +39,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
@@ -747,11 +748,13 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
             case XMLResponseWS::RETURNTYPE_RECORD:
+			case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
             {
                 // Instance d'un parseur
                 $clResponseParser = new ReponseWSParser();
                 $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
+                /** @var ParserRecordList $clParser*/
                 $clActionResult->setData($clParser->getRecord($clReponseXML));
                 $clActionResult->setValidateError($clReponseXML->getValidateError());
 
@@ -795,10 +798,12 @@ class NOUTClient
                 break;
             }
 
+            /*
             case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
 			{
                 throw new \Exception("Type de retour RETURNTYPE_VALIDATEACTION non géré", 1);
 			}
+            */
 
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
             {
@@ -995,20 +1000,21 @@ class NOUTClient
     }
 
     /**
+	 * @param $tabParamQuery
      * @param $sIDFormulaire
      * @param $sIDContexte
      * @param $sIDEnreg
      * @return ActionResult
      */
-    public function oModifyElem($sIDFormulaire, $sIDContexte, $sIDEnreg)
+    public function oModifyElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte, $sIDEnreg)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
         $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
 
-        $clParamSearch          = new Search();
-        $clParamSearch->Table   = $sIDFormulaire;
+        $clParamModify          = new Modify();
+		$clParamModify->Table   = $sIDFormulaire;
 
-        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $aTabHeaderSuppl);
+        $clReponseXML = $this->m_clSOAPProxy->modify($clParamModify, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
