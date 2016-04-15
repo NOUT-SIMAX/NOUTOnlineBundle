@@ -30,14 +30,14 @@ class ReponseWSParser
 	 * @param $sReturnType
 	 * @param \SimpleXMLElement $clXML
 	 * @param \SimpleXMLElement $clSchema
-	 * @return Parser
+	 * @return Parser (enfin les classes filles)
 	 */
 	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS)
 	{
 		$aPtrFct = array(
 			XMLResponseWS::RETURNTYPE_RECORD          	=> '_ParseRecord',
 			XMLResponseWS::RETURNTYPE_VALIDATERECORD  	=> '_ParseRecord',
-			// XMLResponseWS::RETURNTYPE_VALIDATEACTION  => plus tard
+			XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> '_ParseRecord',
 
 			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
 			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',

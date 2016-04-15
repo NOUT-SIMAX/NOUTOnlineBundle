@@ -487,7 +487,6 @@ class XMLResponseWS
 	const RETURNTYPE_RECORD         = 'Record';
 	const RETURNTYPE_LIST           = 'List';
 
-
 	//réponse particulière
 	const RETURNTYPE_XSD                = 'XSD';
 	const RETURNTYPE_IDENTIFICATION     = 'Identification';

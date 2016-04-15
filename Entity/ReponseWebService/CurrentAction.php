@@ -81,11 +81,13 @@ class CurrentAction
 		return $this->m_sTitle;
 	}
 
-	const ETYPEACTION_CREATE  	= 2386; //retourne un enreg en édition
-	const ETYPEACTION_LIST    	= 2388; //retourne une liste
-	const ETYPEACTION_SEARCH  	= 2389; //retourne une liste
-	const ETYPEACTION_DISPLAY 	= 2390; //retourne un enreg en affichage
-	const ETYPEACTION_MODIFY  	= 2387; //retourne un enreg en édition
+	const ETYPEACTION_CREATE  			= 2386; //retourne un enreg en édition
+	const ETYPEACTION_LIST    			= 2388; //retourne une liste
+	const ETYPEACTION_SEARCH  			= 2389; //retourne une liste
+	const ETYPEACTION_DISPLAY 			= 2390; //retourne un enreg en affichage
+	const ETYPEACTION_MODIFY  			= 2387; //retourne un enreg en édition
+	const ETYPEACTION_VALIDATEACTION  	= 1; // Tricherie
+
 	const ETYPEACTION_NONE  	= 0;    //rien du tout
 
 	const ETYPEACTION_AFFTABRECAP      = 9338; //retourne une liste
