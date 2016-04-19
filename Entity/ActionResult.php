@@ -40,17 +40,22 @@ class ActionResult
 	 */
 	private $m_clCache;
 
-
 	/**
 	 * @var ValidateError
 	 */
 	private $m_clValidateError;
 
-
     /**
      * @var Count
      */
     private $m_clCount;
+
+	/**
+     * @var Element
+     */
+    private $m_oElement;
+
+
 
 
 
@@ -76,6 +81,11 @@ class ActionResult
 		$this->m_clCache            = new ActionResultCache();
 		$this->m_clValidateError    = null;
         $this->m_sTypeAction        = CurrentAction::ETYPEACTION_NONE;
+        $this->m_oElement           = new \stdClass();
+
+        $this->m_oElement->id = '';
+        $this->m_oElement->title = '';
+
 	}
 
 	/**
@@ -115,6 +125,25 @@ class ActionResult
 	{
 		return $this->m_Data;
 	}
+
+	/**
+	 * @param $element
+	 * @return $this
+	 */
+	public function setElement($element)
+	{
+		$this->m_oElement = $element;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getElement()
+	{
+		return $this->m_oElement;
+	}
+
 
 	/**
 	 * @param ValidateError $clValidateError

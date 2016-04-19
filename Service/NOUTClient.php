@@ -743,6 +743,8 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_REPORT:
             {
                 $clActionResult->setData($clReponseXML->sGetReport());
+                $clActionResult->setElement($clReponseXML->clGetElement());
+
                 break;
             }
 
@@ -1006,13 +1008,14 @@ class NOUTClient
      * @param $sIDEnreg
      * @return ActionResult
      */
-    public function oModifyElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte, $sIDEnreg)
+    public function oModifyElem(array $tabParamQuery, $sIDContexte)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
         $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
 
-        $clParamModify          = new Modify();
-		$clParamModify->Table   = $sIDFormulaire;
+        $clParamModify              = new Modify();
+		$clParamModify->Table       = $tabParamQuery['Table'];
+		$clParamModify->ParamXML    = $tabParamQuery['ParamXML'];
 
         $clReponseXML = $this->m_clSOAPProxy->modify($clParamModify, $this->_aGetTabHeader($aTabHeaderSuppl));
 
