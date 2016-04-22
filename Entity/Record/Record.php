@@ -285,6 +285,28 @@ class Record
 	}
 
 
+    /**
+     * retourne le titre d'un Enreg Lié
+     * @param $idRecordLie
+     * @param $idColonne
+     * @return string
+     */
+    public function getTitleFromIDRecordLie($idRecordLie, $idColonne)
+    {
+        if (!isset($this->m_TabRecordLie) || !isset($this->m_clStructElem))
+        {
+            return "";
+        }
+
+        $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
+        $record = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
+
+        return $record->getTitle();
+    }
+
+
+
+
 
     /**
      * retourne la valeur affichée
