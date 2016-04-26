@@ -9,6 +9,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+
 class StructureBouton extends StructureColonne
 {
 
@@ -36,6 +38,12 @@ class StructureBouton extends StructureColonne
 	public function getInfoBouton()
 	{
 		return $this->m_clInfoBouton;
+	}
+
+	public function isReadOnly()
+	{
+        // Renvoit un booléen qui indique si le bouton est dispo en readOnly
+        return Langage::s_isActionReadOnly($this->m_clInfoBouton->getOption(self::OPTION_IDTypeAction));
 	}
 
 }

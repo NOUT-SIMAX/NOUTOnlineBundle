@@ -31,6 +31,11 @@ class StructureElement
 	 */
 	protected $m_TabBouton;
 
+    /**
+	 * @var array
+	 */
+	protected $m_TabBoutonReadOnly;
+
 	/**
 	 * @var array
 	 */
@@ -91,7 +96,14 @@ class StructureElement
 	 */
 	public function addButton(StructureBouton $clStructBouton)
 	{
-		$this->m_TabBouton[]=$clStructBouton;
+		$this->m_TabBouton[] = $clStructBouton;
+
+        if($clStructBouton->isReadOnly())
+        {
+            $this->m_TabBoutonReadOnly[] = $clStructBouton;
+        }
+
+
 		return $this;
 	}
 
@@ -156,11 +168,18 @@ class StructureElement
 	}
 
 	/**
+	 * @param $isReadOnly
 	 * @return array
 	 */
-	public function getTabBouton()
+	public function getTabBouton($isReadOnly)
 	{
-		return$this->m_TabBouton;
+		if($isReadOnly)
+		{
+			return $this->m_TabBoutonReadOnly;
+		}
+
+		// Sinon on récupère tous les boutons d'actions de liste par défaut
+		return $this->m_TabBouton;
 	}
 
 	/**

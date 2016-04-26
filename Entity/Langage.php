@@ -83,6 +83,21 @@ class Langage
 		return $this;
 	}
 
+	public static function s_isActionReadOnly($eTYPEACTION)
+	{
+        // Indique quels boutons sont dispo en readOnly
+		$isReadOnlyButton =[
+            self::eTYPEACTION_Creation      => false,
+            self::eTYPEACTION_Modification  => false,
+            self::eTYPEACTION_Liste         => false,
+            self::eTYPEACTION_Consultation  => true,
+            self::eTYPEACTION_Suppression   => false,
+            self::eTYPEACTION_Impression    => true
+		];
+
+        return $isReadOnlyButton[$eTYPEACTION];
+	}
+
 	//typeAction
 	const eTYPEACTION_Unknown               = 0;		//Action inconnue (ne manipule pas un objet de façon générique)
 	const eTYPEACTION_DescEnreg             = 1;		//Description d'un enreg
@@ -106,6 +121,7 @@ class Langage
 	const eTYPEACTION_Exporter              = 15477;
 	const eTYPEACTION_Importer              = 15478;
 	const eTYPEACTION_DeclencherAuto        = 15702;
+	// Si ajout de boutons, penser à modifier méthode s_isActionReadOnly pour préciser si le bouton est visible
 
 
 	/*************************************************************
