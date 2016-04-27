@@ -306,8 +306,6 @@ class Record
 
 
 
-
-
     /**
      * retourne la valeur affichée
      * @param $idColonne
@@ -556,5 +554,4 @@ class Record
     const OPTION_Color      = 'color';
     const OPTION_BGColor    = 'bgcolor';
     const OPTION_Italic     = 'italic';
-
 }
