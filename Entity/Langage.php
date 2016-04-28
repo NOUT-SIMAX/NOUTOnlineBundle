@@ -90,9 +90,12 @@ class Langage
             self::eTYPEACTION_Creation      => false,
             self::eTYPEACTION_Modification  => false,
             self::eTYPEACTION_Liste         => false,
+			self::eTYPEACTION_Suppression   => false,
+            self::eTYPEACTION_AjouterA      => false,
+            self::eTYPEACTION_EnleverDe     => false,
+
             self::eTYPEACTION_Consultation  => true,
-            self::eTYPEACTION_Suppression   => false,
-            self::eTYPEACTION_Impression    => true
+            self::eTYPEACTION_Impression    => true,
 		];
 
         return $isReadOnlyButton[$eTYPEACTION];
