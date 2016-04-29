@@ -39,8 +39,6 @@ class OptionDialogue extends WSDLOptionDialogue
 	const DISPLAY_No_ID_DH_TL_T     = 0x0000407C;           // 100000001111100
 
 
-
-
 	public function __construct()
 	{
 		//----------------------------------
@@ -65,14 +63,14 @@ class OptionDialogue extends WSDLOptionDialogue
 	 */
 	public function InitDefault()
 	{
-		$this->ReturnValue           = 1; // integer
-		$this->ReturnXSD             = 1; // integer
-		$this->Ghost                 = 0; // integer
-		$this->DefaultPagination     = 20; // integer
-		$this->DisplayValue          = 0; // integer
-		$this->LanguageCode          = 12; // integer
-		$this->WithFieldStateControl = 1; // integer
-		$this->ListContentAsync      = 0; // integer
+		$this->ReturnValue           = 1; 	// integer
+		$this->ReturnXSD             = 1; 	// integer
+		$this->Ghost                 = 0; 	// integer
+		$this->DefaultPagination     = 20; 	// integer
+		$this->DisplayValue          = 0; 	// integer
+		$this->LanguageCode          = 12; 	// integer
+		$this->WithFieldStateControl = 1; 	// integer
+		$this->ListContentAsync      = 0; 	// integer
 
 		return $this;
 	}
