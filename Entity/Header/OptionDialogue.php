@@ -46,6 +46,8 @@ class OptionDialogue extends WSDLOptionDialogue
 		$this->Readable        = 0; // integer TOUJOURS laisser 0, on considère que c'est toujours non lisible dans le bundle
 		$this->EncodingOutput  = 0; // integer
 		$this->HTTPForceReturn = 0; // integer
+        $this->VersionMin = 0; // integer
+        $this->VersionPref = 0; // integer
 		//----------------------------------
 
 		$this->ReturnValue           = null; // integer
@@ -71,6 +73,7 @@ class OptionDialogue extends WSDLOptionDialogue
 		$this->LanguageCode          = 12; 	// integer
 		$this->WithFieldStateControl = 1; 	// integer
 		$this->ListContentAsync      = 0; 	// integer
+        $this->VersionMin            = 1; // integer
 
 		return $this;
 	}
