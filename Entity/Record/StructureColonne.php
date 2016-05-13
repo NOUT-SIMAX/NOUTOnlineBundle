@@ -83,7 +83,7 @@ abstract class StructureColonne
 	}
 
     /**
-     * @return array|null
+     * @return StructureElement|null
      */
     public function getStructureElementLie()
     {
