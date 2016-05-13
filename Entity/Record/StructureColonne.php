@@ -119,27 +119,12 @@ abstract class StructureColonne
                 return self::FUSIONTYPE_Dates;
 
             // Pour mettre ensemble toutes les dates
-            if ($this->m_eTypeElement == self::TM_Texte)
-                return self::FUSIONTYPE_String;
+            if ($this->isOption(self::OPTION_Modele_Search))
+                return self::FUSIONTYPE_Search;
 
             // Permet de faire le whole et la fusion avec le champ de recherche
             if ($this->m_nIDColonne == Langage::PA_Recherche_Global)
                 return self::FUSIONTYPE_GlobalSearch;
-
-
-            // *******************************
-            // @@@ TODO
-            // Ajouter l'attribut whole
-
-            // Il faut ajouter le même ID de fusion pour
-
-            // if ($this->m_eTypeElement == self::TM_Search)
-            //    return self::FUSIONTYPE_Search;
-
-            // si ID = recherche  OU si RechercheGlobale (toujours le même ID) -> fusion
-            // const PA_Recherche_Global = 16990;
-
-            // *******************************
 
         }
         else
@@ -155,6 +140,53 @@ abstract class StructureColonne
 
         return self::FUSIONTYPE_Aucun;
     }
+
+    /**
+     * pour savoir si cote a cote en multicolonne
+     * @return integer
+     */
+    public function eGetBuddyTypeMulticolonne($isParamcard)
+    {
+        // Règles fusion fiche et règles paramètres sont différentes
+		// à séparer avec if .. else
+
+        // Si on est en mode filtres + liste
+        if($isParamcard)
+        {
+            // Permet de faire le whole et la fusion avec le champ de recherche
+            if (($this->m_nIDColonne == Langage::PA_Recherche_Global) || $this->isOption(self::OPTION_Modele_Search))
+                return self::BUDDYTYPE_Search;
+
+        }
+
+        if (($this->m_eTypeElement == self::TM_TexteMultiLigne) || ($this->m_eTypeElement == self::TM_ListeElem))
+            return self::BUDDYTYPE_Multi;
+
+        return self::BUDDYTYPE_Mono;
+    }
+
+    /**
+     * pour savoir si prend toute la place quand tout seul
+     * @return integer
+     */
+    public function isWholeIfAlone($isParamcard)
+    {
+        // Règles fusion fiche et règles paramètres sont différentes
+		// à séparer avec if .. else
+
+        // Si on est en mode filtres + liste
+        if($isParamcard)
+        {
+            if (($this->m_nIDColonne == Langage::PA_Recherche_Global) || $this->isOption(self::OPTION_Modele_Search))
+                return true;
+        }
+
+        if (($this->m_eTypeElement == self::TM_TexteMultiLigne) || ($this->m_eTypeElement == self::TM_ListeElem))
+            return true;
+
+        return false;
+    }
+
 
 	public function bEstTypeSimple()
 	{
@@ -423,6 +455,7 @@ abstract class StructureColonne
 	const OPTION_Modele_Company			= "siret";
 	const OPTION_Modele_Latitude		= "latitude";
 	const OPTION_Modele_Longitude		= "longitude";
+    const OPTION_Modele_Search  		= "search";
 
 	// Attributs de transformation
 	const OPTION_Transform_Color			= "colorRGB";
@@ -438,6 +471,10 @@ abstract class StructureColonne
     const FUSIONTYPE_VilleCP        = 2;
     const FUSIONTYPE_Dates          = 3;  // Par exemple pour date début - date fin
     const FUSIONTYPE_GlobalSearch   = 10; // Entraine automatiquement une fusion et un whole
-    const FUSIONTYPE_String         = 11; // Pour pouvoir faire la fusion avec GlobalSearch
+    const FUSIONTYPE_Search         = 11; // Pour pouvoir faire la fusion avec GlobalSearch
+
+    const BUDDYTYPE_Mono            = 0;
+    const BUDDYTYPE_Multi           = 1;
+    const BUDDYTYPE_Search          = 2;
 
 }

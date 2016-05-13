@@ -412,8 +412,8 @@
                             <xs:unique xs:name="17">
                                 <xs:selector xs:xpath="id_225113673346496"/>
                             </xs:unique>
-                            <xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="17128374179198190703" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
-                            <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="17128374192083092591" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Supprimer" simax:idAction="17128374179198190703" simax:actionTypeID="2391" simax:withValidation="3" simax:actionType="Supprimer" simax:typeSelection="multi"/>
+                            <xs:element simax:typeElement="simax-button" simax:name="Imprimer" simax:idAction="17128374192083092591" simax:actionTypeID="2392" simax:withValidation="3" simax:actionType="Imprimer" simax:typeSelection="multi"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
