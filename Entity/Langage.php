@@ -1735,4 +1735,8 @@ class Langage
 
 	//les couleurs définies
 	const COLOR_Magenta = 'ff00ff';
+
+    const SMC_Horizontal = 1; //dans le paramétrage SIMAX 16308
+    const SMC_Vertical = 2; //dans le paramétrage SIMAX 16307
+
 }

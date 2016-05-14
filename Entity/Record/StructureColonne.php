@@ -159,7 +159,7 @@ abstract class StructureColonne
 
         }
 
-        if (($this->m_eTypeElement == self::TM_TexteMultiLigne) || ($this->m_eTypeElement == self::TM_ListeElem))
+        if ($this->_isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
             return self::BUDDYTYPE_Multi;
 
         return self::BUDDYTYPE_Mono;
@@ -181,7 +181,7 @@ abstract class StructureColonne
                 return true;
         }
 
-        if (($this->m_eTypeElement == self::TM_TexteMultiLigne) || ($this->m_eTypeElement == self::TM_ListeElem))
+        if ($this->_isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
             return true;
 
         return false;
@@ -301,9 +301,69 @@ abstract class StructureColonne
 		return $this->m_TabOptions[$sOption];
 	}
 
+    /**
+     * vrai si le champ est un texte multiligne
+     * @return bool
+     */
+    protected function _isMultilineText()
+    {
+        if ($this->m_eTypeElement != self::TM_Texte) {
+            return false;
+        }
+
+        if (is_null($this->m_clRestriction) || !$this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH)){
+            //texte sans restriction => texte multiligne
+            return true;
+        }
+
+        return !$this->_isLongTextMonoline();
+    }
+
+    /**
+     * vrai si le champ est un texte monoligne
+     * @return bool
+     */
+    protected function _isMonolineText()
+    {
+        if ($this->m_eTypeElement != self::TM_Texte){
+            return false;
+        }
+
+        if (   !is_null($this->m_clRestriction) && $this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH)) {
+            //texte avec restriction => texte monoligne
+            return true;
+        }
+
+        return $this->_isLongTextMonoline();
+    }
+
+    /**
+     * vrai si c'est un texte qui est monoligne, même si pas restriction sur la longueur du champ
+     * @return bool
+     */
+    protected function _isLongTextMonoline(){
+
+        // Texte multi-ligne (car pas de restriction de nombre de caractères)
+        //certain modèle sont transformé en monoligne :
+        switch($this->getOption(self::OPTION_Transform))
+        {
+            case self::OPTION_Transform_Url:
+            {
+                return true;
+            }
+        }
+
+        if ($this->isOption(self::OPTION_Modele_Directory)) {
+            return true;
+        }
+
+        return false;
+    }
+
 	//////////////////////////////////////////
 	// POUR LE MOTEUR DE FORMULAIRE PAR DEFAUT
 	//////////////////////////////////////////
+
 
 
 	/**
@@ -329,16 +389,13 @@ abstract class StructureColonne
 			}
 			case self::TM_Texte :
 			{
-				if (!is_null($this->m_clRestriction) &&
-					($this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH))
-				)
-				{
-					// Texte mono-ligne
-					return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
-				}
+                if ($this->_isMonolineText())
+                {
+                    // Texte mono-ligne
+                    return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
+                }
 				else
 				{
-					// Texte multi-ligne (car pas de restriction de nombre de caractères)
 					return str_replace(array(':', '-'), array('_', '_'), self::TM_TexteMultiLigne);
 				}
 			}
