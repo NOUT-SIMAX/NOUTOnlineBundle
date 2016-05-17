@@ -116,21 +116,29 @@ abstract class StructureColonne
 
             // Pour mettre ensemble toutes les dates
             if ($this->m_eTypeElement == self::TM_Date)
+            {
                 return self::FUSIONTYPE_Dates;
+            }
 
             // Pour mettre ensemble le champ recherche et recherche globale
             if ($this->isOption(self::OPTION_Modele_Search) || ($this->m_nIDColonne == Langage::PA_Recherche_Global))
+            {
                 return self::FUSIONTYPE_Search;
+            }
         }
         else
         {
             // Pour mettre ensemble tous les boutons
             if ($this->m_eTypeElement == self::TM_Bouton)
+            {
                 return self::FUSIONTYPE_Bouton;
+            }
 
             // Pour mettre ensemble la ville et le code postal
             if ($this->isOption(self::OPTION_Modele_City) || $this->isOption(self::OPTION_Modele_PostalCode))
+            {
                 return self::FUSIONTYPE_VilleCP;
+            }
         }
 
         return self::FUSIONTYPE_Aucun;
@@ -150,12 +158,16 @@ abstract class StructureColonne
         {
             // Permet de faire le whole et la fusion avec le champ de recherche
             if (($this->m_nIDColonne == Langage::PA_Recherche_Global) || $this->isOption(self::OPTION_Modele_Search))
+            {
                 return self::BUDDYTYPE_Search;
+            }
 
         }
 
         if ($this->_isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
+        {
             return self::BUDDYTYPE_Multi;
+        }
 
         return self::BUDDYTYPE_Mono;
     }
@@ -173,11 +185,15 @@ abstract class StructureColonne
         if($isParamcard)
         {
             if (($this->m_nIDColonne == Langage::PA_Recherche_Global) || $this->isOption(self::OPTION_Modele_Search))
+            {
                 return true;
+            }
         }
 
         if ($this->_isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
+        {
             return true;
+        }
 
         return false;
     }
@@ -306,9 +322,9 @@ abstract class StructureColonne
             return false;
         }
 
-        if (is_null($this->m_clRestriction) || !$this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH)){
-            //texte sans restriction => texte multiligne
-            return true;
+        if (!is_null($this->m_clRestriction) && $this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH)){
+            //texte avec restriction => n'est PAS texte multiligne
+            return false;
         }
 
         return !$this->_isLongTextMonoline();
@@ -400,6 +416,20 @@ abstract class StructureColonne
 			}
 		}
 	}
+
+    /**
+     * @return string
+     *
+     * Retourne une liste de classe en fonction des options du modèle
+     */
+    public function getFormClass()
+    {
+        if ($this->isOption(self::OPTION_Modele_PostalCode)){
+            return 'codepostal ';
+        }
+
+        return '';
+    }
 
 
 	const TM_Invalide = null;
@@ -499,7 +529,7 @@ abstract class StructureColonne
 	const OPTION_Modele_BankDetails		= "bankDetails";
 	const OPTION_Modele_Directory		= "directory";
 	const OPTION_Modele_PostalCode		= "postalCode";
-	const OPTION_Modele_City			= "city";
+	const OPTION_Modele_City			= "City";
 	const OPTION_Modele_InputMask		= "inputMask";
 	const OPTION_Modele_WithSecond		= "withSecond";
 	const OPTION_Modele_PositionVideo	= "videoPosition";
