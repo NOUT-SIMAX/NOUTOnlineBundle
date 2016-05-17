@@ -118,14 +118,9 @@ abstract class StructureColonne
             if ($this->m_eTypeElement == self::TM_Date)
                 return self::FUSIONTYPE_Dates;
 
-            // Pour mettre ensemble toutes les dates
-            if ($this->isOption(self::OPTION_Modele_Search))
+            // Pour mettre ensemble le champ recherche et recherche globale
+            if ($this->isOption(self::OPTION_Modele_Search) || ($this->m_nIDColonne == Langage::PA_Recherche_Global))
                 return self::FUSIONTYPE_Search;
-
-            // Permet de faire le whole et la fusion avec le champ de recherche
-            if ($this->m_nIDColonne == Langage::PA_Recherche_Global)
-                return self::FUSIONTYPE_GlobalSearch;
-
         }
         else
         {
@@ -527,8 +522,7 @@ abstract class StructureColonne
     const FUSIONTYPE_Bouton         = 1;
     const FUSIONTYPE_VilleCP        = 2;
     const FUSIONTYPE_Dates          = 3;  // Par exemple pour date début - date fin
-    const FUSIONTYPE_GlobalSearch   = 10; // Entraine automatiquement une fusion et un whole
-    const FUSIONTYPE_Search         = 11; // Pour pouvoir faire la fusion avec GlobalSearch
+    const FUSIONTYPE_Search         = 11; // Pour pouvoir faire la fusion du champ recherche avec GlobalSearch
 
     const BUDDYTYPE_Mono            = 0;
     const BUDDYTYPE_Multi           = 1;
