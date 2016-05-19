@@ -42,6 +42,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
@@ -728,8 +729,6 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
             case XMLResponseWS::RETURNTYPE_EXCEPTION:
 
-            case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
-
             case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
 
             case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
@@ -739,6 +738,20 @@ class NOUTClient
             {
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
             }
+
+			case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
+			{
+                // Instance d'un parseur
+                $clResponseParser = new ReponseWSParser();
+
+                /** @var ParserList $clParser */
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+                $list = $clParser->getList($clReponseXML);
+
+				$clActionResult->setData($list);
+                break;
+			}
 
             case XMLResponseWS::RETURNTYPE_REPORT:
             {
@@ -1003,9 +1016,7 @@ class NOUTClient
 
     /**
 	 * @param $tabParamQuery
-     * @param $sIDFormulaire
      * @param $sIDContexte
-     * @param $sIDEnreg
      * @return ActionResult
      */
     public function oModifyElem(array $tabParamQuery, $sIDContexte)
@@ -1022,7 +1033,25 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+	/**
+	 * @param $tabParamQuery
+     * @param $sIDFormulaire
+     * @param $sIDContexte
+     * @return ActionResult
+     */
+    public function oSelectAmbiguous($sIDFormulaire, $sIDContexte)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDFormulaire', $sIDFormulaire, null);
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
 
+        // Paramètres obligatoires
+        $clParamSelect             = new SelectForm();
+        $clParamSelect->Form       = $sIDFormulaire;
+
+        $clReponseXML = $this->m_clSOAPProxy->selectForm($clParamSelect, $this->_aGetTabHeader($aTabHeaderSuppl)); // Deuxième paramètre = array
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
 
 
 
