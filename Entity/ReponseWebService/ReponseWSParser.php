@@ -30,7 +30,7 @@ class ReponseWSParser
 	 * @param $sReturnType
 	 * @param \SimpleXMLElement $clXML
 	 * @param \SimpleXMLElement $clSchema
-	 * @return Parser (enfin les classes filles)
+	 * @return Parser
 	 */
 	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS)
 	{
@@ -64,8 +64,6 @@ class ReponseWSParser
 		// Appel des fonctions à la volée grâce au tableau de méthodes
 		return $this->$aPtrFct[$sReturnType]($clXMLReponseWS);
 
-		// Dans le bug c'est _ParseList qui est renvoyé
-		// Le type de paramètre était donc RETURNTYPE_LIST (liste de villes)
 	}
 
 	/**
