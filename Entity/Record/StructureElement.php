@@ -183,6 +183,31 @@ class StructureElement
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getColButtons()
+	{
+        $fiche                      = $this->getFiche(); // Les boutons non détail sont dans la fiche ?
+        $structureColonne           = $fiche->getTabStructureColonne();
+
+        $actionButtonsArray = array();
+
+        foreach ($structureColonne as $element)
+        {
+            /* @var $element StructureDonnee */
+            $typeElement = $element->getTypeElement();
+
+            if ($typeElement == StructureColonne::TM_Bouton)
+            {
+                $actionButtonsArray[] = $element;
+            }
+        }
+
+        return $actionButtonsArray;
+	}
+
+
+	/**
 	 * @return int
 	 */
 	public function getNiveau()
