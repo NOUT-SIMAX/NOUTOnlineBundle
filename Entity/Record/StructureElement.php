@@ -192,7 +192,18 @@ class StructureElement
 
         $actionButtonsArray = array();
 
-        foreach ($structureColonne as $element)
+        // Appel à fonction récursive pour chercher les boutons dans l'arbre
+        $actionButtonsArray = $this->_extractButtonsFromSection($structureColonne, $actionButtonsArray);
+
+        return $actionButtonsArray;
+	}
+
+    /*
+    * La fonction est aussi dans TransformViewWebixJSON.php
+    */
+    private function _extractButtonsFromSection($colonne, $actionButtonsArray)
+    {
+        foreach ($colonne as $element)
         {
             /* @var $element StructureDonnee */
             $typeElement = $element->getTypeElement();
@@ -201,10 +212,14 @@ class StructureElement
             {
                 $actionButtonsArray[] = $element;
             }
+            else if($element instanceof StructureSection)
+            {
+                $this->_extractButtonsFromSection($element, $actionButtonsArray);
+            }
         }
 
         return $actionButtonsArray;
-	}
+    }
 
 
 	/**
