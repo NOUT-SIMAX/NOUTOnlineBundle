@@ -546,7 +546,13 @@ class Record
         {
             case "bold":
             case "italic":
-                return $option;
+            {
+                if($value == "1")
+                {
+                    return $option;
+                }
+                return "";
+            }
 
             case "color":
             case "bgcolor":
