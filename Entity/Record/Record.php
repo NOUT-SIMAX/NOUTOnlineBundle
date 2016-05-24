@@ -435,17 +435,27 @@ class Record
 	 */
 	public function getStructForUpdateSOAP()
 	{
-		$clParamUpdate        = new Update();
+		$clParamUpdate              = new Update();
 
-		$sIDForm = $this->m_clStructElem->getID();
-		$clParamUpdate->Table = $sIDForm;
-		$clParamUpdate->ParamXML = '<id_'.$sIDForm.'>'.$this->m_nIDEnreg.'</id_'.$sIDForm.'>';
-		$clParamUpdate->UpdateData = '<xml><id_'.$sIDForm.'>';
+		$sIDForm                    = $this->m_clStructElem->getID();
+		$clParamUpdate->Table       = $sIDForm;
+		$clParamUpdate->ParamXML    = '<id_'.$sIDForm.'>'.$this->m_nIDEnreg.'</id_'.$sIDForm.'>';
+		$clParamUpdate->UpdateData  = '<xml><id_'.$sIDForm.'>';
 
 		foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
 		{
 			if ($this->m_TabColumnsModified[$sIDColonne])
             {
+                if(is_array($sValue))
+                {
+                    $listValue = "";
+                    foreach ($sValue as $key => $value)
+                    {
+                        $listValue .= $value;
+                        $listValue .= '|';
+                    }
+                    $sValue = rtrim($listValue, "|");
+                }
                 $clParamUpdate->UpdateData.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
             }
 		}
