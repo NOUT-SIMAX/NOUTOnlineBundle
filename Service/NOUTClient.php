@@ -38,6 +38,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -823,24 +824,10 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
             {
 				// TODO faire la vraie messageBox
-				// On doit utiliser un Bootstrap Modals
-
-                // Fabriquer le bon clActionResult
-                // setData
-                // Récupérer avec un getMessageBox (dans clReponseXML)
-
-                // Puis dans le render
-                // Créer le bon json avec les infosn du clActionResult
-
-                // Dans le contextModel
-                // Trouver le type messageBox
-                // Et là appeler api.js
 
                 // On fabrique la messageBox avec les données XML
                 $clActionResult->setData($clReponseXML->clGetMessageBox());
 
-                // Avant
-                // return $this->oConfirmResponse($clActionResult->getIDContexte(), 1);
                 break;
             }
 
@@ -866,8 +853,8 @@ class NOUTClient
 		$paramUpdate = $clRecord->getStructForUpdateSOAP();
 
 		//header
-		$aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
-		$clReponseXML = $this->m_clSOAPProxy->update($paramUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
+		$aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
+		$clReponseXML       = $this->m_clSOAPProxy->update($paramUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
 
 		$oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
 
@@ -1000,7 +987,10 @@ class NOUTClient
     public function oCreateElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
-        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_ActionContext=>$sIDContexte
+        );
 
         $clParamCreate = new Create();
 
@@ -1022,7 +1012,10 @@ class NOUTClient
     public function oModifyElem(array $tabParamQuery, $sIDContexte)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
-        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_ActionContext=>$sIDContexte
+        );
 
         $clParamModify              = new Modify();
 		$clParamModify->Table       = $tabParamQuery['Table'];
@@ -1034,7 +1027,6 @@ class NOUTClient
     }
 
 	/**
-	 * @param $tabParamQuery
      * @param $sIDFormulaire
      * @param $sIDContexte
      * @return ActionResult
@@ -1042,7 +1034,10 @@ class NOUTClient
     public function oSelectAmbiguous($sIDFormulaire, $sIDContexte)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDFormulaire', $sIDFormulaire, null);
-        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_ActionContext => $sIDContexte
+        );
 
         // Paramètres obligatoires
         $clParamSelect             = new SelectForm();
@@ -1052,6 +1047,32 @@ class NOUTClient
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
+
+	/**
+	 * @return ActionResult
+	 */
+	public function oGetStartAutomatism()
+	{
+        // Informations d'authentification
+        /*
+        $token          = $this->_oGetToken();
+        $sessionToken   = $token->getSessionToken();
+        $usernameToken  = $this->_oGetUsernameToken($token->getUser());
+        */
+
+        // Infos déjà récupérées par aGetTabHeader
+        $aTabHeaderSuppl = array(
+//            SOAPProxy::HEADER_SessionToken  => $sessionToken,
+//            SOAPProxy::HEADER_UsernameToken => $usernameToken,
+        );
+
+        $clParamStartAutomatism = new GetStartAutomatism();
+
+        // Paramètres : GetStartAutomatism $clWsdlType_GetStartAutomatism, $aHeaders = array()
+		$clReponseXML = $this->m_clSOAPProxy->getStartAutomatism($clParamStartAutomatism, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+		return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+	}
 
 
 
