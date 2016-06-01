@@ -517,6 +517,10 @@ class Record
         return $this;
     }
 
+    /**
+     * @param $option
+     * @return mixed|null
+     */
     public function transformOption2CSSProperty($option)
     {
 
@@ -527,8 +531,10 @@ class Record
             "italic"    => "font-style"     // Normal, italique..
         );
 
-        return $SIMAXStyleToCSS[$option];
-
+        if (array_key_exists($option, $SIMAXStyleToCSS))
+        {
+            return $SIMAXStyleToCSS[$option];
+        }
     }
 
     public function transformOptionValue2CSSValue($option, $value=null)
@@ -559,7 +565,7 @@ class Record
                 return '#'.$value;
         }
 
-        return 0;
+        return null;
     }
 
 
