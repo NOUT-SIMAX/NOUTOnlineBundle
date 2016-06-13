@@ -11,14 +11,64 @@
 
 		<!-- feuille de style -->
 		<link rel="stylesheet" href="{{ asset('vendors/bootstrap/css/bootstrap.min.css') }}" />
+
+        <style type="text/css">
+
+            @font-face {
+                font-family: 'DolceVita';
+                src: url('../../../font/theme/NOUT/Dolce Vita.ttf');
+            }
+
+            body {
+                background-image: url('../../../img/sym/theme/NOUT/background.jpg');
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-clip: border-box;
+                background-size: cover;
+
+            }
+            #loginbox {
+                height: 400px;
+                width: 500px;
+                left: 50%;
+                margin-left: -250px;
+                margin-top: -200px;
+                position: fixed;
+                top: 50%;
+            }
+            .panel-heading, .btn-login  {
+                background-color: #80b6df;
+                color: white;
+
+                font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
+            }
+            .btn-login:hover {
+                background-color: #449dd7;
+                color:white;
+            }
+            .panel-footer {
+                font-size: xx-small;
+                color: gray;
+                background-color: transparent;
+            }
+            .panel {
+                background-color: rgba(255, 255, 255, 0.8);
+                border-radius: 8px;
+            }
+            .panel-heading {
+                border-top-left-radius: 7px;
+                border-top-right-radius: 7px;
+
+            }
+        </style>
 	{% endblock%}
 </head>
 <body>
 
-<div class="container">
+{#<div class="container">#}
 
-	<div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-		<div class="panel panel-info" >
+	<div id="loginbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+		<div class="panel" >
 			<div class="panel-heading">
 				<div class="panel-title">{{ 'login.sign_in' | trans }}</div>
 			</div>
@@ -37,7 +87,7 @@
 						<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 						<input id="login-password" type="password" class="form-control" name="m_sPass" placeholder="{{ 'login.password' | trans }}">
 					</div>
-					<div style="margin-bottom: 25px" class="input-group">
+					<div style="margin-bottom: 25px" class="input-group hidden">
 						<span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
 						<select class="form-control" id="login-timezone" name="m_sTimeZone">
 							{% for zone in timezone_list %}
@@ -48,7 +98,7 @@
 					<div style="margin-top:10px" class="form-group">
 						<!-- Button -->
 						<div class="col-sm-12 controls">
-							<button type="submit" class="btn btn-default btn-success">{{ 'login.connection' | trans }}</button>
+							<button type="submit" class="btn btn-default btn-login">{{ 'login.connection' | trans }}</button>
 						</div>
 					</div>
 				</form>
@@ -57,14 +107,10 @@
 				© NOUTWeb {{ noutwebsite_version }}
 				<br />
 				© NOUTOnline {{ noutonline_version() }}
-				{% if app.debug %}
-					<br />
-					© NOUTSessionManager Bundle
-				{% endif %}
 			</div>
 		</div>
 	</div>
-</div>
+{#</div>#}
 
 {% block javascripts %}
 	<!-- Latest compiled and minified JavaScript -->
