@@ -38,6 +38,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
@@ -47,6 +48,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\SecurityContext;
 
 class NOUTClient
@@ -372,83 +374,7 @@ class NOUTClient
 		return $clActionResult;
 	}
 
-	/**
-	 * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
-	 * @param $sIDIcon
-	 * @param $sMimeType
-	 * @param $sTransColor
-	 * @param $nWidth
-	 * @param $nHeight
-	 * @return string
-	 */
-	public function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
-	{
-		$clIdentification = $this->_clGetIdentificationREST('', true);
 
-		$aTabOption = array();
-		if (!empty($sMimeType))
-		{
-			$aTabOption[RESTProxy::OPTION_MimeType] = $sMimeType;
-		}
-
-		if (!empty($sTransColor))
-		{
-			$aTabOption[RESTProxy::OPTION_TransColor] = $sTransColor;
-		}
-
-		if (!empty($nWidth))
-		{
-			$aTabOption[RESTProxy::OPTION_Width] = $nWidth;
-		}
-
-		if (!empty($nHeight))
-		{
-			$aTabOption[RESTProxy::OPTION_Height] = $nHeight;
-		}
-
-		//on veut le contenu
-		$aTabOption[RESTProxy::OPTION_WantContent] = 1;
-
-		//on regarde si le fichier existe
-		$sFile = $this->_sGetNomFichierCacheIHM(Langage::TABL_ImageCatalogue, $sIDIcon, $aTabOption);
-
-		if (file_exists($sFile))
-		{
-			return $sFile;
-		}
-
-		$sRet = $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_ImageGrande, array(), $aTabOption, $clIdentification, $sFile);
-		if (!empty($sRet))
-		{
-			return $sRet;
-		}
-
-		return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_ImageCatalogue, $sIDIcon, Langage::COL_IMAGECATALOGUE_Image, array(), $aTabOption, $clIdentification, $sFile);
-	}
-
-
-	/**
-	 * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
-	 * @param $sIDIcon
-	 * @param $sMimeType
-	 * @param $sTransColor
-	 * @param $nWidth
-	 * @param $nHeight
-	 * @return ActionResult
-	 */
-	public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
-	{
-		$sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
-
-		$clActionResult = new ActionResult(null);
-		$clActionResult->setData($sFichier);
-
-		//gestion du cache
-		$clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
-		$clActionResult->setLastModified(new \DateTime('@'.filemtime($sFichier)));
-
-		return $clActionResult;
-	}
 
 	/**
 	 * @param $sIDTab
@@ -478,7 +404,8 @@ class NOUTClient
 
 	/**
 	 * retourne le nom de fichier pour le cache
-	 * @param $sID
+	 * @param $sIDTab
+	 * @param $sIDElement
 	 * @param $aTabOption array
 	 */
 	protected function _sGetNomFichierCacheIHM($sIDTab, $sIDElement, $aTabOption)
@@ -1075,8 +1002,192 @@ class NOUTClient
 	}
 
 
-
     // Fin Elements liés et les sous-listes
+    // ------------------------------------------------------------------------------------
+
+
+
+
+    // FICHIERS
+
+    /**
+     * récupère une icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+     * @param $sIDIcon
+     * @param $sMimeType
+     * @param $sTransColor
+     * @param $nWidth
+     * @param $nHeight
+     * @return ActionResult
+     */
+    public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    {
+		//le retour c'est le chemin de fichier enregistrer dans le cache
+        $sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($sFichier);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        $clActionResult->setLastModified(new \DateTime('@'.filemtime($sFichier)));
+
+        return $clActionResult;
+    }
+
+
+    /**
+     * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+     * @param $sIDIcon
+     * @param $sMimeType
+     * @param $sTransColor
+     * @param $nWidth
+     * @param $nHeight
+     * @return string
+     */
+    public function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+
+        // Création des options
+        $aTabOption = array();
+        if (!empty($sMimeType))
+        {
+            $aTabOption[RESTProxy::OPTION_MimeType] = $sMimeType;
+        }
+
+        if (!empty($sTransColor))
+        {
+            $aTabOption[RESTProxy::OPTION_TransColor] = $sTransColor;
+        }
+
+        if (!empty($nWidth))
+        {
+            $aTabOption[RESTProxy::OPTION_Width] = $nWidth;
+        }
+
+        if (!empty($nHeight))
+        {
+            $aTabOption[RESTProxy::OPTION_Height] = $nHeight;
+        }
+
+        //on veut le contenu
+        $aTabOption[RESTProxy::OPTION_WantContent] = 1;
+
+        //on regarde si le fichier existe
+        $sFile = $this->_sGetNomFichierCacheIHM(Langage::TABL_ImageCatalogue, $sIDIcon, $aTabOption);
+
+        if (file_exists($sFile))
+        {
+            return $sFile;
+        }
+        else // Le fichier n'est pas dans le cache, on va le récupérer
+        {
+            // On essaye de récupérer l'image grande
+            $sRet = $this->m_clRESTProxy->sGetColInRecord(
+                Langage::TABL_ImageCatalogue,
+                $sIDIcon,
+                Langage::COL_IMAGECATALOGUE_ImageGrande,
+                array(),
+                $aTabOption,
+                $clIdentification,
+                $sFile
+            );
+
+            if (!empty($sRet->content))
+            {
+                return $sRet;
+            }
+
+            // Sinon on donne l'image de taille normale
+            return $this->m_clRESTProxy->sGetColInRecord(
+                Langage::TABL_ImageCatalogue,
+                $sIDIcon,
+                Langage::COL_IMAGECATALOGUE_Image,
+                array(),
+                $aTabOption,
+                $clIdentification,
+                $sFile
+            );
+        }
+
+    }
+
+
+    // Langage::TABL_ModeleFichier
+
+	/**
+	 * récupère un fichier
+	 * @param $idForm
+	 * @param $idColumn
+	 * @param $idRecord
+	 * @return ActionResult
+	 */
+	public function getFile($idForm, $idColumn, $idRecord)
+	{
+		$sFichier = $this->_getFile($idForm, $idColumn, $idRecord);
+
+		$clActionResult = new ActionResult(null);
+		$clActionResult->setData($sFichier);
+
+		//gestion du cache
+		$clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+		// $clActionResult->setLastModified(new \DateTime('@'.filemtime($sFichier)));
+
+		return $clActionResult;
+	}
+
+
+    /**
+     * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+     * @param $idForm
+     * @param $idColumn
+     * @param $idRecord
+     * @return File
+     */
+    public function _getFile($idForm, $idColumn, $idRecord)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+        $sFile = null; // Pour stocker le contenu du fichier
+
+        // --------------------------------------------
+        // POUR LE REST - Plus rapide
+        $aTabOption = array();
+        //on veut le contenu
+        $aTabOption[RESTProxy::OPTION_WantContent] = 1;
+
+        // $sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest = ''
+        $clFileResponseRest =  $this->m_clRESTProxy->sGetColInRecord(
+            $idForm,    		// ID Tableau
+            $idRecord,          // ID Enregistrement
+            $idColumn,          // ID Colonne
+            array(),
+            $aTabOption,
+            $clIdentification,
+            $sFile
+        );
+
+        // --------------------------------------------
+        // POUR LE SOAP
+		/*
+        $clParamGetColInRecord              = new GetColInRecord();
+        $clParamGetColInRecord->WantContent = 1;      // On veut le contenu du fichier
+        $clParamGetColInRecord->Column      = $idColumn;   // Ajout des infos obligatoires sur le fichier
+        $clParamGetColInRecord->Record      = $idRecord;   // Ajout des infos obligatoires sur le fichier
+
+        $aTabHeaderSuppl = array();
+
+        $clFileResponseSoap = $this->m_clSOAPProxy->getColInRecord($clParamGetColInRecord, $this->_aGetTabHeader($aTabHeaderSuppl));
+		*/
+        // --------------------------------------------
+
+
+
+        return $clFileResponseRest;
+
+    }
+
+
+    // Fin Fichiers
     // ------------------------------------------------------------------------------------
 
 
