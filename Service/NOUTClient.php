@@ -49,6 +49,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\SecurityContext;
 
 class NOUTClient
@@ -402,6 +403,27 @@ class NOUTClient
 		return $sRep;
 	}
 
+
+    // Pour l'écriture des fichiers en cache
+    /**
+     * @return string
+     */
+    protected function _sGetRepCache()
+    {
+        $oToken    = $this->_oGetToken();
+        $clLangage = $oToken->getLangage();
+
+        $sRep = $this->m_sCacheDir.'/'.self::REPCACHE_UPLOAD.'/'.$clLangage->getVersionLangage();
+
+
+        if (!file_exists($sRep))
+        {
+            mkdir($sRep, 0777, true);
+        }
+
+        return $sRep;
+    }
+
 	/**
 	 * retourne le nom de fichier pour le cache
 	 * @param $sIDTab
@@ -428,6 +450,35 @@ class NOUTClient
 
 		return $sRep.'/'.$this->_sSanitizeFilename($sIDElement.'_'.$sListeOption);
 	}
+
+    /**
+     * retourne le nom de fichier pour le cache
+     * @param $sIDTab
+     * @param $sIDElement
+     * @param $aTabOption array
+     */
+    protected function _sGetCacheFilePath($sIDElement, $aTabOption)
+    {
+        $sRep = $this->_sGetRepCache();
+
+        //on tri le tableau pour toujours l'avoir dans le même ordre
+        ksort($aTabOption);
+
+        $sListeOption = '';
+        foreach ($aTabOption as $sOption => $valeur)
+        {
+            if (!empty($sListeOption))
+            {
+                $sListeOption .= '_';
+            }
+
+            $sListeOption .= $valeur;
+        }
+
+        return $sRep.'/'.$this->_sSanitizeFilename($sIDElement.'_'.$sListeOption);
+    }
+
+
 
 	/**
 	 * @param $filename
@@ -1006,8 +1057,6 @@ class NOUTClient
     // ------------------------------------------------------------------------------------
 
 
-
-
     // FICHIERS
 
     /**
@@ -1021,7 +1070,7 @@ class NOUTClient
      */
     public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
     {
-		//le retour c'est le chemin de fichier enregistrer dans le cache
+		//le retour c'est le chemin de fichier enregistré dans le cache
         $sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
 
         $clActionResult = new ActionResult(null);
@@ -1076,7 +1125,7 @@ class NOUTClient
         //on regarde si le fichier existe
         $sFile = $this->_sGetNomFichierCacheIHM(Langage::TABL_ImageCatalogue, $sIDIcon, $aTabOption);
 
-        if (file_exists($sFile))
+        if (file_exists($sFile)) //Si le fichier est déjà dans le cache
         {
             return $sFile;
         }
@@ -1138,19 +1187,19 @@ class NOUTClient
 
 
     /**
-     * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+     * récupère un fichier pour téléchargement
      * @param $idForm
      * @param $idColumn
      * @param $idRecord
      * @return File
      */
-    public function _getFile($idForm, $idColumn, $idRecord)
+    private function _getFile($idForm, $idColumn, $idRecord)
     {
         $clIdentification = $this->_clGetIdentificationREST('', true);
         $sFile = null; // Pour stocker le contenu du fichier
 
         // --------------------------------------------
-        // POUR LE REST - Plus rapide
+        // VERSION REST - Plus rapide
         $aTabOption = array();
         //on veut le contenu
         $aTabOption[RESTProxy::OPTION_WantContent] = 1;
@@ -1167,7 +1216,7 @@ class NOUTClient
         );
 
         // --------------------------------------------
-        // POUR LE SOAP
+        // VERSION SOAP
 		/*
         $clParamGetColInRecord              = new GetColInRecord();
         $clParamGetColInRecord->WantContent = 1;      // On veut le contenu du fichier
@@ -1181,9 +1230,61 @@ class NOUTClient
         // --------------------------------------------
 
 
-
         return $clFileResponseRest;
+    }
 
+    /**
+     * écrit un fichier dans le cache
+     * @param UploadedFile $file
+     * @param $fileID
+     */
+    public function cacheFile($file, $fileID)
+    {
+        $filePath = $this->_cacheFile($file, $fileID); // Générer le chemin du fichier dans le cache
+        @copy($file, $filePath); // Copie du fichier dans le cache
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($filePath);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        // $clActionResult->setLastModified(new \DateTime('@'.filemtime($filePath))); // Erreur si le fichier n'existe pas
+
+        return $clActionResult;
+    }
+
+    /**
+     * le fichier doit être déplacé dans le cache
+     * @param UploadedFile $file
+     * @param $fileID
+     */
+    private function _cacheFile($file, $fileID)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+
+        // Création des options
+        $aTabOption = array();
+        $sMimeType = $file->getClientMimeType();
+
+        if (!empty($sMimeType))
+        {
+            $aTabOption[RESTProxy::OPTION_MimeType] = $sMimeType;
+        }
+
+        $aTabOption[RESTProxy::OPTION_WantContent] = 1; // Dans le doute
+
+        // ($sIDTab, $sIDElement, $aTabOption)
+        $sFilePath = $this->_sGetCacheFilePath($fileID, $aTabOption);
+        $sFilePath = str_replace('\\','/',$sFilePath); // Sanityze path
+
+        if (file_exists($sFilePath)) // Vérifie si le fichier est dans le cache ?
+        {
+            $fileExists = true;
+            // Soit le fichier existe et on le remplace
+            // Soit le fichier n'existe pas et on le met en cache
+        }
+
+        return $sFilePath;
     }
 
 
@@ -1191,11 +1292,11 @@ class NOUTClient
     // ------------------------------------------------------------------------------------
 
 
+	const REPCACHE      	= 'NOUTClient';
+	const REPCACHE_IHM  	= 'ihm';
+	const REPCACHE_UPLOAD	= 'upload';
 
-	const REPCACHE      = 'NOUTClient';
-	const REPCACHE_IHM  = 'ihm';
-
-	const TP_NotEmpty   = 1;
-	const TP_InArray    = 2;
-    const MaxEnregs     = 200;	// Nombre maximum d'éléments sur une page
+	const TP_NotEmpty   	= 1;
+	const TP_InArray    	= 2;
+    const MaxEnregs     	= 200;	// Nombre maximum d'éléments sur une page
 }
