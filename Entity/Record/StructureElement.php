@@ -27,14 +27,28 @@ class StructureElement
 	protected $m_clFiche;
 
 	/**
+     * les boutons qu'on affiche dans la fiche ou en bas des listes
 	 * @var array
 	 */
 	protected $m_TabBouton;
 
     /**
+     * les boutons qu'on affiche dans la fiche ou en bas des listes qui sont en lecture seule
 	 * @var array
 	 */
 	protected $m_TabBoutonReadOnly;
+
+    /**
+     * les boutons de remplacement qui remplace enregistrer et annuler
+     * @var array
+     */
+    protected $m_TabBoutonRemplacementValidation;
+
+    /**
+     * les autres boutons de remplacement
+     * @var array
+     */
+    protected $m_TabBoutonRemplacementAutre;
 
 	/**
 	 * @var array
@@ -54,6 +68,10 @@ class StructureElement
 		$this->m_clFiche					= new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
 
 		$this->m_MapIDColonne2Structure = array();
+        $this->m_TabBouton=array();
+        $this->m_TabBoutonReadOnly=array();
+        $this->m_TabBoutonRemplacementAutre=array();
+        $this->m_TabBoutonRemplacementValidation=array();
 	}
 
 	public function addColonne(StructureColonne $clColonne)
@@ -96,13 +114,31 @@ class StructureElement
 	 */
 	public function addButton(StructureBouton $clStructBouton)
 	{
-		$this->m_TabBouton[] = $clStructBouton;
+        if ($clStructBouton->isOption(StructureColonne::OPTION_WithValidation))
+        {
+            switch($clStructBouton->getOption(StructureColonne::OPTION_WithValidation))
+            {
+            case StructureColonne::BTNVAL_RemplaceImprimer:
+            {
+                $this->m_TabBoutonRemplacementAutre[]=$clStructBouton;
+                return ;
+            }
 
+            case StructureColonne::BTNVAL_RemplaceEnregistrer:
+            case StructureColonne::BTNVAL_RemplaceAnnuler:
+            {
+                $this->m_TabBoutonRemplacementValidation[]=$clStructBouton;
+                return ;
+            }
+
+            }
+        }
+
+		$this->m_TabBouton[] = $clStructBouton;
         if($clStructBouton->isReadOnly())
         {
             $this->m_TabBoutonReadOnly[] = $clStructBouton;
         }
-
 
 		return $this;
 	}
@@ -181,6 +217,22 @@ class StructureElement
 		// Sinon on récupère tous les boutons d'actions de liste par défaut
 		return $this->m_TabBouton;
 	}
+
+    /**
+     * @return array
+     */
+    public function getTabBtnRemplacementValidation()
+    {
+        return $this->m_TabBoutonRemplacementValidation;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTabBtnRemplacementAutre()
+    {
+        return $this->m_TabBoutonRemplacementAutre;
+    }
 
 	/**
 	 * @return array
