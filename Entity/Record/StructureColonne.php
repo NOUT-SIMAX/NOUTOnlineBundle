@@ -558,4 +558,13 @@ abstract class StructureColonne
     const BUDDYTYPE_Multi           = 1;
     const BUDDYTYPE_Search          = 2;
 
+    //Constantes pour la validation des boutons
+    const BTNVAL_Avant              = 1; //on enregistre avant
+    const BTNVAL_Apres              = 2; //on enregistre après
+    const BTNVAL_RemplaceAnnuler    = 3; //remplace le bouton annuler
+    const BTNVAL_RemplaceEnregistrer= 4; //remplace le bouton enregistrer
+    const BTNVAL_RemplaceImprimer   = 5; //remplace le bouton imprimer
+
+
+
 }
