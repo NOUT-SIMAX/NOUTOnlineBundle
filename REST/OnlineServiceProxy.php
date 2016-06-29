@@ -448,6 +448,17 @@ class OnlineServiceProxy
         return $result;
 	}
 
+    /*
+     * @param $sURL
+     * @param $sDest
+     */
+	public function sGetFileFromUrl($sURL, $sDest = '')
+	{
+		$result = $this->_sExecute('GetColInRecord', $sURL, $sDest); // On veut la réponse complète ici
+
+		return $result;
+	}
+
 
 
     /**
