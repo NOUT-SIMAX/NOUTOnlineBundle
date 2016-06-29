@@ -475,7 +475,8 @@ class NOUTClient
             $sListeOption .= $valeur;
         }
 
-        return $sRep.'/'.$this->_sSanitizeFilename($sIDElement.'_'.$sListeOption);
+        // return $sRep.'/'.$this->_sSanitizeFilename($sIDElement.'_'.$sListeOption); // Si on veut un nom avec options
+        return $sRep.'/'.$this->_sSanitizeFilename($sIDElement); // Nom sans les options
     }
 
 
@@ -1286,6 +1287,8 @@ class NOUTClient
 
         return $sFilePath;
     }
+
+
 
 
     // Fin Fichiers
