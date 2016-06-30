@@ -74,13 +74,75 @@ class StructureElement
         $this->m_TabBoutonRemplacementValidation=array();
 	}
 
-	public function addColonne(StructureColonne $clColonne)
+    /**
+     * @param StructureColonne $clStructColonne
+     * @return $this|StructureElement|void
+     */
+	public function addColonne(StructureColonne $clStructColonne)
 	{
-		$this->m_MapIDColonne2Structure[$clColonne->getIDColonne()]=$clColonne;
+        if ($clStructColonne instanceof StructureBouton)
+        {
+            throw new \Exception("StructureColonne::addColonne ne doit pas être utilisée pour ajouter des boutons, utiliser addButton à la place.");
+        }
+
+		$this->m_MapIDColonne2Structure[$clStructColonne->getIDColonne()]=$clStructColonne;
 		return $this;
 	}
 
-	/**
+
+    /**
+     * ajoute un des boutons d'actions (non paramétré)
+     * @param StructureBouton $clStructBouton
+     * @return bool
+     */
+    public function addButton(StructureBouton $clStructBouton)
+    {
+        $nIDColonne = $clStructBouton->getIDColonne();
+        if (!empty($nIDColonne))
+        {
+            //c'est un bouton colonne, il faut voir si c'est un bouton de substitution
+            if ($clStructBouton->isOption(StructureColonne::OPTION_Substitution))
+            {
+                //on le met dans les boutons de substitution, pas dans les colonnes
+                switch($clStructBouton->getOption(StructureColonne::OPTION_Substitution))
+                {
+                case StructureColonne::BTNSUB_Imprimer:
+                {
+                    $this->m_TabBoutonRemplacementAutre[]=$clStructBouton;
+                    break;
+                }
+
+                case StructureColonne::BTNSUB_Enregistrer:
+                case StructureColonne::BTNSUB_Annuler:
+                {
+                    $this->m_TabBoutonRemplacementValidation[]=$clStructBouton;
+                    break;
+                }
+
+                }
+
+                return false;
+            }
+
+            //sinon on le met avec les autres colonnes
+            $this->m_MapIDColonne2Structure[$clStructBouton->getIDColonne()]=$clStructBouton;
+            return true;
+        }
+
+        //c'est pas un bouton colonne, on le mets avec les boutons d'action de fiche
+        $this->m_TabBouton[] = $clStructBouton;
+        if($clStructBouton->isReadOnly())
+        {
+            $this->m_TabBoutonReadOnly[] = $clStructBouton;
+        }
+
+        return false;
+    }
+
+
+
+
+    /**
 	 * @param string $sIDColonne identifiant de la colonne
 	 */
 	public function getTypeElement($sIDColonne)
@@ -108,42 +170,6 @@ class StructureElement
 	}
 
 	/**
-	 * ajoute un des boutons d'actions (non paramétré)
-	 * @param StructureBouton $clStructBouton
-	 * @return $this
-	 */
-	public function addButton(StructureBouton $clStructBouton)
-	{
-        if ($clStructBouton->isOption(StructureColonne::OPTION_WithValidation))
-        {
-            switch($clStructBouton->getOption(StructureColonne::OPTION_WithValidation))
-            {
-            case StructureColonne::BTNVAL_RemplaceImprimer:
-            {
-                $this->m_TabBoutonRemplacementAutre[]=$clStructBouton;
-                return ;
-            }
-
-            case StructureColonne::BTNVAL_RemplaceEnregistrer:
-            case StructureColonne::BTNVAL_RemplaceAnnuler:
-            {
-                $this->m_TabBoutonRemplacementValidation[]=$clStructBouton;
-                return ;
-            }
-
-            }
-        }
-
-		$this->m_TabBouton[] = $clStructBouton;
-        if($clStructBouton->isReadOnly())
-        {
-            $this->m_TabBoutonReadOnly[] = $clStructBouton;
-        }
-
-		return $this;
-	}
-
-	/**
 	 * @param $sIDColonne string
 	 * @param $eTypeElement string
 	 */
@@ -165,26 +191,6 @@ class StructureElement
 		{
 			$this->m_MapIDColonne2Structure[$sIDColonne]->setRestriction($clRestriction);
 		}
-	}
-
-	/**
-	 * @param StructureColonne $clStructColonne
-	 * @return mixed|void
-	 */
-	public function setStructureColonne(StructureColonne $clStructColonne)
-	{
-		if ($clStructColonne instanceof StructureBouton)
-		{
-			if (empty($clStructColonne->getIDColonne()))
-			{
-				//c'est pas un bouton par programmation, il faut le sortir des structures colonnes
-				$this->m_TabBouton[]=$clStructColonne;
-				return;
-			}
-		}
-
-		$this->m_MapIDColonne2Structure[$clStructColonne->getIDColonne()] = $clStructColonne;
-		return $clStructColonne->getIDColonne();
 	}
 
 	/**

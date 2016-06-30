@@ -509,6 +509,7 @@ abstract class StructureColonne
 	const OPTION_TypeSelection  = "typeSelection";
 	const OPTION_Icone          = "icon";
 	const OPTION_WithValidation = "withValidation";
+    const OPTION_Substitution   = "substitution";
 	const OPTION_IDColToUpdate  = "columnToUpdate";
 	const OPTION_IDColSelection = "columnSelection";
 
@@ -561,9 +562,10 @@ abstract class StructureColonne
     //Constantes pour la validation des boutons
     const BTNVAL_Avant              = 1; //on enregistre avant
     const BTNVAL_Apres              = 2; //on enregistre après
-    const BTNVAL_RemplaceAnnuler    = 3; //remplace le bouton annuler
-    const BTNVAL_RemplaceEnregistrer= 4; //remplace le bouton enregistrer
-    const BTNVAL_RemplaceImprimer   = 5; //remplace le bouton imprimer
+    const BTNVAL_Question           = 3; //on pose la question à l'utilisateur
+    const BTNSUB_Annuler            = 1; //remplace le bouton annuler
+    const BTNSUB_Enregistrer        = 2; //remplace le bouton enregistrer
+    const BTNSUB_Imprimer           = 3; //remplace le bouton imprimer
 
 
 
