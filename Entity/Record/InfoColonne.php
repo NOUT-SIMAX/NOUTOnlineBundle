@@ -88,9 +88,12 @@ class InfoColonne
     }
 
 
-    const OPTION_Bold   = 'bold';
-    const OPTION_Italic = 'italic';
-    const OPTION_Color  = 'color';
-    const OPTION_BgColor= 'bgcolor';
+    const OPTION_Bold       = 'bold';
+    const OPTION_Italic     = 'italic';
+    const OPTION_Color      = 'color';
+    const OPTION_BgColor    = 'bgcolor';
+
+    const OPTION_Hidden     = 'hidden';
+    const OPTION_ReadOnly   = 'readOnly';
 
 }
