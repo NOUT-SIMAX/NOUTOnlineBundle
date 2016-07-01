@@ -134,14 +134,12 @@ class ParserXSDSchema extends Parser
 				case StructureColonne::TM_Bouton:
 				{
 					$clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS);
+                    $bIsCol = $clStructElem->addButton($clStructureBouton);
 
-					if (empty($clStructureBouton->getIDColonne())) //si vide, c'est un bouton d'action sur le formulaire (supprimer, imprimer...)
+					if ($bIsCol) //c'est un colonne bouton qui n'est pas un bouton de substitution, on l'ajoute à la section
 					{
-						$clStructElem->addButton($clStructureBouton);
-						break;
+                        $clStructSection->addColonne($clStructureBouton);
 					}
-					$clStructSection->addColonne($clStructureBouton);
-					$clStructElem->addColonne($clStructureBouton);
 					break;
 				}
 
@@ -228,11 +226,8 @@ class ParserXSDSchema extends Parser
                 $clAttribXS   = $ndElement->attributes(self::NAMESPACE_XSD);
                 $clAttribNOUT = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
                 $clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS);
-                if (empty($clStructureBouton->getIDColonne())) //si vide, c'est un bouton d'action sur le formulaire (supprimer, imprimer...)
-                {
-                    $clStructureElemLie->addButton($clStructureBouton);
-                }
-                else
+                $bIsCol = $clStructureElemLie->addButton($clStructureBouton);
+                if ($bIsCol) //si vide, c'est un bouton d'action sur le formulaire (supprimer, imprimer...)
                 {
                     throw new \Exception("Ici on ne devrait pas avoir de colonne bouton");
                 }
