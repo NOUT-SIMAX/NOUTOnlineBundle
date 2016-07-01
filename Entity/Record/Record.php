@@ -464,6 +464,12 @@ class Record
 		return $clParamUpdate;
 	}
 
+
+
+
+
+
+
     /**
      * retourne la liste des colonnes qui déclenchent un update partiel
      * @return array
@@ -566,6 +572,29 @@ class Record
         }
 
         return null;
+    }
+
+
+    public function setFilesData($filesToSend)
+    {
+        // Structure attendue des données XML d'un fichier
+        /*
+        <id_38566479741459 id="38738278443168">                     // Identifiant 1 = idFormulaire et 2 = idEnreg ???
+            <id_47723350017105 simax:ref="14673000757953052016">    // Identifiant 3 = idColonne et 4 = id unique au choix, retrouvé dans ref
+                lst_oper_L33-1 (1) (1) (1).csv
+            </id_47723350017105>
+            <simax:Data
+            simax:ref = "14673000757953052016"
+            simax:title = "lst_oper_L33-1 (1) (1) (1).csv"
+            simax:encoding = "base64"
+            simax:size = "215465"
+            simax:filename = "lst_oper_L33-1 (1) (1) (1).csv"
+            simax:typemime = "text/plain" >
+                fileContentHere
+            </simax:Data>
+        </id_38566479741459>
+        */
+
     }
 
 
