@@ -23,6 +23,8 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
@@ -829,6 +831,18 @@ class NOUTClient
 		$this->_TestParametre(self::TP_InArray, '$autovalidate', $autovalidate, array(SOAPProxy::AUTOVALIDATE_None, SOAPProxy::AUTOVALIDATE_Cancel, SOAPProxy::AUTOVALIDATE_Validate));
 		$this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
+
+        // -----------------------------------------------------
+        // Fichiers
+
+        // Chercher tous les fichiers modifiés dans le Record // similaire à getStructforUpdateSOAP => getColonneFileModified
+		$filesToSend = $this->_getModifiedFiles($clRecord);
+
+        // Mettre le tableau dans $clRecord
+        $clRecord->setFilesData($filesToSend);
+
+        // -----------------------------------------------------
+
 		$paramUpdate = $clRecord->getStructForUpdateSOAP();
 
 		//header
@@ -1278,6 +1292,7 @@ class NOUTClient
         $sFilePath = $this->_sGetCacheFilePath($fileID, $aTabOption);
         $sFilePath = str_replace('\\','/',$sFilePath); // Sanityze path
 
+
         if (file_exists($sFilePath)) // Vérifie si le fichier est dans le cache ?
         {
             $fileExists = true;
@@ -1286,6 +1301,63 @@ class NOUTClient
         }
 
         return $sFilePath;
+    }
+
+
+
+    /**
+     * on construit la structure qui contient tous les fichiers à envoyer
+     */
+    protected function _getModifiedFiles(Record $clRecord)
+    {
+        // Si fichier, fabriquer le tableau (contenu, titre, etc..)
+
+        // Il faut :
+        // Titre
+        // Encoding
+        // Size
+        // fileName
+        // mimeType
+        // Content
+        // ID formulaire
+        // ID Enreg
+        // ID colonne
+        // Id unique au choix
+
+        $structElem     = $clRecord->clGetStructElem();
+        $fiche          = $structElem->getFiche();
+        $structColonne  = $fiche->getTabStructureColonne();
+
+        $modifiedFiles = array();
+
+        // Contient des structuresDonnes
+        foreach($structColonne as $key=>$colonne)
+        {
+            /**@var StructureDonnee $colonne*/
+            $idColonne = $colonne->getIDColonne();
+
+            if($colonne->getTypeElement() == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
+            {
+                // On a un fichier modifié, on doit le récupérer
+                $file = new \stdClass();
+
+                $fullPath = $clRecord->getValCol($idColonne);
+                $stringElements = explode('?', $fullPath); // Le nom du fichier se trouve après le path
+
+                $file->path     = $stringElements[0];
+                $file->fileName = $stringElements[1];
+                $file->cacheID  = basename($file->path);
+                $file->content  = file_get_contents($file->path);
+                $file->mimeType = mime_content_type($file->path);
+                $file->size     = filesize($file->path);
+
+                // Ajout du fichier dans le tableau
+                $modifiedFiles[$idColonne] = $file;
+            }
+
+        }
+
+        return $modifiedFiles;
     }
 
 
