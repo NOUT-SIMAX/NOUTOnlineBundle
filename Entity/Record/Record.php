@@ -628,7 +628,7 @@ class Record
         // Headers
         $sFileXml .= '<id_' . $sIDColonne . ' simax:ref="' . $fileUniqueId . '">';
         $sFileXml .= $oFile->fileName;
-        $sFileXml .= '</id_' . $sIDColonne . '">';
+        $sFileXml .= '</id_' . $sIDColonne . '>';
 
         // Paramètres
         $sFileXml .= '<simax:Data ';
