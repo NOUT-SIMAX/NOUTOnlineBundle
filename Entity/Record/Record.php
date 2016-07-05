@@ -70,6 +70,9 @@ class Record
 	 */
 	protected $m_nXSDNiv;
 
+
+    protected $sFilesXML;
+
 	/**
 	 * @param Form $clForm : information sur le formulaire
 	 */
@@ -88,6 +91,8 @@ class Record
 
 		//tableau des éléments liés
 		$this->m_TabRecordLie = new RecordCache();
+
+        $this->sFilesXML = '';
 	}
 
 	/**
@@ -97,6 +102,15 @@ class Record
 	public function isBetterLevel(Record $clRecord)
 	{
 		return $this->m_nXSDNiv <= $clRecord->m_nXSDNiv;
+	}
+
+    /**
+	 * @param $sFilesXml
+	 */
+	public function setFilesXml($sFilesXml)
+	{
+        $this->sFilesXML = $sFilesXml;
+        return $this;
 	}
 
 
@@ -431,9 +445,10 @@ class Record
 
 	/**
 	 * on construit la structure qui est passée en paramètre de la méthode update du Proxy
+     * @param $aFilesToSend
 	 * @return Update
 	 */
-	public function getStructForUpdateSOAP()
+	public function getStructForUpdateSOAP($aFilesToSend)
 	{
 		$clParamUpdate              = new Update();
 
@@ -444,7 +459,11 @@ class Record
 
 		foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
 		{
-			if ($this->m_TabColumnsModified[$sIDColonne])
+            if(array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier
+            {
+                $clParamUpdate->UpdateData.= $this->_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne]);
+            }
+			else if ($this->m_TabColumnsModified[$sIDColonne]) // La colonne n'est pas un fichier
             {
                 if(is_array($sValue))
                 {
@@ -456,16 +475,17 @@ class Record
                     }
                     $sValue = rtrim($listValue, "|");
                 }
+
                 $clParamUpdate->UpdateData.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
             }
 		}
 
+        // Ajout du XML pour les fichiers
+        $clParamUpdate->UpdateData.= $this->sFilesXML;
+
 		$clParamUpdate->UpdateData.= '</id_'.$sIDForm.'></xml>';
 		return $clParamUpdate;
 	}
-
-
-
 
 
 
@@ -575,14 +595,19 @@ class Record
     }
 
 
-    public function setFilesData($filesToSend)
+    /**
+     * @param $sIDColonne
+     * @param $oFile
+     * @return string
+     */
+    public function _sGetFileXML($sIDColonne, $oFile)
     {
         // Structure attendue des données XML d'un fichier
         /*
-        <id_38566479741459 id="38738278443168">                     // Identifiant 1 = idFormulaire et 2 = idEnreg ???
-            <id_47723350017105 simax:ref="14673000757953052016">    // Identifiant 3 = idColonne et 4 = id unique au choix, retrouvé dans ref
+            <id_47723350017105 simax:ref="14673000757953052016">    // Identifiant 1 = idColonne et 2 = id unique au choix, retrouvé dans ref
                 lst_oper_L33-1 (1) (1) (1).csv
             </id_47723350017105>
+
             <simax:Data
             simax:ref = "14673000757953052016"
             simax:title = "lst_oper_L33-1 (1) (1) (1).csv"
@@ -592,9 +617,35 @@ class Record
             simax:typemime = "text/plain" >
                 fileContentHere
             </simax:Data>
-        </id_38566479741459>
         */
 
+        $sFileXml = "";
+
+        $filePath = $oFile->path;
+        $pathElements = explode('/', $filePath);
+        $fileUniqueId = array_pop($pathElements);
+
+        // Headers
+        $sFileXml .= '<id_' . $sIDColonne . ' simax:ref="' . $fileUniqueId . '">';
+        $sFileXml .= $oFile->fileName;
+        $sFileXml .= '</id_' . $sIDColonne . '">';
+
+        // Paramètres
+        $sFileXml .= '<simax:Data ';
+        $sFileXml .= 'simax:ref="'        . $fileUniqueId       . '" ';
+        $sFileXml .= 'simax:title="'      . $oFile->fileName    . '" ';
+        $sFileXml .= 'simax:encoding="'   . 'base64'            . '" ';
+        $sFileXml .= 'simax:size="'       . $oFile->size        . '" ';
+        $sFileXml .= 'simax:filename="'   . $oFile->fileName    . '" ';
+        $sFileXml .= 'simax:typemime="'   . $oFile->mimeType    . '">';
+
+        // Content
+        $sFileXml .= base64_encode($oFile->content);
+
+        // Fin Paramètres
+        $sFileXml .= '</simax:Data>';
+
+        return $sFileXml;
     }
 
 
