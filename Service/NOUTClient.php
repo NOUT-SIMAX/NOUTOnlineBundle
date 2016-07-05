@@ -836,14 +836,11 @@ class NOUTClient
         // Fichiers
 
         // Chercher tous les fichiers modifiés dans le Record // similaire à getStructforUpdateSOAP => getColonneFileModified
-		$filesToSend = $this->_getModifiedFiles($clRecord);
-
-        // Mettre le tableau dans $clRecord
-        $clRecord->setFilesData($filesToSend);
+		$aFilesToSend = $this->_getModifiedFiles($clRecord);
 
         // -----------------------------------------------------
 
-		$paramUpdate = $clRecord->getStructForUpdateSOAP();
+		$paramUpdate = $clRecord->getStructForUpdateSOAP($aFilesToSend);
 
 		//header
 		$aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
@@ -1307,22 +1304,11 @@ class NOUTClient
 
     /**
      * on construit la structure qui contient tous les fichiers à envoyer
+     * @param $clRecord
+     * @return array
      */
     protected function _getModifiedFiles(Record $clRecord)
     {
-        // Si fichier, fabriquer le tableau (contenu, titre, etc..)
-
-        // Il faut :
-        // Titre
-        // Encoding
-        // Size
-        // fileName
-        // mimeType
-        // Content
-        // ID formulaire
-        // ID Enreg
-        // ID colonne
-        // Id unique au choix
 
         $structElem     = $clRecord->clGetStructElem();
         $fiche          = $structElem->getFiche();
