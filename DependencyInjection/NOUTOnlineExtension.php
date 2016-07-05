@@ -26,6 +26,8 @@ class NOUTOnlineExtension extends Extension
         $loader->load('services.yml');
 
 	    foreach($config as $key=>$value)
-		    $container->setParameter('nout_online.'.$key, $value);
+        {
+            $container->setParameter('nout_online.' . $key, $value);
+        }
     }
 }
