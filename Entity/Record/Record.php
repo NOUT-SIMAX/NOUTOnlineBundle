@@ -459,11 +459,11 @@ class Record
 
 		foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
 		{
-            if(array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier
+            if(array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier et a été modifiée
             {
                 $clParamUpdate->UpdateData.= $this->_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne]);
             }
-			else if ($this->m_TabColumnsModified[$sIDColonne]) // La colonne n'est pas un fichier
+			else if ($this->isModified($sIDColonne)) // La colonne n'est pas un fichier et a été modifie
             {
                 if(is_array($sValue))
                 {
@@ -484,6 +484,13 @@ class Record
         $clParamUpdate->UpdateData.= $this->sFilesXML;
 
 		$clParamUpdate->UpdateData.= '</id_'.$sIDForm.'></xml>';
+
+        // Contenu de $clParamUpdate
+        // Table        -> l'ID du formulaire correspondant à l'enregistrement modifié
+        // ParamXML     -> <idFormulaire> idEnreg </idFormulaire>
+        // Complete     -> null ?
+        // UpdateData   -> Toutes les données pour une mise à jour
+
 		return $clParamUpdate;
 	}
 
