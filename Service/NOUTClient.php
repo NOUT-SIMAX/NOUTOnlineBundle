@@ -25,6 +25,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
@@ -1309,20 +1310,41 @@ class NOUTClient
      */
     protected function _getModifiedFiles(Record $clRecord)
     {
+        $aModifiedFiles = array();
 
         $structElem     = $clRecord->clGetStructElem();
         $fiche          = $structElem->getFiche();
-        $structColonne  = $fiche->getTabStructureColonne();
 
-        $modifiedFiles = array();
+        $aModifiedFiles = $this->_getFilesFromSection($clRecord, $fiche, $aModifiedFiles);
+
+
+        return $aModifiedFiles;
+    }
+
+    /**
+     * recherche récursive des fichiers
+     * @param $clRecord
+     * @param $section
+     * @param $aModifiedFiles
+     * @return array
+     */
+    protected function _getFilesFromSection(Record $clRecord, StructureSection $section, $aModifiedFiles)
+    {
+        $structColonne  = $section->getTabStructureColonne();
 
         // Contient des structuresDonnes
         foreach($structColonne as $key=>$colonne)
         {
             /**@var StructureDonnee $colonne*/
-            $idColonne = $colonne->getIDColonne();
+            $idColonne      = $colonne->getIDColonne();
+            $typeElement    = $colonne->getTypeElement();
 
-            if($colonne->getTypeElement() == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
+            if($typeElement == StructureColonne::TM_Separateur)
+            {
+                /**@var StructureSection $colonne*/
+                $aModifiedFiles = $this->_getFilesFromSection($clRecord, $colonne, $aModifiedFiles);
+            }
+            else if($typeElement == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
             {
                 // On a un fichier modifié, on doit le récupérer
                 $file = new \stdClass();
@@ -1338,16 +1360,12 @@ class NOUTClient
                 $file->size     = filesize($file->path);
 
                 // Ajout du fichier dans le tableau
-                $modifiedFiles[$idColonne] = $file;
+                $aModifiedFiles[$idColonne] = $file;
             }
-
         }
 
-        return $modifiedFiles;
+        return $aModifiedFiles;
     }
-
-
-
 
     // Fin Fichiers
     // ------------------------------------------------------------------------------------
