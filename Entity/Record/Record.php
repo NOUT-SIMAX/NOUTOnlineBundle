@@ -427,7 +427,7 @@ class Record
 	}
 
 	/**
-	 * méthode magique pour les formulaires
+	 * méthode magique pour les formulaires - Met à jour les valeurs des colonnes depuis les formulaires Symfony
 	 * @param $name
 	 * @param $args
 	 * @return $this
