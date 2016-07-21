@@ -1,0 +1,51 @@
+{% extends "NOUTOnlineBundle::layout.html.twig" %}
+
+{% block stylesheets %}
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+	<style type="text/css">
+		body { padding-top: 70px; }
+	</style>
+{% endblock%}
+
+{% block containt %}
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<ul class="nav navbar-nav">
+				<li><a href="{{ path('index') }}">Retour index</a></li>
+			</ul>
+		</div>
+	</nav>
+
+    {{ form(form1) }}
+
+    <hr />
+
+
+    {{ form(form2) }}
+
+{% endblock %}
+
+{% block javascripts %}
+	{#
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+			var decoded = $('#content_iframe').text();
+
+			var iframe = document.getElementById("my_iframe");
+			var frameDoc = iframe.document;
+			if (iframe.contentWindow)
+				frameDoc = iframe.contentWindow.document;
+
+			frameDoc.open();
+			frameDoc.writeln(decoded);
+			frameDoc.close();
+
+			//$('#my_iframe').appendTo(decoded);
+		});
+	</script>
+	#}
+{% endblock %}

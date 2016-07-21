@@ -8,6 +8,9 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Test\TestRadio;
+use NOUT\Bundle\NOUTOnlineBundle\Form\Test\TestRadioContainerType;
+use NOUT\Bundle\NOUTOnlineBundle\Form\Test\TestRadioType;
 use PhpCsFixer\Fixer\AllmanCurlyBracesFixer;
 use PhpCsFixer\Tests\AllmanCurlyBracesFixerTest;
 
@@ -15,8 +18,7 @@ use PhpCsFixer\Tests\AllmanCurlyBracesFixerTest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route; // this imports the annotations
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
-
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**
@@ -97,4 +99,24 @@ class AutresController extends Controller
 
 		return $this->render('NOUTOnlineBundle:Autres:debug.html.twig', array('containt' => $containt));
 	}
+
+    /**
+     * @Route("/formradio", name="online_autres_formradio")
+     */
+    public function formradioAction(Request $request)
+    {
+        $test = new TestRadio();
+        $test->Choix=2;
+
+        $form = $this->createForm('test_radio_container', $test);
+        $form->handleRequest($request);
+
+        $form2 = $this->createForm('test_radio_container', $test);
+
+
+        return $this->render('NOUTOnlineBundle:Autres:testradio.html.twig', array(
+            'form1' => $form->createView(),
+            'form2' => $form2->createView(),
+        ));
+    }
 }
