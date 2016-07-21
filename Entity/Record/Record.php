@@ -21,6 +21,12 @@ class Record
 	 * @var string $m_sTitle : contient la mini desc de l'enregistrement
 	 */
 	protected $m_sTitle;
+
+    /**
+     * @var string $m_sTitle : contient le sous-titre quand il y en a un
+     */
+    protected $m_sSubTitle;
+
 	/**
 	 * @var string $m_nID : identitifant de l'enregistrement
 	 */
@@ -224,6 +230,25 @@ class Record
     {
         return $this->m_sTitle;
     }
+
+    /**
+     * @return string
+     */
+    public function getSubTitle()
+    {
+        return $this->m_sSubTitle;
+    }
+
+    /**
+     * @param string $sSubTitle
+     * @return $this
+     */
+    public function setSubTitle($sSubTitle)
+    {
+        $this->m_sSubTitle = $sSubTitle;
+        return $this;
+    }
+
 
     /**
      * @return StructureColonne
