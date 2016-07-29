@@ -1347,17 +1347,22 @@ class NOUTClient
             else if($typeElement == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
             {
                 // On a un fichier modifié, on doit le récupérer
-                $file = new \stdClass();
+                $file       = new \stdClass();
+                $file->path = "";
 
                 $fullPath = $clRecord->getValCol($idColonne);
-                $stringElements = explode('?', $fullPath); // Le nom du fichier se trouve après le path
 
-                $file->path     = $stringElements[0];
-                $file->fileName = $stringElements[1];
-                $file->cacheID  = basename($file->path);
-                $file->content  = file_get_contents($file->path);
-                $file->mimeType = mime_content_type($file->path);
-                $file->size     = filesize($file->path);
+				if($fullPath != "")
+				{
+					$stringElements = explode('?', $fullPath); // Le nom du fichier se trouve après le path
+
+					$file->path 	= $stringElements[0];
+					$file->fileName = $stringElements[1];
+					$file->cacheID 	= basename($file->path);
+					$file->content 	= file_get_contents($file->path);
+					$file->mimeType = mime_content_type($file->path);
+					$file->size 	= filesize($file->path);
+				}
 
                 // Ajout du fichier dans le tableau
                 $aModifiedFiles[$idColonne] = $file;
