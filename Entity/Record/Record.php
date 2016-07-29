@@ -653,29 +653,37 @@ class Record
 
         $sFileXml = "";
 
-        $filePath = $oFile->path;
-        $pathElements = explode('/', $filePath);
-        $fileUniqueId = array_pop($pathElements);
+        $filePath       = $oFile->path;
 
-        // Headers
-        $sFileXml .= '<id_' . $sIDColonne . ' simax:ref="' . $fileUniqueId . '">';
-        $sFileXml .= $oFile->fileName;
-        $sFileXml .= '</id_' . $sIDColonne . '>';
+        if($filePath != "")
+        {
+            $pathElements = explode('/', $filePath);
+            $fileUniqueId = array_pop($pathElements);
 
-        // Paramètres
-        $sFileXml .= '<simax:Data ';
-        $sFileXml .= 'simax:ref="'        . $fileUniqueId       . '" ';
-        $sFileXml .= 'simax:title="'      . $oFile->fileName    . '" ';
-        $sFileXml .= 'simax:encoding="'   . 'base64'            . '" ';
-        $sFileXml .= 'simax:size="'       . $oFile->size        . '" ';
-        $sFileXml .= 'simax:filename="'   . $oFile->fileName    . '" ';
-        $sFileXml .= 'simax:typemime="'   . $oFile->mimeType    . '">';
+            // Headers
+            $sFileXml .= '<id_' . $sIDColonne . ' simax:ref="' . $fileUniqueId . '">';
+            $sFileXml .= $oFile->fileName;
+            $sFileXml .= '</id_' . $sIDColonne . '>';
 
-        // Content
-        $sFileXml .= base64_encode($oFile->content);
+            // Paramètres
+            $sFileXml .= '<simax:Data ';
+            $sFileXml .= 'simax:ref="' . $fileUniqueId . '" ';
+            $sFileXml .= 'simax:title="' . $oFile->fileName . '" ';
+            $sFileXml .= 'simax:encoding="' . 'base64' . '" ';
+            $sFileXml .= 'simax:size="' . $oFile->size . '" ';
+            $sFileXml .= 'simax:filename="' . $oFile->fileName . '" ';
+            $sFileXml .= 'simax:typemime="' . $oFile->mimeType . '">';
 
-        // Fin Paramètres
-        $sFileXml .= '</simax:Data>';
+            // Content
+            $sFileXml .= base64_encode($oFile->content);
+
+            // Fin Paramètres
+            $sFileXml .= '</simax:Data>';
+        }
+        else // Champ vide
+        {
+            $sFileXml = '<id_'.$sIDColonne.'>'. "" .'</id_'.$sIDColonne.'>';
+        }
 
         return $sFileXml;
     }
