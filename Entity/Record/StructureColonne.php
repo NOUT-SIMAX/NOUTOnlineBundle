@@ -164,7 +164,7 @@ abstract class StructureColonne
 
         }
 
-        if ($this->_isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
+        if ($this->isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
         {
             return self::BUDDYTYPE_Multi;
         }
@@ -190,7 +190,7 @@ abstract class StructureColonne
             }
         }
 
-        if ($this->_isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
+        if ($this->isMultilineText() || ($this->m_eTypeElement == self::TM_ListeElem))
         {
             return true;
         }
@@ -316,7 +316,7 @@ abstract class StructureColonne
      * vrai si le champ est un texte multiligne
      * @return bool
      */
-    protected function _isMultilineText()
+    public function isMultilineText()
     {
         if ($this->m_eTypeElement != self::TM_Texte) {
             return false;
@@ -490,6 +490,9 @@ abstract class StructureColonne
 	const OPTION_Relation      = "withAddAndRemove";    // bestGroupeRelation
 	const OPTION_Relation11    = "withModifyAndRemove"; // bEstRelation11
 	const OPTION_UniqueElement = "uniqueElement";
+
+	// Attributs pour les textes
+	const OPTION_TextBoxSize   = "textBoxSize";
 
 	// Attributs pour les listes en général
 	const OPTION_WithPlanning = "withPlanning";
