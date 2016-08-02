@@ -8,21 +8,23 @@
  * Time: 09:18
  */
 
-namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
+namespace NOUT\Bundle\ContextsBundle\Entity;
 
 
+use NOUT\Bundle\ContextsBundle\Entity\Menu\Menu;
+use NOUT\Bundle\ContextsBundle\Entity\Menu\OptionMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
-class MenuLoader
+class IHMLoader
 {
 	/**
 	 * @param XMLResponseWS $clReponseOptionMenu
 	 * @param XMLResponseWS $clReponseMenu
      * @param XMLResponseWS $clReponseBigIcon
-	 * @return InfoMenu
+	 * @return InfoIHM
 	 */
 	static public function s_aGetTabMenu(XMLResponseWS $clReponseOptionMenu, XMLResponseWS $clReponseMenu, XMLResponseWS $clReponseBigIcon)
 	{
@@ -43,7 +45,7 @@ class MenuLoader
 		$aTabIDEnregMenu = $clParserMenu->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_MenuPourTous);
         $aTabIDEnregBigIcon = $clParserBigIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
 
-        $oInfoMenu = new InfoMenu();
+        $oInfoMenu = new InfoIHM();
 
 		foreach($aTabIDEnregMenu as $sIDMenu)
 		{
@@ -66,7 +68,7 @@ class MenuLoader
      * @param bool $bUniquementRacine
 	 * @return Menu
 	 */
-	static protected function _s_aGetMenu(ParserList $clParserOption, ParserList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, array $aTabIDEnregBigIcon, $bUniquementRacine, InfoMenu $oInfoMenu)
+	static protected function _s_aGetMenu(ParserList $clParserOption, ParserList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, array $aTabIDEnregBigIcon, $bUniquementRacine, InfoIHM $oInfoMenu)
 	{
 		$clRecordMenu = $clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
 
@@ -109,6 +111,10 @@ class MenuLoader
                 //c'est une grosse icone
                 if (in_array($sIDIcon, $aTabIDEnregBigIcon)){
                     $oInfoMenu->aBigIcon[]=$clOptionMenu;
+                }
+
+                if ($clOptionMenu->bAvecIcon()){
+                    $oInfoMenu->aToolbar[]=$clOptionMenu;
                 }
             }
 		}

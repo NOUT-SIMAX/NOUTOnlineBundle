@@ -6,16 +6,18 @@
  * Time: 11:36
  */
 
-namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
+namespace NOUT\Bundle\ContextsBundle\Entity;
 
 
-class InfoMenu 
+class InfoIHM
 {
     public $aMenu;
     public $aBigIcon;
+    public $aToolbar;
 
     public function __construct(){
         $this->aMenu = array();
         $this->aBigIcon = array();
+        $this->aToolbar = array();
     }
 }

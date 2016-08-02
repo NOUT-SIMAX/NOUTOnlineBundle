@@ -11,7 +11,7 @@ namespace NOUT\Bundle\ContextsBundle\Service;
 use NOUT\Bundle\ContextsBundle\Entity\ActionResult;
 use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
-use NOUT\Bundle\ContextsBundle\Entity\Menu\MenuLoader;
+use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -91,7 +91,7 @@ class NOUTClient
     /**
      * @var NOUTCache
      */
-    private $m_clCacheLangage = null;
+    private $m_clCacheIHM = null;
 
 	/**
 	 * @param TokenStorage          $security
@@ -120,9 +120,8 @@ class NOUTClient
             $sSessionToken = $oSecurityToken->getSessionToken();
             $this->m_clCacheSession = new NOUTCache($this->m_sCacheDir, $sSessionToken);
 
-            $clLangage = $oSecurityToken->getLangage();
-            $sRepCacheMenu = $this->m_sCacheDir.'/'.self::REPCACHE_MENU.'/'.$clLangage->getVersionLangage().'/'.$clLangage->getVersionIcone();
-            $this->m_clCacheLangage = new NOUTCache($sRepCacheMenu);
+            $sRepCacheIHM = $this->_sGetRepCacheIHM(Langage::TABL_ImageCatalogue);
+            $this->m_clCacheIHM = new NOUTCache($sRepCacheIHM);
         }
 	}
 
@@ -393,16 +392,16 @@ class NOUTClient
     /**
      * récupère les infos du menu
      */
-    protected function _oGetInfoMenu()
+    protected function _oGetInfoIHM()
     {
-        if (!is_null($this->m_clCacheLangage))
+        if (!is_null($this->m_clCacheIHM))
         {
             $oToken = $this->_oGetToken();
             $oUser  =  $oToken->getUser();
 
-            $oInfoMenu = $this->m_clCacheLangage->fetch($oUser->getUsername());
-            if ($oInfoMenu !== false){
-                return $oInfoMenu; //on a déjà les infos du menu
+            $oInfoIHM = $this->m_clCacheIHM->fetch('info_'.$oUser->getUsername());
+            if ($oInfoIHM !== false){
+                return $oInfoIHM; //on a déjà les infos du menu
             }
         }
 
@@ -411,10 +410,10 @@ class NOUTClient
         $clReponseXML_Menu       = $this->_oGetTabMenu_Menu();
         $clReponseXML_BigIcon    = $this->_oGetTabBigIcon();
 
-        $oInfoMenu = MenuLoader::s_aGetTabMenu($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_BigIcon);
-        $this->m_clCacheLangage->save($oUser->getUsername(), $oInfoMenu);
+        $oInfoIHM = IHMLoader::s_aGetTabMenu($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_BigIcon);
+        $this->m_clCacheIHM->save('info_'.$oUser->getUsername(), $oInfoIHM);
 
-        return $oInfoMenu;
+        return $oInfoIHM;
     }
 
 
@@ -424,7 +423,7 @@ class NOUTClient
 	 */
 	public function getTabMenu()
 	{
-        $oInfoMenu = $this->_oGetInfoMenu();
+        $oInfoMenu = $this->_oGetInfoIHM();
 
 		$clActionResult = new ActionResult(null);
 		$clActionResult->setData($oInfoMenu->aMenu);
@@ -441,7 +440,7 @@ class NOUTClient
      */
     public function getCentralIcon()
     {
-        $oInfoMenu = $this->_oGetInfoMenu();
+        $oInfoMenu = $this->_oGetInfoIHM();
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($oInfoMenu->aBigIcon);
@@ -1451,7 +1450,6 @@ class NOUTClient
 	const REPCACHE      	= 'NOUTClient';
 	const REPCACHE_IHM  	= 'ihm';
 	const REPCACHE_UPLOAD	= 'upload';
-    const REPCACHE_MENU 	= 'menu';
 
 	const TP_NotEmpty   	= 1;
 	const TP_InArray    	= 2;
