@@ -17,7 +17,7 @@ services:
     nout_session.authentication_listener:
         class: NOUT\Bundle\SessionManagerBundle\Security\Firewall\NOUTOnlineListener
         arguments:
-            - @security.context
+            - @security.token_storage
             - @security.authentication.manager
             - @security.authentication.session_strategy
             - @security.http_utils

@@ -16,7 +16,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\SessionManagerBundle\Entity\ConnectionInfos;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 
 
 class DefaultController extends Controller
@@ -102,19 +102,19 @@ class DefaultController extends Controller
 	    $session = $request->getSession();
 
 	    // get the login error if there is one
-	    if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR))
+	    if ($request->attributes->has(Security::AUTHENTICATION_ERROR))
 	    {
-		    $error = $request->attributes->get(SecurityContext::AUTHENTICATION_ERROR);
+		    $error = $request->attributes->get(Security::AUTHENTICATION_ERROR);
 	    }
 	    else
 	    {
-		    $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
-		    $session->remove(SecurityContext::AUTHENTICATION_ERROR);
+		    $error = $session->get(Security::AUTHENTICATION_ERROR);
+		    $session->remove(Security::AUTHENTICATION_ERROR);
 	    }
 
 	    return $this->render($this->_sGetTemplate('Security/index'), array(
 		    // last username entered by the user
-		    'last_username' => $session->get(SecurityContext::LAST_USERNAME),
+		    'last_username' => $session->get(Security::LAST_USERNAME),
 		    'error'         => $error,
 		    'timezone_list' => TimeZone::s_aGetTabTimezone(),
 		    'last_timezone' => $session->get(NOUTToken::SESSION_LastTimeZone),
@@ -129,7 +129,7 @@ class DefaultController extends Controller
 	 */
 	public function indexAction()
 	{
-		$oToken = $this->get('security.context')->getToken();
+		$oToken = $this->get('security.token_storage')->getToken();
 		$oUser = $oToken->getUser();
 
 		//page d'index

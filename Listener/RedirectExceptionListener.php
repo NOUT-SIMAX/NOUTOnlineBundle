@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 
 class RedirectExceptionListener
 {
@@ -55,7 +55,7 @@ class RedirectExceptionListener
 				}
 				else
 				{
-					$session->set(SecurityContext::AUTHENTICATION_ERROR, array('message'=>$exception->getMessage()));
+					$session->set(Security::AUTHENTICATION_ERROR, array('message'=>$exception->getMessage()));
 
 					//c'est l'erreur utilisateur déconnecté, il faut redirigé sur la page de login
 					$event->setResponse(new RedirectResponse($this->_router->generate('login', array())));
