@@ -21,9 +21,10 @@ class MenuLoader
 	/**
 	 * @param XMLResponseWS $clReponseOptionMenu
 	 * @param XMLResponseWS $clReponseMenu
-	 * @return array
+     * @param XMLResponseWS $clReponseBigIcon
+	 * @return InfoMenu
 	 */
-	static public function s_aGetTabMenu(XMLResponseWS $clReponseOptionMenu, XMLResponseWS $clReponseMenu)
+	static public function s_aGetTabMenu(XMLResponseWS $clReponseOptionMenu, XMLResponseWS $clReponseMenu, XMLResponseWS $clReponseBigIcon)
 	{
 		$clResponseParserOption = new ReponseWSParser();
 		$clParserOption = $clResponseParserOption->InitFromXmlXsd($clReponseOptionMenu);
@@ -33,22 +34,27 @@ class MenuLoader
 		$clParserMenu = $clResponseParserMenu->InitFromXmlXsd($clReponseMenu);
         /** @var ParserList $clParserMenu */
 
+        $clResponseParserBigIcon = new ReponseWSParser();
+        $clParserBigIcon = $clResponseParserBigIcon->InitFromXmlXsd($clReponseBigIcon);
+        /** @var ParserList $clParserBigIcon */
+
 		//on récupère tous les id des options de menu et des menus depuis les différentes réponses
 		$aTabIDEnregOptionMenu = $clParserOption->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_OptionMenuPourTous);
 		$aTabIDEnregMenu = $clParserMenu->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_MenuPourTous);
+        $aTabIDEnregBigIcon = $clParserBigIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
 
-		$aTabMenuRet = array(); //tableau qu'on va retourner
+        $oInfoMenu = new InfoMenu();
 
 		foreach($aTabIDEnregMenu as $sIDMenu)
 		{
-			$clMenu = self::_s_aGetMenu($clParserOption, $clParserMenu, $sIDMenu, $aTabIDEnregMenu, $aTabIDEnregOptionMenu, true);
+			$clMenu = self::_s_aGetMenu($clParserOption, $clParserMenu, $sIDMenu, $aTabIDEnregMenu, $aTabIDEnregOptionMenu, $aTabIDEnregBigIcon, true, $oInfoMenu);
 			if (is_null($clMenu))
 				continue;
 
-			$aTabMenuRet[]=$clMenu;
+            $oInfoMenu->aMenu[]=$clMenu;
 		}
 
-		return $aTabMenuRet;
+		return $oInfoMenu;
 	}
 
 	/**
@@ -60,7 +66,7 @@ class MenuLoader
      * @param bool $bUniquementRacine
 	 * @return Menu
 	 */
-	static protected function _s_aGetMenu(ParserList $clParserOption, ParserList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, $bUniquementRacine)
+	static protected function _s_aGetMenu(ParserList $clParserOption, ParserList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, array $aTabIDEnregBigIcon, $bUniquementRacine, InfoMenu $oInfoMenu)
 	{
 		$clRecordMenu = $clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
 
@@ -77,7 +83,7 @@ class MenuLoader
 			if (in_array($sIDOptionMenu, $aTabIDEnregMenu))
 			{
 				//c'est un sous-menu
-				$clSousMenu = self::_s_aGetMenu($clParserOption, $clParserMenu, $sIDOptionMenu, $aTabIDEnregMenu, $aTabIDEnregOptionMenu, false);
+				$clSousMenu = self::_s_aGetMenu($clParserOption, $clParserMenu, $sIDOptionMenu, $aTabIDEnregMenu, $aTabIDEnregOptionMenu, $aTabIDEnregBigIcon, false, $oInfoMenu);
 				if (!is_null($clSousMenu))
 					$clMenu->AddOptionMenu($clSousMenu);
 
@@ -92,10 +98,19 @@ class MenuLoader
 			$clOptionMenu = new OptionMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent));
 			$clOptionMenu->setIDAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction));
 			$clOptionMenu->setCommande($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande));
-			$clOptionMenu->setIDIcone($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDIcone));
+
+            $sIDIcon = $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDIcone);
+			$clOptionMenu->setIDIcone($sIDIcon);
 
 			if (!$clMenu->bLastOptionIsSeparateur() || !$clOptionMenu->bEstSeparateur())
-				$clMenu->AddOptionMenu($clOptionMenu);
+            {
+                $clMenu->AddOptionMenu($clOptionMenu);
+
+                //c'est une grosse icone
+                if (in_array($sIDIcon, $aTabIDEnregBigIcon)){
+                    $oInfoMenu->aBigIcon[]=$clOptionMenu;
+                }
+            }
 		}
 
 		//on vérifie que le menu n'est pas vide
