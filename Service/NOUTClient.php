@@ -1229,7 +1229,7 @@ class NOUTClient
 
             if (!empty($sRet->content))
             {
-                return $sRet;
+                return $sRet->content;
             }
 
             // Sinon on donne l'image de taille normale
@@ -1241,7 +1241,7 @@ class NOUTClient
                 $aTabOption,
                 $clIdentification,
                 $sFile
-            );
+            )->content;
         }
 
     }
