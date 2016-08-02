@@ -58,7 +58,7 @@ class NOUTFileCache extends CacheProvider
 	{
 		if (!file_exists($this->m_sDir))
 		{
-			if (!@mkdir($this->m_sDir))
+			if (!@mkdir($this->m_sDir, 0777, true))
 			{
 				return false;
 			}
