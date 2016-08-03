@@ -593,6 +593,7 @@ class OnlineServiceProxy
 	const OPTION_Width              = 'Width';
 	const OPTION_Height             = 'Height';
 	const OPTION_ListMode           = 'ListMode';
+    const OPTION_IDCol              = 'IDCol';
 
 	const OPTION_Record             = 'Record';
     const OPTION_Column             = 'Column';
