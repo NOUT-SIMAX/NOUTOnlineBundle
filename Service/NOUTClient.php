@@ -316,12 +316,13 @@ class NOUTClient
      * récupère la liste des icones avec une grosse image
      * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
      */
-    protected function _oGetTabBigIcon()
+    protected function _oGetTabIcon($idCol)
     {
         $aTabColonne = array();
 
         $clFileNPI = new ConditionFileNPI();
-        $clFileNPI->EmpileCondition(Langage::COL_IMAGECATALOGUE_ImageGrande, ConditionColonne::COND_DIFFERENT, '');
+        $clFileNPI->EmpileCondition($idCol, ConditionColonne::COND_DIFFERENT, '');
+
 
         $aTabHeaderSuppl = array(
             SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
@@ -406,11 +407,13 @@ class NOUTClient
         }
 
         //on a pas les infos, il faut les calculer
-        $clReponseXML_OptionMenu = $this->_oGetTabMenu_OptionMenu();
-        $clReponseXML_Menu       = $this->_oGetTabMenu_Menu();
-        $clReponseXML_BigIcon    = $this->_oGetTabBigIcon();
+        $clReponseXML_OptionMenu    = $this->_oGetTabMenu_OptionMenu();
+        $clReponseXML_Menu          = $this->_oGetTabMenu_Menu();
+        $clReponseXML_SmallIcon     = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_Image);
+        $clReponseXML_BigIcon       = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_ImageGrande);
 
-        $oInfoIHM = IHMLoader::s_aGetTabMenu($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_BigIcon);
+        $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
+        $oInfoIHM = $clIHMLoader->oGetInfoIHM();
         $this->m_clCacheIHM->save('info_'.$oUser->getUsername(), $oInfoIHM);
 
         return $oInfoIHM;
@@ -1167,12 +1170,13 @@ class NOUTClient
      * @param $sTransColor
      * @param $nWidth
      * @param $nHeight
+     * @param $bSmallIcon
      * @return ActionResult
      */
-    public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon=true)
     {
 		//le retour c'est le chemin de fichier enregistré dans le cache
-        $sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
+        $sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon);
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($sFichier);
@@ -1192,9 +1196,10 @@ class NOUTClient
      * @param $sTransColor
      * @param $nWidth
      * @param $nHeight
+     * @param $bSmallIcon
      * @return string
      */
-    public function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    public function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon)
     {
         $clIdentification = $this->_clGetIdentificationREST('', true);
 
@@ -1222,6 +1227,8 @@ class NOUTClient
 
         //on veut le contenu
         $aTabOption[RESTProxy::OPTION_WantContent] = 1;
+        //quelle image on veut ?
+        $aTabOption[RESTProxy::OPTION_IDCol] = $bSmallIcon ? Langage::COL_IMAGECATALOGUE_Image : Langage::COL_IMAGECATALOGUE_ImageGrande;
 
         //on regarde si le fichier existe
         $sFile = $this->_sGetNomFichierCacheIHM(Langage::TABL_ImageCatalogue, $sIDIcon, $aTabOption);
@@ -1233,31 +1240,17 @@ class NOUTClient
         else // Le fichier n'est pas dans le cache, on va le récupérer
         {
             // On essaye de récupérer l'image grande
-            $sRet = $this->m_clRESTProxy->sGetColInRecord(
+            $oRet = $this->m_clRESTProxy->sGetColInRecord(
                 Langage::TABL_ImageCatalogue,
                 $sIDIcon,
-                Langage::COL_IMAGECATALOGUE_ImageGrande,
+                $aTabOption[RESTProxy::OPTION_IDCol],
                 array(),
                 $aTabOption,
                 $clIdentification,
                 $sFile
             );
 
-            if (!empty($sRet->content))
-            {
-                return $sRet->content;
-            }
-
-            // Sinon on donne l'image de taille normale
-            return $this->m_clRESTProxy->sGetColInRecord(
-                Langage::TABL_ImageCatalogue,
-                $sIDIcon,
-                Langage::COL_IMAGECATALOGUE_Image,
-                array(),
-                $aTabOption,
-                $clIdentification,
-                $sFile
-            )->content;
+            return $oRet->content;
         }
 
     }

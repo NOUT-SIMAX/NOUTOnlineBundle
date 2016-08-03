@@ -27,19 +27,28 @@ class OptionMenu
 	 * identifiant de l'action à lancer
 	 * @var string
 	 */
-	protected $m_sIDAction;
+	protected $m_sIDAction = null;
 
 	/**
 	 * commande de l'action
 	 * @var string
 	 */
-	protected $m_sCommande;
+	protected $m_sCommande = null;
 
 	/**
 	 * identifiant de l'icone
 	 * @var string
 	 */
-	protected $m_sIDIcone;
+	protected $m_sIDIcone = null;
+
+    /**
+     * @var bool
+     */
+    protected $m_bSmallIcon = false;
+    /**
+     * @var bool
+     */
+    protected $m_bBigIcon = false;
 
 	/**
 	 * identifiant du menu conteneur
@@ -62,9 +71,6 @@ class OptionMenu
 	{
 		$this->m_sIDOptionMenu = $sIDOptionMenu;
 		$this->m_sLibelle = str_replace('&&', '&', $sLibelle);
-		$this->m_sIDAction = null;
-		$this->m_sIDIcone = null;
-		$this->m_sCommande = null;
 		$this->m_sIDMenuParent = $sIDMenu;
 		$this->m_bEstMenu = is_null($bEstMenu) ? false : $bEstMenu;
 	}
@@ -164,6 +170,42 @@ class OptionMenu
 		$this->m_sIDIcone = $sIDIcone;
 		return $this;
 	}
+
+    /**
+     * @return boolean
+     */
+    public function isBigIcon()
+    {
+        return $this->m_bBigIcon;
+    }
+
+    /**
+     * @param boolean $m_bBigIcon
+     * @return this
+     */
+    public function setBigIcon($m_bBigIcon)
+    {
+        $this->m_bBigIcon = $m_bBigIcon;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSmallIcon()
+    {
+        return $this->m_bSmallIcon;
+    }
+
+    /**
+     * @param boolean $m_bSmallIcon
+     * @return this
+     */
+    public function setSmallIcon($m_bSmallIcon)
+    {
+        $this->m_bSmallIcon = $m_bSmallIcon;
+        return $this;
+    }
 
 	/**
 	 * @param string $sIDMenu

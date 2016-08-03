@@ -20,111 +20,153 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 class IHMLoader
 {
-	/**
-	 * @param XMLResponseWS $clReponseOptionMenu
-	 * @param XMLResponseWS $clReponseMenu
-     * @param XMLResponseWS $clReponseBigIcon
-	 * @return InfoIHM
-	 */
-	static public function s_aGetTabMenu(XMLResponseWS $clReponseOptionMenu, XMLResponseWS $clReponseMenu, XMLResponseWS $clReponseBigIcon)
-	{
-		$clResponseParserOption = new ReponseWSParser();
-		$clParserOption = $clResponseParserOption->InitFromXmlXsd($clReponseOptionMenu);
-        /** @var ParserList $clParserOption */
+    /**
+     * @var ParserList
+     */
+    protected $m_clParserOption;
 
-		$clResponseParserMenu = new ReponseWSParser();
-		$clParserMenu = $clResponseParserMenu->InitFromXmlXsd($clReponseMenu);
-        /** @var ParserList $clParserMenu */
+    /**
+     * @var ParserList
+     */
+    protected $m_clParserMenu;
+
+    /**
+     * @var array
+     */
+    protected $m_aTabIDEnregOptionMenu;
+
+    /**
+     * @var array
+     */
+    protected $m_aTabIDEnregMenu;
+
+    /**
+     * @var array
+     */
+    protected $m_aTabIDEnregBigIcon;
+
+    /**
+     * @var array
+     */
+    protected $m_aTabIDEnregSmallIcon;
+
+    /**
+     * @param XMLResponseWS $clReponseOptionMenu
+     * @param XMLResponseWS $clReponseMenu
+     * @param XMLResponseWS $clReponseSmallIcon
+     * @param XMLResponseWS $clReponseBigIcon
+     */
+    public function __construct(XMLResponseWS $clReponseOptionMenu, XMLResponseWS $clReponseMenu, XMLResponseWS $clReponseSmallIcon, XMLResponseWS $clReponseBigIcon)
+    {
+        $clResponseParserOption = new ReponseWSParser();
+        $this->m_clParserOption = $clResponseParserOption->InitFromXmlXsd($clReponseOptionMenu);
+
+        $clResponseParserMenu = new ReponseWSParser();
+        $this->m_clParserMenu = $clResponseParserMenu->InitFromXmlXsd($clReponseMenu);
+
+        //on récupère tous les id des options de menu et des menus depuis les différentes réponses
+        $this->m_aTabIDEnregOptionMenu = $this->m_clParserOption->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_OptionMenuPourTous);
+        $this->m_aTabIDEnregMenu = $this->m_clParserMenu->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_MenuPourTous);
+
 
         $clResponseParserBigIcon = new ReponseWSParser();
         $clParserBigIcon = $clResponseParserBigIcon->InitFromXmlXsd($clReponseBigIcon);
-        /** @var ParserList $clParserBigIcon */
+        $this->m_aTabIDEnregBigIcon = $clParserBigIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
 
-		//on récupère tous les id des options de menu et des menus depuis les différentes réponses
-		$aTabIDEnregOptionMenu = $clParserOption->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_OptionMenuPourTous);
-		$aTabIDEnregMenu = $clParserMenu->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_MenuPourTous);
-        $aTabIDEnregBigIcon = $clParserBigIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
 
-        $oInfoMenu = new InfoIHM();
+        $clResponseParserSmallIcon = new ReponseWSParser();
+        $clParserSmallIcon = $clResponseParserSmallIcon->InitFromXmlXsd($clReponseSmallIcon);
+        $this->m_aTabIDEnregSmallIcon = $clParserSmallIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
+    }
 
-		foreach($aTabIDEnregMenu as $sIDMenu)
-		{
-			$clMenu = self::_s_aGetMenu($clParserOption, $clParserMenu, $sIDMenu, $aTabIDEnregMenu, $aTabIDEnregOptionMenu, $aTabIDEnregBigIcon, true, $oInfoMenu);
-			if (is_null($clMenu))
-				continue;
+    /**
+     * @return InfoIHM
+     */
+    public function oGetInfoIHM()
+    {
+        $oInfoIHM = new InfoIHM();
 
-            $oInfoMenu->aMenu[]=$clMenu;
-		}
+        foreach($this->m_aTabIDEnregMenu as $sIDMenu)
+        {
+            $clMenu = $this->_aGetMenu($oInfoIHM, $sIDMenu, true);
+            if (is_null($clMenu))
+                continue;
 
-		return $oInfoMenu;
-	}
+            $oInfoIHM->aMenu[]=$clMenu;
+        }
 
-	/**
-	 * @param ParserList $clParserOption
-	 * @param ParserList $clParserMenu
-	 * @param $sIDMenu
-     * @param array $aTabIDEnregMenu
-	 * @param array $aTabIDEnregOptionMenu
-     * @param bool $bUniquementRacine
-	 * @return Menu
-	 */
-	static protected function _s_aGetMenu(ParserList $clParserOption, ParserList $clParserMenu, $sIDMenu, array $aTabIDEnregMenu, array $aTabIDEnregOptionMenu, array $aTabIDEnregBigIcon, $bUniquementRacine, InfoIHM $oInfoMenu)
-	{
-		$clRecordMenu = $clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
+        return $oInfoIHM;
+    }
 
-		$sIDMenuPere = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_IDMenuParent);
-		if ($bUniquementRacine && !empty($sIDMenuPere))
-			return null; //on prend que les menus qui n'ont pas de père
+    /**
+     * @param InfoIHM $oInfoIHM
+     * @param         $sIDMenu
+     * @param         $bUniquementRacine
+     * @return $this|null
+     */
+    protected function _aGetMenu(InfoIHM $oInfoIHM, $sIDMenu, $bUniquementRacine)
+    {
+        $clRecordMenu = $this->m_clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
 
-		//on construit un menu
-		$clMenu = new Menu($sIDMenu, $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle), $sIDMenuPere);
+        $sIDMenuPere = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_IDMenuParent);
+        if ($bUniquementRacine && !empty($sIDMenuPere))
+            return null; //on prend que les menus qui n'ont pas de père
 
-		$ValOptionMenu = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_OptionsMenu);
-		foreach($ValOptionMenu as $sIDOptionMenu)
-		{
-			if (in_array($sIDOptionMenu, $aTabIDEnregMenu))
-			{
-				//c'est un sous-menu
-				$clSousMenu = self::_s_aGetMenu($clParserOption, $clParserMenu, $sIDOptionMenu, $aTabIDEnregMenu, $aTabIDEnregOptionMenu, $aTabIDEnregBigIcon, false, $oInfoMenu);
-				if (!is_null($clSousMenu))
-					$clMenu->AddOptionMenu($clSousMenu);
+        //on construit un menu
+        $clMenu = new Menu($sIDMenu, $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle), $sIDMenuPere);
 
-				continue;
-			}
+        $ValOptionMenu = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_OptionsMenu);
+        foreach($ValOptionMenu as $sIDOptionMenu)
+        {
+            if (in_array($sIDOptionMenu, $this->m_aTabIDEnregMenu))
+            {
+                //c'est un sous-menu
+                $clSousMenu = $this->_aGetMenu($oInfoIHM, $sIDOptionMenu, false);
+                if (!is_null($clSousMenu))
+                    $clMenu->AddOptionMenu($clSousMenu);
 
-			if (!in_array($sIDOptionMenu, $aTabIDEnregOptionMenu))
-				continue;
+                continue;
+            }
 
-			$clRecordOption = $clParserOption->getRecordFromID(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
+            if (!in_array($sIDOptionMenu, $this->m_aTabIDEnregOptionMenu))
+                continue;
 
-			$clOptionMenu = new OptionMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent));
-			$clOptionMenu->setIDAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction));
-			$clOptionMenu->setCommande($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande));
+            $clRecordOption = $this->m_clParserOption->getRecordFromID(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
+
+            $clOptionMenu = new OptionMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent));
+            $clOptionMenu->setIDAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction));
+            $clOptionMenu->setCommande($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande));
 
             $sIDIcon = $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDIcone);
-			$clOptionMenu->setIDIcone($sIDIcon);
+            if (!empty($sIDIcon))
+            {
+                $clOptionMenu->setIDIcone($sIDIcon);
+                $clOptionMenu->setBigIcon(in_array($sIDIcon, $this->m_aTabIDEnregBigIcon));
+                $clOptionMenu->setSmallIcon(in_array($sIDIcon, $this->m_aTabIDEnregSmallIcon));
+            }
 
-			if (!$clMenu->bLastOptionIsSeparateur() || !$clOptionMenu->bEstSeparateur())
+            if (!$clMenu->bLastOptionIsSeparateur() || !$clOptionMenu->bEstSeparateur())
             {
                 $clMenu->AddOptionMenu($clOptionMenu);
 
                 //c'est une grosse icone
-                if (in_array($sIDIcon, $aTabIDEnregBigIcon)){
-                    $oInfoMenu->aBigIcon[]=$clOptionMenu;
+                if ($clOptionMenu->isBigIcon()){
+                    $oInfoIHM->aBigIcon[]=$clOptionMenu;
                 }
 
-                if ($clOptionMenu->bAvecIcon()){
-                    $oInfoMenu->aToolbar[]=$clOptionMenu;
+                if ($clOptionMenu->isSmallIcon()){
+                    $oInfoIHM->aToolbar[]=$clOptionMenu;
                 }
             }
-		}
+        }
 
-		//on vérifie que le menu n'est pas vide
-		if ($clMenu->bIsEmpty())
-			return null;
+        //on vérifie que le menu n'est pas vide
+        if ($clMenu->bIsEmpty())
+            return null;
 
-		return $clMenu->TrimSeparateur();
-	}
+        return $clMenu->TrimSeparateur();
+    }
+
 
 
 
