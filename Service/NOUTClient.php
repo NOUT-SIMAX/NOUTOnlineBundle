@@ -451,6 +451,23 @@ class NOUTClient
         return $clActionResult;
     }
 
+    /**
+     * retourne un tableau d'option de menu
+     * @return ActionResult
+     */
+    public function getToolbar()
+    {
+        $oInfoMenu = $this->_oGetInfoIHM();
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($oInfoMenu->aToolbar);
+
+        //le menu dépend de l'utilisateur, c'est un cache privé
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+
+        return $clActionResult;
+    }
+
 	/**
 	 * @param $sIDTab
 	 * @return string
