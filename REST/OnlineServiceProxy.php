@@ -459,6 +459,27 @@ class OnlineServiceProxy
 		return $result;
 	}
 
+    /**
+     * @param $sIDForm
+     * @param $sQuery
+     * @param $aTabParam
+     * @param $aTabOption
+     * @param Identification $clIdentification
+     * @param string $sDest
+     * @return \stdClass
+     * @throws \Exception
+     */
+	public function sGetSuggestFromQuery($sIDForm, $sQuery,  $aTabParam, $aTabOption, Identification $clIdentification, $sDest = '')
+	{
+        $sEndPart = "autocomplete";
+
+		$sURI = $this->_sCreateRequest($sIDForm.'/'.$sQuery.'/'.$sEndPart, $aTabParam, $aTabOption, $clIdentification);
+
+		$result = $this->_sExecute('GetSuggestFromQuery', $sURI, $sDest); // On veut la réponse complète ici
+
+		return $result;
+	}
+
 
 
     /**
