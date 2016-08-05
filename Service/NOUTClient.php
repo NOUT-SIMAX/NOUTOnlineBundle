@@ -1106,7 +1106,7 @@ class NOUTClient
      * @param $nHeight
      * @return string
      */
-    public function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    private function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
     {
         $clIdentification = $this->_clGetIdentificationREST('', true);
 
@@ -1171,9 +1171,46 @@ class NOUTClient
                 $sFile
             );
         }
-
     }
 
+    /**
+ * @param $idformulaire
+ * @param $query
+ */
+    public function getSuggest($idformulaire, $query)
+    {
+        $oSuggestData = $this->_getSuggest($idformulaire, $query);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($oSuggestData);
+
+        // Modifier des données au besoin..
+        //
+        return $clActionResult;
+    }
+
+    /**
+     * @param $idformulaire
+     * @param $query
+     */
+    private function _getSuggest($idformulaire, $query)
+    {
+        // Création des options
+        $aTabOption = array();
+        $aTabParam  = array();
+
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+
+        $sRet = $this->m_clRESTProxy->sGetSuggestFromQuery(
+            $idformulaire,
+            $query,
+            $aTabParam,
+            $aTabOption,
+            $clIdentification
+        );
+
+        return $sRet;
+    }
 
     // Langage::TABL_ModeleFichier
 
