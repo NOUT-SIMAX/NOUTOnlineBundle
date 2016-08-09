@@ -12,22 +12,22 @@ use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class NOUTOnlineDataCollector  extends DataCollector
 {
 	private $m_clLogger;
-	private $m_clSecurityContext;
+	private $m_clTokenStorage;
 
 	public function getName()
 	{
 		return 'NOUTOnline';
 	}
 
-	public function __construct(NOUTOnlineLogger $clLogger, SecurityContextInterface $context = null)
+	public function __construct(NOUTOnlineLogger $clLogger, TokenStorageInterface $tokenStorage = null)
 	{
 		$this->m_clLogger          = $clLogger;
-		$this->m_clSecurityContext = $context;
+		$this->m_clTokenStorage    = $tokenStorage;
 	}
 
 	public function collect(Request $request, Response $response, \Exception $exception = null)
@@ -39,7 +39,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			'queries'     => $queries,
 		);
 
-		if (is_null($this->m_clSecurityContext) || is_null($token = $this->m_clSecurityContext->getToken()))
+		if (is_null($this->m_clTokenStorage) || is_null($token = $this->m_clTokenStorage->getToken()))
 		{
 			$this->data['authenticated'] = false;
 			$this->data['session_token'] = '';

@@ -230,6 +230,10 @@ class ParserRecordList extends Parser
 		$clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $nNiv, $clStructureElement);
         $clRecord->addOptions($TabAttrib);
         $clRecord->addOptionsLayout($TabAttribLayout); // Les attributs HTML sont ajoutés dans le record
+        $subtitle = $TabAttrib['subtitle'];
+        if (!is_null($subtitle)){
+            $clRecord->setSubTitle((string)$subtitle);
+        }
 
 		$this->m_clRecordCache->SetRecord($nNiv, $clRecord);
 		$this->_ParseColumns($nNiv, $clRecord, $clStructureElement, $clXML, $sIDTableau, $sIDEnreg);

@@ -19,7 +19,7 @@ services:
 
     nout_online.datacollector:
         class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector
-        arguments:  [@nout_online.logger, @security.context]
+        arguments:  [@nout_online.logger, @security.token_storage]
         tags:
             - { name: data_collector, template: "NOUTOnlineBundle:DataCollector:layout.html.twig", id: "NOUTOnline" }
 
