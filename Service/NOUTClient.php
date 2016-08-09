@@ -11,7 +11,7 @@ namespace NOUT\Bundle\ContextsBundle\Service;
 use NOUT\Bundle\ContextsBundle\Entity\ActionResult;
 use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
-use NOUT\Bundle\ContextsBundle\Entity\Menu\MenuLoader;
+use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -53,7 +53,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class NOUTClient
 {
@@ -79,25 +79,30 @@ class NOUTClient
 
 
 	/**
-	 * @var \Symfony\Component\Security\Core\SecurityContext
+	 * @var TokenStorage
 	 */
-	private $__security;
+	private $__tokenStorage;
 
 	/**
 	 * @var NOUTCache
 	 */
-	private $m_clCacheSession;
+	private $m_clCacheSession = null;
+
+    /**
+     * @var NOUTCache
+     */
+    private $m_clCacheIHM = null;
 
 	/**
-	 * @param SecurityContext       $security
+	 * @param TokenStorage          $security
 	 * @param OnlineServiceFactory  $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
 	 * @param                       $sCacheDir
 	 * @throws \Exception
 	 */
-	public function __construct(SecurityContext $security, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, $sCacheDir)
+	public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, $sCacheDir)
 	{
-		$this->__security = $security;
+		$this->__tokenStorage = $tokenStorage;
 
 		$this->m_sCacheDir   = $sCacheDir.'/'.self::REPCACHE;
 
@@ -113,7 +118,10 @@ class NOUTClient
         if ($oSecurityToken instanceof NOUTToken)
         {
             $sSessionToken = $oSecurityToken->getSessionToken();
-            $this->m_clCacheSession = new NOUTCache($sCacheDir.'/'.self::REPCACHE, $sSessionToken);
+            $this->m_clCacheSession = new NOUTCache($this->m_sCacheDir, $sSessionToken);
+
+            $sRepCacheIHM = $this->_sGetRepCacheIHM(Langage::TABL_ImageCatalogue);
+            $this->m_clCacheIHM = new NOUTCache($sRepCacheIHM);
         }
 	}
 
@@ -122,7 +130,7 @@ class NOUTClient
 	 */
 	protected function _oGetToken()
 	{
-		return $this->__security->getToken();
+		return $this->__tokenStorage->getToken();
 	}
 
 
@@ -304,6 +312,26 @@ class NOUTClient
 	}
 
 
+    /**
+     * récupère la liste des icones avec une grosse image
+     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     */
+    protected function _oGetTabIcon($idCol)
+    {
+        $aTabColonne = array();
+
+        $clFileNPI = new ConditionFileNPI();
+        $clFileNPI->EmpileCondition($idCol, ConditionColonne::COND_DIFFERENT, '');
+
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
+        );
+
+        return $this->_oRequest(Langage::TABL_ImageCatalogue, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
+    }
+
+
 	/**
 	 * récupère la liste des options de menu sur les actions accordées par les droits et les séparateurs
 	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
@@ -339,6 +367,8 @@ class NOUTClient
 		return $this->_oRequest(Langage::TABL_OptionMenuPourTous, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
 	}
 
+
+
 	/**
 	 * récupère la liste des menus
 	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
@@ -360,17 +390,46 @@ class NOUTClient
 		return $this->_oRequest(Langage::TABL_MenuPourTous, new ConditionFileNPI(), $aTabColonne, $aTabHeaderSuppl);
 	}
 
+    /**
+     * récupère les infos du menu
+     */
+    protected function _oGetInfoIHM()
+    {
+        if (!is_null($this->m_clCacheIHM))
+        {
+            $oToken = $this->_oGetToken();
+            $oUser  =  $oToken->getUser();
+
+            $oInfoIHM = $this->m_clCacheIHM->fetch('info_'.$oUser->getUsername());
+            if ($oInfoIHM !== false){
+                return $oInfoIHM; //on a déjà les infos du menu
+            }
+        }
+
+        //on a pas les infos, il faut les calculer
+        $clReponseXML_OptionMenu    = $this->_oGetTabMenu_OptionMenu();
+        $clReponseXML_Menu          = $this->_oGetTabMenu_Menu();
+        $clReponseXML_SmallIcon     = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_Image);
+        $clReponseXML_BigIcon       = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_ImageGrande);
+
+        $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
+        $oInfoIHM = $clIHMLoader->oGetInfoIHM();
+        $this->m_clCacheIHM->save('info_'.$oUser->getUsername(), $oInfoIHM);
+
+        return $oInfoIHM;
+    }
+
+
 	/**
 	 * retourne un tableau d'option de menu
 	 * @return ActionResult
 	 */
 	public function getTabMenu()
 	{
-		$clReponseXML_OptionMenu = $this->_oGetTabMenu_OptionMenu();
-		$clReponseXML_Menu       = $this->_oGetTabMenu_Menu();
+        $oInfoMenu = $this->_oGetInfoIHM();
 
 		$clActionResult = new ActionResult(null);
-		$clActionResult->setData(MenuLoader::s_aGetTabMenu($clReponseXML_OptionMenu, $clReponseXML_Menu));
+		$clActionResult->setData($oInfoMenu->aMenu);
 
 		//le menu dépend de l'utilisateur, c'est un cache privé
 		$clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
@@ -378,7 +437,39 @@ class NOUTClient
 		return $clActionResult;
 	}
 
+    /**
+     * retourne un tableau d'option de menu
+     * @return ActionResult
+     */
+    public function getCentralIcon()
+    {
+        $oInfoMenu = $this->_oGetInfoIHM();
 
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($oInfoMenu->aBigIcon);
+
+        //le menu dépend de l'utilisateur, c'est un cache privé
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+
+        return $clActionResult;
+    }
+
+    /**
+     * retourne un tableau d'option de menu
+     * @return ActionResult
+     */
+    public function getToolbar()
+    {
+        $oInfoMenu = $this->_oGetInfoIHM();
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($oInfoMenu->aToolbar);
+
+        //le menu dépend de l'utilisateur, c'est un cache privé
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+
+        return $clActionResult;
+    }
 
 	/**
 	 * @param $sIDTab
@@ -411,7 +502,7 @@ class NOUTClient
     /**
      * @return string
      */
-    protected function _sGetRepCache()
+    protected function _sGetRepCacheUpload()
     {
         $oToken    = $this->_oGetToken();
         $clLangage = $oToken->getLangage();
@@ -462,7 +553,7 @@ class NOUTClient
      */
     protected function _sGetCacheFilePath($sIDElement, $aTabOption)
     {
-        $sRep = $this->_sGetRepCache();
+        $sRep = $this->_sGetRepCacheUpload();
 
         //on tri le tableau pour toujours l'avoir dans le même ordre
         ksort($aTabOption);
@@ -1079,12 +1170,13 @@ class NOUTClient
      * @param $sTransColor
      * @param $nWidth
      * @param $nHeight
+     * @param $bSmallIcon
      * @return ActionResult
      */
-    public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon=true)
     {
 		//le retour c'est le chemin de fichier enregistré dans le cache
-        $sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
+        $sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon);
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($sFichier);
@@ -1104,9 +1196,10 @@ class NOUTClient
      * @param $sTransColor
      * @param $nWidth
      * @param $nHeight
+     * @param $bSmallIcon
      * @return string
      */
-    private function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    protected function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon)
     {
         $clIdentification = $this->_clGetIdentificationREST('', true);
 
@@ -1134,6 +1227,8 @@ class NOUTClient
 
         //on veut le contenu
         $aTabOption[RESTProxy::OPTION_WantContent] = 1;
+        //quelle image on veut ?
+        $aTabOption[RESTProxy::OPTION_IDCol] = $bSmallIcon ? Langage::COL_IMAGECATALOGUE_Image : Langage::COL_IMAGECATALOGUE_ImageGrande;
 
         //on regarde si le fichier existe
         $sFile = $this->_sGetNomFichierCacheIHM(Langage::TABL_ImageCatalogue, $sIDIcon, $aTabOption);
@@ -1145,31 +1240,17 @@ class NOUTClient
         else // Le fichier n'est pas dans le cache, on va le récupérer
         {
             // On essaye de récupérer l'image grande
-            $sRet = $this->m_clRESTProxy->sGetColInRecord(
+            $oRet = $this->m_clRESTProxy->sGetColInRecord(
                 Langage::TABL_ImageCatalogue,
                 $sIDIcon,
-                Langage::COL_IMAGECATALOGUE_ImageGrande,
+                $aTabOption[RESTProxy::OPTION_IDCol],
                 array(),
                 $aTabOption,
                 $clIdentification,
                 $sFile
             );
 
-            if (!empty($sRet->content))
-            {
-                return $sRet;
-            }
-
-            // Sinon on donne l'image de taille normale
-            return $this->m_clRESTProxy->sGetColInRecord(
-                Langage::TABL_ImageCatalogue,
-                $sIDIcon,
-                Langage::COL_IMAGECATALOGUE_Image,
-                array(),
-                $aTabOption,
-                $clIdentification,
-                $sFile
-            );
+            return $oRet->content;
         }
     }
 
