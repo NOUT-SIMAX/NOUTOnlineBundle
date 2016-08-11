@@ -47,21 +47,20 @@ class XMLResponseWS
 		$clEnvelope   = simplexml_load_string($sXML);
 
 		//calcul du nom du namespace de l'enveloppe
-		$sNomNSSoap      = '';
 		$tabNamespace    = $clEnvelope->getNamespaces();
-		$tabNomNamespace = array_keys($tabNamespace, 'http://www.w3.org/2003/05/soap-envelope');
-		if (count($tabNomNamespace)>0)
-		{
-			$this->m_sNamespaceSOAP = $tabNomNamespace[0];
-		}
-		else
-		{
-			$tabNomNamespace = array_keys($tabNamespace, 'http://schemas.xmlsoap.org/soap/envelope/');
-			if (count($tabNomNamespace)>0)
-			{
-				$this->m_sNamespaceSOAP = $tabNomNamespace[0];
-			}
-		}
+
+        $aNamespacePossible = array(
+            'http://www.w3.org/2003/05/soap-envelope/',
+            'http://schemas.xmlsoap.org/soap/envelope/',
+            'http://www.w3.org/2003/05/soap-envelope',
+            'http://schemas.xmlsoap.org/soap/envelope',
+        );
+        foreach($aNamespacePossible as $sNamespacePossible){
+            $this->m_sNamespaceSOAP = array_search($sNamespacePossible, $tabNamespace);
+            if ($this->m_sNamespaceSOAP){
+                break;
+            }
+        }
 
 		//on trouve le noeud header et le noeud body
 		$this->m_ndHeader = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Header;
