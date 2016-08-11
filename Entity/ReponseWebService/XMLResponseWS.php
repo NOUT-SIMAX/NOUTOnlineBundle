@@ -501,10 +501,14 @@ class XMLResponseWS
 	const RETURNTYPE_VALIDATERECORD     = 'ValidateEnreg';
 	const RETURNTYPE_PRINTTEMPLATE      = 'PrintTemplate';
 
-
 	//réponse de messagerie
 	const RETURNTYPE_MAILSERVICERECORD      = 'MailServiceRecord';
 	const RETURNTYPE_MAILSERVICELIST        = 'MailServiceList';
 	const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
 	const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
+
+
+    //les différent type d'affichage pour les listes
+    const DISPLAYMODE_List = 'List';
+    const DISPLAYMODE_Chart = 'Chart';
 }

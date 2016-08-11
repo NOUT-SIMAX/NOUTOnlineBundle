@@ -117,6 +117,8 @@ class ParserList extends Parser
 
         // Instance d'une nouvelle clList avec toutes les données précédentes
         $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
+        $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
+        $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
 
         // Paramètres pour la clList
         $clList->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));
