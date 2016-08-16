@@ -12,6 +12,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
+use NOUT\Bundle\SessionManagerBundle\Entity\ConfigExtranet;
 use NOUT\Bundle\SessionManagerBundle\Entity\User;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -25,9 +26,20 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 	 */
 	private $m_clRESTProxy;
 
-	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue)
+	/**
+	 * @var ConfigExtranet
+	 */
+	private $m_clConfigExtranet;
+
+    /**
+     * @param OnlineServiceFactory $serviceFactory
+     * @param ConfigExtranet $clConfigExtranet
+     * @param ConfigurationDialogue $configurationDialogue
+     */
+	public function __construct(OnlineServiceFactory $serviceFactory, ConfigExtranet $clConfigExtranet, ConfigurationDialogue $configurationDialogue)
 	{
-		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+        $this->m_clConfigExtranet   = $clConfigExtranet;
+		$this->m_clRESTProxy        = $serviceFactory->clGetRESTProxy($configurationDialogue);
 	}
 
 	/**
@@ -37,6 +49,12 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 	 */
 	public function loadUserByUsername($username)
 	{
+        // Si on est en identification extranet
+        if($this->m_clConfigExtranet->isExtranet())
+        {
+            $username = $this->m_clConfigExtranet->getUser();
+        }
+
 		// Try service
 		$nTypeUtilisateur = $this->m_clRESTProxy->nGetUserExists($username);
 		if ($nTypeUtilisateur != RESTProxy::TYPEUTIL_NONE)

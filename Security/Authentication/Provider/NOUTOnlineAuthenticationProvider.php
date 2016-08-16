@@ -20,6 +20,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExtranetUserType;
+use NOUT\Bundle\SessionManagerBundle\Entity\ConfigExtranet;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -76,10 +78,16 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
      */
     private $m_clConfigDialogue;
 
+	/**
+     * @var ConfigExtranet
+     */
+    private $m_clConfigExtranet;
+
 
 
 	/**
-	 * @param ClientInformation $$clClientInfo
+	 * @param ClientInformation $clClientInfo
+	 * @param ConfigExtranet $clConfigExtranet
 	 * @param OnlineServiceFactory $serviceFactory
 	 * @param ConfigurationDialogue $configurationDialogue
 	 * @param UserProviderInterface $userProvider
@@ -89,6 +97,7 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 	 * @param bool $hideUserNotFoundExceptions
 	 */
 	public function __construct(ClientInformation $clClientInfo,
+								ConfigExtranet $clConfigExtranet,
                                 OnlineServiceFactory $serviceFactory,
                                 ConfigurationDialogue $configurationDialogue,
                                 UserProviderInterface $userProvider,
@@ -106,6 +115,7 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		$this->providerKey = $providerKey;
 		$this->hideUserNotFoundExceptions = $hideUserNotFoundExceptions;
 
+		$this->m_clConfigExtranet = $clConfigExtranet;
 
 
 		$this->userProvider   = $userProvider;
@@ -118,7 +128,9 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * @param TokenInterface $token
+	 * @return NOUTToken
+	 * @throws \Exception
 	 */
     public function authenticate(TokenInterface $token)
 	{
@@ -175,12 +187,28 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 			$authenticatedToken->setIP($this->m_clClientInformation->getIP());
 
 			$clIdentification = new Identification();
+
+            // Si on est en identification extranet
+            if($this->m_clConfigExtranet->isExtranet())
+            {
+                $sUser      = $this->m_clConfigExtranet->getUser();
+                $sPassword  = $this->m_clConfigExtranet->getPassword();
+                // $sFormID    = $this->m_clConfigExtranet->getForm();  // Plus loin
+            }
+
+            else
+            {
+                $sUser      = $user->getUsername();
+                $sPassword  = $user->getPassword();
+            }
+
 			$clIdentification->m_clUsernameToken = new UsernameToken(
-                $user->getUsername(),
-                $user->getPassword(),
+                $sUser,
+                $sPassword,
                 $this->m_clConfigDialogue->getModeAuth(),
                 $this->m_clConfigDialogue->getSecret()
             );
+
 			$clIdentification->m_sTokenSession = $sTokenSession;
 			$clIdentification->m_sIDContexteAction = '';
 			$clIdentification->m_bAPIUser = true;
@@ -191,13 +219,13 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 
 			$authenticatedToken->setLangage(new Langage($sVersionLangage, $sVersionIcone));
 
+
 			return $authenticatedToken;
 		}
 
+
+
 		throw new AuthenticationServiceException('The token is not a NOUTToken.');
-
-
-
 
 	}
 
@@ -238,14 +266,45 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		{
 			$presentedPassword = $token->getCredentials();
 
+
+            // Si on est en identification extranet
+            if($this->m_clConfigExtranet->isExtranet())
+            {
+                $sUser      = $this->m_clConfigExtranet->getUser();
+                $sPassword  = $this->m_clConfigExtranet->getPassword();
+                // $sFormID    = $this->m_clConfigExtranet->getForm();  // Plus loin
+            }
+
+            else
+            {
+                $sUser      = $user->getUsername();
+                $sPassword  = $presentedPassword;
+            }
+
+
+
             $oUsernameToken = new UsernameToken(
-                $user->getUsername(),
-                $presentedPassword,
+                $sUser,
+                $sPassword,
                 $this->m_clConfigDialogue->getModeAuth(),
                 $this->m_clConfigDialogue->getSecret());
 
             $oGetTokenSessionParam = new GetTokenSession();
             $oGetTokenSessionParam->UsernameToken = $this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken);
+
+            if($this->m_clConfigExtranet->isExtranet())
+            {
+                $oExtranetUsernameToken = new UsernameToken(
+                    $user->getUsername(),
+                    $presentedPassword,
+                    $this->m_clConfigDialogue->getModeAuth(),
+                    $this->m_clConfigDialogue->getSecret());
+
+                // $sFormID    = $this->m_clConfigExtranet->getForm();  // Plus loin
+                $oGetTokenSessionParam->ExtranetUser = new ExtranetUserType();
+                $oGetTokenSessionParam->ExtranetUser->UsernameToken = $this->m_clSOAPProxy->getUsernameTokenForWdsl($oExtranetUsernameToken);
+                $oGetTokenSessionParam->ExtranetUser->Form = $this->m_clConfigExtranet->getForm();
+            }
 
 			try
 			{

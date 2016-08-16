@@ -17,19 +17,21 @@ class User implements UserInterface
 	 * @var string
 	 */
 	protected $m_sUsername;
+
 	/**
 	 * @var string
 	 */
 	protected $m_sPassword;
+
 	/**
 	 * @var array
 	 */
 	protected $m_TabRoles;
 
-
 	/**
 	 * @inheritdoc
 	 */
+
 	public function getRoles()
 	{
 		return $this->m_TabRoles;

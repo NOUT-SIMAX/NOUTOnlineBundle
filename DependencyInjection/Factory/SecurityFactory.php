@@ -30,9 +30,11 @@ class SecurityFactory extends FormLoginFactory
 		$providerId = 'nout_session.authentication_provider.'.$id;
 		$container
 			->setDefinition($providerId, new DefinitionDecorator('nout_session.authentication_provider'))
-			->replaceArgument(3, new Reference($userProviderId))
-			->replaceArgument(5, $id)
+			->replaceArgument(4, new Reference($userProviderId))
+			->replaceArgument(6, $id)
 		;
+
+	//	Indices dans l'injection de services
 
 		return $providerId;
 	}

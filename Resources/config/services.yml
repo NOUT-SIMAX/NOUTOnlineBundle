@@ -12,7 +12,14 @@ services:
     #http://blog.vandenbrand.org/2012/06/19/symfony2-authentication-provider-authenticate-against-webservice/
     nout_session.user_provider:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Core\User\NOUTOnlineUserProvider
-        arguments:  [@nout_online.service_factory, @nout_online.configuration_dialogue]
+        arguments:
+            - @nout_online.service_factory
+            - @nout_session.config_extranet
+            - @nout_online.configuration_dialogue
+
+    nout_session.config_extranet:
+        class:      NOUT\Bundle\SessionManagerBundle\Entity\ConfigExtranet
+        arguments:  [%nout_online.mode_extranet%, %nout_online.user%, %nout_online.password%, %nout_online.form%]
 
     nout_session.authentication_listener:
         class: NOUT\Bundle\SessionManagerBundle\Security\Firewall\NOUTOnlineListener
@@ -31,7 +38,6 @@ services:
             - { name: 'monolog.logger', channel: 'security' }
 
 
-
     nout_session.authentication_provider:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTOnlineAuthenticationProvider
         arguments:
@@ -39,6 +45,7 @@ services:
             # \NOUT\Bundle\SessionManagerBundle\DependencyInjection\Factory\SecurityFactory.php
             # pour le remplacement de paramètres
             - @nout_online.client_information
+            - @nout_session.config_extranet
             - @nout_online.service_factory
             - @nout_online.configuration_dialogue
             - null #null remplacer par le replaceArgument du fichier \NOUT\Bundle\SessionManagerBundle\DependencyInjection\Factory\SecurityFactory.php
