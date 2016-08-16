@@ -7,6 +7,11 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Translation\Translator;
 
+
+/*
+ * Fichier utilisé pour parser les variables de noutonline.yml
+ */
+
 /**
  * This is the class that validates and merges configuration from your app/config files
  *
@@ -14,6 +19,7 @@ use Symfony\Component\Translation\Translator;
  */
 class Configuration implements ConfigurationInterface
 {
+
     /**
      * {@inheritDoc}
      */
@@ -56,6 +62,10 @@ class Configuration implements ConfigurationInterface
             ->end()//integerNode('port')
             ->scalarNode('apiuuid')->end()
             ->scalarNode('mode_auth')->end()
+            ->booleanNode('mode_extranet')->end()
+            ->scalarNode('user')->end()
+            ->scalarNode('password')->end()
+            ->scalarNode('form')->end()
             ->end()//children
         ;
         return $treeBuilder;

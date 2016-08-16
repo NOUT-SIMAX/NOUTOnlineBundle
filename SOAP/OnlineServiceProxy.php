@@ -247,10 +247,12 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 				if($this->proxyhost && $this->proxyport){
 					$http->setProxy($this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword);
 				}
-				if($this->authtype != '') {
+				if($this->authtype != '')
+				{
 					$http->setCredentials($this->username, $this->password, $this->authtype, array(), $this->certRequest);
 				}
-				if($this->http_encoding != ''){
+				if($this->http_encoding != '')
+				{
 					$http->setEncoding($this->http_encoding);
 				}
 
