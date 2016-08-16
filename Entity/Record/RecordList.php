@@ -52,6 +52,19 @@ class RecordList
      */
     protected $m_TabEnregTableau;
 
+    /**
+     * @var array
+     * tableau qui contient les types d'affichage possible
+     */
+    protected $m_TabPossibleDisplayMode = array();
+
+    /**
+     * @var string
+     * tableau qui contient les types d'affichage possible
+     */
+    protected $m_eDefaultDisplayMode;
+
+
 
     public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, StructureElement $clStructElem=null)
     {
@@ -137,5 +150,53 @@ class RecordList
     {
         return $this->m_nIDTableau;
     }
+
+    /**
+     * @return array
+     */
+    public function getTabPossibleDisplayMode()
+    {
+        return $this->m_TabPossibleDisplayMode;
+    }
+
+    /**
+     * @param array $tabPossibleDisplayMode
+     * @return $this
+     */
+    public function setTabPossibleDisplayMode($tabPossibleDisplayMode)
+    {
+        $this->m_TabPossibleDisplayMode = $tabPossibleDisplayMode;
+        return $this;
+    }
+
+    /**
+     * @param $eDisplayMode
+     * @return $this
+     */
+    public function addPossibleDisplayMode($eDisplayMode)
+    {
+        $this->m_TabPossibleDisplayMode[]=$eDisplayMode;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultDisplayMode()
+    {
+        return $this->m_eDefaultDisplayMode;
+    }
+
+    /**
+     * @param string $eDefaultDisplayMode
+     * @return $this
+     */
+    public function setDefaultDisplayMode($eDefaultDisplayMode)
+    {
+        $this->m_eDefaultDisplayMode = $eDefaultDisplayMode;
+        return $this;
+    }
+
+
 
 }
