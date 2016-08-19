@@ -1022,9 +1022,10 @@ class NOUTClient
      * @param $tabParamQuery
      * @param $sIDFormulaire
      * @param $sIDContexte
+     * @param $sCallingcolumn
      * @return ActionResult
      */
-    public function oSelectElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte)
+    public function oSelectElem(array $tabParamQuery, $sIDFormulaire, $sCallingcolumn, $sIDContexte)
 	{
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
         $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
@@ -1040,6 +1041,7 @@ class NOUTClient
 
         // Ajout des paramètres
         $clParamSearch->Table               = $sIDFormulaire;
+        $clParamSearch->CallingColumn       = $sCallingcolumn;
 
 //        public $First; 				// integer
 //        public $Length; 			    // integer
