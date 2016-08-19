@@ -93,6 +93,25 @@ class RecordCache
 		return $this->m_MapXMLKey2Record[$sKey2Record];
 	}
 
+    /**
+     * met à jour le cache
+     * @param RecordCache $cacheSrc
+     * @return $this
+     */
+    public function update(RecordCache $cacheSrc)
+    {
+        foreach($cacheSrc->m_MapIDTableauIDEnreg2Record as $key=>$clRecord)
+        {
+            $this->m_MapIDTableauIDEnreg2Record[$key]=$clRecord;
+        }
+
+        foreach($cacheSrc->m_MapXMLKey2Record as $key=>$clRecord)
+        {
+            $this->m_MapXMLKey2Record[$key]=$clRecord;
+        }
+        return $this;
+    }
+
 
 
 }

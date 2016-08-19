@@ -565,6 +565,7 @@ class Record
 
         //mise à jour du titre
         $this->m_sTitle = $clRecordSrc->getTitle();
+        $this->m_TabRecordLie->update($clRecordSrc->m_TabRecordLie);
 
         //mise à jour des valeurs
         foreach($clRecordSrc->m_TabColumnsValues as $idcolonne=>$value)
