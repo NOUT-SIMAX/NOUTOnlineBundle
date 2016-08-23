@@ -51,8 +51,6 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class NOUTClient
@@ -779,12 +777,17 @@ class NOUTClient
 
 	/**
 	 * @param XMLResponseWS $clReponseXML
+     * @param $ReturnTypeForce
+     * @param $autreInfos - informations nécessaire pour le force return type
 	 * @return ActionResult
 	 * @throws \Exception
 	 */
-	protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML)
+	protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, $ReturnTypeForce=null, $autreInfos=null)
 	{
 		$clActionResult = new ActionResult($clReponseXML);
+        if (!empty($ReturnTypeForce)){
+            $clActionResult->ReturnType=$ReturnTypeForce; //on force le return type
+        }
 
 		switch ($clActionResult->ReturnType)
 		{
@@ -904,6 +907,24 @@ class NOUTClient
                 break;
             }
 
+
+            /**
+             * cas particulier, ici on triche
+             */
+            case XMLResponseWS::RETURNTYPE_COLINRECORD:
+            {
+                $clResponseParser = new ReponseWSParser();
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML, $clActionResult->ReturnType, $autreInfos);
+
+                $data = new \stdClass();
+                $data->cache = $clParser->getListFullCache();
+                $data->value = $clReponseXML->getData();
+
+                $clActionResult->setData($data);
+
+                break;
+            }
+
 		}
 
 		return $clActionResult;
@@ -917,28 +938,28 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-	public function oUpdate($sIDContexte, Record $clRecord, $autovalidate=SOAPProxy::AUTOVALIDATE_None)
-	{
-		//test des valeurs des paramètres
-		$this->_TestParametre(self::TP_InArray, '$autovalidate', $autovalidate, array(SOAPProxy::AUTOVALIDATE_None, SOAPProxy::AUTOVALIDATE_Cancel, SOAPProxy::AUTOVALIDATE_Validate));
-		$this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+    public function oUpdate($sIDContexte, Record $clRecord, $autovalidate=SOAPProxy::AUTOVALIDATE_None)
+    {
+        //test des valeurs des paramètres
+        $this->_TestParametre(self::TP_InArray, '$autovalidate', $autovalidate, array(SOAPProxy::AUTOVALIDATE_None, SOAPProxy::AUTOVALIDATE_Cancel, SOAPProxy::AUTOVALIDATE_Validate));
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
 
         // -----------------------------------------------------
         // Fichiers
 
         // Chercher tous les fichiers modifiés dans le Record // similaire à getStructforUpdateSOAP => getColonneFileModified
-		$aFilesToSend = $this->_getModifiedFiles($clRecord);
+        $aFilesToSend = $this->_getModifiedFiles($clRecord);
 
         // -----------------------------------------------------
 
-		$paramUpdate = $clRecord->getStructForUpdateSOAP($aFilesToSend);
+        $paramUpdate = $clRecord->getStructForUpdateSOAP($aFilesToSend);
 
-		//header
-		$aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
-		$clReponseXML       = $this->m_clSOAPProxy->update($paramUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
+        //header
+        $aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
+        $clReponseXML       = $this->m_clSOAPProxy->update($paramUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
 
-		$oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
 
         if ($autovalidate==SOAPProxy::AUTOVALIDATE_None)
         {
@@ -955,7 +976,49 @@ class NOUTClient
         }
 
         return $oRet;
-	}
+    }
+
+
+
+    /**
+     * @param $sIDContexte
+     * @param Record $clRecord
+     * @param $idColumn
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetColInRecord($sIDContexte, Record $clRecord, $idColumn)
+    {
+        //test des valeurs des paramètres
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+        $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idColumn, null);
+
+        //header
+        $aTabHeaderSuppl    = array(
+            SOAPProxy::HEADER_ActionContext=>$sIDContexte,
+            SOAPProxy::HEADER_AutoValidate=>SOAPProxy::AUTOVALIDATE_None,
+            SOAPProxy::HEADER_APIUser=>1, //on utilise l'utilisateur d'application pour les droits
+        );
+
+        //paramètre de l'action liste
+        $clParam     = new GetColInRecord();
+        $clParam->Record = $clRecord->getIDEnreg();
+        $clParam->Column = $idColumn;
+        $clParam->WantContent = 1;
+
+        $clReponseXML       = $this->m_clSOAPProxy->getColInRecord($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML, XMLResponseWS::RETURNTYPE_COLINRECORD, $idColumn );
+
+        $data = $oRet->getData();
+
+        //on met à jour l'enregistrement d'origine à partir de celui renvoyé par NOUTOnline
+        $clRecord->updateRecordLie($data->cache);
+        $clRecord->setValCol($idColumn, $data->value, false);
+        $oRet->setData($clRecord);
+
+        return $oRet;
+    }
 
     /**
      * Valide l'action courante du contexte
@@ -1368,7 +1431,7 @@ class NOUTClient
 
     /**
      * écrit un fichier dans le cache
-     * @param UploadedFile $file
+     * @param $file
      * @param $fileID
      */
     public function cacheFile($file, $fileID)
@@ -1388,7 +1451,7 @@ class NOUTClient
 
     /**
      * le fichier doit être déplacé dans le cache
-     * @param UploadedFile $file
+     * @param $file
      * @param $fileID
      */
     private function _cacheFile($file, $fileID)
