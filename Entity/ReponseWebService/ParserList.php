@@ -57,14 +57,27 @@ class ParserList extends Parser
     {
 
         $ndSchema    = $clReponseXML->getNodeSchema();
+        $ndXML = $clReponseXML->getNodeXML();
+        $idForm = $clReponseXML->clGetForm()->getID();
 
+        return $this->ParseListFromSchemaAndXML($idForm, $ndXML, $ndSchema);
+    }
+
+    /**
+     * Parse la liste
+     * Ne doit pas être trop volumineuse
+     * @param                   $idForm
+     * @param \SimpleXMLElement $ndXML
+     * @param \SimpleXMLElement $ndSchema
+     */
+    public function ParseListFromSchemaAndXML($idForm, \SimpleXMLElement $ndXML, \SimpleXMLElement $ndSchema)
+    {
         if (isset($ndSchema))
         {
             $this->m_clParserList->ParseXSD($ndSchema, StructureElement::NV_XSD_List);
         }
 
-        $ndXML = $clReponseXML->getNodeXML();
-        $this->m_clParserList->ParseXML($ndXML, $clReponseXML->clGetForm()->getID(), StructureElement::NV_XSD_List);
+        $this->m_clParserList->ParseXML($ndXML, $idForm, StructureElement::NV_XSD_List);
     }
 
     /**
@@ -140,6 +153,14 @@ class ParserList extends Parser
         $clList->setRecordCache($this->m_clParserList->getFullCache());
 
         return $clList;
+    }
+
+    /**
+     * @return RecordCache
+     */
+    public function getListFullCache()
+    {
+        return $this->m_clParserList->getFullCache();
     }
 
 }

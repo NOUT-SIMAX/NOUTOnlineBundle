@@ -189,6 +189,13 @@ class XMLResponseWS
 		return new MessageBox($this->getNodeXML());
 	}
 
+    public function getData()
+    {
+        $ndXML = $this->getNodeXML();
+
+        return (string)$ndXML->Data;
+    }
+
 	/**
 	 * @return CurrentAction : action en cours
 	 */
@@ -481,6 +488,7 @@ class XMLResponseWS
 	const RETURNTYPE_REQUESTFILTER  = 'RequestFilter';
 	const RETURNTYPE_CHART          = 'Chart';
 	const RETURNTYPE_NUMBEROFCHART  = 'NumberOfChart';
+    const RETURNTYPE_COLINRECORD    = 'ColInRecord';
 
 	//retourne des enregistrements
 	const RETURNTYPE_RECORD         = 'Record';

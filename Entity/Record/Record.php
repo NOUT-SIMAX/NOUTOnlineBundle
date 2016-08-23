@@ -554,6 +554,12 @@ class Record
         return $this;
     }
 
+    public function updateRecordLie(RecordCache $src)
+    {
+        $this->m_TabRecordLie->update($src);
+        return $this;
+    }
+
     /**
      * met à jour l'enregistrement depuis la réponse de NOUTOnline
      * @param Record $clRecordSrc

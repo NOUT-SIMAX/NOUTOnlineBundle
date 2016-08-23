@@ -163,6 +163,7 @@ class ParserRecordList extends Parser
 	 */
 	public function ParseXML(\SimpleXMLElement $ndXML, $sIDForm, $nNiv)
 	{
+        //on peut avoir un fils Data
 		$this->m_clXML = new \SimpleXMLElement($ndXML->asXML());
 
 		//on commence par parser les balises data s'il y en a
