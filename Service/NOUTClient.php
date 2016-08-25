@@ -35,6 +35,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
@@ -354,10 +355,16 @@ class NOUTClient
 		$clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Commande, ConditionColonne::COND_EQUAL, '');
 		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
 
-		//les options de menu sur lesquelles les droits sont accordés
-		$clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, ConditionColonne::COND_WITHRIGHT, 1);
+        //les options de menu sur lesquelles les droits sont accordés
+        if ($this->m_clSOAPProxy->getGestionWSDL()->bGere(GestionWSDL::OPT_MenuVisible))
+        {
+            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, ConditionColonne::COND_MENUVISIBLE, 1);
+        }
+        else
+        {
+            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, ConditionColonne::COND_WITHRIGHT, 1);
+        }
 		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_OR);
-
 		$aTabHeaderSuppl = array(
 			SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
 		);
@@ -1320,12 +1327,14 @@ class NOUTClient
     }
 
     /**
- * @param $idformulaire
- * @param $query
- */
-    public function getSuggest($idformulaire, $query)
+     * @param $idformulaire
+     * @param $query
+     * @param $idcontext
+     * @param $idcallingcolumn
+     */
+    public function getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query)
     {
-        $oSuggestData = $this->_getSuggest($idformulaire, $query);
+        $oSuggestData = $this->_getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query);
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($oSuggestData);
@@ -1338,14 +1347,16 @@ class NOUTClient
     /**
      * @param $idformulaire
      * @param $query
+     * @param $idcontext
+     * @param $idcallingcolumn
      */
-    private function _getSuggest($idformulaire, $query)
+    private function _getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query)
     {
         // Création des options
         $aTabOption = array();
-        $aTabParam  = array();
+        $aTabParam  = array('CallingColumn'=>$idcallingcolumn);
 
-        $clIdentification = $this->_clGetIdentificationREST('', true);
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
 
         $sRet = $this->m_clRESTProxy->sGetSuggestFromQuery(
             $idformulaire,
