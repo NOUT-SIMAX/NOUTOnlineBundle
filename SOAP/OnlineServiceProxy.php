@@ -105,12 +105,6 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	private $__clLogger;
 
-	/**
-	 * pour le cache de la wsdl
-	 * @var string
-	 */
-	private $__sVersionWSDL;
-
     /**
      * @var GestionWSDL
      */
@@ -1021,6 +1015,14 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     public function getUsernameTokenForWdsl(UsernameToken $username)
     {
         return $this->__clGestionWSDL->getParamForGetTokenSession($username);
+    }
+
+    /**
+     * @return GestionWSDL
+     */
+    public function getGestionWSDL()
+    {
+        return $this->__clGestionWSDL;
     }
 
     //---
