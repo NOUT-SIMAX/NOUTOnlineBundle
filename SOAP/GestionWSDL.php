@@ -144,5 +144,17 @@ class GestionWSDL
         return $Username;
     }
 
+    public function bGere($options)
+    {
+        switch($options)
+        {
+            case self::OPT_MenuVisible:
+            {
+                return $this->m_dVersion >= 1550.01;
+            }
+        }
+        return false;
+    }
 
+    const OPT_MenuVisible = 'menu_visible';
 }

@@ -44,4 +44,5 @@ class ConditionColonne
 	const COND_ISWITHIN            = 'IsWithin';
 	const COND_WITHRIGHT           = 'WithRight';
 	const COND_BEGINWITHWORDBYWORD = 'BeginWithWordByWord';
+    const COND_MENUVISIBLE         = 'MenuVisible';
 }
