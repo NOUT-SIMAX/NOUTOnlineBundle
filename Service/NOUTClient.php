@@ -221,14 +221,14 @@ class NOUTClient
 
 
     /**
-     * @param $oUser
+     * @param NOUTToken $oToken
      * @return UsernameToken
      */
-    protected function _oGetUsernameToken($oUser)
+    protected function _oGetUsernameToken(NOUTToken $oToken)
     {
         $oUsernameToken = new UsernameToken(
-            $oUser->getUsername(),
-            $oUser->getPassword(),
+            $oToken->getUser()->getUsername(),
+            $oToken->getLoginPassword(), //le mot de passe n'est pas stocké dans le user
             $this->m_clConfigurationDialogue->getModeAuth(),
             $this->m_clConfigurationDialogue->getSecret()
         );
@@ -237,12 +237,12 @@ class NOUTClient
     }
 
     /**
-     * @param $oUser
+     * @param NOUTToken $oToken
      * @return array|UsernameToken
      */
-    protected function _oGetUsernameTokenSOAP($oUser)
+    protected function _oGetUsernameTokenSOAP($oToken)
     {
-        $oUsernameToken = $this->_oGetUsernameToken($oUser);
+        $oUsernameToken = $this->_oGetUsernameToken($oToken);
         return $this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken);
     }
 
@@ -257,9 +257,8 @@ class NOUTClient
 
 		// récupération de l'utilsateur connecté
 		$oToken = $this->_oGetToken();
-        $oUser  =  $oToken->getUser();
 
-		$clIdentification->m_clUsernameToken   = $this->_oGetUsernameToken($oUser);
+		$clIdentification->m_clUsernameToken   = $this->_oGetUsernameToken($oToken);
 		$clIdentification->m_sTokenSession     = $oToken->getSessionToken();
 		$clIdentification->m_sIDContexteAction = $sIDContexteAction;
 		$clIdentification->m_bAPIUser          = $bAPIUser;
@@ -276,10 +275,9 @@ class NOUTClient
 	{
 		// récupération de l'utilsateur connecté
 		$oToken = $this->_oGetToken();
-		$oUser  = $oToken->getUser();
 
 		$aTabHeader = array(
-			SOAPProxy::HEADER_UsernameToken  => $this->_oGetUsernameTokenSOAP($oUser),
+			SOAPProxy::HEADER_UsernameToken  => $this->_oGetUsernameTokenSOAP($oToken),
 			SOAPProxy::HEADER_SessionToken   => $oToken->getSessionToken(),
 			SOAPProxy::HEADER_OptionDialogue => $this->_clGetOptionDialogue(),
 		);
@@ -1211,7 +1209,7 @@ class NOUTClient
         /*
         $token          = $this->_oGetToken();
         $sessionToken   = $token->getSessionToken();
-        $usernameToken  = $this->_oGetUsernameToken($token->getUser());
+        $usernameToken  = $this->_oGetUsernameToken($token);
         */
 
         // Infos déjà récupérées par aGetTabHeader
