@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Logout\LogoutHandlerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 
 class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 {
@@ -60,13 +61,12 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 	 */
 	public function logout(Request $request, Response $response, TokenInterface $oToken)
 	{
+        /** @var NOUTToken $oToken */
 		$oUser=$oToken->getUser();
-        $oUser->setPassword($oToken->getCredentials());
-
 
         $oUsernameToken = new UsernameToken(
             $oUser->getUsername(),
-            $oUser->getPassword(),
+            $oToken->getLoginPassword(),
             $this->m_clConfigurationDialogue->getModeAuth(),
             $this->m_clConfigurationDialogue->getSecret()
         );

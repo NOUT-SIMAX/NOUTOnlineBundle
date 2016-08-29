@@ -35,6 +35,11 @@ class NOUTToken extends UsernamePasswordToken
 	 */
 	protected $m_sIP;
 
+    /**
+     * @var string m_sLoginPassword
+     */
+    protected $m_sLoginPassword;
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -44,11 +49,20 @@ class NOUTToken extends UsernamePasswordToken
 	}
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function eraseCredentials()
+    public function getLoginPassword()
     {
+        return $this->m_sLoginPassword;
+    }
 
+    /**
+     * @param string $sLoginPassword
+     */
+    public function setLoginPassword($sLoginPassword)
+    {
+        $this->m_sLoginPassword = $sLoginPassword;
+        return $this;
     }
 
 	/**
@@ -127,7 +141,16 @@ class NOUTToken extends UsernamePasswordToken
 	 */
 	public function serialize()
 	{
-		return serialize(array($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize(), parent::serialize()));
+		return serialize(
+            array(
+                $this->m_sIP,
+                $this->m_sSessionToken,
+                $this->m_sTimeZone,
+                $this->m_sLoginPassword,
+                is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
+                , parent::serialize()
+            )
+        );
 	}
 
 	/**
@@ -135,7 +158,15 @@ class NOUTToken extends UsernamePasswordToken
 	 */
 	public function unserialize($serialized)
 	{
-		list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $sLangage, $parentStr) = unserialize($serialized);
+        $aUnserialised = unserialize($serialized);
+        if (count($aUnserialised)>=6)
+        {
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLoginPassword, $sLangage, $parentStr) = $aUnserialised;
+        }
+        else
+        {
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $sLangage, $parentStr) = $aUnserialised;
+        }
 		$this->m_clLangage = new Langage('', '');
 		$this->m_clLangage->unserialize($sLangage);
 		parent::unserialize($parentStr);

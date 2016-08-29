@@ -180,13 +180,12 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 
 		if ($token instanceof NOUTToken)
 		{
-            $user->setPassword($token->getCredentials());
-
 			$authenticatedToken = new NOUTToken($user, $token->getCredentials(), $this->providerKey, $this->_aGetRoles($user, $token));
 			$authenticatedToken->setTimeZone($token->getTimeZone());
 			$authenticatedToken->setAttributes($token->getAttributes());
 			$authenticatedToken->setSessionToken($sTokenSession);
 			$authenticatedToken->setIP($this->m_clClientInformation->getIP());
+            $authenticatedToken->setLoginPassword($token->getLoginPassword());
 
 			$clIdentification = new Identification();
 
@@ -197,11 +196,10 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
                 $sPassword  = $this->m_clConfigExtranet->getPassword();
                 // $sFormID    = $this->m_clConfigExtranet->getForm();  // Plus loin
             }
-
             else
             {
                 $sUser      = $user->getUsername();
-                $sPassword  = $user->getPassword();
+                $sPassword  = $token->getLoginPassword(); //le membre login password contient le mdp mis par l'utilisateur, il est là pour ne pas être vider
             }
 
 			$clIdentification->m_clUsernameToken = new UsernameToken(
@@ -266,7 +264,7 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		}
 		else
 		{
-			$presentedPassword = $token->getCredentials();
+			$presentedPassword = $token->getLoginPassword();
 
 
             // Si on est en identification extranet
