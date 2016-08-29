@@ -180,6 +180,8 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 
 		if ($token instanceof NOUTToken)
 		{
+            $user->setPassword($token->getCredentials());
+
 			$authenticatedToken = new NOUTToken($user, $token->getCredentials(), $this->providerKey, $this->_aGetRoles($user, $token));
 			$authenticatedToken->setTimeZone($token->getTimeZone());
 			$authenticatedToken->setAttributes($token->getAttributes());

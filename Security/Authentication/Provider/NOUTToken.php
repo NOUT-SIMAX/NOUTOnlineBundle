@@ -43,6 +43,14 @@ class NOUTToken extends UsernamePasswordToken
 		parent::__construct($user, $credentials, $providerKey, $roles);
 	}
 
+    /**
+     * {@inheritdoc}
+     */
+    public function eraseCredentials()
+    {
+
+    }
+
 	/**
 	 * @param string $sSessionToken
 	 */

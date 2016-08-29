@@ -61,6 +61,7 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 	public function logout(Request $request, Response $response, TokenInterface $oToken)
 	{
 		$oUser=$oToken->getUser();
+        $oUser->setPassword($oToken->getCredentials());
 
 
         $oUsernameToken = new UsernameToken(
