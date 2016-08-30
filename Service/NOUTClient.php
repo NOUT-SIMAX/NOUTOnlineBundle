@@ -1001,7 +1001,7 @@ class NOUTClient
         //header
         $aTabHeaderSuppl    = array(
             SOAPProxy::HEADER_ActionContext=>$sIDContexte,
-            SOAPProxy::HEADER_AutoValidate=>SOAPProxy::AUTOVALIDATE_None,
+            SOAPProxy::HEADER_AutoValidate=>SOAPProxy::AUTOVALIDATE_Cancel,
             SOAPProxy::HEADER_APIUser=>0, //on utilise l'utilisateur d'application pour les droits
         );
 
