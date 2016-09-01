@@ -629,78 +629,59 @@ class NOUTClient
         return $XMLString;
     }
 
-
-	/**
-	 * Execute une action via la phrase OU par son ID
-	 *
-	 * @param string $sPhrase
-     * @param string $sIDAction
-	 * @param string $sIDContexte
-	 * @param string $sTabParam
-	 * @param string $sIDCallingColumn
-	 * @param SpecialParamListType $oParamListe
-	 * @param string $sDisplayMode
-	 * @param string $sChecksum
-	 * @return ActionResult
-	 */
-	public function oExecAction($sPhrase, $sIDAction, $sIDContexte = '', $sTabParam = '' , $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
-	{
-        //--------------------------------------------------------------------------------------------
-        // Création de $clParamExecute
-		$clParamExecute = new Execute();
-
-        if (!empty($sIDAction))
+    /**
+     * initialise la struture de paramètre a partir du tableau des paramètres de la requête HTTP
+     * @param $oParam
+     * @param $aTabParamRequest
+     */
+    protected function _initStructParamFromTabParamRequest($oParam, $aTabParamRequest)
+    {
+        foreach($aTabParamRequest as $property=>$valeur)
         {
-            $clParamExecute->ID           = $sIDAction;             // identifiant de l'action (String)
+            if (property_exists($oParam, $property))
+            {
+                $oParam->$property = $valeur;
+            }
         }
 
-        if (!empty($sPhrase))
+        if (property_exists($oParam, self::PARAM_SPECIALPARAMLIST) && is_null($oParam->{self::PARAM_SPECIALPARAMLIST}))
         {
-            $clParamExecute->Sentence     = $sPhrase;               // phrase de l'action (Sting)
+            $oParam->{self::PARAM_SPECIALPARAMLIST}                = new SpecialParamListType();
+            $oParam->{self::PARAM_SPECIALPARAMLIST}->initFirstLength();
         }
 
-        //if (!is_null($sTabParam))
-		if($sTabParam != '')
+        if (property_exists($oParam, self::PARAM_PARAMXML) && is_null($oParam->{self::PARAM_PARAMXML}))
         {
-            // $aTabParam est à transformer en string
-			// $clParamExecute->ParamXML     = $this->_sParamArray2ParamString($aTabParam);
-
-			// Transformation déjà faire dans s_GetTabParam de Request2APIParam.php
-			$clParamExecute->ParamXML     = $sTabParam;
+            $oParam->{self::PARAM_PARAMXML}='';
         }
 
-		$clParamExecute->SpecialParamList = $oParamListe;           // paramètre supplémentaire pour les listes (SpecialParamListType)
-		$clParamExecute->Checksum         = $sChecksum;             // checksum pour utilisation du cache (Integer)
-		$clParamExecute->CallingColumn    = $sIDCallingColumn;      // identifiant de la colonne d'appel (String)
-		$clParamExecute->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste); // (DisplayModeParamEnum)
-
-        //--------------------------------------------------------------------------------------------
-
-		//header
-		$aTabHeaderSuppl = array();
-		if (!empty($sIDContexte))
-		{
-			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
-		}
-
-		return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
-	}
+    }
 
 	/**
 	 * Execute une action via son id
 	 * @param string $sIDAction
 	 * @param string $sIDContexte
-	 * @param string $sTabParam
-	 * @param string $sIDCallingColumn
-	 * @param SpecialParamListType $oParamListe
-	 * @param string $sDisplayMode
-	 * @param string $sChecksum
+	 * @param string $tabParamQuery
 	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
 	 */
-	public function oExecIDAction($sIDAction, $sIDContexte = '', $sTabParam = '', $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+	public function oExecIDAction(array $tabParamQuery, $sIDAction, $sIDContexte = '')
 	{
-        // On recopie les paramètres
-        return $this->oExecAction(null, $sIDAction, $sIDContexte, $sTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
+        //--------------------------------------------------------------------------------------------
+        // Création de $clParamExecute
+        $clParamExecute = new Execute();
+        $this->_initStructParamFromTabParamRequest($clParamExecute, $tabParamQuery);
+
+        $clParamExecute->ID           = (string)$sIDAction;             // identifiant de l'action (String)
+        //--------------------------------------------------------------------------------------------
+
+        //header
+        $aTabHeaderSuppl = array();
+        if (!empty($sIDContexte))
+        {
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+        }
+
+        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
 	}
 
 
@@ -709,44 +690,44 @@ class NOUTClient
      * Execute une action via sa phrase
      * @param string $sPhrase
      * @param string $sIDContexte
-     * @param string $aTabParam
-     * @param string $sIDCallingColumn
-     * @param SpecialParamListType $oParamListe
-     * @param string $sDisplayMode
-     * @param string $sChecksum
+     * @param string $tabParamQuery
      * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
      */
-    public function oExecPhraseAction($sPhrase, $sIDContexte = '', $sTabParam = '', $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+    public function oExecSentence(array $tabParamQuery, $sPhrase, $sIDContexte = '')
     {
-        // On recopie les paramètres
-        return $this->oExecAction($sPhrase, null, $sIDContexte, $sTabParam, $sIDCallingColumn, $oParamListe, $sDisplayMode, $sChecksum);
+        //--------------------------------------------------------------------------------------------
+        // Création de $clParamExecute
+        $clParamExecute = new Execute();
+        $this->_initStructParamFromTabParamRequest($clParamExecute, $tabParamQuery);
+
+        $clParamExecute->Sentence           = (string)$sPhrase;
+        //--------------------------------------------------------------------------------------------
+
+        //header
+        $aTabHeaderSuppl = array();
+        if (!empty($sIDContexte))
+        {
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+        }
+
+        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
     }
 
 
 
 	/**
 	 * Affichage d'une liste
-	 * @param $sIDAction
+	 * @param $sIDTableau
 	 * @param string $sIDContexte
-	 * @param array $aTabParam
-	 * @param string $sIDCallingColumn
-	 * @param SpecialParamListType $oParamListe
-	 * @param string $sDisplayMode
-	 * @param string $sChecksum
+	 * @param array $tabParamQuery
 	 * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
 	 */
-	public function oExecList($sIDTableau, $sIDContexte = '', $aTabParam = array(), $sIDCallingColumn = '', SpecialParamListType $oParamListe = null, $sDisplayMode = SOAPProxy::DISPLAYMODE_Liste, $sChecksum = '')
+	public function oExecList(array $tabParamQuery, $sIDTableau, $sIDContexte = '')
 	{
 		//paramètre de l'action liste
 		$clParamListe     = new ListParams();
+        $this->_initStructParamFromTabParamRequest($clParamListe, $tabParamQuery);
         $clParamListe->Table = $sIDTableau;
-
-		//$clParamExecute->Sentence								// phrase de l'action
-        $clParamListe->SpecialParamList = $oParamListe;      	//paramètre supplémentaire pour les listes
-        $clParamListe->Checksum         = $sChecksum;        	// checksum pour utilisation du cache
-        $clParamListe->CallingColumn    = $sIDCallingColumn; 	// identifiant de la colonne d'appel
-        $clParamListe->DisplayMode      = SOAPProxy::s_sVerifDisplayMode($sDisplayMode, SOAPProxy::DISPLAYMODE_Liste);       // DisplayModeParamEnum
-        // $clParamListe->ParamXML         = $aTabParam;               // paramètre de l'action -  valeurs des filtres
 
 		//header
 		$aTabHeaderSuppl = array();
@@ -755,16 +736,7 @@ class NOUTClient
 			$aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
 		}
 
-        $start = 0;
-        $count = 20;
-
-        // à faire de la forme ?first=___&size=___
-        // Dans webix : size // group //page
-        $clParamListe->SpecialParamList->First = $start;
-        $clParamListe->SpecialParamList->Length = $count;
-
         $clReponseXML = $this->m_clSOAPProxy->listAction($clParamListe, $this->_aGetTabHeader($aTabHeaderSuppl));
-
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
 	}
 
@@ -949,20 +921,23 @@ class NOUTClient
         $this->_TestParametre(self::TP_InArray, '$autovalidate', $autovalidate, array(SOAPProxy::AUTOVALIDATE_None, SOAPProxy::AUTOVALIDATE_Cancel, SOAPProxy::AUTOVALIDATE_Validate));
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
+        $sIDForm = $clRecord->getIDTableau();
+        $sIDEnreg = $clRecord->getIDEnreg();
 
+        $clParamUpdate              = new Update();
+        $clParamUpdate->Table       = $clRecord->getIDTableau();
+        $clParamUpdate->ParamXML    = "<id_$sIDForm>$sIDEnreg</id_$sIDForm>";
         // -----------------------------------------------------
         // Fichiers
 
         // Chercher tous les fichiers modifiés dans le Record // similaire à getStructforUpdateSOAP => getColonneFileModified
         $aFilesToSend = $this->_getModifiedFiles($clRecord);
-
         // -----------------------------------------------------
-
-        $paramUpdate = $clRecord->getStructForUpdateSOAP($aFilesToSend);
+        $clParamUpdate->UpdateData = $clRecord->getUpdateData($aFilesToSend);
 
         //header
         $aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte, SOAPProxy::HEADER_AutoValidate=>$autovalidate);
-        $clReponseXML       = $this->m_clSOAPProxy->update($paramUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML       = $this->m_clSOAPProxy->update($clParamUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
 
@@ -1090,43 +1065,26 @@ class NOUTClient
      * @param $tabParamQuery
      * @param $sIDFormulaire
      * @param $sIDContexte
-     * @param $sCallingcolumn
      * @return ActionResult
      */
-    public function oSelectElem(array $tabParamQuery, $sIDFormulaire, $sCallingcolumn, $sIDContexte)
+    public function oSelectElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte)
 	{
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
         $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
 
 
-//        public $Table; 				// string
 //        public $ParamXML; 			// string
 //        public $SpecialParamList; 	// SpecialParamListType
-//        public $CallingColumn; 		// string ! Todo
 //        public $Checksum; 			// integer
 //        public $DisplayMode; 		    // DisplayModeParamEnum
         $clParamSearch                      = new Search();
-
+        $this->_initStructParamFromTabParamRequest($clParamSearch, $tabParamQuery);
         // Ajout des paramètres
         $clParamSearch->Table               = $sIDFormulaire;
-        $clParamSearch->CallingColumn       = $sCallingcolumn;
 
-//        public $First; 				// integer
-//        public $Length; 			    // integer
-//        public $WithBreakRow; 		// integer
-//        public $WithEndCalculation;	// integer
-//        public $ChangePage; 		    // integer
-//        public $Sort1; 				// SortType
-//        public $Sort2; 				// SortType
-//        public $Sort3; 				// SortType
-        $clParamSearch->SpecialParamList                = new SpecialParamListType();
-        $clParamSearch->SpecialParamList->First         = $tabParamQuery['SpecialParamList']->First;
-        $clParamSearch->SpecialParamList->Length        = $tabParamQuery['SpecialParamList']->Length;
-        $clParamSearch->SpecialParamList->ChangePage    = 0; //$tabParamQuery['SpecialParamList']->ChangePage;
 
 
         $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $this->_aGetTabHeader($aTabHeaderSuppl));
-
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
@@ -1148,7 +1106,6 @@ class NOUTClient
 
         // Ajout des paramètres
         $clParamCreate->Table               = $sIDFormulaire;
-        $clParamCreate->SpecialParamList    = new SpecialParamListType();	// Pas besoin de ces paramètres ?
 
 
         $clReponseXML = $this->m_clSOAPProxy->create($clParamCreate, $this->_aGetTabHeader($aTabHeaderSuppl));
@@ -1161,7 +1118,7 @@ class NOUTClient
      * @param $sIDContexte
      * @return ActionResult
      */
-    public function oModifyElem(array $tabParamQuery, $sIDContexte)
+    public function oModifyElem(array $tabParamQuery, $sIDContexte, $idformulaire, $idenreg)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
@@ -1170,8 +1127,9 @@ class NOUTClient
         );
 
         $clParamModify              = new Modify();
-		$clParamModify->Table       = $tabParamQuery['Table'];
-		$clParamModify->ParamXML    = $tabParamQuery['ParamXML'];
+        $this->_initStructParamFromTabParamRequest($clParamModify, $tabParamQuery);
+		$clParamModify->Table       = $idformulaire;
+        $clParamModify->ParamXML    .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
 
         $clReponseXML = $this->m_clSOAPProxy->modify($clParamModify, $this->_aGetTabHeader($aTabHeaderSuppl));
 
@@ -1575,4 +1533,11 @@ class NOUTClient
 	const TP_NotEmpty   	= 1;
 	const TP_InArray    	= 2;
     const MaxEnregs     	= 200;	// Nombre maximum d'éléments sur une page
+
+
+    const PARAM_SPECIALPARAMLIST  = 'SpecialParamList';
+    const PARAM_PARAMXML          = 'ParamXML';
+    const PARAM_CALLINGCOLUMN     = 'CallingColumn';
+    const PARAM_DISPLAYMODE       = 'DisplayMode';
+    const PARAM_CHECKSUM          = 'Checksum';
 }
