@@ -467,61 +467,6 @@ class Record
 		return $this->setValCol($idColonne, $value, true);
 	}
 
-
-	/**
-	 * on construit la structure qui est passée en paramètre de la méthode update du Proxy
-     * @param $aFilesToSend
-	 * @return Update
-	 */
-	public function getStructForUpdateSOAP($aFilesToSend)
-	{
-		$clParamUpdate              = new Update();
-
-		$sIDForm                    = $this->m_clStructElem->getID();
-		$clParamUpdate->Table       = $sIDForm;
-		$clParamUpdate->ParamXML    = '<id_'.$sIDForm.'>'.$this->m_nIDEnreg.'</id_'.$sIDForm.'>';
-		$clParamUpdate->UpdateData  = '<xml><id_'.$sIDForm.'>';
-
-		foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
-		{
-            if(array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier et a été modifiée
-            {
-                $clParamUpdate->UpdateData.= $this->_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne]);
-            }
-			else if ($this->isModified($sIDColonne)) // La colonne n'est pas un fichier et a été modifie
-            {
-                if(is_array($sValue))
-                {
-                    $listValue = "";
-                    foreach ($sValue as $key => $value)
-                    {
-                        $listValue .= $value;
-                        $listValue .= '|';
-                    }
-                    $sValue = rtrim($listValue, "|");
-                }
-
-                $clParamUpdate->UpdateData.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
-            }
-		}
-
-        // Ajout du XML pour les fichiers
-        $clParamUpdate->UpdateData.= $this->sFilesXML;
-
-		$clParamUpdate->UpdateData.= '</id_'.$sIDForm.'></xml>';
-
-        // Contenu de $clParamUpdate
-        // Table        -> l'ID du formulaire correspondant à l'enregistrement modifié
-        // ParamXML     -> <idFormulaire> idEnreg </idFormulaire>
-        // Complete     -> null ?
-        // UpdateData   -> Toutes les données pour une mise à jour
-
-		return $clParamUpdate;
-	}
-
-
-
-
     /**
      * retourne la liste des colonnes qui déclenchent un update partiel
      * @return array
@@ -633,6 +578,40 @@ class Record
         return null;
     }
 
+    public function getXMLColonne($aFilesToSend = null, $onlyModified=false)
+    {
+        $sXML = '';
+
+        foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
+        {
+            if(!is_null($aFilesToSend) && array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier et a été modifiée
+            {
+                $sXML.= $this->_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne]);
+            }
+            else if (!$onlyModified || $this->isModified($sIDColonne)) // La colonne n'est pas un fichier et a été modifie
+            {
+                if(is_array($sValue))
+                {
+                    $sValue=implode('|', array_values($sValue));
+                }
+                $sXML.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
+            }
+        }
+
+        return $sXML;
+    }
+
+    public function getUpdateData($aFilesToSend)
+    {
+        $sIDForm                    = $this->m_clStructElem->getID();
+
+        $sUpdateData = "<xml><id_$sIDForm>";
+        $sUpdateData.= $this->getXMLColonne($aFilesToSend, true);
+        $sUpdateData.= $this->sFilesXML;
+        $sUpdateData.= '</id_'.$sIDForm.'></xml>';
+
+        return $sUpdateData;
+    }
 
     /**
      * @param $sIDColonne
