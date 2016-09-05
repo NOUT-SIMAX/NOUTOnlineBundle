@@ -207,6 +207,17 @@ class NOUTClient
 		return $clOptionDialogue;
 	}
 
+    protected function _getUserFromToken(NOUTToken $oToken)
+    {
+        $user = $oToken->getUser();
+        if (is_string($user))
+        {
+            return $user;
+        }
+
+        return $user->getUsername();
+    }
+
 	/**
 	 * retourne une classe qui contient les informations de connexions
 	 *
@@ -215,9 +226,9 @@ class NOUTClient
 	public function getConnectionInfos()
 	{
 		$oToken = $this->_oGetToken();
-		$oUser  = $oToken->getUser();
+        $sUsername = $this->_getUserFromToken($oToken);
 
-		return new ConnectionInfos($oUser->getUsername());
+		return new ConnectionInfos($sUsername);
 	}
 
 
@@ -228,7 +239,7 @@ class NOUTClient
     protected function _oGetUsernameToken(NOUTToken $oToken)
     {
         $oUsernameToken = new UsernameToken(
-            $oToken->getUser()->getUsername(),
+            $this->_getUserFromToken($oToken),
             $oToken->getLoginPassword(), //le mot de passe n'est pas stocké dans le user
             $this->m_clConfigurationDialogue->getModeAuth(),
             $this->m_clConfigurationDialogue->getSecret()
@@ -399,12 +410,10 @@ class NOUTClient
      */
     protected function _oGetInfoIHM()
     {
+        $sUsername = $this->_getUserFromToken($this->_oGetToken());
         if (!is_null($this->m_clCacheIHM))
         {
-            $oToken = $this->_oGetToken();
-            $oUser  =  $oToken->getUser();
-
-            $oInfoIHM = $this->m_clCacheIHM->fetch('info_'.$oUser->getUsername());
+            $oInfoIHM = $this->m_clCacheIHM->fetch('info_'.$sUsername);
             if ($oInfoIHM !== false){
                 return $oInfoIHM; //on a déjà les infos du menu
             }
@@ -418,7 +427,7 @@ class NOUTClient
 
         $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
         $oInfoIHM = $clIHMLoader->oGetInfoIHM();
-        $this->m_clCacheIHM->save('info_'.$oUser->getUsername(), $oInfoIHM);
+        $this->m_clCacheIHM->save('info_'.$sUsername, $oInfoIHM);
 
         return $oInfoIHM;
     }
