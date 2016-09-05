@@ -14,53 +14,53 @@ class ConnectionInfos
 	/**
 	 * @var string
 	 */
-	protected $m_sUsername;
+	protected $m_sUsername = '';
 
 	/**
 	 * @var bool
 	 */
-	protected $m_bExtranet;
+	protected $m_bExtranet = false;
 
-	public function __construct($sUsername)
+
+    /**
+     * @var string
+     */
+    protected $m_sExtranet = '';
+
+	public function __construct($sUsername, $bExtranet, $sExtranet)
 	{
 		$this->m_sUsername = $sUsername;
-		$this->m_bExtranet = false;
+		$this->m_bExtranet = $bExtranet;
+        $this->m_sExtranet = $sExtranet;
 	}
 
-	/**
-	 * @param boolean $bExtranet
-	 */
-	public function setExtranet($bExtranet)
-	{
-		$this->m_bExtranet = $bExtranet;
-		return $this;
-	}
+    /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->m_sUsername;
+    }
 
 	/**
 	 * @return boolean
 	 */
-	public function getExtranet()
+	public function isExtranet()
 	{
 		return $this->m_bExtranet;
 	}
 
-	/**
-	 * @param string $sUsername
-	 */
-	public function setUsername($sUsername)
-	{
-		$this->m_sUsername = $sUsername;
-		return $this;
-	}
+    /**
+     * @return string
+     */
+    public function getExtranet()
+    {
+        return $this->m_sExtranet;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getUsername()
-	{
-		return $this->m_sUsername;
-	}
-
-
+    public function getConnectedUser()
+    {
+        return $this->m_bExtranet ? $this->m_sExtranet : $this->m_sUsername;
+    }
 
 } 

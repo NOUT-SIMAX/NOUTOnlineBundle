@@ -207,17 +207,6 @@ class NOUTClient
 		return $clOptionDialogue;
 	}
 
-    protected function _getUserFromToken(NOUTToken $oToken)
-    {
-        $user = $oToken->getUser();
-        if (is_string($user))
-        {
-            return $user;
-        }
-
-        return $user->getUsername();
-    }
-
 	/**
 	 * retourne une classe qui contient les informations de connexions
 	 *
@@ -226,9 +215,7 @@ class NOUTClient
 	public function getConnectionInfos()
 	{
 		$oToken = $this->_oGetToken();
-        $sUsername = $this->_getUserFromToken($oToken);
-
-		return new ConnectionInfos($sUsername);
+		return new ConnectionInfos($oToken->getLoginSIMAX(), $oToken->isExtranet(), $oToken->getLoginExtranet());
 	}
 
 
@@ -239,8 +226,8 @@ class NOUTClient
     protected function _oGetUsernameToken(NOUTToken $oToken)
     {
         $oUsernameToken = new UsernameToken(
-            $this->_getUserFromToken($oToken),
-            $oToken->getLoginPassword(), //le mot de passe n'est pas stocké dans le user
+            $oToken->getLoginSIMAX(),
+            $oToken->getPasswordSIMAX(), //le mot de passe n'est pas stocké dans le user
             $this->m_clConfigurationDialogue->getModeAuth(),
             $this->m_clConfigurationDialogue->getSecret()
         );
@@ -410,7 +397,7 @@ class NOUTClient
      */
     protected function _oGetInfoIHM()
     {
-        $sUsername = $this->_getUserFromToken($this->_oGetToken());
+        $sUsername = $this->_oGetToken()->getLoginSIMAX();
         if (!is_null($this->m_clCacheIHM))
         {
             $oInfoIHM = $this->m_clCacheIHM->fetch('info_'.$sUsername);
