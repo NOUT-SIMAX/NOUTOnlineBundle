@@ -79,7 +79,7 @@ class NOUTOnlineListener extends UsernamePasswordFormAuthenticationListener
 
 		$clToken = new NOUTToken($username, $password, $this->providerKey);
 		$clToken->setTimeZone($timezone);
-        $clToken->setLoginPassword($password);
+        $clToken->setPasswordSIMAX($password);
 
 		try
 		{

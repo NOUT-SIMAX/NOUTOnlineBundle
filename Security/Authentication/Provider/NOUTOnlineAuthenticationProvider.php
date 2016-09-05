@@ -191,8 +191,8 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
             }
             else
             {
-                $sUser      = $token->getUsername();
-                $sPassword  = $token->getLoginPassword(); //le membre login password contient le mdp mis par l'utilisateur, il est là pour ne pas être vider
+                $sUser      = $token->getLoginSIMAX();
+                $sPassword  = $token->getPasswordSIMAX(); //le membre login password contient le mdp mis par l'utilisateur, il est là pour ne pas être vider
             }
 
 
@@ -201,7 +201,12 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 			$authenticatedToken->setAttributes($token->getAttributes());
 			$authenticatedToken->setSessionToken($sTokenSession);
 			$authenticatedToken->setIP($this->m_clClientInformation->getIP());
-            $authenticatedToken->setLoginPassword($sPassword);
+            $authenticatedToken->setPasswordSIMAX($sPassword);
+            if ($this->m_clConfigExtranet->isExtranet())
+            {
+                $authenticatedToken->setLoginExtranet($username);
+                $authenticatedToken->setExtranet(true);
+            }
 
 			$clIdentification = new Identification();
 
@@ -277,8 +282,8 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 
             else
             {
-                $sUser      = $token->getUser();
-                $sPassword  = $token->getLoginPassword();
+                $sUser      = $token->getLoginSIMAX();
+                $sPassword  = $token->getPasswordSIMAX();
             }
 
 
@@ -295,8 +300,8 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
             if($this->m_clConfigExtranet->isExtranet())
             {
                 $oExtranetUsernameToken = new UsernameToken(
-                    $token->getUser(),
-                    $token->getLoginPassword(),
+                    $token->getLoginSIMAX(),
+                    $token->getPasswordSIMAX(),
                     $this->m_clConfigDialogue->getModeAuth(),
                     $this->m_clConfigDialogue->getSecret());
 

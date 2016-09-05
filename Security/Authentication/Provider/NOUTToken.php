@@ -36,9 +36,21 @@ class NOUTToken extends UsernamePasswordToken
 	protected $m_sIP;
 
     /**
-     * @var string m_sLoginPassword
+     * le mot de passe en clair de l'utilisateur intranet
+     * @var string m_sLoginPasswordSIMAX
      */
-    protected $m_sLoginPassword;
+    protected $m_sPasswordSIMAX;
+
+    /**
+     * @var bool m_bExtranet
+     */
+    protected $m_bExtranet = false;
+
+    /**
+     * le login de l'utilisateur extranet
+     * @var string m_sLoginExtranet
+     */
+    protected $m_sLoginExtranet;
 
 	/**
 	 * {@inheritdoc}
@@ -51,17 +63,63 @@ class NOUTToken extends UsernamePasswordToken
     /**
      * @return string
      */
-    public function getLoginPassword()
+    public function getLoginExtranet()
     {
-        return $this->m_sLoginPassword;
+        return $this->m_sLoginExtranet;
     }
+
+    /**
+     * @param string $sLoginExtranet
+     */
+    public function setLoginExtranet($sLoginExtranet)
+    {
+        $this->m_sLoginExtranet = $sLoginExtranet;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isExtranet()
+    {
+        return $this->m_bExtranet;
+    }
+
+    /**
+     * @param boolean $bExtranet
+     */
+    public function setExtranet($bExtranet)
+    {
+        $this->m_bExtranet = $bExtranet;
+    }
+
+
+
+    /**
+     * @return string
+     */
+    public function getPasswordSIMAX()
+    {
+        return $this->m_sPasswordSIMAX;
+    }
+
+    /**
+     * un alias de getUsername
+     * @return string
+     */
+    public function getLoginSIMAX()
+    {
+        return $this->getUsername();
+    }
+
+
 
     /**
      * @param string $sLoginPassword
      */
-    public function setLoginPassword($sLoginPassword)
+    public function setPasswordSIMAX($sLoginPassword)
     {
-        $this->m_sLoginPassword = $sLoginPassword;
+        $this->m_sPasswordSIMAX = $sLoginPassword;
         return $this;
     }
 
@@ -146,7 +204,9 @@ class NOUTToken extends UsernamePasswordToken
                 $this->m_sIP,
                 $this->m_sSessionToken,
                 $this->m_sTimeZone,
-                $this->m_sLoginPassword,
+                $this->m_sPasswordSIMAX,
+                $this->m_bExtranet,
+                $this->m_sLoginExtranet,
                 is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
                 , parent::serialize()
             )
@@ -159,9 +219,14 @@ class NOUTToken extends UsernamePasswordToken
 	public function unserialize($serialized)
 	{
         $aUnserialised = unserialize($serialized);
-        if (count($aUnserialised)>=6)
+        $nbElem = count($aUnserialised);
+        if ($nbElem>=8)
         {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLoginPassword, $sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet,$sLangage, $parentStr) = $aUnserialised;
+        }
+        elseif ($nbElem>=6)
+        {
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $sLangage, $parentStr) = $aUnserialised;
         }
         else
         {
