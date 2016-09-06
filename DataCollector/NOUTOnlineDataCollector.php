@@ -47,6 +47,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			$this->data['user']          = '';
 			$this->data['superviseur']   = false;
 			$this->data['ip']			 = '';
+            $this->data['extranet']      = false;
 		}
 		else
 		{
@@ -55,6 +56,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			$this->data['time_zone']     = '';
 			$this->data['user']          = $token->getUsername();
 			$this->data['ip']			 = '';
+            $this->data['extranet']      = $token->getLoginExtranet();
 
 			$tabRole = array_map(function ($role)	{ return $role->getRole();}
 				, $token->getRoles());
@@ -106,6 +108,14 @@ class NOUTOnlineDataCollector  extends DataCollector
 	{
 		return $this->data['superviseur'];
 	}
+
+    /**
+     * @return bool
+     */
+    public function getExtranet()
+    {
+        return $this->data['extranet'];
+    }
 
 
 	/**

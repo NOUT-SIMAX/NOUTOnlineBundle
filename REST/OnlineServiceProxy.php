@@ -111,10 +111,10 @@ class OnlineServiceProxy
      */
     private function __sGetUsernameToken(UsernameToken $usernameToken)
     {
-        $sBottom = 'Username='.urlencode($usernameToken->Username);
+        $sBottom = 'Username='.urlencode(utf8_decode($usernameToken->Username));
         $sBottom .= '&Password='.urlencode($usernameToken->Password);
-        $sBottom .= '&nonce='.urlencode($usernameToken->Nonce);
-        $sBottom .= '&created='.urlencode($usernameToken->Created);
+        $sBottom .= '&nonce='.urlencode(utf8_decode($usernameToken->Nonce));
+        $sBottom .= '&created='.urlencode(utf8_decode($usernameToken->Created));
 
         if ($usernameToken->bCrypted())
         {
@@ -156,7 +156,7 @@ class OnlineServiceProxy
 
 			foreach ($aTabParam as $sKey => $sValue)
 			{
-				$sListeParam .= '&'.urlencode($sKey).'='.urlencode($sValue);
+				$sListeParam .= '&'.urlencode(utf8_decode($sKey)).'='.urlencode(utf8_decode($sValue));
 			}
 
 			$sUrl .= trim($sListeParam,  '&');
@@ -169,7 +169,7 @@ class OnlineServiceProxy
 
 			foreach ($aTabOption as $sKey => $sValue)
 			{
-				$sListeOption .= '&'.urlencode($sKey).'='.urlencode($sValue);
+				$sListeOption .= '&'.urlencode(utf8_decode($sKey)).'='.urlencode(utf8_decode($sValue));
 			}
 
 			$sUrl .= ';'.trim($sListeOption,  '&');
