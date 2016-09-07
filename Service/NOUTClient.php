@@ -1537,4 +1537,5 @@ class NOUTClient
     const PARAM_CALLINGCOLUMN     = 'CallingColumn';
     const PARAM_DISPLAYMODE       = 'DisplayMode';
     const PARAM_CHECKSUM          = 'Checksum';
+    const PARAM_CALLINGINFO       = 'CallingInfo';
 }
