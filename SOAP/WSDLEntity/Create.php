@@ -19,5 +19,6 @@ class Create
 	public $ParamXML; // string
 	public $IDMessage; // string
 	public $CallingColumn; // string
+    public $CallingInfo; // CallingInfoType
 }
 //***

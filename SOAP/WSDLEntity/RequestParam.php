@@ -16,7 +16,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 class RequestParam
 {
 	public $Table; // string
-	public $CallingColumn; // string
+    public $CallingColumn; // string
+    public $CallingInfo; // CallingInfoType
 	public $ColList; // ColListType
 	public $CondList; // string
 	public $MaxResult; // integer

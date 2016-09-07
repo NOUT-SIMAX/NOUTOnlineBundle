@@ -19,7 +19,8 @@ class ListParams
 	public $ParamXML; // string
 	/** @var  SpecialParamListType */
 	public $SpecialParamList;
-	public $CallingColumn; // string
+    public $CallingColumn; // string
+    public $CallingInfo; // CallingInfoType
 	public $NoCache; // integer
 	public $Checksum; // integer
 	public $DisplayMode; // DisplayModeParamEnum

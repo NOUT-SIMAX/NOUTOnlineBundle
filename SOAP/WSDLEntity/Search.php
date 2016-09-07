@@ -20,7 +20,8 @@ class Search
 	public $Table; 				// string
 	public $ParamXML; 			// string
 	public $SpecialParamList; 	// SpecialParamListType
-	public $CallingColumn; 		// string
+    public $CallingColumn; // string
+    public $CallingInfo; // CallingInfoType
 	public $Checksum; 			// integer
 	public $DisplayMode; 		// DisplayModeParamEnum
 }

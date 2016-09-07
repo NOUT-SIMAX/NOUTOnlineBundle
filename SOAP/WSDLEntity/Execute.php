@@ -20,7 +20,8 @@ class Execute
 	public $ParamXML; 			// string
 	public $SpecialParamList; 	// SpecialParamListType
 	public $Checksum; 			// integer
-	public $CallingColumn; 		// string
+    public $CallingColumn; // string
+    public $CallingInfo; // CallingInfoType
 	public $DisplayMode; 		// DisplayModeParamEnum
 }
 //***
