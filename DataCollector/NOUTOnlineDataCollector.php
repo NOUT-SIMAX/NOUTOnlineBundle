@@ -39,24 +39,19 @@ class NOUTOnlineDataCollector  extends DataCollector
 			'queries'     => $queries,
 		);
 
-		if (is_null($this->m_clTokenStorage) || is_null($token = $this->m_clTokenStorage->getToken()))
-		{
-			$this->data['authenticated'] = false;
-			$this->data['session_token'] = '';
-			$this->data['time_zone']     = '';
-			$this->data['user']          = '';
-			$this->data['superviseur']   = false;
-			$this->data['ip']			 = '';
-            $this->data['extranet']      = false;
-		}
-		else
+
+        $this->data['authenticated'] = false;
+        $this->data['session_token'] = '';
+        $this->data['time_zone']     = '';
+        $this->data['user']          = '';
+        $this->data['superviseur']   = false;
+        $this->data['ip']			 = '';
+        $this->data['extranet']      = false;
+
+		if (!is_null($this->m_clTokenStorage) && !is_null($token = $this->m_clTokenStorage->getToken()))
 		{
 			$this->data['authenticated'] = $token->isAuthenticated();
-			$this->data['session_token'] = '';
-			$this->data['time_zone']     = '';
-			$this->data['user']          = $token->getUsername();
-			$this->data['ip']			 = '';
-            $this->data['extranet']      = $token->getLoginExtranet();
+            $this->data['user']          = $token->getUsername();
 
 			$tabRole = array_map(function ($role)	{ return $role->getRole();}
 				, $token->getRoles());
@@ -64,6 +59,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 
 			if ($token instanceof NOUTToken)
 			{
+                $this->data['extranet']      = $token->getLoginExtranet();
 				$this->data['session_token'] = $token->getSessionToken();
 				$this->data['time_zone']     = $token->getTimeZone();
 				$this->data['ip']            = $token->getIP();
