@@ -481,7 +481,16 @@ class Record
      */
     public function getLinkedColumns()
     {
-        return $this->m_clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link);
+        return $this->m_clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link) ;
+    }
+
+    /**
+     * retourne la liste des colonnes qui correspondent à une option
+     * @return array
+     */
+    public function getTabColonneAvecOption($option)
+    {
+        return $this->m_clStructElem->getTabColonneAvecOption($option) ;
     }
 
     /**
@@ -532,6 +541,11 @@ class Record
             $this->setValCol($idcolonne, $value);
         }
 
+        //il faut mettre à jour l'etat des champs
+        foreach($clRecordSrc->m_TabColumnsInfo as $idcolonne=>$clInfo)
+        {
+            $this->m_TabColumnsInfo[$idcolonne]=$clInfo;
+        }
         return $this;
     }
 
