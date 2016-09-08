@@ -275,6 +275,14 @@ class Record
         return $this->m_TabOptionsLayout;
     }
 
+    /**
+     * @return array|InfoColonne[]
+     */
+    public function aGetTabColumnsInfo()
+    {
+        return $this->m_TabColumnsInfo;
+    }
+
 	/**
 	 * @param InfoColonne $clInfoColonne
 	 * @return $this
