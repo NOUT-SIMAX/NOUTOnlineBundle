@@ -526,6 +526,9 @@ abstract class StructureColonne
 	// Attributs pour liste deroulante
 	const OPTION_AttributID = "id";
 
+	// Attributs pour les fichiers
+	const OPTION_Mime_Type				= "typeMime";
+
 	// Attributs liés au modele
 	const OPTION_Modele_PhoneNumber		= "phoneNumber";
 	const OPTION_Modele_CreditCard    	= "creditCard";
