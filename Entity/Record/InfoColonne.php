@@ -42,8 +42,8 @@ class InfoColonne
         {
             switch($sAttribName)
             {
-            case self::OPTION_BgColor:
-            case self::OPTION_Color:
+            case Record::OPTION_BGColor:
+            case Record::OPTION_Color:
                 $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
                 break;
 
@@ -86,14 +86,5 @@ class InfoColonne
     {
         return $this->m_TabOptions;
     }
-
-
-    const OPTION_Bold       = 'bold';
-    const OPTION_Italic     = 'italic';
-    const OPTION_Color      = 'color';
-    const OPTION_BgColor    = 'bgcolor';
-
-    const OPTION_Hidden     = 'hidden';
-    const OPTION_ReadOnly   = 'readOnly';
 
 }
