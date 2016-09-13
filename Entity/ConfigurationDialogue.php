@@ -82,15 +82,18 @@ class ConfigurationDialogue
         $sSecret=''
     )
 	{
+        $this->m_sAPIUUID     = trim($sAPIUUID);
 		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
+        if (!empty($this->m_sAPIUUID)){
+            $this->m_sWSDLUri.='!&APIUUID='.urlencode($this->m_sAPIUUID);
+        }
 		$this->m_bWsdl          = true;
 		$this->m_sHost          = $sHost;
 		$this->m_nPort          = $sPort;
 		$this->m_sProtocolPrefix = $sProtocolPrefix;
 
 		$this->m_nLangCode    = 12;
-		$this->m_sAPIUUID     = $sAPIUUID;
 		$this->m_nDureeSession = 3600;
 
 		$this->m_sVersion=$sVersion;
