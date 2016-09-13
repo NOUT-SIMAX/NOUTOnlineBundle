@@ -1742,4 +1742,11 @@ class Langage
     const SMC_Horizontal = 1; //dans le paramétrage SIMAX 16308
     const SMC_Vertical = 2; //dans le paramétrage SIMAX 16307
 
+
+    const ICONCENTRAL_TitreImgHelp  = 1;
+    const ICONCENTRAL_ImgTitreHelp  = 2;
+    const ICONCENTRAL_OverlayTop    = 3;
+    const ICONCENTRAL_OverlayMiddle = 4;
+    const ICONCENTRAL_OverlayBottom = 5;
+
 }
