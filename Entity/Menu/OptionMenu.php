@@ -13,6 +13,8 @@
 
 namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+
 class OptionMenu
 {
 	protected $m_sIDOptionMenu;
@@ -62,6 +64,27 @@ class OptionMenu
 	 */
 	protected $m_bEstMenu;
 
+
+    /**
+     * @var string
+     */
+    protected $m_eTypePresentation;
+
+    /**
+     * @var string
+     */
+    protected $m_sAide;
+
+    /**
+     * @var int
+     */
+    protected $m_nWidth;
+
+    /**
+     * @var int
+     */
+    protected $m_nHeight;
+
 	/**
 	 * @param $sIDOptionMenu
 	 * @param $sLibelle
@@ -73,6 +96,8 @@ class OptionMenu
 		$this->m_sLibelle = str_replace('&&', '&', $sLibelle);
 		$this->m_sIDMenuParent = $sIDMenu;
 		$this->m_bEstMenu = is_null($bEstMenu) ? false : $bEstMenu;
+        $this->m_eTypePresentation = Langage::ICONCENTRAL_OverlayTop;
+        $this->m_sAide = $this->m_sLibelle;
 	}
 
 
@@ -288,6 +313,97 @@ class OptionMenu
 
 		return $this->m_sLibelle;
 	}
+
+    /**
+     * @return string
+     */
+    public function getTypePresentation()
+    {
+        return $this->m_eTypePresentation;
+    }
+
+    /**
+     * @param string $eTypePresentation
+     */
+    public function setTypePresentation($eTypePresentation)
+    {
+        $this->m_eTypePresentation = $eTypePresentation;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAide()
+    {
+        return $this->m_sAide;
+    }
+
+    /**
+     * @param string $sAide
+     */
+    public function setAide($sAide)
+    {
+        $this->m_sAide = $sAide;
+        return $this;
+    }
+
+    public function isOverlay()
+    {
+        return  ($this->m_eTypePresentation==Langage::ICONCENTRAL_OverlayBottom)
+            ||  ($this->m_eTypePresentation==Langage::ICONCENTRAL_OverlayTop)
+            ||  ($this->m_eTypePresentation==Langage::ICONCENTRAL_OverlayMiddle);
+    }
+
+    public function isTop()
+    {
+        return  ($this->m_eTypePresentation==Langage::ICONCENTRAL_TitreImgHelp)
+                ||  ($this->m_eTypePresentation==Langage::ICONCENTRAL_OverlayTop);
+    }
+
+    public function isMiddle()
+    {
+        return  ($this->m_eTypePresentation==Langage::ICONCENTRAL_OverlayMiddle);
+    }
+
+    public function isBottom()
+    {
+        return  ($this->m_eTypePresentation==Langage::ICONCENTRAL_OverlayBottom);
+    }
+
+    /**
+     * @return int
+     */
+    public function getWidth()
+    {
+        return $this->m_nWidth;
+    }
+
+    /**
+     * @param int $nWidth
+     */
+    public function setWidth($nWidth)
+    {
+        $this->m_nWidth = $nWidth;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHeight()
+    {
+        return $this->m_nHeight;
+    }
+
+    /**
+     * @param int $nHeight
+     */
+    public function setHeight($nHeight)
+    {
+        $this->m_nHeight = $nHeight;
+        return $this;
+    }
 
 
 
