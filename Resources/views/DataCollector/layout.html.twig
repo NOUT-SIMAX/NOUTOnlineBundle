@@ -36,16 +36,20 @@
 		{% if collector.authenticated %}
 			<div class="sf-toolbar-info-piece">
 				<b>Client IP</b>
-				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.ip }}</span>
+				<span>{{ collector.ip }}</span>
 			</div>
 			<div class="sf-toolbar-info-piece">
 				<b>Token session</b>
-				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.sessiontoken }}</span>
+				<span>{{ collector.sessiontoken }}</span>
 			</div>
 			<div class="sf-toolbar-info-piece">
 				<b>Time zone</b>
-				<span class="sf-toolbar-status sf-toolbar-status-{{ color_code }}">{{ collector.timezone }}</span>
+				<span>{{ collector.timezone }}</span>
 			</div>
+            <div class="sf-toolbar-info-piece">
+                <b>Version</b>
+                <span>{{ collector.version }}</span>
+            </div>
 			<div class="sf-toolbar-info-piece">
 				<b>Logged in as</b>
                 {% set class_plus = '' %}
@@ -56,7 +60,7 @@
 		{# informations sur les requetes #}
 		<div class="sf-toolbar-info-piece">
 			<b>Queries</b>
-			<span>{{ collector.querycount }}</span>
+			<span class="sf-toolbar-status">{{ collector.querycount }}</span>
 		</div>
 		<div class="sf-toolbar-info-piece">
 			<b>Query time</b>
@@ -104,6 +108,10 @@
 	<h2>Session</h2>
 	{% if collector.authenticated %}
 		<table>
+            <tr>
+                <th>Version</th>
+                <td>{{ collector.version }}</td>
+            </tr>
 			<tr>
 				<th>Username</th>
 				<td>{{ collector.user }}</td>
@@ -112,15 +120,24 @@
 				<th>Superviseur</th>
 				<td>{% if collector.superviseur %} yes {% else %} no {% endif %}</td>
 			</tr>
+            {% if collector.extranet %}
+                <tr>
+                    <th>Extranet User</th>
+                    <td>collector.extranet</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>Time zone</th>
+                <td>{{ collector.timezone }}</td>
+            </tr>
 			<tr>
 				<th>Token session</th>
 				<td>{{ collector.sessiontoken }}</td>
 			</tr>
-			<tr>
-				<th>Time zone</th>
-				<td>{{ collector.timezone }}</td>
-			</tr>
-
+            <tr>
+                <th>Client IP</th>
+                <td>{{ collector.ip }}</td>
+            </tr>
 		</table>
 	{% endif %}
 

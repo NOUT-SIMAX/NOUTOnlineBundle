@@ -46,6 +46,7 @@ class NOUTOnlineDataCollector  extends DataCollector
         $this->data['user']          = '';
         $this->data['superviseur']   = false;
         $this->data['ip']			 = '';
+        $this->data['version']		 = '';
         $this->data['extranet']      = false;
 
 		if (!is_null($this->m_clTokenStorage) && !is_null($token = $this->m_clTokenStorage->getToken()))
@@ -63,6 +64,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 				$this->data['session_token'] = $token->getSessionToken();
 				$this->data['time_zone']     = $token->getTimeZone();
 				$this->data['ip']            = $token->getIP();
+                $this->data['version']       = $token->getVersionNO();
 			}
 		}
 	}
@@ -111,6 +113,14 @@ class NOUTOnlineDataCollector  extends DataCollector
     public function getExtranet()
     {
         return $this->data['extranet'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function getVersion()
+    {
+        return $this->data['version'];
     }
 
 
