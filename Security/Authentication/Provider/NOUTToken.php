@@ -217,6 +217,35 @@ class NOUTToken extends UsernamePasswordToken
         return $this;
     }
 
+    /**
+     * vrai si la version courante est supérieur (ou égal suivant $bInclu)
+     * @param      $sVersionMin
+     * @param bool $bInclu
+     */
+    public function isVersionSup($sVersionMin, $bInclu = true)
+    {
+        if (empty($this->m_sVersionNO)){
+            return false;
+        }
+        $aVersionCur = array_slice(explode('.', $this->m_sVersionNO), -2);
+        $aVersionMin = array_slice(explode('.', $sVersionMin), -2);
+
+        if ((int)$aVersionCur[0]>(int)$aVersionMin[0]){
+            return true;
+        }
+        if ((int)$aVersionCur[0]<(int)$aVersionMin[0]){
+            return false;
+        }
+
+        if ((int)$aVersionCur[1]>(int)$aVersionMin[1]){
+            return true;
+        }
+        if ((int)$aVersionCur[1]<(int)$aVersionMin[1]){
+            return false;
+        }
+        return $bInclu;
+    }
+
 
 
 	/**
