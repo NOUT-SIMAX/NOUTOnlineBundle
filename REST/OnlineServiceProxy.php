@@ -401,6 +401,39 @@ class OnlineServiceProxy
 		return $this->_sExecute('GetVersion', $sURI, '')->content;
 	}
 
+    /**
+     * récupère le menu
+     * @return string
+     */
+    public function sGetMenu(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest('GetMenu', array(), array(), $clIdentification);
+
+        return $this->_sExecute('GetMenu', $sURI, '')->content;
+    }
+
+    /**
+     * récupère la barre de menu
+     * @return string
+     */
+    public function sGetToolbar(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest('GetToolbar', array(), array(), $clIdentification);
+
+        return $this->_sExecute('GetToolbar', $sURI, '')->content;
+    }
+
+    /**
+     * récupère les icones centraux
+     * @return string
+     */
+    public function sGetCentralIcon(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest('GetCentralIcon', array(), array(), $clIdentification);
+
+        return $this->_sExecute('GetCentralIcon', $sURI, '')->content;
+    }
+
 	/**
 	 * récupère la version du langage
 	 * @param Identification $clIdentification

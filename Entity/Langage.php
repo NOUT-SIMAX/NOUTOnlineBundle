@@ -1399,6 +1399,9 @@ class Langage
 	const COL_OPTIONMENUPOURTOUS_IDIcone       = 11586;
 	const COL_OPTIONMENUPOURTOUS_Ordre         = 11587;
 	const COL_OPTIONMENUPOURTOUS_Commande      = 11583;
+    const COL_OPTIONMENUPOURTOUS_HomeImg       = 17547;
+    const COL_OPTIONMENUPOURTOUS_HomeDesc      = 17548;
+    const COL_OPTIONMENUPOURTOUS_HomeTitle     = 17550;
 
 
 
