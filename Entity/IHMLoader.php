@@ -11,6 +11,7 @@
 namespace NOUT\Bundle\ContextsBundle\Entity;
 
 
+use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\Menu;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\OptionMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
@@ -90,7 +91,9 @@ class IHMLoader
         {
             $clMenu = $this->_aGetMenu($oInfoIHM, $sIDMenu, true);
             if (is_null($clMenu))
+            {
                 continue;
+            }
 
             $oInfoIHM->aMenu[]=$clMenu;
         }
@@ -110,10 +113,15 @@ class IHMLoader
 
         $sIDMenuPere = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_IDMenuParent);
         if ($bUniquementRacine && !empty($sIDMenuPere))
-            return null; //on prend que les menus qui n'ont pas de père
+        {
+            //on prend que les menus qui n'ont pas de père
+            return null;
+        }
 
         //on construit un menu
-        $clMenu = new Menu($sIDMenu, $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle), $sIDMenuPere);
+        $clMenu = new ItemMenu($sIDMenu, $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle), false);
+        $clMenu->setIdMenuParent($sIDMenuPere);
+        $clMenu->setRootMenu(empty($sIDMenuPere));
 
         $ValOptionMenu = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_OptionsMenu);
         foreach($ValOptionMenu as $sIDOptionMenu)
@@ -133,28 +141,34 @@ class IHMLoader
 
             $clRecordOption = $this->m_clParserOption->getRecordFromID(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
 
-            $clOptionMenu = new OptionMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent));
-            $clOptionMenu->setIDAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction));
-            $clOptionMenu->setCommande($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande));
+            $clOptionMenu = new ItemMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), true);
+            $clOptionMenu
+                ->setIdMenuParent($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent))
+                ->setIdAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction))
+                ->setCommand($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande))
+            ;
+
 
             $sIDIcon = $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDIcone);
             if (!empty($sIDIcon))
             {
-                $clOptionMenu->setIDIcone($sIDIcon);
-                $clOptionMenu->setBigIcon(in_array($sIDIcon, $this->m_aTabIDEnregBigIcon));
-                $clOptionMenu->setSmallIcon(in_array($sIDIcon, $this->m_aTabIDEnregSmallIcon));
+                $sBigIcon = in_array($sIDIcon, $this->m_aTabIDEnregBigIcon) ? $sIDIcon : '';
+                $sSmallIcon = in_array($sIDIcon, $this->m_aTabIDEnregSmallIcon) ? $sIDIcon : '';
+
+                $clOptionMenu->setIconBig($sBigIcon);
+                $clOptionMenu->setIconSmall($sSmallIcon);
             }
 
-            if (!$clMenu->bLastOptionIsSeparateur() || !$clOptionMenu->bEstSeparateur())
+            if (!$clMenu->bLastOptionIsSeparateur() || !$clOptionMenu->isSeparator())
             {
                 $clMenu->AddOptionMenu($clOptionMenu);
 
                 //c'est une grosse icone
-                if ($clOptionMenu->isBigIcon()){
+                if (!empty($sBigIcon)){
                     $oInfoIHM->aBigIcon[]=$clOptionMenu;
                 }
 
-                if ($clOptionMenu->isSmallIcon()){
+                if (!empty($sSmallIcon)){
                     $oInfoIHM->aToolbar[]=$clOptionMenu;
                 }
             }

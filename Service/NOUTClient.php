@@ -12,6 +12,7 @@ use NOUT\Bundle\ContextsBundle\Entity\ActionResult;
 use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
+use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -419,23 +420,110 @@ class NOUTClient
         return $oInfoIHM;
     }
 
+    /**
+     * récupère les infos du menu
+     */
+    protected function __oGetIHMPart($method, $prefix)
+    {
+        $sUsername = $this->_oGetToken()->getLoginSIMAX();
+        if (!is_null($this->m_clCacheIHM))
+        {
+            $aTabMenu = $this->m_clCacheIHM->fetch("info_{$prefix}_{$sUsername}");
+            if ($aTabMenu !== false){
+                return $aTabMenu; //on a déjà les infos du menu
+            }
+        }
 
-	/**
-	 * retourne un tableau d'option de menu
-	 * @return ActionResult
-	 */
-	public function getTabMenu()
-	{
-        $oInfoMenu = $this->_oGetInfoIHM();
+        $clIdentification = $this->_clGetIdentificationREST('', false);
 
-		$clActionResult = new ActionResult(null);
-		$clActionResult->setData($oInfoMenu->aMenu);
+        $aInfo = array();
+        //on a pas les infos, il faut les calculer
+        $json = json_decode( $this->m_clRESTProxy->$method($clIdentification));
+        if (is_array($json) && (count($json)>0))
+        {
+            foreach($json as $objet)
+            {
+                $itemMenu = $this->__oGetItemMenu($objet);
+                $aInfo[]=$itemMenu;
+            }
+        }
 
-		//le menu dépend de l'utilisateur, c'est un cache privé
-		$clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+        $this->m_clCacheIHM->save("info_{$prefix}_{$sUsername}", $aInfo);
+        return $aInfo;
+    }
 
-		return $clActionResult;
-	}
+    /**
+     * récupère les infos du menu
+     * @param \stdClass $objSrc
+     * @return ItemMenu
+     */
+    protected function __oGetItemMenu($objSrc)
+    {
+        $itemMenu = new ItemMenu($objSrc->id, $objSrc->title, $objSrc->is_menu_option);
+        $itemMenu
+            ->setSeparator($objSrc->is_separator)
+            ->setRootMenu($objSrc->is_root)
+            ->setIdAction($objSrc->idaction)
+            ->setCommand($objSrc->command)
+
+            ->setIconBig($objSrc->icon_big)
+            ->setIconSmall($objSrc->icon_small)
+
+            ->setHomeWithImg($objSrc->home_withimg)
+            ->setHomeDesc($objSrc->home_desc)
+            ->setHomeTitle($objSrc->home_title)
+
+            ->setHomeWidth($objSrc->home_width)
+            ->setHomeHeight($objSrc->home_height)
+        ;
+
+        if (count($objSrc->tab_options)>0)
+        {
+            foreach($objSrc->tab_options as $objChild)
+            {
+                $childMenu = $this->__oGetItemMenu($objChild);
+                $itemMenu->AddOptionMenu($childMenu);
+            }
+        }
+
+        return $itemMenu;
+    }
+
+    /**
+     * @param $member_name
+     * @param $method_name
+     * @param $prefix
+     * @return ActionResult
+     */
+    protected function _oGetIHMPart($member_name, $method_name, $prefix)
+    {
+        $clActionResult = new ActionResult(null);
+        if (!$this->_oGetToken()->isVersionSup('1637.01'))
+        {
+            //l'ancien système
+            $oInfoMenu = $this->_oGetInfoIHM();
+            $clActionResult->setData($oInfoMenu->$member_name);
+        }
+        else
+        {
+            $tabMenu = $this->__oGetIHMPart($method_name, $prefix);
+            $clActionResult->setData($tabMenu);
+        }
+
+        //le menu dépend de l'utilisateur, c'est un cache privé
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+        return $clActionResult;
+
+    }
+
+    /**
+     * retourne un tableau d'option de menu
+     * @return ActionResult
+     */
+    public function getTabMenu()
+    {
+        return $this->_oGetIHMPart('aMenu','sGetMenu', 'menu');
+    }
 
     /**
      * retourne un tableau d'option de menu
@@ -443,15 +531,7 @@ class NOUTClient
      */
     public function getCentralIcon()
     {
-        $oInfoMenu = $this->_oGetInfoIHM();
-
-        $clActionResult = new ActionResult(null);
-        $clActionResult->setData($oInfoMenu->aBigIcon);
-
-        //le menu dépend de l'utilisateur, c'est un cache privé
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
-
-        return $clActionResult;
+        return $this->_oGetIHMPart('aBigIcon','sGetCentralIcon', 'home');
     }
 
     /**
@@ -460,15 +540,7 @@ class NOUTClient
      */
     public function getToolbar()
     {
-        $oInfoMenu = $this->_oGetInfoIHM();
-
-        $clActionResult = new ActionResult(null);
-        $clActionResult->setData($oInfoMenu->aToolbar);
-
-        //le menu dépend de l'utilisateur, c'est un cache privé
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
-
-        return $clActionResult;
+        return $this->_oGetIHMPart('aToolbar','sGetToolbar', 'toolbar');
     }
 
 	/**
@@ -1200,8 +1272,25 @@ class NOUTClient
      */
     public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon=true)
     {
-		//le retour c'est le chemin de fichier enregistré dans le cache
-        $sFichier = $this->_getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon);
+        $sIDColonne = $bSmallIcon ? Langage::COL_IMAGECATALOGUE_Image : Langage::COL_IMAGECATALOGUE_ImageGrande;
+        return $this->getImage(Langage::TABL_ImageCatalogue, $sIDColonne, $sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
+    }
+
+    /**
+     * récupère une icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+     * @param $sIDIcon
+     * @param $sMimeType
+     * @param $sTransColor
+     * @param $nWidth
+     * @param $nHeight
+     * @param $sIDColonne
+     * @param $sIDFormulaire
+     * @return ActionResult
+     */
+    public function getImage($sIDFormulaire, $sIDColonne, $sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
+    {
+        //le retour c'est le chemin de fichier enregistré dans le cache
+        $sFichier = $this->_getImage($sIDFormulaire, $sIDColonne, $sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($sFichier);
@@ -1213,18 +1302,18 @@ class NOUTClient
         return $clActionResult;
     }
 
-
     /**
      * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
-     * @param $sIDIcon
+     * @param $sIDFormulaire
+     * @param $sIDEnreg
      * @param $sMimeType
      * @param $sTransColor
      * @param $nWidth
      * @param $nHeight
-     * @param $bSmallIcon
+     * @param $sIDColonne
      * @return string
      */
-    protected function _getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon)
+    protected function _getImage($sIDFormulaire, $sIDColonne, $sIDEnreg, $sMimeType, $sTransColor, $nWidth, $nHeight)
     {
         $clIdentification = $this->_clGetIdentificationREST('', true);
 
@@ -1253,10 +1342,10 @@ class NOUTClient
         //on veut le contenu
         $aTabOption[RESTProxy::OPTION_WantContent] = 1;
         //quelle image on veut ?
-        $aTabOption[RESTProxy::OPTION_IDCol] = $bSmallIcon ? Langage::COL_IMAGECATALOGUE_Image : Langage::COL_IMAGECATALOGUE_ImageGrande;
+        $aTabOption[RESTProxy::OPTION_IDCol] = $sIDColonne;
 
         //on regarde si le fichier existe
-        $sFile = $this->_sGetNomFichierCacheIHM(Langage::TABL_ImageCatalogue, $sIDIcon, $aTabOption);
+        $sFile = $this->_sGetNomFichierCacheIHM($sIDFormulaire, $sIDEnreg, $aTabOption);
 
         if (file_exists($sFile)) //Si le fichier est déjà dans le cache
         {
@@ -1266,8 +1355,8 @@ class NOUTClient
         {
             // On essaye de récupérer l'image grande
             $oRet = $this->m_clRESTProxy->sGetColInRecord(
-                Langage::TABL_ImageCatalogue,
-                $sIDIcon,
+                $sIDFormulaire,
+                $sIDEnreg,
                 $aTabOption[RESTProxy::OPTION_IDCol],
                 array(),
                 $aTabOption,
