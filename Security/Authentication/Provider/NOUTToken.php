@@ -52,6 +52,12 @@ class NOUTToken extends UsernamePasswordToken
      */
     protected $m_sLoginExtranet;
 
+    /**
+     * version du noutonline
+     * @var string m_sVersionNO
+     */
+    protected $m_sVersionNO;
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -194,6 +200,25 @@ class NOUTToken extends UsernamePasswordToken
 		return $this;
 	}
 
+    /**
+     * @return string
+     */
+    public function getVersionNO()
+    {
+        return $this->m_sVersionNO;
+    }
+
+    /**
+     * @param string $sVersionNO
+     */
+    public function setVersionNO($sVersionNO)
+    {
+        $this->m_sVersionNO = $sVersionNO;
+        return $this;
+    }
+
+
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -207,6 +232,7 @@ class NOUTToken extends UsernamePasswordToken
                 $this->m_sPasswordSIMAX,
                 $this->m_bExtranet,
                 $this->m_sLoginExtranet,
+                $this->m_sVersionNO,
                 is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
                 , parent::serialize()
             )
@@ -220,9 +246,13 @@ class NOUTToken extends UsernamePasswordToken
 	{
         $aUnserialised = unserialize($serialized);
         $nbElem = count($aUnserialised);
-        if ($nbElem>=8)
+        if ($nbElem>=9)
         {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet,$sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $this->m_sVersionNO, $sLangage, $parentStr) = $aUnserialised;
+        }
+        elseif ($nbElem>=8)
+        {
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $sLangage, $parentStr) = $aUnserialised;
         }
         elseif ($nbElem>=6)
         {

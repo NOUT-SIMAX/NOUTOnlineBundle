@@ -221,12 +221,15 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 			$clIdentification->m_sIDContexteAction = '';
 			$clIdentification->m_bAPIUser = true;
 
+
 			$sVersionLangage = $this->m_clRESTProxy->sGetChecksumLangage($clIdentification);
 			$clIdentification->m_clUsernameToken->ComputeCryptedPassword(); //recalcule le mot de passe crypté
 			$sVersionIcone = $this->m_clRESTProxy->sGetChecksum(Langage::TABL_ImageCatalogue, $clIdentification);
 
 			$authenticatedToken->setLangage(new Langage($sVersionLangage, $sVersionIcone));
 
+            $sVersionNO = $this->m_clRESTProxy->sGetVersion();
+            $authenticatedToken->setVersionNO($sVersionNO);
 
 			return $authenticatedToken;
 		}
