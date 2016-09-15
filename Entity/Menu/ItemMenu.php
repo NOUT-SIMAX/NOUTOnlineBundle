@@ -88,7 +88,7 @@ class ItemMenu
     /**
      * @var int
      */
-    public $homeTypeDisplay = Langage::ICONCENTRAL_OverlayTop;
+    public $homeTypeDisplay = null;
 
     /**
      * @var string
