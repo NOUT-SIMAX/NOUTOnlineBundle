@@ -498,7 +498,7 @@ class NOUTClient
     protected function _oGetIHMPart($member_name, $method_name, $prefix)
     {
         $clActionResult = new ActionResult(null);
-        if (!$this->_oGetToken()->isVersionSup('1637.01'))
+        if (!$this->_oGetToken()->isVersionSup('1637.02'))
         {
             //l'ancien système
             $oInfoMenu = $this->_oGetInfoIHM();
