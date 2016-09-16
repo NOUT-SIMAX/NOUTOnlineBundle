@@ -24,7 +24,8 @@ class ItemMenu
     protected $idMenuParent;
 
     /**
-     * @var identifiant de l'option de menu
+     * identifiant de l'option de menu
+     * @var string $idOptionMenu
      */
 	protected $idOptionMenu;
 
@@ -120,7 +121,7 @@ class ItemMenu
 	/**
 	 * @param $sIDOptionMenu
 	 * @param $sLibelle
-	 * @param $sIDMenu
+	 * @param $bEstOptionMenu
 	 */
 	public function __construct($sIDOptionMenu, $sLibelle, $bEstOptionMenu)
 	{
@@ -139,6 +140,7 @@ class ItemMenu
 
     /**
      * @param string $idMenuParent
+     * @return $this
      */
     public function setIdMenuParent($idMenuParent)
     {
@@ -147,7 +149,7 @@ class ItemMenu
     }
 
     /**
-     * @return identifiant
+     * @return string
      */
     public function getIdOptionMenu()
     {
@@ -155,7 +157,8 @@ class ItemMenu
     }
 
     /**
-     * @param identifiant $idOptionMenu
+     * @param string $idOptionMenu
+     * @return $this
      */
     public function setIdOptionMenu($idOptionMenu)
     {
@@ -173,6 +176,7 @@ class ItemMenu
 
     /**
      * @param boolean $rootMenu
+     * @return $this
      */
     public function setRootMenu($rootMenu)
     {
@@ -190,6 +194,7 @@ class ItemMenu
 
     /**
      * @param boolean $optionMenu
+     * @return $this
      */
     public function setOptionMenu($optionMenu)
     {
@@ -207,6 +212,7 @@ class ItemMenu
 
     /**
      * @param boolean $separator
+     * @return $this
      */
     public function setSeparator($separator)
     {
@@ -224,6 +230,7 @@ class ItemMenu
 
     /**
      * @param string $title
+     * @return $this
      */
     public function setTitle($title)
     {
@@ -241,6 +248,7 @@ class ItemMenu
 
     /**
      * @param string $idAction
+     * @return $this
      */
     public function setIdAction($idAction)
     {
@@ -258,6 +266,7 @@ class ItemMenu
 
     /**
      * @param string $command
+     * @return $this
      */
     public function setCommand($command)
     {
@@ -275,6 +284,7 @@ class ItemMenu
 
     /**
      * @param string $iconSmall
+     * @return $this
      */
     public function setIconSmall($iconSmall)
     {
@@ -292,6 +302,7 @@ class ItemMenu
 
     /**
      * @param string $iconBig
+     * @return $this
      */
     public function setIconBig($iconBig)
     {
@@ -309,6 +320,7 @@ class ItemMenu
 
     /**
      * @param array $tabOptions
+     * @return $this
      */
     public function setTabOptions($tabOptions)
     {
@@ -326,6 +338,7 @@ class ItemMenu
 
     /**
      * @param int $homeTypeDisplay
+     * @return $this
      */
     public function setHomeTypeDisplay($homeTypeDisplay)
     {
@@ -343,6 +356,7 @@ class ItemMenu
 
     /**
      * @param string $homeTitle
+     * @return $this
      */
     public function setHomeTitle($homeTitle)
     {
@@ -360,6 +374,7 @@ class ItemMenu
 
     /**
      * @param string $homeDesc
+     * @return $this
      */
     public function setHomeDesc($homeDesc)
     {
@@ -377,6 +392,7 @@ class ItemMenu
 
     /**
      * @param boolean $homeWithImg
+     * @return $this
      */
     public function setHomeWithImg($homeWithImg)
     {
@@ -394,6 +410,7 @@ class ItemMenu
 
     /**
      * @param int $homeWidth
+     * @return $this
      */
     public function setHomeWidth($homeWidth)
     {
@@ -411,6 +428,7 @@ class ItemMenu
 
     /**
      * @param int $homeHeight
+     * @return $this
      */
     public function setHomeHeight($homeHeight)
     {
@@ -463,6 +481,9 @@ class ItemMenu
      * Autres méthodes
      ***************************************/
 
+    /**
+     * @return bool
+     */
     public function isWithSmallIcon()
     {
         return !empty($this->iconSmall) && ($this->iconSmall != '0');
@@ -570,19 +591,6 @@ class ItemMenu
         return $this;
     }
 
-
-    /**
-     * @return bool
-     */
-    public function bOptionsWithIcon()
-    {
-        foreach($this->tabOptions as $clOption)
-        {
-            if (!$clOption->bAvecIcon())
-                return true;
-        }
-        return false;
-    }
 
     public function TrimSeparateur()
     {
