@@ -57,32 +57,32 @@ class ItemMenu
 	 * identifiant de l'action à lancer
 	 * @var string
 	 */
-	protected $idAction = null;
+	public $idAction = null;
 
 	/**
 	 * commande de l'action
 	 * @var string
 	 */
-	protected $command = null;
+    public $command = null;
 
     /**
      * id de l'icone
      * @var string
      */
-    protected $iconSmall = null;
+    public $iconSmall = '';
 
     /**
      * id de l'icone
      * @var string
      */
-    protected $iconBig = null;
+    public $iconBig = '';
 
 
     /**
      * tableau des options de menu
      * @var array
      */
-    protected $tabOptions = array();
+    public $tabOptions = array();
 
     /*******************************************************************/
     /* LA PAGE D'ACCUEIL */
@@ -94,12 +94,12 @@ class ItemMenu
     /**
      * @var string
      */
-    protected $homeTitle;
+    public $homeTitle;
 
     /**
      * @var string
      */
-    protected $homeDesc;
+    public $homeDesc;
 
     /**
      * @var bool
@@ -486,6 +486,16 @@ class ItemMenu
      */
     public function isWithSmallIcon()
     {
+        if (empty($this->iconSmall)){
+            return false;
+        }
+
+        if ($this->iconSmall == '0'){
+            return false;
+        }
+
+        return true;
+
         return !empty($this->iconSmall) && ($this->iconSmall != '0');
     }
 

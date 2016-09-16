@@ -158,6 +158,12 @@ class IHMLoader
                 $clOptionMenu->setIconBig($sBigIcon);
                 $clOptionMenu->setIconSmall($sSmallIcon);
             }
+            else
+            {
+                $sBigIcon='';
+                $sSmallIcon='';
+            }
+            $clOptionMenu->FinInit();
 
             if (!$clMenu->bLastOptionIsSeparateur() || !$clOptionMenu->isSeparator())
             {
