@@ -488,6 +488,11 @@ class ItemMenu
     {
         return !empty($this->iconSmall) && ($this->iconSmall != '0');
     }
+
+    public function isWithBigIcon()
+    {
+        return !empty($this->iconBig) && ($this->iconBig != '0');
+    }
     /**
      * @param ItemMenu $oOption
      * @return $this
