@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\ContextsBundle\Entity;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
@@ -80,7 +81,7 @@ class ActionResult
 		$this->m_Data               = null;
 		$this->m_clCache            = new ActionResultCache();
 		$this->m_clValidateError    = null;
-        $this->m_sTypeAction        = CurrentAction::ETYPEACTION_NONE;
+        $this->m_sTypeAction        = Langage::eTYPEACTION_Unknown;
         $this->m_oElement           = new \stdClass();
 
         $this->m_oElement->id = '';
