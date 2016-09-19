@@ -80,7 +80,7 @@ class DefaultController extends Controller
 		if (empty($sNameSpace))
 			$sNameSpace='NOUTSessionManagerBundle';
 
-		$sTheme = $this->container->getParameter('nout_web_site.theme');
+		$sTheme = $this->container->getParameter('nout_web.theme');
 		$sTemplate = "$sNameSpace:$sTheme:$sFile.html.twig";
 
 		if ( !$this->get('templating')->exists($sTemplate) ) {

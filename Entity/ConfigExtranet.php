@@ -38,12 +38,12 @@ class ConfigExtranet
      * @param string $sPassword
      * @param string $sForm
      */
-    public function __construct($bModeExtranet, $sUser, $sPassword, $sForm)
+    public function __construct($aConfigExtra)
     {
-        $this->m_bModeExtranet  = $bModeExtranet;
-        $this->m_sUser          = $sUser;
-        $this->m_sPassword      = $sPassword;
-        $this->m_sForm          = $sForm;
+        $this->m_bModeExtranet  = $aConfigExtra['actif'];
+        $this->m_sUser          = $aConfigExtra['user'];
+        $this->m_sPassword      = $aConfigExtra['password'];
+        $this->m_sForm          = $aConfigExtra['form'];
     }
 
 

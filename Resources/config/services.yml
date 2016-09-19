@@ -19,7 +19,7 @@ services:
 
     nout_session.config_extranet:
         class:      NOUT\Bundle\SessionManagerBundle\Entity\ConfigExtranet
-        arguments:  [%nout_online.mode_extranet%, %nout_online.user%, %nout_online.password%, %nout_online.form%]
+        arguments:  [%nout_web.extranet%]
 
     nout_session.authentication_listener:
         class: NOUT\Bundle\SessionManagerBundle\Security\Firewall\NOUTOnlineListener
