@@ -4,7 +4,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\Yaml\Yaml;
@@ -14,17 +13,8 @@ use Symfony\Component\Yaml\Yaml;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class NOUTOnlineExtension extends Extension implements PrependExtensionInterface
+class NOUTOnlineExtension extends Extension
 {
-
-    public function prepend(ContainerBuilder $container)
-    {
-//        $root_dir = $container->getParameter('kernel.root_dir');
-//        $value = Yaml::parse(file_get_contents("$root_dir/config/noutonline.yml"));
-//
-//        $container->prependExtensionConfig($this->getAlias(), $value);
-    }
-
     /**
      * {@inheritDoc}
      */
