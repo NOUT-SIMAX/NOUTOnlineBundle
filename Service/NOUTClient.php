@@ -1483,6 +1483,47 @@ class NOUTClient
     }
 
     /**
+     * @param $idForm
+     * @param $idColumn
+     * @param $idRecord
+     * @param $height
+     * @return ActionResult
+     */
+    public function getImagePreview($idForm, $idColumn, $idRecord, $height)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+        $sFile = null; // Pour stocker le contenu du fichier
+
+        // --------------------------------------------
+        // VERSION REST - Plus rapide
+        $aTabOption = array();
+        //on veut le contenu
+        $aTabOption[RESTProxy::OPTION_WantContent]  = 1;
+        $aTabOption[RESTProxy::OPTION_Height]       = $height;
+
+        // $sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest = ''
+        $clFileResponseRest =  $this->m_clRESTProxy->sGetColInRecord(
+            $idForm,    		// ID Tableau
+            $idRecord,          // ID Enregistrement
+            $idColumn,          // ID Colonne
+            array(),
+            $aTabOption,
+            $clIdentification,
+            $sFile
+        );
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($clFileResponseRest);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        // $clActionResult->setLastModified(new \DateTime('@'.filemtime($sFichier)));
+
+        return $clActionResult;
+    }
+
+
+    /**
      * écrit un fichier dans le cache
      * @param $file
      * @param $fileID
