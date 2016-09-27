@@ -78,8 +78,7 @@ class ConfigurationDialogue
         $sAPIUUID = '',
         $sVersion='',
         $sSociete='',
-        $sModeAuth='',
-        $sSecret=''
+        array $aAuth=array()
     )
 	{
         $this->m_sAPIUUID     = trim($sAPIUUID);
@@ -99,8 +98,8 @@ class ConfigurationDialogue
 		$this->m_sVersion=$sVersion;
 		$this->m_sSociete=$sSociete;
 
-        $this->m_sModeAuth = $sModeAuth;
-        $this->m_sSecret = $sSecret;
+        $this->m_sModeAuth = isset($aAuth['mode']) ? $aAuth['mode'] : '';
+        $this->m_sSecret = isset($aAuth['secret']) ? $aAuth['secret'] : '';
 	}
 
 	public function Init($sWSDLUri, $bWsdl = false, $sHost = false, $sPort = false, $sProtocolPrefix = 'http://')

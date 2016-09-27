@@ -23,10 +23,10 @@ class ConnectionManager
      */
     protected $m_sSecret;
 
-	public function __construct($mode, $secret)
+	public function __construct(array $aAuth)
 	{
-        $this->m_sModeAuth = $mode;
-        $this->m_sSecret = $secret;
+        $this->m_sModeAuth = $aAuth['mode'];
+        $this->m_sSecret = $aAuth['secret'];
 	}
 
 	/**
