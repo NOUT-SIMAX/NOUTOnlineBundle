@@ -470,7 +470,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 		    /*$mResult =  */parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
 
 	    }
-	    catch(\Exception $e)
+	    catch(SOAPException $e)
 	    {
 		    if (isset($this->__clLogger)) //log des requetes
             {
