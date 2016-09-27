@@ -109,6 +109,7 @@ class OnlineError
 		return $this->m_sMessage;
 	}
 
+    const ERR_NOUTONLINE_OFF                = 1;
 
 	//constante pour les codes d'erreurs
 	const ERR_AUTRE                         = 1000;

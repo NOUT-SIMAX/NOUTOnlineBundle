@@ -110,7 +110,7 @@ class NOUTOnlineExtension extends \Twig_Extension
 		{
 			return $clRest->sGetVersion();
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			return $e->getMessage();
 		}
@@ -123,7 +123,7 @@ class NOUTOnlineExtension extends \Twig_Extension
 	public function isStarted()
 	{
 		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
-		return $clRest->bIsStarted();
+        return $clRest->bIsStarted();
 	}
 
 } 

@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 
 class GestionWSDL
 {
@@ -40,18 +41,24 @@ class GestionWSDL
         $this->m_sUri = $sUri;
         $this->m_dVersion = 0;
 
-        $fHandle = fopen($sUri, "r");
-        if ($fHandle)
-        {
-            $sDebutWSDL='';
-            while (strlen($sDebutWSDL)<1000)
+        try {
+            $fHandle = fopen($sUri, "r");
+            if ($fHandle)
             {
-                $sDebutWSDL .= fgets($fHandle, 1000);
-            }
-            fclose($fHandle);
+                $sDebutWSDL='';
+                while (strlen($sDebutWSDL)<1000)
+                {
+                    $sDebutWSDL .= fgets($fHandle, 1000);
+                }
+                fclose($fHandle);
 
-            $this->m_sHash = md5($sDebutWSDL, false);
-            $this->m_dVersion = $this->_getVersion($sDebutWSDL);
+                $this->m_sHash = md5($sDebutWSDL, false);
+                $this->m_dVersion = $this->_getVersion($sDebutWSDL);
+            }
+        }
+        catch (\Exception $e){
+            //TODO trad
+            throw new SOAPException('NOUTOnline ne répond pas', OnlineError::ERR_NOUTONLINE_OFF);
         }
     }
 

@@ -46,8 +46,13 @@ class OnlineServiceFactory
 	 */
 	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration)
 	{
-		$OnlineService = new SOAPProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->m_clCache);
-		return $OnlineService;
+        try {
+            $OnlineService = new SOAPProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->m_clCache);
+            return $OnlineService;
+        }
+        catch(\Exception $e){
+            return null;
+        }
 	}
 
 	/**
