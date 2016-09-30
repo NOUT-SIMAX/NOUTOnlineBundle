@@ -715,13 +715,13 @@ class NOUTClient
 
         if (property_exists($oParam, self::PARAM_SPECIALPARAMLIST) && is_null($oParam->{self::PARAM_SPECIALPARAMLIST}))
         {
-            $oParam->{self::PARAM_SPECIALPARAMLIST}                = new SpecialParamListType();
+            $oParam->{self::PARAM_SPECIALPARAMLIST} = new SpecialParamListType();
             $oParam->{self::PARAM_SPECIALPARAMLIST}->initFirstLength();
         }
 
         if (property_exists($oParam, self::PARAM_PARAMXML) && is_null($oParam->{self::PARAM_PARAMXML}))
         {
-            $oParam->{self::PARAM_PARAMXML}='';
+            $oParam->{self::PARAM_PARAMXML} = '';
         }
 
     }
