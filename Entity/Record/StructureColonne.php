@@ -573,6 +573,4 @@ abstract class StructureColonne
     const BTNSUB_Enregistrer        = 2; //remplace le bouton enregistrer
     const BTNSUB_Imprimer           = 3; //remplace le bouton imprimer
 
-
-
 }
