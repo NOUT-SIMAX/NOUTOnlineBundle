@@ -83,11 +83,30 @@ class NOUTOnlineLogger
 		}
 	}
 
+    protected function _getContext($bTo, $sOperation, $bSOAP, $extra)
+    {
+        $oCtxt = new \stdClass();
+        $oCtxt->way = $bTo ? 'send' : 'receive';
+        $oCtxt->operation = $sOperation;
+        $oCtxt->soap = $bSOAP;
+        $oCtxt->rest = !$bSOAP;
+        $oCtxt->extra = $extra;
+
+        if (is_array($extra) && array_key_exists('http-headers', $extra)){
+            $http_headers  = $extra['http-headers'];
+            if (is_array($http_headers) && array_key_exists('Content-Type', $http_headers)){
+                $oCtxt->content_type = $http_headers['Content-Type']->value;
+            }
+        }
+
+        return json_decode(json_encode($oCtxt), true);
+    }
+
 	/**
 	 * @param $sTo
 	 * @param $sFrom
 	 */
-	public function stopQuery($sTo, $sFrom, $sOperation, $bSOAP, $bXML = false)
+	public function stopQuery($sTo, $sFrom, $sOperation, $bSOAP, $extra)
 	{
 		if ($this->m_bEnabled)
 		{
@@ -96,8 +115,8 @@ class NOUTOnlineLogger
 				$sTo = str_replace('><', ">\r\n<", $sTo);
 			}
 
-			$this->m_clMonolog->debug($sTo);
-			$this->m_clMonolog->debug($sFrom);
+			$this->m_clMonolog->debug($sTo, $this->_getContext(true, $sOperation, $bSOAP, $extra));
+			$this->m_clMonolog->debug($sFrom, $this->_getContext(false, $sOperation, $bSOAP, $extra));
 
 			if ($bSOAP)
 			{
@@ -142,7 +161,7 @@ class NOUTOnlineLogger
 				'sendMS'          => $this->m_fSend,
 				'operation'       => $sOperation,
 				'soap'            => $bSOAP,
-				'xml'             => $bSOAP ? true : $bXML,
+				'xml'             => $bSOAP ? true : false,
 			);
 		}
 	}

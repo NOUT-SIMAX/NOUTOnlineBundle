@@ -168,7 +168,7 @@
 							<code class="code-request-{{ i }}">
 								{{ query.request_header | noutonline_beautify_soap_query | nl2br }}
 							</code>
-							<code class="code-request-{{ i }} prettyprint">
+							<code class="code-request-{{ i }} prettyprint linenums">
 								{{ query.request | noutonline_beautify_soap_query |nl2br }}
 							</code>
 						{% else %}
@@ -193,7 +193,7 @@
 							<code class="code-response-{{ i }}">
 								{{ query.response_header | noutonline_beautify_soap_query | nl2br }}
 							</code>
-							<code class="code-response-{{ i }} prettyprint">
+							<code class="code-response-{{ i }} prettyprint linenums">
 								{{ query.response | noutonline_beautify_soap_query |nl2br }}
 							</code>
 						{% else %}
@@ -212,16 +212,19 @@
 		{% endfor %}
 		</ul>
 
-		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true"></script>
-
-
-
-		{# <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> #}
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script src="{{ asset('vendors/other_components/GooglePrettify/run_prettify.js') }}"></script>
+		<script src="{{ asset('vendors/jquery/jquery.min.js') }}"></script>
 
 		<script type="text/javascript">//<![CDATA[
 
 			$( document ).ready(function() {
+
+
+//                vkbeautify.xml(text [,indent_pattern]);
+//                vkbeautify.json(text [,indent_pattern]);
+//                vkbeautify.css(text [,indent_pattern]);
+//                vkbeautify.sql(text [,indent_pattern]);
+
 
 				$('.expand').bind('click', function() {
 					var expand_id = $(this).attr('id');
@@ -242,6 +245,8 @@
 					$('#'+expand_id).css('display', 'inline');
 					$(this).css('display', 'none');
 				});
+
+
 			});
 			//]]></script>
 

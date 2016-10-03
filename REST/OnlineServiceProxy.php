@@ -352,19 +352,19 @@ class OnlineServiceProxy
 		{
 			if (isset($this->__clLogger))
 			{
-				$this->__clLogger->stopQuery($sURI, $e->getMessage(), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
+				$this->__clLogger->stopQuery($sURI, $e->getMessage(), (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, false);
 			}
 			throw $e;
 		}
 
+        // Parsage des Headers Http
+        $ret->headers = $this->parseHeaders($ret->headers);
 
 		if (isset($this->__clLogger))
 		{
-			$this->__clLogger->stopQuery($sURI, $ret->content, (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, true);
+			$this->__clLogger->stopQuery($sURI, $ret->content, (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, array('http-headers'=>$ret->headers));
 		}
 
-        // Parsage des Headers Http
-        $ret->headers = $this->parseHeaders($ret->headers);
 
         // - connection
         // - content-Type

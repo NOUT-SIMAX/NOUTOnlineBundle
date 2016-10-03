@@ -475,7 +475,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 		    if (isset($this->__clLogger)) //log des requetes
             {
                 $sError = empty($this->response) ? $this->error_str : $this->response;
-                $this->__clLogger->stopQuery($this->request, $sError, $sOperation, true);
+                $this->__clLogger->stopQuery($this->request, $sError, $sOperation, true, null);
             }
 
 		    throw $e;
@@ -485,7 +485,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 	    if (isset($this->__clLogger)) //log des requetes
         {
-            $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true);
+            $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true, null);
         }
 
 	    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
