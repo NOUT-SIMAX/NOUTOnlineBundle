@@ -76,6 +76,11 @@ class OnlineServiceProxy
 	{
 		if (empty($clIdentification->m_clUsernameToken) || !$clIdentification->m_clUsernameToken->bIsValid())
 		{
+            if (!empty($this->__ConfigurationDialogue->getAPIUUID()))
+            {
+                return '!APIUUID='.urlencode($this->__ConfigurationDialogue->getAPIUUID());
+            }
+
 			return '';
 		}
 
