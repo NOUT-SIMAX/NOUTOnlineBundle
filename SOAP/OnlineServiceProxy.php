@@ -417,8 +417,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
 	    //petite modif sur le paramètre mParams si tableau vide
 	    if (empty($mParams))
-		    $mParams = '<'.$sOperation.' />';
-
+		{
+			$mParams = '<' . $sOperation . ' />';
+		}
 
         //si il le faut, avant toutes chose, on nettoye les header
         if($this->__bCleanHeadersBeforeRequest )

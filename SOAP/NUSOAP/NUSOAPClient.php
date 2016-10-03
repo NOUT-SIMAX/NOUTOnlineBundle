@@ -153,7 +153,8 @@ class NUSOAPClient extends NUSOAPBase  {
 	 * @return	mixed	response from SOAP call, normally an associative array mirroring the structure of the XML response, false for certain fatal errors
 	 * @access   public
 	 */
-	function call($operation,$params=array(),$namespace='http://tempuri.org',$soapAction='',$headers=false,$rpcParams=null,$style='rpc',$use='encoded'){
+	function call($operation, $params=array(), $namespace='http://tempuri.org', $soapAction='', $headers=false, $rpcParams=null, $style='rpc', $use='encoded')
+	{
 		$this->operation = $operation;
 		$this->fault = false;
 		$this->setError('');
@@ -164,44 +165,67 @@ class NUSOAPClient extends NUSOAPBase  {
 		$this->faultcode = '';
 		$this->opData = array();
 
-		if ($headers) {
+		if ($headers)
+        {
 			$this->requestHeaders = $headers;
 		}
-		if ($this->endpointType == 'wsdl' && is_null($this->wsdl)) {
+
+		if ($this->endpointType == 'wsdl' && is_null($this->wsdl))
+        {
 			$this->loadWSDL();
 			if ($this->getError())
-				return false;
+            {
+                return false;
+            }
 		}
+
 		// serialize parameters
-		if($this->endpointType == 'wsdl' && $opData = $this->getOperationData($operation)){
+		if($this->endpointType == 'wsdl' && $opData = $this->getOperationData($operation))
+        {
 			// use WSDL for operation
 			$this->opData = $opData;
-			if (isset($opData['soapAction'])) {
+
+			if (isset($opData['soapAction']))
+            {
 				$soapAction = $opData['soapAction'];
 			}
-			if (! $this->forceEndpoint) {
+
+            if (! $this->forceEndpoint)
+            {
 				$this->endpoint = $opData['endpoint'];
-			} else {
+			}
+
+            else
+            {
 				$this->endpoint = $this->forceEndpoint;
 			}
 			$namespace = isset($opData['input']['namespace']) ? $opData['input']['namespace'] :	$namespace;
 			$style = isset($opData['style']) ? $opData['style'] : '';
 			$use = $opData['input']['use'];
+
 			// add ns to ns array
-			if($namespace != '' && !isset($this->wsdl->namespaces[$namespace])){
+			if($namespace != '' && !isset($this->wsdl->namespaces[$namespace]))
+            {
 				$nsPrefix = 'ns' . rand(1000, 9999);
 				$this->wsdl->namespaces[$nsPrefix] = $namespace;
 			}
 			$nsPrefix = $this->wsdl->getPrefixFromNamespace($namespace);
 			// serialize payload
-			if (is_string($params)) {
+
+			if (is_string($params))
+            {
 				$payload = $params;
-			} elseif (is_array($params)) {
-				$payload = $this->wsdl->serializeRPCParameters($operation,'input',$params,$this->bindingType);
-			} else {
+			}
+            elseif (is_array($params))
+            {
+				$payload = $this->wsdl->serializeRPCParameters($operation, 'input', $params ,$this->bindingType);
+			}
+            else
+            {
 				$this->setError('params must be array or string');
 				return false;
 			}
+
 			$usedNamespaces = $this->wsdl->usedNamespaces;
 			if (isset($opData['input']['encodingStyle'])) {
 				$encodingStyle = $opData['input']['encodingStyle'];

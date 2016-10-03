@@ -1031,65 +1031,87 @@ class WSDL extends NUSOAPBase {
 	 * @return mixed parameters serialized as XML or false on error (e.g. operation not found)
 	 * @access public
 	 */
-	function serializeRPCParameters($operation, $direction, $parameters, $bindingType = 'soap') {
+	function serializeRPCParameters($operation, $direction, $parameters, $bindingType = 'soap')
+    {
 
-		if ($direction != 'input' && $direction != 'output') {
+		if ($direction != 'input' && $direction != 'output')
+		{
 			$this->setError('The value of the \$direction argument needs to be either "input" or "output"');
 			return false;
 		}
-		if (!$opData = $this->getOperationData($operation, $bindingType)) {
+		if (!$opData = $this->getOperationData($operation, $bindingType))
+        {
 			$this->setError('Unable to retrieve WSDL data for operation: ' . $operation . ' bindingType: ' . $bindingType);
 			return false;
 		}
 
 		// Get encoding style for output and set to current
 		$encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/';
-		if(($direction == 'input') && isset($opData['output']['encodingStyle']) && ($opData['output']['encodingStyle'] != $encodingStyle)) {
+
+		if(($direction == 'input') && isset($opData['output']['encodingStyle']) && ($opData['output']['encodingStyle'] != $encodingStyle))
+        {
 			$encodingStyle = $opData['output']['encodingStyle'];
 			$enc_style = $encodingStyle;
 		}
 
 		// set input params
 		$xml = '';
-		if (isset($opData[$direction]['parts']) && sizeof($opData[$direction]['parts']) > 0) {
+		if (isset($opData[$direction]['parts']) && sizeof($opData[$direction]['parts']) > 0)
+        {
 			$parts = &$opData[$direction]['parts'];
 			$part_count = sizeof($parts);
 			$style = isset($opData['style']) ? $opData['style'] : '';
 			$use = $opData[$direction]['use'];
-			if (is_array($parameters)) {
+
+			if (is_array($parameters))
+            {
 				$parametersArrayType = $this->isArraySimpleOrStruct($parameters);
 				$parameter_count = count($parameters);
+
 				// check for Microsoft-style wrapped parameters
-				if ($style == 'document' && $use == 'literal' && $part_count == 1 && isset($parts['parameters'])) {
-					if ($direction == 'output' && $parametersArrayType == 'arraySimple' && $parameter_count == 1) {
+				if ($style == 'document' && $use == 'literal' && $part_count == 1 && isset($parts['parameters']))
+                {
+					if ($direction == 'output' && $parametersArrayType == 'arraySimple' && $parameter_count == 1)
+                    {
 						// TODO: consider checking here for double-wrapping, when
 						// service function wraps, then NuSOAP wraps again
 						$parameters['parameters'] = $parameters[0];
 						unset($parameters[0]);
 					}
-					if (($parametersArrayType == 'arrayStruct' || $parameter_count == 0) && !isset($parameters['parameters'])) {
+					if (($parametersArrayType == 'arrayStruct' || $parameter_count == 0) && !isset($parameters['parameters']))
+                    {
 						if ($this->parametersMatchWrapped($parts['parameters'], $parameters)) {
 							$parameters = array('parameters' => $parameters);
 							$parameter_count = 1;
 						}
 					}
 				}
-				foreach ($parts as $name => $type) {
+
+				foreach ($parts as $name => $type)
+                {
 					// Track encoding style
-					if (isset($opData[$direction]['encodingStyle']) && $encodingStyle != $opData[$direction]['encodingStyle']) {
+					if (isset($opData[$direction]['encodingStyle']) && $encodingStyle != $opData[$direction]['encodingStyle'])
+                    {
 						$encodingStyle = $opData[$direction]['encodingStyle'];
 						$enc_style = $encodingStyle;
-					} else {
+					}
+                    else
+                    {
 						$enc_style = false;
 					}
 					// NOTE: add error handling here
 					// if serializeType returns false, then catch global error and fault
-					if ($parametersArrayType == 'arraySimple') {
+					if ($parametersArrayType == 'arraySimple')
+                    {
 						$p = array_shift($parameters);
 						$xml .= $this->serializeType($name, $type, $p, $use, $enc_style);
-					} elseif (isset($parameters[$name])) {
+					}
+                    elseif (isset($parameters[$name]))
+                    {
 						$xml .= $this->serializeType($name, $type, $parameters[$name], $use, $enc_style);
-					} else {
+					}
+                    else
+                    {
 						// TODO: only send nillable
 						$xml .= $this->serializeType($name, $type, null, $use, $enc_style);
 					}
@@ -1355,6 +1377,9 @@ class WSDL extends NUSOAPBase {
 					if (isset($value['!'])) {
 						$xml .= $value['!'];
 					}
+                    elseif (isset($value['_'])){
+                        $xml .= $value['_'];
+                    }
 				} else {
 					// complexContent
 					$xml .= $this->serializeComplexTypeElements($typeDef, $value, $ns, $uqType, $use, $encodingStyle);
