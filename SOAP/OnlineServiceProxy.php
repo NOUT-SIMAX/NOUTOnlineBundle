@@ -1435,7 +1435,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     //---
 
 
-
+    // Penser à rajouter la constante dans _initStructHeaderFromTabHeaderRequest de NOUTClient.php
 	const HEADER_OptionDialogue                 = 'OptionDialogue';
 	const HEADER_OptionDialogue_Readable        = 'Readable';
 	const HEADER_OptionDialogue_DisplayValue    = 'DisplayValue';
@@ -1449,6 +1449,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	const HEADER_ActionContext                  = 'ActionContext';
 	const HEADER_AutoValidate                   = 'AutoValidate';
 	const HEADER_APIUser                        = 'APIUser';
+	const HEADER_Ghost							= 'Ghost';
 
 	const AUTOVALIDATE_Validate = 1;
 	const AUTOVALIDATE_None     = 0;

@@ -16,16 +16,16 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 
 class OptionDialogue
 {
-	public $Readable; // integer
-	public $EncodingOutput; // integer
-	public $ReturnValue; // integer
-	public $ReturnXSD; // integer
-	public $HTTPForceReturn; // integer
-	public $Ghost; // integer
-	public $DefaultPagination; // integer
-	public $DisplayValue; // integer
-	public $LanguageCode; // integer
-	public $WithFieldStateControl; // integer
-	public $ListContentAsync; // integer
+	public $Readable; 				// integer
+	public $EncodingOutput; 		// integer
+	public $ReturnValue; 			// integer
+	public $ReturnXSD; 				// integer
+	public $HTTPForceReturn; 		// integer
+	public $Ghost; 					// integer
+	public $DefaultPagination; 		// integer
+	public $DisplayValue; 			// integer
+	public $LanguageCode; 			// integer
+	public $WithFieldStateControl; 	// integer
+	public $ListContentAsync; 		// integer
 }
 //***
