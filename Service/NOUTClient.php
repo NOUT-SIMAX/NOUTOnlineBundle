@@ -219,7 +219,7 @@ class NOUTClient
      */
     function setOptionDialogueProperty($propertyName, $value)
     {
-        if(property_exists($this->m_clOptionDialogue, $propertyName))
+        if(property_exists($this->m_clOptionDialogue, $propertyName) && (SOAPProxy::s_isValidDialogOption($propertyName)))
         {
             $this->m_clOptionDialogue->$propertyName = $value;
         }
@@ -758,58 +758,36 @@ class NOUTClient
         // $oParam du type OptionDialogue
         foreach ($aTabHeaderQuery as $property => $value)
         {
-            // Si la propriété existe dans la classe, on la rajoute dans le tableau
-            switch ($property)
+            if(is_array($value)) // On a une propriété de second niveau (par exemple OptionDialogue)
             {
-                // Ce sont des propriétés valides, on les ajoute dans le header
-                case SOAPProxy::HEADER_Ghost:
-                case SOAPProxy::HEADER_ActionContext:
+                $setFunctionName = "set" . $property . "Property";
+
+                if(method_exists($this, $setFunctionName))
                 {
-                    $aTabHeaderSuppl[$property] = $value;
-                    break;
-                }
-                case SOAPProxy::HEADER_OptionDialogue:
-                {
-                    // Normalement on a un array - Il faut ajouter toutes les options
                     foreach ($value as $optionProperty => $optionValue)
                     {
-                        $this->setOptionDialogueProperty($optionProperty, $optionValue);
+                        $this->$setFunctionName($optionProperty, $optionValue);
                     }
                 }
+                else
+                {
+                    // Erreur, fonction de parsage non existante
+                }
+            }
+            elseif(!is_object($value)) // Propriété de premier niveau (scalar)
+            {
+                if(SOAPProxy::s_isValidHeaderProp($property))
+                {
+                    $aTabHeaderSuppl[$property] = $value;
+                }
+            }
+            else
+            {
+                // Erreur, mauvais format
             }
         }
 
         return $aTabHeaderSuppl;
-    }
-
-    /**
-     * Execute une action via son id
-     * @param string $sIDAction
-     * @param string $sIDContexte
-     * @param string $tabParamQuery
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
-     */
-    public function oExecIDAction(array $tabParamQuery, $sIDAction, $sIDContexte = '')
-    {
-        //--------------------------------------------------------------------------------------------
-        // Paramètres
-        $clParamExecute = new Execute();
-        $this->_initStructParamFromTabParamRequest($clParamExecute, $tabParamQuery);
-
-        $clParamExecute->ID = (string)$sIDAction;             // identifiant de l'action (String)
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = array();
-
-        if (!empty($sIDContexte))
-        {
-            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
-        }
-
-        //--------------------------------------------------------------------------------------------
-        // L'action
-        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
     }
 
 
@@ -820,7 +798,7 @@ class NOUTClient
      * @param string $sIDAction
      * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
      */
-    public function oExecIDActionH(array $tabParamQuery, array $tabHeaderQuery = array(), $sIDAction)
+    public function oExecIDAction(array $tabParamQuery, array $tabHeaderQuery = array(), $sIDAction)
     {
         // Les paramètres du header sont passés par array
 
