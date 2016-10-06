@@ -1450,21 +1450,52 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     }
     //---
 
+	static public function s_isValidHeaderProp($sHeaderProp)
+	{
+        return( $sHeaderProp == self::HEADER_APIUUID ||
+                $sHeaderProp == self::HEADER_UsernameToken ||
+                $sHeaderProp == self::HEADER_SessionToken ||
+                $sHeaderProp == self::HEADER_ActionContext ||
+                $sHeaderProp == self::HEADER_AutoValidate ||
+                $sHeaderProp == self::HEADER_APIUser ||
+                $sHeaderProp == self::HEADER_OptionDialogue
+        );
+	}
 
 
+    static public function s_isValidDialogOption($sDialogOption)
+    {
+        return( $sDialogOption == self::HEADER_OptionDialogue_Readable ||
+                $sDialogOption == self::HEADER_OptionDialogue_DisplayValue ||
+                $sDialogOption == self::HEADER_OptionDialogue_EncodingOutput ||
+                // ReturnValue
+                // ReturnXSD
+                // HTTPForceReturn
+                $sDialogOption == self::HEADER_Ghost ||
+                // DefaultPagination
+                $sDialogOption == self::HEADER_OptionDialogue_LanguageCode
+                // ListContentAsync
+        );
+	}
+
+    // Propriétés du Header
+    const HEADER_APIUUID                        = 'APIUUID';
+    const HEADER_UsernameToken                  = 'UsernameToken';
+    const HEADER_SessionToken                   = 'SessionToken';
+    const HEADER_ActionContext                  = 'ActionContext';
+    const HEADER_AutoValidate                   = 'AutoValidate';
+    const HEADER_APIUser                        = 'APIUser';
 	const HEADER_OptionDialogue                 = 'OptionDialogue';
+
+    // Propriétés de OptionDialogue
 	const HEADER_OptionDialogue_Readable        = 'Readable';
 	const HEADER_OptionDialogue_DisplayValue    = 'DisplayValue';
 	const HEADER_OptionDialogue_EncodingOutput  = 'EncodingOutput';
+	const HEADER_Ghost							= 'Ghost';
 	const HEADER_OptionDialogue_LanguageCode    = 'LanguageCode';
-	const HEADER_WithFieldStateControl          = 'WithFieldStateControl';
 
-	const HEADER_APIUUID                        = 'APIUUID';
-	const HEADER_UsernameToken                  = 'UsernameToken';
-	const HEADER_SessionToken                   = 'SessionToken';
-	const HEADER_ActionContext                  = 'ActionContext';
-	const HEADER_AutoValidate                   = 'AutoValidate';
-	const HEADER_APIUser                        = 'APIUser';
+    // Autres
+	const HEADER_WithFieldStateControl          = 'WithFieldStateControl'; // ?? Pas dans la doc
 
 	const AUTOVALIDATE_Validate = 1;
 	const AUTOVALIDATE_None     = 0;
@@ -1499,8 +1530,6 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 		return (in_array($sValueToVerif, $aTabPossible)) ? $sValueToVerif : $sDefaultValue;
 	}
-
-
 
 
 }

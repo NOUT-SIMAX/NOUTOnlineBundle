@@ -38,6 +38,11 @@ class OptionDialogue extends WSDLOptionDialogue
 	const DISPLAY_No_ID_DH_TL       = 0x0000407D;           // 100000001111101
 	const DISPLAY_No_ID_DH_TL_T     = 0x0000407C;           // 100000001111100
 
+    //masque pour les fantômes
+    const GHOST_VALID               = 0x1;
+    const GHOST_INVALID             = 0x2;
+    const GHOST_ALL                 = 0x3;
+
 
 	public function __construct()
 	{
@@ -67,7 +72,7 @@ class OptionDialogue extends WSDLOptionDialogue
 	{
 		$this->ReturnValue           = 1; 	// integer
 		$this->ReturnXSD             = 1; 	// integer
-		$this->Ghost                 = 0; 	// integer
+		$this->Ghost                 = OptionDialogue::GHOST_ALL;
 		$this->DefaultPagination     = 20; 	// integer
 		$this->DisplayValue          = 0; 	// integer
 		$this->LanguageCode          = 12; 	// integer
@@ -77,4 +82,5 @@ class OptionDialogue extends WSDLOptionDialogue
 
 		return $this;
 	}
+
 }
