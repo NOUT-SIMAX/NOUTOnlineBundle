@@ -39,6 +39,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
@@ -994,7 +995,7 @@ class NOUTClient
         $sIDEnreg = $clRecord->getIDEnreg();
 
         $clParamUpdate              = new Update();
-        $clParamUpdate->Table       = $clRecord->getIDTableau();
+        $clParamUpdate->Table       = $sIDForm;
         $clParamUpdate->ParamXML    = "<id_$sIDForm>$sIDEnreg</id_$sIDForm>";
         // -----------------------------------------------------
         // Fichiers
@@ -1024,6 +1025,28 @@ class NOUTClient
             $oRet->setData($clRecord);
         }
 
+        return $oRet;
+    }
+
+    /**
+     * @param string $sIDContexte
+     * @param string $idButton
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oButtonAction($sIDContexte, $idButton)
+    {
+        //test des valeurs des paramètres
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+
+        $clParam                = new ButtonAction();
+        $clParam->CallingColumn = $idButton;
+
+        //header
+        $aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
+        $clReponseXML       = $this->m_clSOAPProxy->buttonAction($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
         return $oRet;
     }
 
