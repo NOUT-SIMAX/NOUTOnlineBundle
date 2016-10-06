@@ -11,6 +11,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\WSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelMessage;
@@ -1348,6 +1349,21 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
 	    return $this->call('Update', array($clWsdlType_Update) ,  null, null , $aHeaders);
     }
+
+    //----
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ButtonAction
+     *
+     * @param ButtonAction $clWsdlType_ButtonAction
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function buttonAction(ButtonAction $clWsdlType_ButtonAction, $aHeaders = array())
+    {
+        return $this->call('ButtonAction', array($clWsdlType_ButtonAction) ,  null, null , $aHeaders);
+    }
+
     //----
 
     /**
