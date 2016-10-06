@@ -31,6 +31,17 @@ class ActionResult
 	 */
 	private $m_sIDContexte;
 
+
+    /**
+     * @var string
+     */
+    private $m_sIDContexteToValidateOnClose;
+
+    /**
+     * @var array
+     */
+    private $m_aContexteToClose;
+
     /**
      * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction
      */
@@ -70,12 +81,16 @@ class ActionResult
 			$this->ReturnType    = $clReponseXML->sGetReturnType();
 			$this->m_sIDContexte = $clReponseXML->sGetActionContext();
 			$this->m_clAction    = $clReponseXML->clGetAction();
+            $this->m_sIDContexteToValidateOnClose = $clReponseXML->sGetContextToValidateOnClose();
+            $this->m_aContexteToClose = $clReponseXML->aGetActionContextToClose();
 		}
 		else
 		{
 			$this->ReturnType    = null;
 			$this->m_sIDContexte = '';
             $this->m_clAction    = null;
+            $this->m_sIDContexteToValidateOnClose = '';
+            $this->m_aContexteToClose = array();
 		}
 
 		$this->m_Data               = null;
@@ -171,6 +186,23 @@ class ActionResult
 	{
 		return $this->m_sIDContexte;
 	}
+
+    /**
+     * @return string
+     */
+    public function getIDContexteToValidateOnClose()
+    {
+        return $this->m_sIDContexteToValidateOnClose;
+    }
+
+    /**
+     * @return array
+     */
+    public function getContexteToClose()
+    {
+        return $this->m_aContexteToClose;
+    }
+
 
     /**
      * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction|null
