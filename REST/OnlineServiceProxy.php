@@ -563,6 +563,9 @@ class OnlineServiceProxy
             list(, $output['status'], $output['status_text']) = explode(' ', $headers[0]);
             unset($headers[0]);
         }
+        elseif ((count($headers)==1) && (empty($headers[0]))){
+            return array();
+        }
 
         foreach ($headers as $v)
         {

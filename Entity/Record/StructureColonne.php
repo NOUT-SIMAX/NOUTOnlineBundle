@@ -481,6 +481,7 @@ abstract class StructureColonne
 	const OPTION_LinkedTableID  = "linkedTableID";
 	const OPTION_WithBtnOrdre   = "withBtnOrder";
 	const OPTION_WithoutDetail  = "withoutDetail";
+    const OPTION_WithoutEdit    = "withoutEdit";
 	const OPTION_WithoutSearch  = "withoutSearch";
 	const OPTION_WithoutCreate  = "withoutCreate";
 	const OPTION_Resource       = "resource";
