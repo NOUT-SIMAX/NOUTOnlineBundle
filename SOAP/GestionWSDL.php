@@ -42,7 +42,7 @@ class GestionWSDL
         $this->m_dVersion = 0;
 
         try {
-            $fHandle = fopen($sUri, "r");
+            $fHandle = @fopen($sUri, "r");
             if ($fHandle)
             {
                 $sDebutWSDL='';
@@ -54,6 +54,10 @@ class GestionWSDL
 
                 $this->m_sHash = md5($sDebutWSDL, false);
                 $this->m_dVersion = $this->_getVersion($sDebutWSDL);
+            }
+            else
+            {
+                throw new SOAPException('NOUTOnline ne répond pas', OnlineError::ERR_NOUTONLINE_OFF);
             }
         }
         catch (\Exception $e){
