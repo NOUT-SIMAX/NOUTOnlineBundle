@@ -98,6 +98,19 @@ class IHMLoader
             $oInfoIHM->aMenu[]=$clMenu;
         }
 
+        if (count($oInfoIHM->aMenu[])==1)
+        {
+            //il y a qu'1 seul menu, il faut le remonter
+            /** @var ItemMenu $clMenu */
+            $clMenu = $oInfoIHM->aMenu[0];
+            $oInfoIHM->aMenu=array();
+            foreach($clMenu->tabOptions as $clSousMenu){
+                /** @var ItemMenu $clSousMenu */
+                if (!$clSousMenu->isSeparator()){
+                    $oInfoIHM->aMenu[]=$clSousMenu;
+                }
+            }
+        }
         return $oInfoIHM;
     }
 
@@ -105,7 +118,7 @@ class IHMLoader
      * @param InfoIHM $oInfoIHM
      * @param         $sIDMenu
      * @param         $bUniquementRacine
-     * @return $this|null
+     * @return ItemMenu
      */
     protected function _aGetMenu(InfoIHM $oInfoIHM, $sIDMenu, $bUniquementRacine)
     {

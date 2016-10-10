@@ -474,6 +474,25 @@ class NOUTClient
                 $itemMenu = $this->__oGetItemMenu($objet);
                 $aInfo[] = $itemMenu;
             }
+
+            if ($prefix=='menu'){
+                //c'est le menu, il faut vérifier le a plat
+                if (count($aInfo)==1)
+                {
+                    $tabOptions = $aInfo[0]->tabOptions;
+                    $aInfo = array();
+                    foreach($tabOptions as $clMenu)
+                    {
+                        /** @var ItemMenu $clMenu */
+                        if (!$clMenu->isSeparator()){
+                            $aInfo[]=$clMenu;
+                        }
+                    }
+
+                }
+
+            }
+
         }
 
         $this->m_clCacheIHM->save("info_{$prefix}_{$sUsername}", $aInfo);
