@@ -352,6 +352,13 @@ class OnlineServiceProxy
 				$ret = $this->_sExecute_cURL($sAction, $sURI, $sDestination);   // on utilise l'extension curl
 			}
 
+
+			// Encoder les options de header
+			if(!is_null($ret->headers))
+			{
+				$ret->headers = $this->_UTF8EncodeOptions($ret->headers);
+			}
+
 		}
 		catch(\Exception $e)
 		{
@@ -377,6 +384,24 @@ class OnlineServiceProxy
 
 		return $ret;
 	}
+
+
+	/**
+	 * @param $aOptions
+	 * @return array
+	 */
+	protected function _UTF8EncodeOptions($aOptions)
+	{
+		$aEncodedOptions = Array();
+
+		foreach($aOptions as $optionName => $option)
+		{
+			$aEncodedOptions[$optionName] = utf8_encode($option);
+		}
+
+		return $aEncodedOptions;
+	}
+
 
 
 	/**
