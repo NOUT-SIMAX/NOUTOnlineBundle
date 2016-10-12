@@ -529,6 +529,28 @@ abstract class StructureColonne
 	// Attributs pour les fichiers
 	const OPTION_Mime_Type				= "typeMime";
 
+
+	static public function s_GetModeleOption()
+	{
+		return array(
+			self::OPTION_Modele_PhoneNumber		,
+			self::OPTION_Modele_CreditCard    	,
+			self::OPTION_Modele_SocialSecurity	,
+			self::OPTION_Modele_BankDetails		,
+			self::OPTION_Modele_Directory		,
+			self::OPTION_Modele_PostalCode		,
+			self::OPTION_Modele_City			,
+			self::OPTION_Modele_InputMask		,
+			self::OPTION_Modele_WithSecond		,
+			self::OPTION_Modele_PositionVideo	,
+			self::OPTION_Modele_IDColLinked		,
+			self::OPTION_Modele_Company			,
+			self::OPTION_Modele_Latitude		,
+			self::OPTION_Modele_Longitude		,
+			self::OPTION_Modele_Search  		,
+		);
+	}
+
 	// Attributs liés au modele
 	const OPTION_Modele_PhoneNumber		= "phoneNumber";
 	const OPTION_Modele_CreditCard    	= "creditCard";
@@ -545,10 +567,12 @@ abstract class StructureColonne
 	const OPTION_Modele_Latitude		= "latitude";
 	const OPTION_Modele_Longitude		= "longitude";
     const OPTION_Modele_Search  		= "search";
+	//Si ajout au dessus, rajouter dans la méthode s_GetModeleOption
 
 	// Attributs de transformation
 	const OPTION_Transform_Color			= "colorRGB";
 	const OPTION_Transform_Uppercase		= "uppercase";
+	const OPTION_Transform_Lowercase		= "lowercase";
 	const OPTION_Transform_FirstUppercase	= "firstUppercase";
 	const OPTION_Transform_Url				= "url";
 	const OPTION_Transform_Video			= "video";

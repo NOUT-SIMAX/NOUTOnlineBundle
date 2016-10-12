@@ -304,6 +304,14 @@ class StructureElement
         return array_keys($this->m_MapIDColonne2Structure);
     }
 
+	/**
+	 * @return array
+	 */
+	public function getMapIDColonne2Structure()
+	{
+		return $this->m_MapIDColonne2Structure;
+	}
+
     /**
      * @param $option
      * @return array

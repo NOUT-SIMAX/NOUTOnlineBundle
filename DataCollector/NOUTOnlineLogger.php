@@ -99,7 +99,10 @@ class NOUTOnlineLogger
             }
         }
 
-        return json_decode(json_encode($oCtxt), true);
+		//transforme en array
+		$stringjson = json_encode($oCtxt);
+		$aRet = json_decode($stringjson, true);
+        return $aRet;
     }
 
 	/**
@@ -115,8 +118,15 @@ class NOUTOnlineLogger
 				$sTo = str_replace('><', ">\r\n<", $sTo);
 			}
 
-			$this->m_clMonolog->debug($sTo, $this->_getContext(true, $sOperation, $bSOAP, $extra));
-			$this->m_clMonolog->debug($sFrom, $this->_getContext(false, $sOperation, $bSOAP, $extra));
+			$this->m_clMonolog->debug(
+				$sTo,
+				$this->_getContext(true, $sOperation, $bSOAP, $extra)
+			);
+
+			$this->m_clMonolog->debug(
+				$sFrom,
+				$this->_getContext(false, $sOperation, $bSOAP, $extra)
+			);
 
 			if ($bSOAP)
 			{
