@@ -1763,10 +1763,10 @@ class NOUTClient
     const MaxEnregs = 200;    // Nombre maximum d'éléments sur une page
 
 
-    const PARAM_SPECIALPARAMLIST = 'SpecialParamList';
-    const PARAM_PARAMXML = 'ParamXML';
-    const PARAM_CALLINGCOLUMN = 'CallingColumn';
-    const PARAM_DISPLAYMODE = 'DisplayMode';
-    const PARAM_CHECKSUM = 'Checksum';
-    const PARAM_CALLINGINFO = 'CallingInfo';
+    const PARAM_SPECIALPARAMLIST    = 'SpecialParamList';
+    const PARAM_PARAMXML            = 'ParamXML';
+    const PARAM_CALLINGCOLUMN       = 'CallingColumn';
+    const PARAM_DISPLAYMODE         = 'DisplayMode';
+    const PARAM_CHECKSUM            = 'Checksum';
+    const PARAM_CALLINGINFO         = 'CallingInfo';
 }
