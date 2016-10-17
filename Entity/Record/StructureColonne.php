@@ -403,6 +403,11 @@ abstract class StructureColonne
                 if ($this->_isMonolineText())
                 {
                     // Texte mono-ligne
+                    if ($this->getOption(self::OPTION_Transform)==self::OPTION_Transform_Secret)
+                    {
+                        return 'simax_password';
+                    }
+
                     return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
                 }
 				else
