@@ -83,6 +83,14 @@ class NOUTOnlineLogger
 		}
 	}
 
+
+    /**
+     * @param $bTo
+     * @param $sOperation
+     * @param $bSOAP
+     * @param $extra
+     * @return mixed
+     */
     protected function _getContext($bTo, $sOperation, $bSOAP, $extra)
     {
         $oCtxt = new \stdClass();
@@ -92,14 +100,47 @@ class NOUTOnlineLogger
         $oCtxt->rest = !$bSOAP;
         $oCtxt->extra = $extra;
 
-        if (is_array($extra) && array_key_exists('http-headers', $extra)){
+        if (is_array($extra) && array_key_exists('http-headers', $extra))
+        {
             $http_headers  = $extra['http-headers'];
-            if (is_array($http_headers) && array_key_exists('Content-Type', $http_headers)){
+
+            if (is_array($http_headers) && array_key_exists('Content-Type', $http_headers))
+            {
                 $oCtxt->content_type = $http_headers['Content-Type']->value;
             }
         }
 
-        return json_decode(json_encode($oCtxt), true);
+		//transforme en array
+		$stringjson = json_encode($oCtxt);
+
+		if ($stringjson == false){
+			switch (json_last_error()) {
+				case JSON_ERROR_NONE:
+					$erreur = ' - Aucune erreur';
+					break;
+				case JSON_ERROR_DEPTH:
+					$erreur =  ' - Profondeur maximale atteinte';
+					break;
+				case JSON_ERROR_STATE_MISMATCH:
+					$erreur =  ' - Inadéquation des modes ou underflow';
+					break;
+				case JSON_ERROR_CTRL_CHAR:
+					$erreur =  ' - Erreur lors du contrôle des caractères';
+					break;
+				case JSON_ERROR_SYNTAX:
+					$erreur =  ' - Erreur de syntaxe ; JSON malformé';
+					break;
+				case JSON_ERROR_UTF8:
+					$erreur =  ' - Caractères UTF-8 malformés, probablement une erreur d\'encodage';
+					break;
+				default:
+					$erreur =  ' - Erreur inconnue';
+					break;
+			}
+
+		}
+		$aRet = json_decode($stringjson, true);
+        return $aRet;
     }
 
 	/**
@@ -115,8 +156,15 @@ class NOUTOnlineLogger
 				$sTo = str_replace('><', ">\r\n<", $sTo);
 			}
 
-			$this->m_clMonolog->debug($sTo, $this->_getContext(true, $sOperation, $bSOAP, $extra));
-			$this->m_clMonolog->debug($sFrom, $this->_getContext(false, $sOperation, $bSOAP, $extra));
+			$this->m_clMonolog->debug(
+				$sTo,
+				$this->_getContext(true, $sOperation, $bSOAP, $extra)
+			);
+
+			$this->m_clMonolog->debug(
+				$sFrom,
+				$this->_getContext(false, $sOperation, $bSOAP, $extra)
+			);
 
 			if ($bSOAP)
 			{
