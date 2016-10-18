@@ -72,7 +72,7 @@ class OptionDialogue extends WSDLOptionDialogue
 	{
 		$this->ReturnValue           = 1; 	// integer
 		$this->ReturnXSD             = 1; 	// integer
-		$this->Ghost                 = OptionDialogue::GHOST_ALL;
+		$this->Ghost                 = OptionDialogue::GHOST_VALID;
 		$this->DefaultPagination     = 20; 	// integer
 		$this->DisplayValue          = 0; 	// integer
 		$this->LanguageCode          = 12; 	// integer

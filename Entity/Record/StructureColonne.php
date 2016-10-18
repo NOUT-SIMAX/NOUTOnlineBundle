@@ -99,7 +99,6 @@ abstract class StructureColonne
     }
 
 
-
     /**
      * pour savoir si fusion de colonne pour le multi-colonne
      * @return integer
@@ -381,6 +380,8 @@ abstract class StructureColonne
 	 * @return string
 	 *
 	 * Retourne le type de formulaire Symfony correspondant
+	 *
+	 * Gestion des cas particuliers avec options (par ex les Directory ou Couleurs ou Password)
 	 */
 	public function getFormType()
 	{

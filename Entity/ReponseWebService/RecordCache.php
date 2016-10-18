@@ -30,8 +30,8 @@ class RecordCache
 
 	public function __construct()
 	{
-		$this->m_MapIDTableauIDEnreg2Record=array();
-		$this->m_MapXMLKey2Record=array();
+		$this->m_MapIDTableauIDEnreg2Record	= array();
+		$this->m_MapXMLKey2Record			= array();
 	}
 
 	/**
