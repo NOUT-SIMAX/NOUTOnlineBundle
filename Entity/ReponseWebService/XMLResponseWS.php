@@ -181,6 +181,31 @@ class XMLResponseWS
 		return (string) $this->m_ndHeader->children()->ActionContext;
 	}
 
+    /**
+     * renvoi l'identifiant du contexte d'action
+     * @return string
+     */
+    public function sGetContextToValidateOnClose()
+    {
+        return (string) $this->m_ndHeader->children()->ContextToValidateOnClose;
+    }
+
+    /**
+     * renvoi les id des contextes qu'on doit fermer
+     * @return array
+     */
+    public function aGetActionContextToClose()
+    {
+        $val = (string) $this->m_ndHeader->children()->ActionContextToClose;
+        if (empty($val))
+        {
+            return array();
+        }
+
+        return explode('|', trim($val, '|'));
+    }
+
+
 	/**
 	 * @return MessageBox
 	 */
