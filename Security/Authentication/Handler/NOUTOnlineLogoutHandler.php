@@ -69,29 +69,33 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
             $this->m_clConfigurationDialogue->getSecret()
         );
 
-		$TabHeader=array(
-            'UsernameToken'=>$this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken),
-            'SessionToken'=>$oToken->getSessionToken());
+        if (isset($this->m_clSOAPProxy) && !is_null($this->m_clSOAPProxy))
+        {
+            $TabHeader=array(
+                'UsernameToken'=>$this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken),
+                'SessionToken'=>$oToken->getSessionToken());
 
-		try
-		{
-			//Disconnect
-			$this->m_clSOAPProxy->disconnect($TabHeader);
-            $this->__eventDispatcher->dispatch('session.disconnect', new GenericEvent($oToken->getSessionToken()));
-		}
-		catch(\Exception $e)
-		{
-			//erreur à la connexion
-			$clReponseXML = $this->m_clSOAPProxy->getXMLResponseWS();
-			if ($clReponseXML instanceof XMLResponseWS)
-			{
-				if ($clReponseXML->getNumError()!=OnlineError::ERR_UTIL_DECONNECTE)
-					throw new \Exception($clReponseXML->getMessError());
-			}
-			else
-			{
-				throw new \Exception('Error on logout');
-			}
-		}
+            try
+            {
+                //Disconnect
+                $this->m_clSOAPProxy->disconnect($TabHeader);
+                $this->__eventDispatcher->dispatch('session.disconnect', new GenericEvent($oToken->getSessionToken()));
+            }
+            catch(\Exception $e)
+            {
+                //erreur à la connexion
+                $clReponseXML = $this->m_clSOAPProxy->getXMLResponseWS();
+                if ($clReponseXML instanceof XMLResponseWS)
+                {
+                    if ($clReponseXML->getNumError()!=OnlineError::ERR_UTIL_DECONNECTE)
+                        throw new \Exception($clReponseXML->getMessError());
+                }
+                else
+                {
+                    throw new \Exception('Error on logout');
+                }
+            }
+        }
+
 	}
 }
