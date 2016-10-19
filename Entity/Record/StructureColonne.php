@@ -294,7 +294,19 @@ abstract class StructureColonne
 			return false;
 		}
 
-		return !empty($this->m_TabOptions[$sOption]);
+        if (!empty($this->m_TabOptions[$sOption]))
+        {
+            return true;
+        }
+
+        if (    ($sOption==self::OPTION_ReadOnly)
+            &&  isset($this->m_TabOptions[self::OPTION_Modele_Directory])
+            && !empty($this->m_TabOptions[self::OPTION_Modele_Directory]))
+        {
+            return true; //dans le cas d'un modèle directory, on force en readonly
+        }
+
+        return false;
 	}
 
 	/**
@@ -407,6 +419,11 @@ abstract class StructureColonne
                     if ($this->getOption(self::OPTION_Transform)==self::OPTION_Transform_Secret)
                     {
                         return 'simax_password';
+                    }
+
+					if ($this->isOption(self::OPTION_Modele_Directory))
+                    {
+                        return 'xs_base64Binary';
                     }
 
                     return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
