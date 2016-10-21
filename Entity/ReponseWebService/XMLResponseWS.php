@@ -508,6 +508,7 @@ class XMLResponseWS
 
 	//réponse générique
 	const RETURNTYPE_EMPTY          = 'Empty';
+    const RETURNTYPE_DONOTHING      = 'DoNothing';
 	const RETURNTYPE_REPORT         = 'Report';
 	const RETURNTYPE_VALUE          = 'Value';
 	const RETURNTYPE_REQUESTFILTER  = 'RequestFilter';
