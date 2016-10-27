@@ -8,7 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
-use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Cache\XcacheCache;
@@ -21,7 +21,7 @@ use Doctrine\Common\Cache\XcacheCache;
 class NOUTCache extends CacheProvider
 {
 	/**
-	 * @var \Doctrine\Common\Cache\FilesystemCache|\Doctrine\Common\Cache\ApcCache|\Doctrine\Common\Cache\XcacheCache
+	 * @var \Doctrine\Common\Cache\FilesystemCache|NOUTFileCache|\Doctrine\Common\Cache\ApcuCache|\Doctrine\Common\Cache\XcacheCache
 	 */
 	private $m_clPiloteCache;
 
@@ -30,7 +30,7 @@ class NOUTCache extends CacheProvider
 	{
 		if (extension_loaded('apc') || extension_loaded('apcu'))
 		{
-			$this->m_clPiloteCache = new ApcCache();
+			$this->m_clPiloteCache = new ApcuCache();
 			if (!empty($prefix))
 				$this->setNamespace($prefix);
 		}
@@ -47,6 +47,17 @@ class NOUTCache extends CacheProvider
 		}
 	}
 
+    public function destroy()
+    {
+        if ($this->m_clPiloteCache instanceof NOUTFileCache)
+        {
+            $this->m_clPiloteCache->destroy();
+        }
+        else
+        {
+            $this->doFlush();
+        }
+    }
 
 	/**
 	 * {@inheritdoc}

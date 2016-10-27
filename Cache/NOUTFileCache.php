@@ -21,6 +21,11 @@ class NOUTFileCache extends CacheProvider
 		$this->m_sDir = $dir;
 	}
 
+    public function destroy()
+    {
+        $this->doFlush();
+        @rmdir($this->m_sDir);
+    }
 
 	protected function _sGetFilename($id)
 	{
@@ -88,7 +93,7 @@ class NOUTFileCache extends CacheProvider
 	 */
 	protected function doFlush()
 	{
-		array_map('unlink', glob($this->m_sDir.'/*')); //on supprime tous les anciens fichier de cache WSDL
+		array_map('unlink', glob($this->m_sDir.'/*'));
 		return true;
 	}
 
