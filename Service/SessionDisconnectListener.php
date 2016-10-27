@@ -28,6 +28,6 @@ class SessionDisconnectListener
         //$tokenSession = $event->getSubject();
 
         $clCache = $this->m_clNOUTClient->getCacheSession();
-        $clCache->deleteAll();
+        $clCache->destroy();
     }
 }
