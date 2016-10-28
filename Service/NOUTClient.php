@@ -34,6 +34,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
+use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
@@ -56,6 +57,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class NOUTClient
@@ -64,11 +66,6 @@ class NOUTClient
      * @var ConfigurationDialogue
      */
     private $m_clConfigurationDialogue;
-
-    /**
-     * @var string
-     */
-    private $m_sCacheDir;
 
     /**
      * @var SOAPProxy
@@ -86,15 +83,11 @@ class NOUTClient
      */
     private $__tokenStorage;
 
-    /**
-     * @var NOUTCache
-     */
-    private $m_clCacheSession = null;
 
     /**
-     * @var NOUTCache
+     * @var NOUTClientCache
      */
-    private $m_clCacheIHM = null;
+    private $m_clCache = null;
 
     /**
      * @var OptionDialogue
@@ -112,9 +105,6 @@ class NOUTClient
     {
         $this->__tokenStorage = $tokenStorage;
 
-        $this->m_sCacheDir = $sCacheDir . '/' . self::REPCACHE;
-
-
         $oSecurityToken = $this->_oGetToken();
 
         $this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
@@ -122,14 +112,10 @@ class NOUTClient
 
         $this->m_clConfigurationDialogue = $configurationDialogue;
 
-        //création du cache pour la session
+        //création du gestionnaire de cache
         if ($oSecurityToken instanceof NOUTToken)
         {
-            $sSessionToken = $oSecurityToken->getSessionToken();
-            $this->m_clCacheSession = new NOUTCache($this->m_sCacheDir, $sSessionToken);
-
-            $sRepCacheIHM = $this->_sGetRepCacheIHM(Langage::TABL_ImageCatalogue);
-            $this->m_clCacheIHM = new NOUTCache($sRepCacheIHM);
+            $this->m_clCache = new NOUTClientCache($sCacheDir, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
         }
 
         $this->m_clOptionDialogue = new OptionDialogue();
@@ -193,7 +179,28 @@ class NOUTClient
      */
     public function getCacheSession()
     {
-        return $this->m_clCacheSession;
+        if (!is_null($this->m_clCache)){
+            return $this->m_clCache->getCacheSession();
+        }
+    }
+
+    /**
+     * @param $cache
+     * @param $name
+     * @return mixed
+     */
+    protected function _fetchFromCache($cache, $name)
+    {
+        if (!is_null($this->m_clCache)){
+            return $this->m_clCache->fetch($cache, $name);
+        }
+    }
+
+    protected function _saveInCache($cache, $name, $data)
+    {
+        if (!is_null($this->m_clCache)){
+            return $this->m_clCache->save($cache, $name, $data);
+        }
     }
 
     /**
@@ -425,13 +432,9 @@ class NOUTClient
     protected function _oGetInfoIHM()
     {
         $sUsername = $this->_oGetToken()->getLoginSIMAX();
-        if (!is_null($this->m_clCacheIHM))
-        {
-            $oInfoIHM = $this->m_clCacheIHM->fetch('info_' . $sUsername);
-            if ($oInfoIHM !== false)
-            {
-                return $oInfoIHM; //on a déjà les infos du menu
-            }
+        $oInfoIHM = $this->_fetchFromCache(NOUTClientCache::CACHE_IHM, "info_$sUsername");
+        if (isset($oInfoIHM) && ($oInfoIHM !== false)){
+            return $oInfoIHM; //on a déjà les infos du menu
         }
 
         //on a pas les infos, il faut les calculer
@@ -442,8 +445,8 @@ class NOUTClient
 
         $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
         $oInfoIHM = $clIHMLoader->oGetInfoIHM();
-        $this->m_clCacheIHM->save('info_' . $sUsername, $oInfoIHM);
 
+        $this->_saveInCache(NOUTClientCache::CACHE_IHM, "info_$sUsername", $oInfoIHM);
         return $oInfoIHM;
     }
 
@@ -453,13 +456,9 @@ class NOUTClient
     protected function __oGetIHMPart($method, $prefix)
     {
         $sUsername = $this->_oGetToken()->getLoginSIMAX();
-        if (!is_null($this->m_clCacheIHM))
-        {
-            $aTabMenu = $this->m_clCacheIHM->fetch("info_{$prefix}_{$sUsername}");
-            if ($aTabMenu !== false)
-            {
-                return $aTabMenu; //on a déjà les infos du menu
-            }
+        $aTabMenu = $this->_fetchFromCache(NOUTClientCache::CACHE_IHM, "info_{$prefix}_{$sUsername}");
+        if (isset($aTabMenu) && ($aTabMenu !== false)){
+            return $aTabMenu; //on a déjà les infos du menu
         }
 
         $clIdentification = $this->_clGetIdentificationREST('', false);
@@ -488,14 +487,11 @@ class NOUTClient
                             $aInfo[]=$clMenu;
                         }
                     }
-
                 }
-
             }
-
         }
 
-        $this->m_clCacheIHM->save("info_{$prefix}_{$sUsername}", $aInfo);
+        $this->_saveInCache(NOUTClientCache::CACHE_IHM, "info_{$prefix}_{$sUsername}", $aInfo);
         return $aInfo;
     }
 
@@ -585,31 +581,6 @@ class NOUTClient
         return $this->_oGetIHMPart('aToolbar', 'sGetToolbar', 'toolbar');
     }
 
-    /**
-     * @param $sIDTab
-     * @return string
-     */
-    protected function _sGetRepCacheIHM($sIDTab)
-    {
-        $oToken = $this->_oGetToken();
-        $clLangage = $oToken->getLangage();
-
-        $sRep = $this->m_sCacheDir . '/' . self::REPCACHE_IHM . '/' . $clLangage->getVersionLangage();
-
-        switch ($sIDTab)
-        {
-            case Langage::TABL_ImageCatalogue:
-                $sRep .= '/' . $clLangage->getVersionIcone();
-                break;
-        }
-
-        if (!file_exists($sRep))
-        {
-            mkdir($sRep, 0777, true);
-        }
-
-        return $sRep;
-    }
 
 
     // Pour l'écriture des fichiers en cache
@@ -1362,114 +1333,6 @@ class NOUTClient
     // ------------------------------------------------------------------------------------
 
 
-    // FICHIERS
-
-    /**
-     * récupère une icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
-     * @param $sIDIcon
-     * @param $sMimeType
-     * @param $sTransColor
-     * @param $nWidth
-     * @param $nHeight
-     * @param $bSmallIcon
-     * @return ActionResult
-     */
-    public function getIcon($sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight, $bSmallIcon = true)
-    {
-        $sIDColonne = $bSmallIcon ? Langage::COL_IMAGECATALOGUE_Image : Langage::COL_IMAGECATALOGUE_ImageGrande;
-        return $this->getImage(Langage::TABL_ImageCatalogue, $sIDColonne, $sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
-    }
-
-    /**
-     * récupère une icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
-     * @param $sIDIcon
-     * @param $sMimeType
-     * @param $sTransColor
-     * @param $nWidth
-     * @param $nHeight
-     * @param $sIDColonne
-     * @param $sIDFormulaire
-     * @return ActionResult
-     */
-    public function getImage($sIDFormulaire, $sIDColonne, $sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight)
-    {
-        //le retour c'est le chemin de fichier enregistré dans le cache
-        $sFichier = $this->_getImage($sIDFormulaire, $sIDColonne, $sIDIcon, $sMimeType, $sTransColor, $nWidth, $nHeight);
-
-        $clActionResult = new ActionResult(null);
-        $clActionResult->setData($sFichier);
-
-        //gestion du cache
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
-        $clActionResult->setLastModified(new \DateTime('@' . filemtime($sFichier)));
-
-        return $clActionResult;
-    }
-
-    /**
-     * récupère un icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
-     * @param $sIDFormulaire
-     * @param $sIDEnreg
-     * @param $sMimeType
-     * @param $sTransColor
-     * @param $nWidth
-     * @param $nHeight
-     * @param $sIDColonne
-     * @return string
-     */
-    protected function _getImage($sIDFormulaire, $sIDColonne, $sIDEnreg, $sMimeType, $sTransColor, $nWidth, $nHeight)
-    {
-        $clIdentification = $this->_clGetIdentificationREST('', true);
-
-        // Création des options
-        $aTabOption = array();
-        if (!empty($sMimeType))
-        {
-            $aTabOption[RESTProxy::OPTION_MimeType] = $sMimeType;
-        }
-
-        if (!empty($sTransColor))
-        {
-            $aTabOption[RESTProxy::OPTION_TransColor] = $sTransColor;
-        }
-
-        if (!empty($nWidth))
-        {
-            $aTabOption[RESTProxy::OPTION_Width] = $nWidth;
-        }
-
-        if (!empty($nHeight))
-        {
-            $aTabOption[RESTProxy::OPTION_Height] = $nHeight;
-        }
-
-        //on veut le contenu
-        $aTabOption[RESTProxy::OPTION_WantContent] = 1;
-        //quelle image on veut ?
-        $aTabOption[RESTProxy::OPTION_IDCol] = $sIDColonne;
-
-        //on regarde si le fichier existe
-        $sFile = $this->_sGetNomFichierCacheIHM($sIDFormulaire, $sIDEnreg, $aTabOption);
-
-        if (file_exists($sFile)) //Si le fichier est déjà dans le cache
-        {
-            return $sFile;
-        } else // Le fichier n'est pas dans le cache, on va le récupérer
-        {
-            // On essaye de récupérer l'image grande
-            $oRet = $this->m_clRESTProxy->sGetColInRecord(
-                $sIDFormulaire,
-                $sIDEnreg,
-                $aTabOption[RESTProxy::OPTION_IDCol],
-                array(),
-                $aTabOption,
-                $clIdentification,
-                $sFile
-            );
-
-            return $oRet->content;
-        }
-    }
 
     /**
      * @param $idformulaire
@@ -1514,117 +1377,160 @@ class NOUTClient
         return $sRet;
     }
 
+    /**
+     * @param HTTPResponse $oRet
+     * @return ActionResult
+     */
+    protected function _oMakeResultFromFile(HTTPResponse $oRet)
+    {
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($oRet);
+
+        //gestion du cache de symfony
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        $clActionResult->setLastModified($oRet->getDTLastModified());
+
+        return $clActionResult;
+    }
+
+
+    // FICHIERS
+    /**
+     * récupère une icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+     * @param $sIDIcon
+     * @param array $aTabOptions
+     * @param $sIDColonne
+     * @param $sIDFormulaire
+     * @return ActionResult
+     */
+    public function getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions)
+    {
+        //le retour c'est le chemin de fichier enregistré dans le cache
+        $oHTTPResponse = $this->_getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions);
+        return $this->_oMakeResultFromFile($oHTTPResponse);
+    }
+
+    /**
+     * récupère une image du langage
+     * @param $sIDIcon
+     * @param array $aTabOptions
+     * @param $sIDColonne
+     * @param $sIDFormulaire
+     * @return HTTPResponse
+     */
+    protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+
+        //on veut le contenu
+        $aTabOptions[RESTProxy::OPTION_WantContent] = 1;
+
+        if (!is_null($this->m_clCache)){
+            $dataCache = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
+            if (isset($dataCache) && ($dataCache !== false)){
+                return $dataCache;
+            }
+        }
+
+        //on a pas l'image en cache avec les options en question, il faut la récuperer
+        $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
+            $sIDFormulaire,
+            $sIDEnreg,
+            $sIDColonne,
+            array(),
+            $aTabOptions,
+            $clIdentification
+        );
+        $oFileInRecord->setLastModifiedIfNotExists();
+
+        if (!is_null($this->m_clCache)){
+            $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $oFileInRecord);
+        }
+
+        return $oFileInRecord;
+    }
+
     // Langage::TABL_ModeleFichier
 
     /**
      * récupère un fichier
+     * @param $idcontexte
+     * @param $idihm
      * @param $idForm
      * @param $idColumn
      * @param $idRecord
+     * @param array $aTabOptions
      * @return ActionResult
      */
-    public function getFile($idForm, $idColumn, $idRecord)
+    public function getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
     {
-        $sFichier = $this->_getFile($idForm, $idColumn, $idRecord);
-
-        $clActionResult = new ActionResult(null);
-        $clActionResult->setData($sFichier);
-
-        //gestion du cache
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
-        // $clActionResult->setLastModified(new \DateTime('@'.filemtime($sFichier)));
-
-        return $clActionResult;
+        $oHTTPResponse = $this->_getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions);
+        return $this->_oMakeResultFromFile($oHTTPResponse);
     }
 
 
     /**
      * récupère un fichier pour téléchargement
+     * @param $idcontexte
+     * @param $idihm
      * @param $idForm
      * @param $idColumn
      * @param $idRecord
      * @return File
      */
-    private function _getFile($idForm, $idColumn, $idRecord)
+    private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
     {
-        $clIdentification = $this->_clGetIdentificationREST('', true);
+        $clIdentification = $this->_clGetIdentificationREST($idcontexte, true);
         $sFile = null; // Pour stocker le contenu du fichier
 
-        // --------------------------------------------
-        // VERSION REST - Plus rapide
-        $aTabOption = array();
-        //on veut le contenu
-        $aTabOption[RESTProxy::OPTION_WantContent] = 1;
 
-        // $sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest = ''
-        $clFileResponseRest = $this->m_clRESTProxy->sGetColInRecord(
-            $idForm,            // ID Tableau
-            $idRecord,          // ID Enregistrement
-            $idColumn,          // ID Colonne
+        //on veut le contenu
+        $aTabOptions[RESTProxy::OPTION_WantContent] = 1;
+
+        if (!is_null($this->m_clCache)){
+            $dataCache = $this->m_clCache->fetchFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions);
+            if (isset($dataCache) && ($dataCache !== false)){
+                return $dataCache;
+            }
+        }
+
+        //on a pas l'image en cache avec les options en question, il faut la récuperer
+        $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
+            $idForm,
+            $idRecord,
+            $idColumn,
             array(),
-            $aTabOption,
-            $clIdentification,
-            $sFile
+            $aTabOptions,
+            $clIdentification
         );
 
-        // --------------------------------------------
-        // VERSION SOAP
-        /*
-        $clParamGetColInRecord              = new GetColInRecord();
-        $clParamGetColInRecord->WantContent = 1;      // On veut le contenu du fichier
-        $clParamGetColInRecord->Column      = $idColumn;   // Ajout des infos obligatoires sur le fichier
-        $clParamGetColInRecord->Record      = $idRecord;   // Ajout des infos obligatoires sur le fichier
+        $oFileInRecord->setLastModifiedIfNotExists();
+        if (!is_null($this->m_clCache)){
+            $this->m_clCache->saveFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions, $oFileInRecord);
+        }
 
-        $aTabHeaderSuppl = array();
-
-        $clFileResponseSoap = $this->m_clSOAPProxy->getColInRecord($clParamGetColInRecord, $this->_aGetTabHeader($aTabHeaderSuppl));
-        */
-        // --------------------------------------------
-
-
-        return $clFileResponseRest;
+        return $oFileInRecord;
     }
 
-    /**
-     * @param $idForm
-     * @param $idColumn
-     * @param $idRecord
-     * @param $height
-     * @return ActionResult
-     */
-    public function getImagePreview($idForm, $idColumn, $idRecord, $height)
+    public function saveInCache(UploadedFile $file, $idcontexte, $idihm, $idcolonne)
     {
-        $clIdentification = $this->_clGetIdentificationREST('', true);
-        $sFile = null; // Pour stocker le contenu du fichier
+        if (!is_null($this->m_clCache))
+        {
+            $data = new \stdClass();
+            $data->fileinfo = $file;
+            $data->content = file_get_contents($file->getFilename());
+            $name = $this->m_clCache->saveFile($idcontexte, $idihm, '', $idcolonne, '', array(), $data);
 
-        // --------------------------------------------
-        // VERSION REST - Plus rapide
-        $aTabOption = array();
-        //on veut le contenu
-        $aTabOption[RESTProxy::OPTION_WantContent] = 1;
-        $aTabOption[RESTProxy::OPTION_Height] = $height;
+            $clActionResult = new ActionResult(null);
+            $clActionResult->setData($name);
 
-        // $sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest = ''
-        $clFileResponseRest = $this->m_clRESTProxy->sGetColInRecord(
-            $idForm,            // ID Tableau
-            $idRecord,          // ID Enregistrement
-            $idColumn,          // ID Colonne
-            array(),
-            $aTabOption,
-            $clIdentification,
-            $sFile
-        );
+            //gestion du cache
+            $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+            // $clActionResult->setLastModified(new \DateTime('@'.filemtime($filePath))); // Erreur si le fichier n'existe pas
 
-        $clActionResult = new ActionResult(null);
-        $clActionResult->setData($clFileResponseRest);
-
-        //gestion du cache
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
-        // $clActionResult->setLastModified(new \DateTime('@'.filemtime($sFichier)));
-
-        return $clActionResult;
+            return $clActionResult;
+        }
     }
-
 
     /**
      * écrit un fichier dans le cache
@@ -1754,9 +1660,6 @@ class NOUTClient
     // ------------------------------------------------------------------------------------
 
 
-    const REPCACHE = 'NOUTClient';
-    const REPCACHE_IHM = 'ihm';
-    const REPCACHE_UPLOAD = 'upload';
 
     const TP_NotEmpty = 1;
     const TP_InArray = 2;

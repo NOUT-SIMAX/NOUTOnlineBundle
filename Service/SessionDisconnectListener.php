@@ -25,9 +25,9 @@ class SessionDisconnectListener
 
     public function disconnect(GenericEvent $event)
     {
-        //$tokenSession = $event->getSubject();
-
         $clCache = $this->m_clNOUTClient->getCacheSession();
-        $clCache->destroy();
+        if (isset($clCache)){
+            $clCache->destroy();
+        }
     }
 }
