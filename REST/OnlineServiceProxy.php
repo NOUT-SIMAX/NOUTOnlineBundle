@@ -185,74 +185,40 @@ class OnlineServiceProxy
 		return $sUrl;
 	}
 
-	protected function _sExecute_cURL($sAction, $sURI, $sDestination)
-	{
-        $response               = new \stdClass();
-        $response->content      = '';
-        $response->headers      = array();
+    /**
+     * @param $sURI
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    protected function _sExecute_cURL($sURI)
+    {
+        //initialisation de curl
+        $curl = curl_init($sURI);
 
-		//initialisation de curl
-		$curl = curl_init($sURI);
-
-		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-			ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP     . ': '  . $this->__clInfoClient->getIP(),
-			ConfigurationDialogue::HTTP_SIMAX_CLIENT        . ': '  . $this->__ConfigurationDialogue->getSociete(),
-			ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version. ': '  . $this->__ConfigurationDialogue->getVersion(),
-		));
-
-		if (!empty($sDestination)) // On a un fichier de destination, il faut écrire le résultat de l'url dans le fichier de destination
-		{
-			$fp = fopen($sDestination, "w");
-			curl_setopt($curl, CURLOPT_FILE, $fp);
-			curl_setopt($curl, CURLOPT_HEADER, 0);
-
-			curl_exec($curl);
-			fclose($fp);
-
-            $info = curl_getinfo($curl);
-
-
-			// Vérifie si une erreur survient
-			if(curl_errno($curl))
-			{
-				$e = new \Exception(curl_error($curl));
-				curl_close($curl);
-				throw $e;
-			}
-
-			curl_close($curl);
-
-			//si le fichier est vide on le supprime
-			if (is_file($sDestination) && ((filesize($sDestination) == 0) || ($info['http_code']!=200)))
-			{
-				unlink($sDestination);
-				return $response;
-			}
-
-            $response->content = $sDestination;
-            return $response;
-		}
-
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP     . ': '  . $this->__clInfoClient->getIP(),
+            ConfigurationDialogue::HTTP_SIMAX_CLIENT        . ': '  . $this->__ConfigurationDialogue->getSociete(),
+            ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version. ': '  . $this->__ConfigurationDialogue->getVersion(),
+        ));
         // ------------------------------------------------
-		// Contenu du fichier
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		$output = curl_exec($curl);
+        // Contenu du fichier
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($curl);
 
-		// Vérifie si une erreur survient
-		if(curl_errno($curl))
-		{
-			$e = new \Exception(curl_error($curl));
-			curl_close($curl);
-			throw $e;
-		}
+        // Vérifie si une erreur survient
+        if(curl_errno($curl))
+        {
+            $e = new \Exception(curl_error($curl));
+            curl_close($curl);
+            throw $e;
+        }
 
-        $response->content = $output;
 
         // ------------------------------------------------
         // Entêtes
         curl_setopt($curl, CURLOPT_HEADER, 1); // Demande des headers
 
-        $output = curl_exec($curl);
+        $headers_output = curl_exec($curl);
 
         // Vérifie si une erreur survient
         if(curl_errno($curl))
@@ -264,54 +230,26 @@ class OnlineServiceProxy
 
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $headers = substr($output, 0, $header_size);
-        $parsedHeaders = $this->get_headers_from_curl_response($headers);
-        $response->headers = $parsedHeaders;
+        $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
         // ------------------------------------------------
 
-		curl_close($curl);
+        curl_close($curl);
+        return new HTTPResponse($output, $parsedHeaders);
+    }
 
-		return $response;
-	}
-
-	protected function _sExecute_natif($sAction, $sURI, $sDestination)
+    /**
+     * @param $sURI
+     * @return \stdClass
+     * @throws \Exception
+     */
+	protected function _sExecute_natif($sURI)
 	{
-        $response               = new \stdClass();
-        $response->content      = '';
-        $response->headers      = array();
-
-		//obligé de rajouter l'ip ici car j'ai pas accès au entête http
-		$sIP = $this->__clInfoClient->getIP();
-		if (!empty($sIP))
-		{
-			$sURI .= '&ip=' . urlencode($sIP);
-		}
-
-		if (!empty($sDestination))
-		{
-			//on a un fichier de destination
-			if (@copy($sURI, $sDestination) === false)
-			{
-				$aError = error_get_last();
-				if (empty($aError))
-				{
-					$aError['message'] = 'le serveur ' . $this->__ConfigurationDialogue->getServiceAddress() . ' ne répond pas';
-				}
-				$e = new \Exception($aError['message']);
-
-				throw $e;
-			}
-
-			//si le fichier est vide on le supprime
-			if (is_file($sDestination) && filesize($sDestination) == 0)
-			{
-				unlink($sDestination);
-				return $response;
-			}
-
-            $response->content = $sDestination;
-
-			return $response;
-		}
+        //obligé de rajouter l'ip ici car j'ai pas accès au entête http
+        $sIP = $this->__clInfoClient->getIP();
+        if (!empty($sIP))
+        {
+            $sURI .= '&ip=' . urlencode($sIP);
+        }
 
 		if (($sResp = @file_get_contents($sURI)) === false)
 		{
@@ -325,12 +263,16 @@ class OnlineServiceProxy
 			throw $e;
 		}
 
-        $response->content      = $sResp;
-        $response->headers      = $http_response_header;
-		return $response;
+        return new HTTPResponse($sResp, $http_response_header);
 	}
 
-	protected function _sExecute($sAction, $sURI, $sDestination)
+    /**
+     * @param $sAction
+     * @param $sURI
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+	protected function _oExecute($sAction, $sURI)
 	{
 		if (isset($this->__clLogger))
 		{
@@ -343,22 +285,14 @@ class OnlineServiceProxy
             // content = le fichier
             // headers = contenu de $http_response_header
 
-			if (!function_exists('curl_version'))
+			if (extension_loaded('curl'))
 			{
-				$ret = $this->_sExecute_natif($sAction, $sURI, $sDestination);  // curl n'est pas disponible
+                $ret = $this->_sExecute_cURL($sURI);   // on utilise l'extension curl
 			}
 			else
 			{
-				$ret = $this->_sExecute_cURL($sAction, $sURI, $sDestination);   // on utilise l'extension curl
+                $ret = $this->_sExecute_natif($sURI);  // curl n'est pas disponible
 			}
-
-
-			// Encoder les options de header
-			if(!is_null($ret->headers))
-			{
-				$ret->headers = $this->_UTF8EncodeOptions($ret->headers);
-			}
-
 		}
 		catch(\Exception $e)
 		{
@@ -369,38 +303,14 @@ class OnlineServiceProxy
 			throw $e;
 		}
 
-        // Parsage des Headers Http
-        $ret->headers = $this->parseHeaders($ret->headers);
-
 		if (isset($this->__clLogger))
 		{
 			$this->__clLogger->stopQuery($sURI, $ret->content, (empty($sAction) ? substr($sURI, 0, 50) : $sAction), false, array('http-headers'=>$ret->headers));
 		}
-
-
-        // - connection
-        // - content-Type
-        // - content-Length
-
 		return $ret;
 	}
 
 
-	/**
-	 * @param $aOptions
-	 * @return array
-	 */
-	protected function _UTF8EncodeOptions($aOptions)
-	{
-		$aEncodedOptions = Array();
-
-		foreach($aOptions as $optionName => $option)
-		{
-			$aEncodedOptions[$optionName] = utf8_encode($option);
-		}
-
-		return $aEncodedOptions;
-	}
 
 
 
@@ -416,7 +326,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetUserExists', array('login' => $login), array(), new Identification());
 
-		return (int) $this->_sExecute('GetUserExists', $sURI, '')->content;
+		return (int) $this->_oExecute('GetUserExists', $sURI)->content;
 	}
 
 
@@ -428,7 +338,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetVersion', array(), array(), new Identification());
 
-		return $this->_sExecute('GetVersion', $sURI, '')->content;
+		return $this->_oExecute('GetVersion', $sURI)->content;
 	}
 
     /**
@@ -439,7 +349,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetMenu', array(), array(), $clIdentification);
 
-        return $this->_sExecute('GetMenu', $sURI, '')->content;
+        return $this->_oExecute('GetMenu', $sURI)->content;
     }
 
     /**
@@ -450,7 +360,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetToolbar', array(), array(), $clIdentification);
 
-        return $this->_sExecute('GetToolbar', $sURI, '')->content;
+        return $this->_oExecute('GetToolbar', $sURI)->content;
     }
 
     /**
@@ -461,7 +371,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetCentralIcon', array(), array(), $clIdentification);
 
-        return $this->_sExecute('GetCentralIcon', $sURI, '')->content;
+        return $this->_oExecute('GetCentralIcon', $sURI)->content;
     }
 
 	/**
@@ -473,7 +383,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetLangageVersion', array(), array(), $clIdentification);
 
-		return $this->_sExecute('GetLangageVersion', $sURI, '')->content;
+		return $this->_oExecute('GetLangageVersion', $sURI)->content;
 	}
 
 	/**
@@ -486,7 +396,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest($idTableau.'/GetChecksum', array(), array(), $clIdentification);
 
-		return $this->_sExecute('GetChecksum', $sURI, '')->content;
+		return $this->_oExecute('GetChecksum', $sURI)->content;
 	}
 
 	// IdTableau est IDForm
@@ -497,19 +407,29 @@ class OnlineServiceProxy
 	 * @param $sIDColonne
 	 * @param $aTabParam
 	 * @param $aTabOption
-	 * @param UsernameToken $clUsernameToken
-	 * @param $sTokenSession
-	 * @param string $sIDContexte
+	 * @param Identification $clIdentification
 	 * @return string
 	 */
-	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification, $sDest = '')
+	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
 	{
 		$sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
-
-		$result = $this->_sExecute('GetColInRecord', $sURI, $sDest); // On veut la réponse complète ici
-
-        return $result;
+        return $this->_oExecute('GetColInRecord', $sURI)->content;
 	}
+
+    /**
+     * @param $sIDTableau
+     * @param $sIDEnreg
+     * @param $sIDColonne
+     * @param $aTabParam
+     * @param $aTabOption
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     */
+    public function oGetFileInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
+        return $this->_oExecute('GetColInRecord', $sURI);
+    }
 
     /*
      * @param $sURL
@@ -517,7 +437,7 @@ class OnlineServiceProxy
      */
 	public function sGetFileFromUrl($sURL, $sDest = '')
 	{
-		$result = $this->_sExecute('GetColInRecord', $sURL, $sDest); // On veut la réponse complète ici
+		$result = $this->_oExecute('GetColInRecord', $sURL, $sDest); // On veut la réponse complète ici
 
 		return $result;
 	}
@@ -532,13 +452,13 @@ class OnlineServiceProxy
      * @return \stdClass
      * @throws \Exception
      */
-	public function sGetSuggestFromQuery($sIDForm, $sQuery,  $aTabParam, $aTabOption, Identification $clIdentification, $sDest = '')
+	public function sGetSuggestFromQuery($sIDForm, $sQuery,  $aTabParam, $aTabOption, Identification $clIdentification)
 	{
         $sEndPart = "autocomplete";
 
 		$sURI = $this->_sCreateRequest($sIDForm.'/'.$sQuery.'/'.$sEndPart, $aTabParam, $aTabOption, $clIdentification);
 
-		$result = $this->_sExecute('GetSuggestFromQuery', $sURI, $sDest); // On veut la réponse complète ici
+		$result = $this->_oExecute('GetSuggestFromQuery', $sURI); // On veut la réponse complète ici
 
 		return $result;
 	}
@@ -551,7 +471,7 @@ class OnlineServiceProxy
      * @param $response
      * @return array
      */
-    function get_headers_from_curl_response($response)
+    protected function _aGetHeadersFromCurlResponse($response)
     {
         $headers = array();
 
@@ -565,72 +485,6 @@ class OnlineServiceProxy
         return $headers;
     }
 
-
-    /**
-     * Parse a set of HTTP headers
-     *
-     * @param array     // The php headers to be parsed
-     * @param [string]  // The name of the header to be retrieved
-     * @return          // A header value if a header is passed
-     *                  // An array with all the headers otherwise
-     */
-    public function parseHeaders(array $headers, $header = null)
-    {
-        if(empty($headers))
-        {
-            return array();
-        }
-
-        $output = array();
-
-        if ('HTTP' === substr($headers[0], 0, 4))
-        {
-            list(, $output['status'], $output['status_text']) = explode(' ', $headers[0]);
-            unset($headers[0]);
-        }
-        elseif ((count($headers)==1) && (empty($headers[0]))){
-            return array();
-        }
-
-        foreach ($headers as $v)
-        {
-            $h = preg_split('/:\s*/', $v);
-            $output[$h[0]] = $h[1];
-        }
-
-        if (null !== $header)
-        {
-            if (isset($output[$header]))
-            {
-                return $output[$header];
-            }
-            return '';
-        }
-
-        // Parser les options
-        foreach ($output as $headerKey => $headerValue)
-        {
-            $options = explode(';', $headerValue);
-
-            // if(count($options) > 1)
-            {
-                $headerWithOptions          = new \stdClass();
-                $headerWithOptions->value   = array_shift($options); // Retire le premier élément
-                $headerWithOptions->options = array();
-
-                foreach ($options as $optionKey => $optionValue)
-                {
-                    $split = explode('=', $optionValue);
-                    $cleanOption = str_replace('"', "", $split[1]); // Retirer les quotes
-                    $headerWithOptions->options[$split[0]] = $cleanOption;
-                }
-
-                $output[$headerKey] = $headerWithOptions;
-            }
-        }
-
-        return $output;
-    }
 
 
 

@@ -25,7 +25,7 @@ services:
 
     nout_online.cache:
         class:  NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache
-        arguments: ["%kernel.cache_dir%/soap"]
+        arguments: ["%kernel.cache_dir%", "soap", ""]
 
     nout_online.client_information:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation

@@ -26,26 +26,43 @@ class NOUTCache extends CacheProvider
 	private $m_clPiloteCache;
 
 
-	public function __construct($dir, $prefix='')
+	public function __construct($dir, $prefix1, $prefix2, $prefix3='')
 	{
 		if (extension_loaded('apc') || extension_loaded('apcu'))
 		{
 			$this->m_clPiloteCache = new ApcuCache();
+
+            $prefix = $this->_sMakePrefix(array($prefix1, $prefix2, $prefix3), '_');
 			if (!empty($prefix))
-				$this->setNamespace($prefix);
+            {
+                $this->setNamespace($prefix);
+            }
 		}
 		elseif (extension_loaded('xcache'))
 		{
 			$this->m_clPiloteCache = new XcacheCache();
+            $prefix = $this->_sMakePrefix(array($prefix1, $prefix2, $prefix3), '_');
 			if (!empty($prefix))
-				$this->setNamespace($prefix);
+            {
+                $this->setNamespace($prefix);
+            }
 		}
 		else
 		{
-			//$this->m_clPiloteCache = new FilesystemCache($dir, '.noutcache.data');
-			$this->m_clPiloteCache = new NOUTFileCache($dir.(!empty($prefix) ? '/'.$prefix : ''));
+			$this->m_clPiloteCache = new NOUTFileCache($this->_sMakePrefix(array($dir, $prefix1, $prefix2, $prefix3), '/'));
 		}
 	}
+
+    protected function _sMakePrefix($aArray, $sep)
+    {
+        $aArray = array_filter($aArray, function($var)
+        {
+            // retourne lorsque l'entrée est impaire
+            return !empty($var);
+        });
+
+        return implode($sep, $aArray);
+    }
 
     public function destroy()
     {
