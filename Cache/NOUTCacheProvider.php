@@ -257,4 +257,27 @@ abstract class NOUTCacheProvider
      */
     abstract protected function doDelete($id);
 
+
+    public static function initCache($namespace, $prefix, $cachedir)
+    {
+        if (extension_loaded('apc') || extension_loaded('apcu'))
+        {
+            $cache = new NOUTApcuCache();
+            $cache->setNamespace($namespace, $prefix);
+        }
+        elseif (extension_loaded('xcache'))
+        {
+            $cache = new NOUTXCacheCache();
+            $cache->setNamespace($namespace, $prefix);
+        }
+        else
+        {
+            $cache = new NOUTFileCache();
+            $cache->setNamespace($namespace, $cachedir.(empty($prefix) ? '' : '/'.$prefix));
+        }
+
+        return $cache;
+
+    }
+
 }
