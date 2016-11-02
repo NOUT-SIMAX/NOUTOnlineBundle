@@ -11,6 +11,6 @@ services:
 
     nout_contexts.session_disconnect_listener:
         class:  NOUT\Bundle\ContextsBundle\Service\SessionDisconnectListener
-        arguments: [@nout_contexts.client]
+        arguments: ['%kernel.cache_dir%']
         tags:
           - { name: kernel.event_listener, event: session.disconnect, method: disconnect }

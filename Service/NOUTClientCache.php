@@ -9,37 +9,25 @@
 namespace NOUT\Bundle\ContextsBundle\Service;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTApcuCache;
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTFileCache;
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTXCacheCache;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 
 class NOUTClientCache
 {
     /**
-     * @var NOUTCache
+     * @var NOUTCacheProvider
      */
     private $m_clCacheSession = null;
 
     /**
-     * @var NOUTCache
+     * @var NOUTCacheProvider
      */
     private $m_clCacheIHM = null;
 
     /**
-     * @var NOUTCache
+     * @var NOUTCacheProvider
      */
     private $m_clCacheIcones = null;
-
-    /**
-     * @var string
-     */
-    private $m_sSessionToken = '';
-
-    /**
-     * @var string
-     */
-    private $m_sDir = '';
 
     /**
      * @param string $sDir
@@ -49,42 +37,10 @@ class NOUTClientCache
     {
         $sDir .= '/' . self::REPCACHE;
 
-        $this->m_sDir = $sDir;
-        $this->m_sSessionToken = $sSessionToken;
 
-        if (extension_loaded('apc') || extension_loaded('apcu'))
-        {
-            $this->m_clCacheSession = new NOUTApcuCache();
-            $this->m_clCacheSession->setNamespace($sSessionToken, self::SOUSREPCACHE_SESSION);
-
-            $this->m_clCacheIHM = new NOUTApcuCache();
-            $this->m_clCacheIHM->setNamespace(array($clLangage->getVersionLangage(), $clLangage->getVersionIcone()), self::SOUSREPCACHE_IHM);
-
-            $this->m_clCacheIcones = new NOUTApcuCache();
-            $this->m_clCacheIcones->setNamespace($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON);
-        }
-        elseif (extension_loaded('xcache'))
-        {
-            $this->m_clCacheSession = new NOUTXCacheCache();
-            $this->m_clCacheSession->setNamespace($sSessionToken, self::SOUSREPCACHE_SESSION);
-
-            $this->m_clCacheIHM = new NOUTXCacheCache();
-            $this->m_clCacheIHM->setNamespace(array($clLangage->getVersionLangage(), $clLangage->getVersionIcone()), self::SOUSREPCACHE_IHM);
-
-            $this->m_clCacheIcones = new NOUTXCacheCache();
-            $this->m_clCacheIcones->setNamespace($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON);
-        }
-        else
-        {
-            $this->m_clCacheSession = new NOUTFileCache();
-            $this->m_clCacheSession->setNamespace($sSessionToken, $sDir.'/'.self::SOUSREPCACHE_SESSION);
-
-            $this->m_clCacheIHM = new NOUTFileCache();
-            $this->m_clCacheIHM->setNamespace(array($clLangage->getVersionLangage(), $clLangage->getVersionIcone()), $sDir.'/'.self::SOUSREPCACHE_IHM);
-
-            $this->m_clCacheIcones = new NOUTFileCache();
-            $this->m_clCacheIcones->setNamespace($clLangage->getVersionIcone(), $sDir.'/'.self::SOUSREPCACHE_ICON);
-        }
+        $this->m_clCacheSession = NOUTCacheProvider::initCache($sSessionToken, self::SOUSREPCACHE_SESSION, $sDir);
+        $this->m_clCacheIHM = NOUTCacheProvider::initCache($clLangage->getVersionLangage(), self::SOUSREPCACHE_IHM, $sDir);
+        $this->m_clCacheIcones = NOUTCacheProvider::initCache($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON, $sDir);
     }
 
     /**
@@ -142,7 +98,14 @@ class NOUTClientCache
     public function fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption)
     {
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        return $this->m_clCacheIHM->fetch($sName);
+        if ($sIDFormulaire == Langage::TABL_ImageCatalogue)
+        {
+            return $this->m_clCacheIcones->fetch($sName);
+        }
+        else
+        {
+            return $this->m_clCacheIHM->fetch($sName);
+        }
     }
 
     /**
@@ -156,7 +119,14 @@ class NOUTClientCache
     public function saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption, $data)
     {
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        return $this->m_clCacheIHM->save($sName, $data);
+        if ($sIDFormulaire == Langage::TABL_ImageCatalogue)
+        {
+            return $this->m_clCacheIcones->save($sName, $data);
+        }
+        else
+        {
+            return $this->m_clCacheIHM->save($sName, $data);
+        }
     }
 
     /**
