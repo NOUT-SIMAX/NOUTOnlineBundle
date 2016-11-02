@@ -169,7 +169,7 @@ class NOUTClientCache
     public function fetchFile($sIDContexte, $idihm, $sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption)
     {
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        return $this->m_clCacheSession->fetch(array($sIDContexte, $idihm, $sName));
+        return $this->m_clCacheSession->fetch(array($sIDContexte, $idihm, 'file', $sName));
     }
 
     /**
