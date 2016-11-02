@@ -229,7 +229,7 @@ class OnlineServiceProxy
         }
 
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
+        $headers = substr($headers_output, 0, $header_size);
         $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
         // ------------------------------------------------
 

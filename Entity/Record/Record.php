@@ -7,6 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
+use NOUT\Bundle\ContextsBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
@@ -640,7 +641,7 @@ class Record
      * @param $oFile
      * @return string
      */
-    public function _sGetFileXML($sIDColonne, $oFile)
+    public function _sGetFileXML($sIDColonne, NOUTFileInfo $oFile=null)
     {
         // Structure attendue des données XML d'un fichier
         /*
@@ -659,28 +660,23 @@ class Record
             </simax:Data>
         */
 
-        $sFileXml = "";
-
-        $filePath       = $oFile->path;
-
-        if($filePath != "")
+        if($oFile instanceof NOUTFileInfo)
         {
-            $pathElements = explode('/', $filePath);
-            $fileUniqueId = array_pop($pathElements);
+            $fileUniqueId  = uniqid();
 
             // Headers
-            $sFileXml .= '<id_' . $sIDColonne . ' simax:ref="' . $fileUniqueId . '">';
-            $sFileXml .= $oFile->fileName;
+            $sFileXml = '<id_' . $sIDColonne . ' simax:ref="' . $fileUniqueId . '">';
+            $sFileXml .= $oFile->filename;
             $sFileXml .= '</id_' . $sIDColonne . '>';
 
             // Paramètres
             $sFileXml .= '<simax:Data ';
             $sFileXml .= 'simax:ref="' . $fileUniqueId . '" ';
-            $sFileXml .= 'simax:title="' . $oFile->fileName . '" ';
+            $sFileXml .= 'simax:title="' . $oFile->filename . '" ';
             $sFileXml .= 'simax:encoding="' . 'base64' . '" ';
             $sFileXml .= 'simax:size="' . $oFile->size . '" ';
-            $sFileXml .= 'simax:filename="' . $oFile->fileName . '" ';
-            $sFileXml .= 'simax:typemime="' . $oFile->mimeType . '">';
+            $sFileXml .= 'simax:filename="' . $oFile->filename . '" ';
+            $sFileXml .= 'simax:typemime="' . $oFile->mimetype . '">';
 
             // Content
             $sFileXml .= base64_encode($oFile->content);
