@@ -99,10 +99,22 @@ class NOUTXCacheCache extends NOUTCacheProvider
      */
     protected function doListEntry($id)
     {
-        $entry_list = apcu_cache_info()['cache_list'];
+        $this->checkAuthorization();
+        $varCacheCount = xcache_count(XC_TYPE_VAR);
 
         $aRet = array();
+        for ($i = 0; $i < $varCacheCount; $i ++) {
+            $data = xcache_list(XC_TYPE_VAR, $i);
 
+            foreach($data['cache_list'] as $entry)
+            {
+                $key = $entry['name'];
+                if (strncmp($key, $id, strlen($id))==0)
+                {
+                    $aRet[]=$key;
+                }
+            }
+        }
         return $aRet;
     }
 }
