@@ -73,22 +73,6 @@ class NOUTXCacheCache extends NOUTCacheProvider
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doGetStats()
-    {
-        $this->checkAuthorization();
-
-        $info = xcache_info(XC_TYPE_VAR, 0);
-        return array(
-            Cache::STATS_HITS   => $info['hits'],
-            Cache::STATS_MISSES => $info['misses'],
-            Cache::STATS_UPTIME => null,
-            Cache::STATS_MEMORY_USAGE      => $info['size'],
-            Cache::STATS_MEMORY_AVAILABLE  => $info['avail'],
-        );
-    }
 
     /**
      * Fetches an entry from the cache.

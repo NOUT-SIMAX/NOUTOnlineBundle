@@ -154,14 +154,6 @@ abstract class NOUTCacheProvider
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getStats()
-    {
-        return $this->doGetStats();
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function flushAll($prefix='')
@@ -265,12 +257,4 @@ abstract class NOUTCacheProvider
      */
     abstract protected function doDelete($id);
 
-    /**
-     * Retrieves cached information from the data store.
-     *
-     * @since 2.2
-     *
-     * @return array|null An associative array with server's statistics if available, NULL otherwise.
-     */
-    abstract protected function doGetStats();
 }
