@@ -8,6 +8,9 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
+
 class NOUTFileCache extends NOUTCacheProvider
 {
     const FILE_EXTENSION = '.noutcache.data';
@@ -15,6 +18,9 @@ class NOUTFileCache extends NOUTCacheProvider
     protected function makeKey($id, $prefix)
     {
         if (!is_array($id)){
+            if (empty($id)){
+                return $prefix;
+            }
             return sprintf('%s/%s', $prefix, (string)$id);
         }
 
@@ -28,7 +34,10 @@ class NOUTFileCache extends NOUTCacheProvider
     protected function getNamespacedId($id)
     {
         $key = $this->makeKey($id, $this->namespace);
-        $key.=self::FILE_EXTENSION;
+        if (!empty($id))
+        {
+            $key.=self::FILE_EXTENSION;
+        }
         return $key;
     }
 
@@ -92,15 +101,6 @@ class NOUTFileCache extends NOUTCacheProvider
 		return true;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function doGetStats()
-	{
-		return;
-	}
-
-
     /**
      * Fetches an entry from the cache.
      *
@@ -110,10 +110,74 @@ class NOUTFileCache extends NOUTCacheProvider
      */
     protected function doListEntry($id)
     {
-        //$entry_list = apcu_cache_info()['cache_list'];
+        $finder = new Finder();
+        $finder
+            ->files()
+            ->in($id.'/*')
+            ->name('*'.self::FILE_EXTENSION);
 
         $aRet = array();
+        foreach ($finder as $file) {
+            /** @var SplFileInfo $file */
+            $aRet[]=$file->getRealPath();
+        }
 
         return $aRet;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function flushAll($prefix='')
+    {
+        $nbFile = parent::flushAll($prefix);
+
+        $id = $this->getNamespacedId($prefix);
+        $aDir = $this->getSubDir($id);
+
+        usort($aDir, function ($a, $b)
+        {
+            return -strcmp($a, $b);
+        });
+
+        //on supprime les sous-rep
+        foreach($aDir as $dir)
+        {
+            if (is_dir($dir))
+            {
+                @rmdir($dir);
+            }
+        }
+        //on supprime le rep de la session
+        @rmdir($id);
+
+        return $nbFile;
+    }
+
+    protected function getSubDir($id)
+    {
+        $finder = new Finder();
+        $finder->directories()->in($id.'/*');
+        $finder->sort(function (\SplFileInfo $a, \SplFileInfo $b)
+        {
+            return -strcmp($a->getRealPath(), $b->getRealPath());
+        });
+
+        $id = str_replace(array('\\', '/'), array('_', '_'), $id);
+
+        $aRet = array();
+        foreach ($finder as $dir) {
+            /** @var SplFileInfo $dir */
+            $path_dir = $dir->getRealPath();
+            do
+            {
+                $aRet[]=$path_dir;
+                $path_dir=dirname($path_dir);
+            }
+            while(str_replace(array('\\', '/'), array('_', '_'), $path_dir) != $id);
+        }
+        return $aRet;
+    }
+
+
 }
