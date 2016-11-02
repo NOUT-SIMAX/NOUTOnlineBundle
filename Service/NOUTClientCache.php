@@ -9,7 +9,9 @@
 namespace NOUT\Bundle\ContextsBundle\Service;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTApcuCache;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTFileCache;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTXCacheCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 
 class NOUTClientCache
@@ -50,9 +52,39 @@ class NOUTClientCache
         $this->m_sDir = $sDir;
         $this->m_sSessionToken = $sSessionToken;
 
-        $this->m_clCacheSession = new NOUTCache($sDir, self::SOUSREPCACHE_SESSION,  $sSessionToken);
-        $this->m_clCacheIHM     = new NOUTCache($sDir, self::SOUSREPCACHE_IHM,      $clLangage->getVersionLangage().'_'.$clLangage->getVersionIcone());
-        $this->m_clCacheIcones  = new NOUTCache($sDir, self::SOUSREPCACHE_ICON,     $clLangage->getVersionIcone());
+        if (extension_loaded('apc') || extension_loaded('apcu'))
+        {
+            $this->m_clCacheSession = new NOUTApcuCache();
+            $this->m_clCacheSession->setNamespace($sSessionToken, self::SOUSREPCACHE_SESSION);
+
+            $this->m_clCacheIHM = new NOUTApcuCache();
+            $this->m_clCacheIHM->setNamespace(array($clLangage->getVersionLangage(), $clLangage->getVersionIcone()), self::SOUSREPCACHE_IHM);
+
+            $this->m_clCacheIcones = new NOUTApcuCache();
+            $this->m_clCacheIcones->setNamespace($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON);
+        }
+        elseif (extension_loaded('xcache'))
+        {
+            $this->m_clCacheSession = new NOUTXCacheCache();
+            $this->m_clCacheSession->setNamespace($sSessionToken, self::SOUSREPCACHE_SESSION);
+
+            $this->m_clCacheIHM = new NOUTXCacheCache();
+            $this->m_clCacheIHM->setNamespace(array($clLangage->getVersionLangage(), $clLangage->getVersionIcone()), self::SOUSREPCACHE_IHM);
+
+            $this->m_clCacheIcones = new NOUTXCacheCache();
+            $this->m_clCacheIcones->setNamespace($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON);
+        }
+        else
+        {
+            $this->m_clCacheSession = new NOUTFileCache();
+            $this->m_clCacheSession->setNamespace($sSessionToken, $sDir.'/'.self::SOUSREPCACHE_SESSION);
+
+            $this->m_clCacheIHM = new NOUTFileCache();
+            $this->m_clCacheIHM->setNamespace(array($clLangage->getVersionLangage(), $clLangage->getVersionIcone()), $sDir.'/'.self::SOUSREPCACHE_IHM);
+
+            $this->m_clCacheIcones = new NOUTFileCache();
+            $this->m_clCacheIcones->setNamespace($clLangage->getVersionIcone(), $sDir.'/'.self::SOUSREPCACHE_ICON);
+        }
     }
 
     /**
@@ -136,9 +168,8 @@ class NOUTClientCache
      */
     public function fetchFile($sIDContexte, $idihm, $sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption)
     {
-        $clCache = new NOUTCache($this->m_sDir, self::SOUSREPCACHE_SESSION,  $this->m_sSessionToken, $sIDContexte.'_'.$idihm);
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        return $clCache->fetch($sName);
+        return $this->m_clCacheSession->fetch(array($sIDContexte, $idihm, $sName));
     }
 
     /**
@@ -151,9 +182,8 @@ class NOUTClientCache
      */
     public function saveFile($sIDContexte, $idihm, $sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption, $data)
     {
-        $clCache = new NOUTCache($this->m_sDir, self::SOUSREPCACHE_SESSION,  $this->m_sSessionToken, $sIDContexte.'_'.$idihm);
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        if ($clCache->save($sName, $data))
+        if ($this->m_clCacheSession->save(array($sIDContexte, $idihm, 'file', $sName), $data))
         {
             return $sName;
         }
@@ -161,8 +191,7 @@ class NOUTClientCache
 
     public function fetchFileFromName($sIDContexte, $idihm, $name)
     {
-        $clCache = new NOUTCache($this->m_sDir, self::SOUSREPCACHE_SESSION,  $this->m_sSessionToken, $sIDContexte.'_'.$idihm);
-        return $clCache->fetch($name);
+        return $this->m_clCacheSession->fetch(array($sIDContexte, $idihm, 'file', $name));
     }
 
 

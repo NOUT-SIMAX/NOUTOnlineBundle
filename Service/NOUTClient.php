@@ -13,7 +13,7 @@ use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
@@ -175,7 +175,7 @@ class NOUTClient
     }
 
     /**
-     * @return NOUTCache
+     * @return NOUTCacheProvider
      */
     public function getCacheSession()
     {
@@ -1517,8 +1517,12 @@ class NOUTClient
         if (!is_null($this->m_clCache))
         {
             $data = new \stdClass();
-            $data->fileinfo = $file;
-            $data->content = file_get_contents($file->getFilename());
+            $data->fileinfo = new \stdClass();
+            $data->fileinfo->filename = $file->getClientOriginalName();
+            $data->fileinfo->extension = $file->getClientOriginalExtension();
+            $data->fileinfo->mimetype = $file->getClientMimeType();
+            $data->fileinfo->size = $file->getClientSize();
+            $data->content = file_get_contents($file->getRealPath());
             $name = $this->m_clCache->saveFile($idcontexte, $idihm, '', $idcolonne, '', array(), $data);
 
             $clActionResult = new ActionResult(null);
