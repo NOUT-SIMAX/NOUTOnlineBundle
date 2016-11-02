@@ -100,8 +100,8 @@ class NOUTXCacheCache extends NOUTCacheProvider
     protected function doListEntry($id)
     {
         $this->checkAuthorization();
-        $varCacheCount = xcache_count(XC_TYPE_VAR);
 
+        $varCacheCount = xcache_count(XC_TYPE_VAR);
         $aRet = array();
         for ($i = 0; $i < $varCacheCount; $i ++) {
             $data = xcache_list(XC_TYPE_VAR, $i);
