@@ -9,14 +9,14 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 
 class GestionWSDL
 {
     /**
-     * @var NOUTCache
+     * @var NOUTCacheProvider
      */
     protected $__cache;
 
@@ -35,7 +35,7 @@ class GestionWSDL
      */
     protected $m_dVersion;
 
-    public function __construct(NOUTCache $cache, $sUri)
+    public function __construct(NOUTCacheProvider $cache, $sUri)
     {
         $this->__cache = $cache;
         $this->m_sUri = $sUri;
@@ -71,11 +71,15 @@ class GestionWSDL
      */
     public function load()
     {
-        if (!isset($this->__clCache) || empty($this->m_sHash))
+        if (!isset($this->__cache) || empty($this->m_sHash))
+        {
             return false;
+        }
 
-        if ($this->__clCache->contains($this->m_sHash))
-            return $this->__clCache->fetch($this->m_sHash);
+        if ($this->__cache->contains(array('wsdl', $this->m_sHash)))
+        {
+            return $this->__cache->fetch(array('wsdl', $this->m_sHash));
+        }
 
         return false;
     }
@@ -85,10 +89,12 @@ class GestionWSDL
      */
     public function save($wsdl, $dureeVie)
     {
-        if (!isset($this->__clCache) || empty($this->__sVersionWSDL))
+        if (!isset($this->__cache) || empty($this->m_sHash))
+        {
             return ;
+        }
 
-        $this->__clCache->save($this->m_sHash, $wsdl, $dureeVie);
+        $this->__cache->save(array('wsdl', $this->m_sHash), $wsdl, $dureeVie);
     }
 
     /**

@@ -23,10 +23,6 @@ services:
         tags:
             - { name: data_collector, template: "NOUTOnlineBundle:DataCollector:layout.html.twig", id: "NOUTOnline" }
 
-    nout_online.cache:
-        class:  NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache
-        arguments: ["%kernel.cache_dir%", "soap", ""]
-
     nout_online.client_information:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation
         arguments:  ["@request_stack"]
@@ -45,7 +41,7 @@ services:
     #factory pour les proxy
     nout_online.service_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-        arguments:  [@nout_online.client_information, @nout_online.logger, @nout_online.cache]
+        arguments:  [@nout_online.client_information, @nout_online.logger, "%kernel.cache_dir%"]
 
     #les extension twigs
     nout_online.twig.nout_online_extension:

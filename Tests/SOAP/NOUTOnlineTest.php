@@ -11,7 +11,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;

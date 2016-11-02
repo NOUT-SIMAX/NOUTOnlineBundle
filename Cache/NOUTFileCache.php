@@ -8,42 +8,41 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
-use Doctrine\Common\Cache\CacheProvider;
-
-class NOUTFileCache extends CacheProvider
+class NOUTFileCache extends NOUTCacheProvider
 {
-	private $m_sDir;
-	private $m_sExtension = '.noutcache.data';
+    const FILE_EXTENSION = '.noutcache.data';
 
-
-	public function __construct($dir)
-	{
-		$this->m_sDir = $dir;
-	}
-
-    public function destroy()
+    protected function makeKey($id, $prefix)
     {
-        $this->doFlush();
-        @rmdir($this->m_sDir);
+        if (!is_array($id)){
+            return sprintf('%s/%s', $prefix, (string)$id);
+        }
+
+        $key = $prefix;
+        foreach($id as $subid){
+            $key.=sprintf('/%s', (string)$subid);
+        }
+        return $key;
     }
 
-	protected function _sGetFilename($id)
-	{
-		return $this->m_sDir.'/'.$id.$this->m_sExtension;
-	}
+    protected function getNamespacedId($id)
+    {
+        $key = $this->makeKey($id, $this->namespace);
+        $key.=self::FILE_EXTENSION;
+        return $key;
+    }
 
 	/**
 	 * {@inheritdoc}
 	 */
 	protected function doFetch($id)
 	{
-		$sFilePath = $this->_sGetFilename($id);
-		if (!file_exists($sFilePath))
+		if (!file_exists($id))
 		{
 			return false;
 		}
 
-		return unserialize(file_get_contents($sFilePath));
+		return unserialize(file_get_contents($id));
 	}
 
 	/**
@@ -51,9 +50,7 @@ class NOUTFileCache extends CacheProvider
 	 */
 	protected function doContains($id)
 	{
-		$sFilePath = $this->_sGetFilename($id);
-
-		return file_exists($sFilePath);
+		return file_exists($id);
 	}
 
 	/**
@@ -61,16 +58,15 @@ class NOUTFileCache extends CacheProvider
 	 */
 	protected function doSave($id, $data, $lifeTime = 0)
 	{
-		if (!file_exists($this->m_sDir))
+        $dir = dirname($id);
+		if (!file_exists($dir))
 		{
-			if (!@mkdir($this->m_sDir, 0777, true))
+			if (!@mkdir($dir, 0777, true))
 			{
 				return false;
 			}
 		}
-
-		file_put_contents($this->_sGetFilename($id), serialize($data));
-
+		file_put_contents($id, serialize($data));
 		return true;
 	}
 
@@ -79,10 +75,9 @@ class NOUTFileCache extends CacheProvider
 	 */
 	protected function doDelete($id)
 	{
-        $sFilePath = $this->_sGetFilename($id);
-        if (file_exists($sFilePath))
+        if (file_exists($id))
         {
-            unlink($this->_sGetFilename($id));
+            unlink($id);
         }
 
 		return true;
@@ -93,7 +88,7 @@ class NOUTFileCache extends CacheProvider
 	 */
 	protected function doFlush()
 	{
-		array_map('unlink', glob($this->m_sDir.'/*'));
+		array_map('unlink', glob($this->namespace.'/*'));
 		return true;
 	}
 
@@ -104,4 +99,21 @@ class NOUTFileCache extends CacheProvider
 	{
 		return;
 	}
+
+
+    /**
+     * Fetches an entry from the cache.
+     *
+     * @param string $id The beginning of the id of the cache entry to list.
+     *
+     * @return array|false.
+     */
+    protected function doListEntry($id)
+    {
+        //$entry_list = apcu_cache_info()['cache_list'];
+
+        $aRet = array();
+
+        return $aRet;
+    }
 }

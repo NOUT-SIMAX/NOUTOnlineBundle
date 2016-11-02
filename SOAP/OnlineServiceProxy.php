@@ -1,7 +1,7 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 //WSDLEntity utilsé en paramètres
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCache;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -123,7 +123,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 * @param NOUTOnlineLogger      $_clLogger
 	 * @param NOUTCache             $cache
      */
-    public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCache $cache=null)
+    public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCacheProvider $cache=null)
     {
         parent::__construct($clConfig->getWSDLUri(), $clConfig->getWsdl(), $clConfig->getHost(),$clConfig->getPort());
 
