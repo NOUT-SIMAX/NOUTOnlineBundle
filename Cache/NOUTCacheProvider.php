@@ -27,6 +27,12 @@ abstract class NOUTCacheProvider
             {
                 return $id;
             }
+
+            if (empty($id))
+            {
+                return $prefix;
+            }
+
             return sprintf('%s[%s]', $prefix, (string)$id);
         }
 

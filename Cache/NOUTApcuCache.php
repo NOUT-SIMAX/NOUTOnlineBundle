@@ -66,6 +66,14 @@ class NOUTApcuCache extends NOUTCacheProvider
         $entry_list = apcu_cache_info()['cache_list'];
 
         $aRet = array();
+        foreach($entry_list as $entry)
+        {
+            $key = $entry['info'];
+            if (strncmp($key, $id, strlen($id))==0)
+            {
+                $aRet[]=$key;
+            }
+        }
 
         return $aRet;
     }
