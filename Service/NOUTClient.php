@@ -13,6 +13,7 @@ use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
+use NOUT\Bundle\ContextsBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -1039,7 +1040,7 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdate($sIDContexte, Record $clRecord, $autovalidate = SOAPProxy::AUTOVALIDATE_None)
+    public function oUpdate($sIDContexte, $idihm, Record $clRecord, $autovalidate = SOAPProxy::AUTOVALIDATE_None)
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_InArray, '$autovalidate', $autovalidate, array(SOAPProxy::AUTOVALIDATE_None, SOAPProxy::AUTOVALIDATE_Cancel, SOAPProxy::AUTOVALIDATE_Validate));
@@ -1055,7 +1056,7 @@ class NOUTClient
         // Fichiers
 
         // Chercher tous les fichiers modifiés dans le Record // similaire à getStructforUpdateSOAP => getColonneFileModified
-        $aFilesToSend = $this->_getModifiedFiles($clRecord);
+        $aFilesToSend = $this->_getModifiedFiles($clRecord, $sIDContexte, $idihm);
         // -----------------------------------------------------
         $clParamUpdate->UpdateData = $clRecord->getUpdateData($aFilesToSend);
 
@@ -1480,7 +1481,7 @@ class NOUTClient
      */
     private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
     {
-        $clIdentification = $this->_clGetIdentificationREST($idcontexte, true);
+        $clIdentification = $this->_clGetIdentificationREST($idcontexte, false);
         $sFile = null; // Pour stocker le contenu du fichier
 
 
@@ -1512,42 +1513,29 @@ class NOUTClient
         return $oFileInRecord;
     }
 
-    public function saveInCache(UploadedFile $file, $idcontexte, $idihm, $idcolonne)
+    public function saveFileInCache(UploadedFile $file, $idcontexte, $idihm, $idcolonne)
     {
-        if (!is_null($this->m_clCache))
-        {
-            $data = new \stdClass();
-            $data->fileinfo = new \stdClass();
-            $data->fileinfo->filename = $file->getClientOriginalName();
-            $data->fileinfo->extension = $file->getClientOriginalExtension();
-            $data->fileinfo->mimetype = $file->getClientMimeType();
-            $data->fileinfo->size = $file->getClientSize();
-            $data->content = file_get_contents($file->getRealPath());
-            $name = $this->m_clCache->saveFile($idcontexte, $idihm, '', $idcolonne, '', array(), $data);
-
-            $clActionResult = new ActionResult(null);
-            $clActionResult->setData($name);
-
-            //gestion du cache
-            $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
-            // $clActionResult->setLastModified(new \DateTime('@'.filemtime($filePath))); // Erreur si le fichier n'existe pas
-
-            return $clActionResult;
-        }
-    }
-
-    /**
-     * écrit un fichier dans le cache
-     * @param $file
-     * @param $fileID
-     */
-    public function cacheFile($file, $fileID)
-    {
-        $filePath = $this->_cacheFile($file, $fileID); // Générer le chemin du fichier dans le cache
-        @copy($file, $filePath); // Copie du fichier dans le cache
+        $data = new NOUTFileInfo();
+        $data->initFromUploadedFile($file);
+        $name = $this->m_clCache->saveFile($idcontexte, $idihm, '', $idcolonne, '', array(), $data);
 
         $clActionResult = new ActionResult(null);
-        $clActionResult->setData($filePath);
+        $clActionResult->setData($name);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        // $clActionResult->setLastModified(new \DateTime('@'.filemtime($filePath))); // Erreur si le fichier n'existe pas
+
+        return $clActionResult;
+    }
+
+
+    public function getFileInCache($idcontexte, $idihm, $name)
+    {
+        $data = $this->m_clCache->fetchFileFromName($idcontexte, $idihm, $name);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($data);
 
         //gestion du cache
         $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
@@ -1557,54 +1545,20 @@ class NOUTClient
     }
 
     /**
-     * le fichier doit être déplacé dans le cache
-     * @param $file
-     * @param $fileID
-     */
-    private function _cacheFile($file, $fileID)
-    {
-        $clIdentification = $this->_clGetIdentificationREST('', true);
-
-        // Création des options
-        $aTabOption = array();
-        $sMimeType = $file->getClientMimeType();
-
-        if (!empty($sMimeType))
-        {
-            $aTabOption[RESTProxy::OPTION_MimeType] = $sMimeType;
-        }
-
-        $aTabOption[RESTProxy::OPTION_WantContent] = 1; // Dans le doute
-
-        // ($sIDTab, $sIDElement, $aTabOption)
-        $sFilePath = $this->_sGetCacheFilePath($fileID, $aTabOption);
-        $sFilePath = str_replace('\\', '/', $sFilePath); // Sanityze path
-
-
-        if (file_exists($sFilePath)) // Vérifie si le fichier est dans le cache ?
-        {
-            $fileExists = true;
-            // Soit le fichier existe et on le remplace
-            // Soit le fichier n'existe pas et on le met en cache
-        }
-
-        return $sFilePath;
-    }
-
-
-    /**
      * on construit la structure qui contient tous les fichiers à envoyer
      * @param $clRecord
+     * @param $idcontexte
+     * @param $idihm
      * @return array
      */
-    protected function _getModifiedFiles(Record $clRecord)
+    protected function _getModifiedFiles(Record $clRecord, $idcontexte, $idihm)
     {
         $aModifiedFiles = array();
 
         $structElem = $clRecord->clGetStructElem();
         $fiche = $structElem->getFiche();
 
-        $aModifiedFiles = $this->_getFilesFromSection($clRecord, $fiche, $aModifiedFiles);
+        $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $fiche, $aModifiedFiles);
 
 
         return $aModifiedFiles;
@@ -1613,11 +1567,13 @@ class NOUTClient
     /**
      * recherche récursive des fichiers
      * @param $clRecord
+     * @param $idcontexte
+     * @param $idihm
      * @param $section
      * @param $aModifiedFiles
      * @return array
      */
-    protected function _getFilesFromSection(Record $clRecord, StructureSection $section, $aModifiedFiles)
+    protected function _getFilesFromSection(Record $clRecord, $idcontexte, $idihm, StructureSection $section, $aModifiedFiles)
     {
         $structColonne = $section->getTabStructureColonne();
 
@@ -1631,29 +1587,26 @@ class NOUTClient
             if ($typeElement == StructureColonne::TM_Separateur)
             {
                 /**@var StructureSection $colonne */
-                $aModifiedFiles = $this->_getFilesFromSection($clRecord, $colonne, $aModifiedFiles);
-            } else if ($typeElement == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
+                $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $colonne, $aModifiedFiles);
+            }
+            else if ($typeElement == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
             {
                 // On a un fichier modifié, on doit le récupérer
-                $file = new \stdClass();
-                $file->path = "";
-
                 $fullPath = $clRecord->getValCol($idColonne);
-
                 if ($fullPath != "")
                 {
-                    $stringElements = explode('?', $fullPath); // Le nom du fichier se trouve après le path
+                    $name = explode('?', $fullPath); // Le nom du fichier se trouve après le path
+                    /** @var NOUTFileInfo $data */
+                    $file = $this->m_clCache->fetchFileFromName($idcontexte, $idihm, $name[0]);
 
-                    $file->path = $stringElements[0];
-                    $file->fileName = $stringElements[1];
-                    $file->cacheID = basename($file->path);
-                    $file->content = file_get_contents($file->path);
-                    $file->mimeType = mime_content_type($file->path);
-                    $file->size = filesize($file->path);
+                    // Ajout du fichier dans le tableau
+                    $aModifiedFiles[$idColonne] = $file;
+                }
+                else
+                {
+                    $aModifiedFiles[$idColonne] = null;
                 }
 
-                // Ajout du fichier dans le tableau
-                $aModifiedFiles[$idColonne] = $file;
             }
         }
 
