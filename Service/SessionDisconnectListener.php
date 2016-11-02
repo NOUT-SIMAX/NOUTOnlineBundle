@@ -27,7 +27,7 @@ class SessionDisconnectListener
     {
         $clCache = $this->m_clNOUTClient->getCacheSession();
         if (isset($clCache)){
-            $clCache->destroy();
+            $clCache->flushAll();
         }
     }
 }
