@@ -27,6 +27,6 @@ class SessionDisconnectListener
     public function disconnect(GenericEvent $event)
     {
         $clCache = NOUTCacheProvider::initCache($event->getSubject(), NOUTClientCache::SOUSREPCACHE_SESSION, $this->m_sCacheDir.'/'.NOUTClientCache::REPCACHE);
-        $clCache->flushAll();
+        $clCache->deletePrefix();
     }
 }
