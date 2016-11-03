@@ -15,7 +15,7 @@ class NOUTFileCache extends NOUTCacheProvider
 {
     const FILE_EXTENSION = '.noutcache.data';
 
-    protected function makeKey($id, $prefix)
+    protected function _makeKey($id, $prefix)
     {
         if (!is_array($id)){
             if (empty($id)){
@@ -31,9 +31,9 @@ class NOUTFileCache extends NOUTCacheProvider
         return $key;
     }
 
-    protected function getNamespacedId($id)
+    protected function _getNamespacedId($id)
     {
-        $key = $this->makeKey($id, $this->namespace);
+        $key = $this->_makeKey($id, $this->namespace);
         if (!empty($id))
         {
             $key.=self::FILE_EXTENSION;
@@ -44,7 +44,7 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doFetch($id)
+	protected function _doFetch($id)
 	{
 		if (!file_exists($id))
 		{
@@ -57,7 +57,7 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doContains($id)
+	protected function _doContains($id)
 	{
 		return file_exists($id);
 	}
@@ -65,7 +65,7 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doSave($id, $data, $lifeTime = 0)
+	protected function _doSave($id, $data, $lifeTime = 0)
 	{
         $dir = dirname($id);
 		if (!file_exists($dir))
@@ -82,7 +82,7 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doDelete($id)
+	protected function _doDelete($id)
 	{
         if (file_exists($id))
         {
@@ -108,7 +108,7 @@ class NOUTFileCache extends NOUTCacheProvider
      *
      * @return array|false.
      */
-    protected function doListEntry($id)
+    protected function _doListEntry($id)
     {
         $finder = new Finder();
         $finder
@@ -132,7 +132,7 @@ class NOUTFileCache extends NOUTCacheProvider
     {
         $nbFile = parent::flushAll($prefix);
 
-        $id = $this->getNamespacedId($prefix);
+        $id = $this->_getNamespacedId($prefix);
         $aDir = $this->getSubDir($id);
 
         usort($aDir, function ($a, $b)

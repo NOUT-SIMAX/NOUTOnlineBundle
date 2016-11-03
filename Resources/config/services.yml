@@ -41,7 +41,12 @@ services:
     #factory pour les proxy
     nout_online.service_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-        arguments:  [@nout_online.client_information, @nout_online.logger, "%kernel.cache_dir%"]
+        arguments:  [@nout_online.client_information, @nout_online.logger, @nout_online.cache_factory]
+
+    #factory pour les caches
+    nout_online.cache_factory:
+        class:      NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory
+        arguments:  [@router, "%kernel.cache_dir%"]
 
     #les extension twigs
     nout_online.twig.nout_online_extension:

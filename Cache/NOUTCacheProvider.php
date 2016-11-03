@@ -9,7 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
 
-abstract class NOUTCacheProvider
+abstract class NOUTCacheProvider implements NOUTCacheInterface
 {
     /**
      * The namespace to prefix all cache ids with.
@@ -19,7 +19,7 @@ abstract class NOUTCacheProvider
     protected $namespace = '';
 
 
-    protected function makeKey($id, $prefix)
+    protected function _makeKey($id, $prefix)
     {
         if (!is_array($id))
         {
@@ -55,9 +55,9 @@ abstract class NOUTCacheProvider
      *
      * @return string The namespaced id.
      */
-    protected function getNamespacedId($id)
+    protected function _getNamespacedId($id)
     {
-        return $this->makeKey($id, $this->namespace);
+        return $this->_makeKey($id, $this->namespace);
     }
 
 
@@ -70,7 +70,7 @@ abstract class NOUTCacheProvider
      */
     public function setNamespace($namespace, $prefix)
     {
-        $this->namespace  = $this->makeKey($namespace, $prefix);
+        $this->namespace  = $this->_makeKey($namespace, $prefix);
     }
 
     /**
@@ -92,7 +92,7 @@ abstract class NOUTCacheProvider
      */
     public function fetch($id)
     {
-        return $this->doFetch($this->getNamespacedId($id));
+        return $this->_doFetch($this->_getNamespacedId($id));
     }
 
     /**
@@ -109,8 +109,8 @@ abstract class NOUTCacheProvider
         }
 
         // note: the array_combine() is in place to keep an association between our $keys and the $namespacedKeys
-        $namespacedKeys = array_combine($keys, array_map(array($this, 'getNamespacedId'), $keys));
-        $items          = $this->doFetchMultiple($namespacedKeys);
+        $namespacedKeys = array_combine($keys, array_map(array($this, '_getNamespacedId'), $keys));
+        $items          = $this->_doFetchMultiple($namespacedKeys);
         $foundItems     = array();
 
         // no internal array function supports this sort of mapping: needs to be iterative
@@ -137,10 +137,10 @@ abstract class NOUTCacheProvider
     {
         $namespacedKeysAndValues = array();
         foreach ($keysAndValues as $key => $value) {
-            $namespacedKeysAndValues[$this->getNamespacedId($key)] = $value;
+            $namespacedKeysAndValues[$this->_getNamespacedId($key)] = $value;
         }
 
-        return $this->doSaveMultiple($namespacedKeysAndValues, $lifetime);
+        return $this->_doSaveMultiple($namespacedKeysAndValues, $lifetime);
     }
 
     /**
@@ -152,7 +152,7 @@ abstract class NOUTCacheProvider
      */
     public function deleteMultiple(array $keys)
     {
-        return $this->doDeleteMultiple($keys);
+        return $this->_doDeleteMultiple($keys);
     }
 
     /**
@@ -164,7 +164,7 @@ abstract class NOUTCacheProvider
      */
     public function contains($id)
     {
-        return $this->doContains($this->getNamespacedId($id));
+        return $this->_doContains($this->_getNamespacedId($id));
     }
 
     /**
@@ -182,7 +182,7 @@ abstract class NOUTCacheProvider
      */
     public function save($id, $data, $lifeTime = 0)
     {
-        return $this->doSave($this->getNamespacedId($id), $data, $lifeTime);
+        return $this->_doSave($this->_getNamespacedId($id), $data, $lifeTime);
     }
 
     /**
@@ -195,7 +195,7 @@ abstract class NOUTCacheProvider
      */
     public function delete($id)
     {
-        return $this->doDelete($this->getNamespacedId($id));
+        return $this->_doDelete($this->_getNamespacedId($id));
     }
 
     /**
@@ -208,8 +208,8 @@ abstract class NOUTCacheProvider
      */
     public function deletePrefix($prefix='')
     {
-        $keys = $this->doListEntry($this->getNamespacedId($prefix));
-        return $this->doDeleteMultiple($keys);
+        $keys = $this->_doListEntry($this->_getNamespacedId($prefix));
+        return $this->_doDeleteMultiple($keys);
     }
 
     /**
@@ -219,7 +219,7 @@ abstract class NOUTCacheProvider
      */
     public function flushAll()
     {
-        return $this->doFlushAll();
+        return $this->_doFlushAll();
     }
 
     /**
@@ -228,12 +228,12 @@ abstract class NOUTCacheProvider
      * @param array $keys Array of keys to retrieve from cache
      * @return array Array of values retrieved for the given keys.
      */
-    protected function doFetchMultiple(array $keys)
+    protected function _doFetchMultiple(array $keys)
     {
         $returnValues = array();
 
         foreach ($keys as $key) {
-            if (false !== ($item = $this->doFetch($key)) || $this->doContains($key)) {
+            if (false !== ($item = $this->_doFetch($key)) || $this->_doContains($key)) {
                 $returnValues[$key] = $item;
             }
         }
@@ -248,12 +248,12 @@ abstract class NOUTCacheProvider
      * @param array $keys Array of keys to retrieve from cache
      * @return array Array of values retrieved for the given keys.
      */
-    protected function doDeleteMultiple(array $keys)
+    protected function _doDeleteMultiple(array $keys)
     {
         $returnValues = array();
 
         foreach ($keys as $key) {
-            $returnValues[$key] = $this->doDelete($key);
+            $returnValues[$key] = $this->_doDelete($key);
         }
 
         return $returnValues;
@@ -267,7 +267,7 @@ abstract class NOUTCacheProvider
      *
      * @return mixed|false The cached data or FALSE, if no cache entry exists for the given id.
      */
-    abstract protected function doFetch($id);
+    abstract protected function _doFetch($id);
 
 
     /**
@@ -277,7 +277,7 @@ abstract class NOUTCacheProvider
      *
      * @return array|false.
      */
-    abstract protected function doListEntry($id);
+    abstract protected function _doListEntry($id);
 
     /**
      * Tests if an entry exists in the cache.
@@ -286,7 +286,7 @@ abstract class NOUTCacheProvider
      *
      * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
-    abstract protected function doContains($id);
+    abstract protected function _doContains($id);
 
     /**
      * Default implementation of doSaveMultiple. Each driver that supports multi-put should override it.
@@ -297,12 +297,12 @@ abstract class NOUTCacheProvider
      *
      * @return bool TRUE if the operation was successful, FALSE if it wasn't.
      */
-    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
+    protected function _doSaveMultiple(array $keysAndValues, $lifetime = 0)
     {
         $success = true;
 
         foreach ($keysAndValues as $key => $value) {
-            if (!$this->doSave($key, $value, $lifetime)) {
+            if (!$this->_doSave($key, $value, $lifetime)) {
                 $success = false;
             }
         }
@@ -320,7 +320,7 @@ abstract class NOUTCacheProvider
      *
      * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    abstract protected function doSave($id, $data, $lifeTime = 0);
+    abstract protected function _doSave($id, $data, $lifeTime = 0);
 
     /**
      * Deletes a cache entry.
@@ -329,7 +329,7 @@ abstract class NOUTCacheProvider
      *
      * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
-    abstract protected function doDelete($id);
+    abstract protected function _doDelete($id);
 
 
     /**
@@ -337,35 +337,6 @@ abstract class NOUTCacheProvider
      *
      * @return bool TRUE if the cache entries were successfully flushed, FALSE otherwise.
      */
-    abstract protected function doFlushAll();
-
-    /**
-     * renvoi le bon cache en fonction des extensions qui sont chargées
-     * @param $namespace
-     * @param $prefix
-     * @param $cachedir
-     * @return NOUTApcuCache|NOUTFileCache|NOUTXCacheCache
-     */
-    public static function initCache($namespace, $prefix, $cachedir)
-    {
-        if (extension_loaded('apc') || extension_loaded('apcu'))
-        {
-            $cache = new NOUTApcuCache();
-            $cache->setNamespace($namespace, $prefix);
-        }
-        elseif (extension_loaded('xcache'))
-        {
-            $cache = new NOUTXCacheCache();
-            $cache->setNamespace($namespace, $prefix);
-        }
-        else
-        {
-            $cache = new NOUTFileCache();
-            $cache->setNamespace($namespace, $cachedir.(empty($prefix) ? '' : '/'.$prefix));
-        }
-
-        return $cache;
-
-    }
+    abstract protected function _doFlushAll();
 
 }

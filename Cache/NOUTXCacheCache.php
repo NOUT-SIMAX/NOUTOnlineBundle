@@ -19,9 +19,9 @@ class NOUTXCacheCache extends NOUTCacheProvider
      *
      * @return mixed|false The cached data or FALSE, if no cache entry exists for the given id.
      */
-    protected function doFetch($id)
+    protected function _doFetch($id)
     {
-        return $this->doContains($id) ? unserialize(xcache_get($id)) : false;
+        return $this->_doContains($id) ? unserialize(xcache_get($id)) : false;
     }
 
     /**
@@ -31,7 +31,7 @@ class NOUTXCacheCache extends NOUTCacheProvider
      *
      * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
-    protected function doContains($id)
+    protected function _doContains($id)
     {
         return xcache_isset($id);
     }
@@ -46,7 +46,7 @@ class NOUTXCacheCache extends NOUTCacheProvider
      *
      * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    protected function doSave($id, $data, $lifeTime = 0)
+    protected function _doSave($id, $data, $lifeTime = 0)
     {
         return xcache_set($id, serialize($data), (int) $lifeTime);
     }
@@ -58,7 +58,7 @@ class NOUTXCacheCache extends NOUTCacheProvider
      *
      * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
-    protected function doDelete($id)
+    protected function _doDelete($id)
     {
         return xcache_unset($id);
     }
@@ -68,7 +68,7 @@ class NOUTXCacheCache extends NOUTCacheProvider
      *
      * @return bool TRUE if the cache entries were successfully flushed, FALSE otherwise.
      */
-    protected function doFlushAll()
+    protected function _doFlushAll()
     {
         $this->checkAuthorization();
 
@@ -102,7 +102,7 @@ class NOUTXCacheCache extends NOUTCacheProvider
      *
      * @return array|false.
      */
-    protected function doListEntry($id)
+    protected function _doListEntry($id)
     {
         $this->checkAuthorization();
 

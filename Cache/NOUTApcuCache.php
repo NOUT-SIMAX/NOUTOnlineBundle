@@ -15,7 +15,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doFetch($id)
+    protected function _doFetch($id)
     {
         return apcu_fetch($id);
     }
@@ -23,7 +23,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doContains($id)
+    protected function _doContains($id)
     {
         return apcu_exists($id);
     }
@@ -31,7 +31,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
+    protected function _doSave($id, $data, $lifeTime = 0)
     {
         return apcu_store($id, $data, $lifeTime);
     }
@@ -39,7 +39,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
+    protected function _doDelete($id)
     {
         // apcu_delete returns false if the id does not exist
         return apcu_delete($id) || ! apcu_exists($id);
@@ -48,7 +48,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doFlushAll()
+    protected function _doFlushAll()
     {
         return apcu_clear_cache();
     }
@@ -57,10 +57,10 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doListEntry($id)
+    protected function _doListEntry($id)
     {
         $aRet = array();
-        $regex = '/^'.str_replace(array('[', ']'), array('\\[','\\]'), $id).'.*/';
+        $regex = '/^'.str_replace(array('[', ']', '/'), array('\\[','\\]', '\\/'), $id).'.*/';
         $iterator = new \APCUIterator($regex, APC_ITER_KEY);
         foreach ($iterator as $key=>$counter)
         {
@@ -72,7 +72,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doDeleteMultiple(array $keys)
+    protected function _doDeleteMultiple(array $keys)
     {
         return apcu_delete($keys);
     }
@@ -80,7 +80,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doFetchMultiple(array $keys)
+    protected function _doFetchMultiple(array $keys)
     {
         return apcu_fetch($keys);
     }
@@ -88,7 +88,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
+    protected function _doSaveMultiple(array $keysAndValues, $lifetime = 0)
     {
         $result = apcu_store($keysAndValues, null, $lifetime);
 

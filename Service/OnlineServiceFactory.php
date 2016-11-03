@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
@@ -32,12 +33,12 @@ class OnlineServiceFactory
 	protected $m_clClientInformation;
 
 
-	public function __construct(ClientInformation $clientInfo, NOUTOnlineLogger $logger, $cache_dir)
+	public function __construct(ClientInformation $clientInfo, NOUTOnlineLogger $logger, NOUTCacheFactory $cacheFactory)
 	{
 		$this->m_clLogger = $logger;
 		$this->m_clClientInformation=$clientInfo;
 
-        $this->m_clCache = NOUTCacheProvider::initCache('noutonline', null, $cache_dir);
+        $this->m_clCache = $cacheFactory->getCache('noutonline', '', '');
 	}
 
 	/**

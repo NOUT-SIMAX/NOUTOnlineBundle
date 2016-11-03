@@ -4,6 +4,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 /**
@@ -38,7 +39,7 @@ class DefaultController extends Controller
         var_dump($request->server->get('HTTP_HOST'));
 
         // /blog/my-blog-post
-        var_dump($this->generateUrl('index'));
+        var_dump($this->generateUrl('index',array(), UrlGeneratorInterface::ABSOLUTE_URL));
 
         var_dump($_SERVER);
 
