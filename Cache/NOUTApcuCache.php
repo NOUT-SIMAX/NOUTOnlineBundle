@@ -48,34 +48,33 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doFlush()
+    protected function doFlushAll()
     {
         return apcu_clear_cache();
     }
 
 
     /**
-     * Fetches an entry from the cache.
-     *
-     * @param string $id The beginning of the id of the cache entry to list.
-     *
-     * @return array|false.
+     * {@inheritdoc}
      */
     protected function doListEntry($id)
     {
-        $entry_list = apcu_cache_info()['cache_list'];
-
         $aRet = array();
-        foreach($entry_list as $entry)
+        $regex = '/^'.str_replace(array('[', ']'), array('\\[','\\]'), $id).'.*/';
+        $iterator = new \APCUIterator($regex, APC_ITER_KEY);
+        foreach ($iterator as $key=>$counter)
         {
-            $key = $entry['info'];
-            if (strncmp($key, $id, strlen($id))==0)
-            {
-                $aRet[]=$key;
-            }
+            $aRet[]=$key;
         }
-
         return $aRet;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doDeleteMultiple(array $keys)
+    {
+        return apcu_delete($keys);
     }
 
     /**
