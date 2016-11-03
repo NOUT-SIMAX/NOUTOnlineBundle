@@ -14,6 +14,7 @@ use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\ContextsBundle\Entity\NOUTFileInfo;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -58,6 +59,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
@@ -102,7 +104,7 @@ class NOUTClient
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, $sCacheDir)
+    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory)
     {
         $this->__tokenStorage = $tokenStorage;
 
@@ -116,7 +118,7 @@ class NOUTClient
         //création du gestionnaire de cache
         if ($oSecurityToken instanceof NOUTToken)
         {
-            $this->m_clCache = new NOUTClientCache($sCacheDir, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
+            $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
         }
 
         $this->m_clOptionDialogue = new OptionDialogue();

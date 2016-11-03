@@ -7,10 +7,10 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
     nout_contexts.client:
         class:      NOUT\Bundle\ContextsBundle\Service\NOUTClient
-        arguments:  [@security.token_storage, @nout_online.service_factory, @nout_online.configuration_dialogue, '%kernel.cache_dir%']
+        arguments:  [@security.token_storage, @nout_online.service_factory, @nout_online.configuration_dialogue, @nout_online.cache_factory]
 
     nout_contexts.session_disconnect_listener:
         class:  NOUT\Bundle\ContextsBundle\Service\SessionDisconnectListener
-        arguments: ['%kernel.cache_dir%']
+        arguments: [@nout_online.cache_factory]
         tags:
           - { name: kernel.event_listener, event: session.disconnect, method: disconnect }

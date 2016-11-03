@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\ContextsBundle\Service;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 
@@ -30,17 +31,14 @@ class NOUTClientCache
     private $m_clCacheIcones = null;
 
     /**
-     * @param string $sDir
+     * @param string $sCacheDir
      * @param string $sSessionToken
      */
-    public function __construct($sDir, $sSessionToken, Langage $clLangage)
+    public function __construct(NOUTCacheFactory $cacheFactory, $sSessionToken, Langage $clLangage)
     {
-        $sDir .= '/' . self::REPCACHE;
-
-
-        $this->m_clCacheSession = NOUTCacheProvider::initCache($sSessionToken, self::SOUSREPCACHE_SESSION, $sDir);
-        $this->m_clCacheIHM = NOUTCacheProvider::initCache($clLangage->getVersionLangage(), self::SOUSREPCACHE_IHM, $sDir);
-        $this->m_clCacheIcones = NOUTCacheProvider::initCache($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON, $sDir);
+        $this->m_clCacheSession = $cacheFactory->getCache($sSessionToken, self::SOUSREPCACHE_SESSION, self::REPCACHE);
+        $this->m_clCacheIHM =  $cacheFactory->getCache($clLangage->getVersionLangage(), self::SOUSREPCACHE_IHM, self::REPCACHE);
+        $this->m_clCacheIcones =  $cacheFactory->getCache($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON, self::REPCACHE);
     }
 
     /**
@@ -222,6 +220,7 @@ class NOUTClientCache
 
 
     const REPCACHE              = 'NOUTClient';
+
     const SOUSREPCACHE_SESSION  = 'session';
     const SOUSREPCACHE_IHM      = 'ihm';
     const SOUSREPCACHE_ICON     = 'icons';

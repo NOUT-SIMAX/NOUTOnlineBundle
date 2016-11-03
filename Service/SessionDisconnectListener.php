@@ -9,24 +9,25 @@
 namespace NOUT\Bundle\ContextsBundle\Service;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class SessionDisconnectListener
 {
     /**
-     * @var string
+     * @var NOUTCacheFactory
      */
-    private $m_sCacheDir;
+    private $m_clCacheFactory;
 
-    public function __construct($cachedir)
+    public function __construct(NOUTCacheFactory $cacheFactory)
     {
-        $this->m_sCacheDir = $cachedir;
+        $this->m_clCacheFactory = $cacheFactory;
     }
 
     public function disconnect(GenericEvent $event)
     {
-        $clCache = NOUTCacheProvider::initCache($event->getSubject(), NOUTClientCache::SOUSREPCACHE_SESSION, $this->m_sCacheDir.'/'.NOUTClientCache::REPCACHE);
+        $clCache = $this->m_clCacheFactory->getCache($event->getSubject(), NOUTClientCache::SOUSREPCACHE_SESSION, NOUTClientCache::REPCACHE);
         $clCache->deletePrefix();
     }
 }
