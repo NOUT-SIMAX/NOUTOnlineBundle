@@ -125,12 +125,17 @@ class NOUTFileCache extends NOUTCacheProvider
         return $aRet;
     }
 
+    protected function _doFlushAll()
+    {
+        return false;
+    }
+
     /**
      * {@inheritDoc}
      */
-    public function flushAll($prefix='')
+    public function deletePrefix($prefix='')
     {
-        $nbFile = parent::flushAll($prefix);
+        $nbFile = parent::deletePrefix($prefix);
 
         $id = $this->_getNamespacedId($prefix);
         $aDir = $this->getSubDir($id);
