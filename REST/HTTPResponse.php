@@ -118,6 +118,18 @@ class HTTPResponse
         }
     }
 
+    public function resetLastModified()
+    {
+        if (!array_key_exists('Last-Modified', $this->headers))
+        {
+            //on ajoute le last modified à aujourd'hui
+            $this->headers['Last-Modified']=new \stdClass();
+            $this->headers['Last-Modified']->options = array();
+        }
+        $this->headers['Last-Modified']->value = gmdate('D, d M Y H:i:s T');
+    }
+
+
     public function getDTLastModified()
     {
         if (array_key_exists('Last-Modified', $this->headers))
