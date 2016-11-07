@@ -415,13 +415,22 @@ abstract class StructureColonne
 			{
                 if ($this->_isMonolineText())
                 {
-                    // Texte mono-ligne
-                    if ($this->getOption(self::OPTION_Transform)==self::OPTION_Transform_Secret)
+
+                    $MonolineTransform2Type = [
+                        self::OPTION_Transform_Secret   => 'simax_password',
+                        self::OPTION_Transform_Email    => 'simax_email'
+                    ];
+
+                    $transformOption = $this->getOption(self::OPTION_Transform);
+
+                    if(array_key_exists($transformOption, $MonolineTransform2Type))
                     {
-                        return 'simax_password';
+                        return $MonolineTransform2Type[$transformOption];
                     }
 
-					if ($this->isOption(self::OPTION_Modele_Directory))
+                    // --------- Cas particulier --------
+
+					if ($this->isOption(self::OPTION_Modele_Directory)) // Est-ce que l'option est présente
                     {
                         return 'xs_base64Binary';
                     }
@@ -602,6 +611,7 @@ abstract class StructureColonne
 	const OPTION_Transform_Url				= "url";
 	const OPTION_Transform_Video			= "video";
 	const OPTION_Transform_Secret			= "secret";
+	const OPTION_Transform_Email			= "email";
 
     // Constantes pour les fusions
     const FUSIONTYPE_Aucun          = 0;
