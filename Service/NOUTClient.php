@@ -1404,12 +1404,13 @@ class NOUTClient
      * @param array $aTabOptions
      * @param $sIDColonne
      * @param $sIDFormulaire
+     * @param array $aTabPHPManipulation
      * @return ActionResult
      */
-    public function getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions)
+    public function getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions, $aTabPHPManipulation=array())
     {
         //le retour c'est le chemin de fichier enregistré dans le cache
-        $oHTTPResponse = $this->_getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions);
+        $oHTTPResponse = $this->_getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions, $aTabPHPManipulation);
         return $this->_oMakeResultFromFile($oHTTPResponse);
     }
 
@@ -1419,36 +1420,73 @@ class NOUTClient
      * @param array $aTabOptions
      * @param $sIDColonne
      * @param $sIDFormulaire
+     * @param array $aTabPHPManipulation
      * @return HTTPResponse
      */
-    protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions)
+    protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $aTabPHPManipulation=array())
     {
-        $clIdentification = $this->_clGetIdentificationREST('', true);
-
         //on veut le contenu
         $aTabOptions[RESTProxy::OPTION_WantContent] = 1;
 
-        if (!is_null($this->m_clCache)){
-            $dataCache = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
-            if (isset($dataCache) && ($dataCache !== false)){
-                return $dataCache;
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+
+
+        $aTabOptionsForName = $aTabOptions;
+        if (count($aTabPHPManipulation)>0)
+        {
+            foreach($aTabPHPManipulation as $name=>$option)
+            {
+                $aTabOptionsForName[$name]=$option['value'];
+            }
+
+            if (!is_null($this->m_clCache)){
+                $oFileInRecord = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName);
+                if (isset($oFileInRecord) && ($oFileInRecord !== false)){
+                    return $oFileInRecord; //on l'image manipuler, on la récupère
+                }
             }
         }
 
-        //on a pas l'image en cache avec les options en question, il faut la récuperer
-        $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
-            $sIDFormulaire,
-            $sIDEnreg,
-            $sIDColonne,
-            array(),
-            $aTabOptions,
-            $clIdentification
-        );
-        $oFileInRecord->setLastModifiedIfNotExists();
-
         if (!is_null($this->m_clCache)){
-            $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $oFileInRecord);
+            $oFileInRecord = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
         }
+
+        if (!isset($oFileInRecord) || ($oFileInRecord === false))
+        {
+            //on a pas l'image en cache avec les options en question, il faut la récuperer
+            $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
+                $sIDFormulaire,
+                $sIDEnreg,
+                $sIDColonne,
+                array(),
+                $aTabOptions,
+                $clIdentification
+            );
+
+            $oFileInRecord->setLastModifiedIfNotExists();
+
+            if (!is_null($this->m_clCache))
+            {
+                //on sauve l'image non manipulée
+                $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $oFileInRecord);
+            }
+        }
+
+        //on applique les modifications
+        if (count($aTabPHPManipulation)>0)
+        {
+            foreach($aTabPHPManipulation as $name=>$option)
+            {
+                call_user_func($option['callback'], $option['value'], $oFileInRecord);
+            }
+
+            if (!is_null($this->m_clCache))
+            {
+                //on sauve l'image modifiée
+                $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName, $oFileInRecord);
+            }
+        }
+
 
         return $oFileInRecord;
     }
