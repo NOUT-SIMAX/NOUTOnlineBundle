@@ -866,6 +866,33 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+
+
+    /**
+     * Affichage d'une liste via l'action recherche
+     * @param $sIDTableau
+     * @param string $sIDContexte
+     * @param array $tabParamQuery
+     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     */
+    public function oExecSearch(array $tabParamQuery, $sIDTableau, $sIDContexte = '')
+    {
+        //paramètre de l'action liste
+        $clParamSearch = new Search();
+        $this->_initStructParamFromTabParamRequest($clParamSearch, $tabParamQuery);
+        $clParamSearch->Table = $sIDTableau;
+
+        //header
+        $aTabHeaderSuppl = array();
+        if (!empty($sIDContexte))
+        {
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
     /**
      * @param Execute $clParamExecute
      * @param array $aTabHeaderSuppl
