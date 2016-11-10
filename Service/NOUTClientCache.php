@@ -111,6 +111,26 @@ class NOUTClientCache
      * @param $sIDColonne
      * @param $sIDEnreg
      * @param $aTabOption
+     * @return false|mixed
+     */
+    public function deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption)
+    {
+        $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
+        if ($sIDFormulaire == Langage::TABL_ImageCatalogue)
+        {
+            return $this->m_clCacheIcones->delete($sName);
+        }
+        else
+        {
+            return $this->m_clCacheIHM->delete($sName);
+        }
+    }
+
+    /**
+     * @param $sIDFormulaire
+     * @param $sIDColonne
+     * @param $sIDEnreg
+     * @param $aTabOption
      * @param $data
      * @return bool
      */

@@ -1417,7 +1417,7 @@ class NOUTClient
         $clActionResult->setData($oRet);
 
         //gestion du cache de symfony
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        $clActionResult->setTypeCache($oRet->isNoCache() ? ActionResultCache::TYPECACHE_None : ActionResultCache::TYPECACHE_Public);
         $clActionResult->setLastModified($oRet->getDTLastModified());
 
         return $clActionResult;
@@ -1504,7 +1504,13 @@ class NOUTClient
         {
             foreach($aTabPHPManipulation as $name=>$option)
             {
-                call_user_func($option['callback'], $option['value'], $oFileInRecord);
+                if (!call_user_func($option['callback'], $option['value'], $oFileInRecord))
+                {
+                    $this->m_clCache->deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
+                    $this->m_clCache->deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName);
+                    $oFileInRecord->setNoCache(true);
+                    return $oFileInRecord;
+                }
             }
 
             if (!is_null($this->m_clCache))
