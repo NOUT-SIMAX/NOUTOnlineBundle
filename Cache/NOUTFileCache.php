@@ -110,6 +110,9 @@ class NOUTFileCache extends NOUTCacheProvider
      */
     protected function _doListEntry($id)
     {
+        if (!is_dir($id)) {
+            return array();
+        }
         $finder = new Finder();
         $finder
             ->files()
@@ -161,6 +164,11 @@ class NOUTFileCache extends NOUTCacheProvider
 
     protected function getSubDir($id)
     {
+        if (!is_dir($id)) {
+            return array();
+        }
+
+
         $finder = new Finder();
         $finder->directories()->in($id.'/*');
         $finder->sort(function (\SplFileInfo $a, \SplFileInfo $b)
