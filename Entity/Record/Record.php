@@ -361,8 +361,7 @@ class Record
      */
     public function getDisplayValCol($idColonne)
     {
-        if (!isset($this->m_TabColumnsValues[$idColonne]))
-        {
+        if (!isset($this->m_TabColumnsValues[$idColonne])){
             return;
         }
 
@@ -402,6 +401,9 @@ class Record
      */
     public function isModified($idColonne)
     {
+        if (!isset($this->m_TabColumnsModified[$idColonne])){
+            return false;
+        }
         return $this->m_TabColumnsModified[$idColonne];
     }
 
