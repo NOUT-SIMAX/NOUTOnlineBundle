@@ -13,8 +13,10 @@ namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 class OnlineServiceProxy
@@ -185,6 +187,20 @@ class OnlineServiceProxy
 		return $sUrl;
 	}
 
+    protected function _oMakeResponse($output, $headers)
+    {
+        $ret = new HTTPResponse($output, $headers);
+        if ($ret->getStatus()!=200)
+        {
+            $no_error = new OnlineError(0, 0, 0, '');
+            $no_error->parseFromREST($output);
+            //il y a une erreur, il faut parser l'erreur
+            $e = new SOAPException($no_error->getMessage(), $no_error->getCode());
+            throw $e;
+        }
+        return $ret;
+    }
+
     /**
      * @param $sURI
      * @return HTTPResponse
@@ -234,7 +250,7 @@ class OnlineServiceProxy
         // ------------------------------------------------
 
         curl_close($curl);
-        return new HTTPResponse($output, $parsedHeaders);
+        return $this->_oMakeResponse($output, $parsedHeaders);
     }
 
     /**
@@ -263,7 +279,7 @@ class OnlineServiceProxy
 			throw $e;
 		}
 
-        return new HTTPResponse($sResp, $http_response_header);
+        return $this->_oMakeResponse($sResp, $http_response_header);
 	}
 
     /**

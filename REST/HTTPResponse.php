@@ -13,11 +13,13 @@ class HTTPResponse
 {
     public $content;
     public $headers;
+    public $no_cache;
 
     public function __construct($content, $headers)
     {
         $this->content = $content;
         $this->headers = $headers;
+        $this->no_cache = false;
 
         if (!is_array($this->headers))
         {
@@ -27,6 +29,23 @@ class HTTPResponse
         $this->_UTF8EncodeOptions();
         $this->headers = $this->_aParseHeaders($this->headers);
     }
+
+    /**
+     * @return boolean
+     */
+    public function isNoCache()
+    {
+        return $this->no_cache;
+    }
+
+    /**
+     * @param boolean $no_cache
+     */
+    public function setNoCache($no_cache)
+    {
+        $this->no_cache = $no_cache;
+    }
+
 
 
     /**

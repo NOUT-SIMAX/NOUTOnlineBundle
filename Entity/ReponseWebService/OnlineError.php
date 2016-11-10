@@ -109,6 +109,20 @@ class OnlineError
 		return $this->m_sMessage;
 	}
 
+    public function parseFromREST($output)
+    {
+        $tabLines = explode("\r\n", $output);
+
+        $re = '/([0-9]+)\(([0-9]+)\|([0-9]+)\)(.*)/';
+        preg_match_all($re, $tabLines[0], $matches);
+
+        $this->m_nErreur = $matches[1][0];
+        $this->m_nCategorie = $matches[2][0];
+        $this->m_nCode = $matches[3][0];
+
+        $this->m_sMessage = strip_tags($tabLines[1]);
+    }
+
     const ERR_NOUTONLINE_OFF                = 1;
 
 	//constante pour les codes d'erreurs
