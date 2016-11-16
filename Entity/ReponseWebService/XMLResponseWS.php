@@ -240,22 +240,26 @@ class XMLResponseWS
 	{
         $ndXML = $this->getNodeXML(); // Récupération du noeud xml
 
+
+		$aDataAttributes = [];
+
         /* @var $DataElement \SimpleXMLElement */
         $DataElement 	= $ndXML->Data; // Récupération du noeud data fils du noeud xml
-        $aAttributesXml = $DataElement->attributes('http://www.nout.fr/soap'); // Va récupérer le préfixe déclaré dans l'entête SOAP
+		if (isset($DataElement))
+		{
+			$aAttributesXml = $DataElement->attributes('http://www.nout.fr/soap'); // Va récupérer le préfixe déclaré dans l'entête SOAP
 
-        $aDataAttributes = [];
 
-        foreach($aAttributesXml as $key => $value)
-        {
-            $aDataAttributes[$key] = (string)$value;
-        }
+			foreach($aAttributesXml as $key => $value)
+			{
+				$aDataAttributes[$key] = (string)$value;
+			}
 
-        // Ajout des données de fichier
-        $aDataAttributes['data'] = $this->getData();
+			// Ajout des données de fichier
+			$aDataAttributes['data'] = $this->getData();
+		}
 
         return $aDataAttributes;
-
 	}
 
 	/**
