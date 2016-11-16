@@ -192,9 +192,10 @@ class NOUTClient
      * @param $name
      * @return mixed
      */
-    protected function _fetchFromCache($cache, $name)
+    public function fetchFromCache($cache, $name)
     {
-        if (!is_null($this->m_clCache)){
+        if (!is_null($this->m_clCache))
+        {
             return $this->m_clCache->fetch($cache, $name);
         }
     }
@@ -435,7 +436,7 @@ class NOUTClient
     protected function _oGetInfoIHM()
     {
         $sUsername = $this->_oGetToken()->getLoginSIMAX();
-        $oInfoIHM = $this->_fetchFromCache(NOUTClientCache::CACHE_IHM, "info_$sUsername");
+        $oInfoIHM = $this->fetchFromCache(NOUTClientCache::CACHE_IHM, "info_$sUsername");
         if (isset($oInfoIHM) && ($oInfoIHM !== false)){
             return $oInfoIHM; //on a déjà les infos du menu
         }
@@ -459,7 +460,7 @@ class NOUTClient
     protected function __oGetIHMPart($method, $prefix)
     {
         $sUsername = $this->_oGetToken()->getLoginSIMAX();
-        $aTabMenu = $this->_fetchFromCache(NOUTClientCache::CACHE_IHM, "info_{$prefix}_{$sUsername}");
+        $aTabMenu = $this->fetchFromCache(NOUTClientCache::CACHE_IHM, "info_{$prefix}_{$sUsername}");
         if (isset($aTabMenu) && ($aTabMenu !== false)){
             return $aTabMenu; //on a déjà les infos du menu
         }
@@ -963,8 +964,23 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_REPORT:
             {
-                $clActionResult->setData($clReponseXML->sGetReport());
                 $clActionResult->setElement($clReponseXML->clGetElement());
+
+                $aFileData  = $clReponseXML->getFileAttributes();   // Récupérer les attributs d'un éventuel fichier
+                if(array_key_exists("filename", $aFileData))
+                {
+                    $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
+                    $nameForCache = uniqid();
+                    $clActionResult->setData($nameForCache);
+
+                    // Mise en cache du fichier
+                    $this->m_clCache->save(NOUTClientCache::CACHE_Session, $nameForCache,  $aFileData);
+                }
+                else // Cas normal
+                {
+                    $clActionResult->setData($clReponseXML->sGetReport());
+                }
+
 
                 break;
             }
@@ -997,7 +1013,7 @@ class NOUTClient
                 if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
-                    throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel", OnlineError::ERR_MEMORY_OVERFLOW);
+                    throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
                 // Instance d'un parseur
@@ -1550,7 +1566,8 @@ class NOUTClient
      * @param $idForm
      * @param $idColumn
      * @param $idRecord
-     * @return File
+     * @param array $aTabOptions
+     * @return false|mixed|HTTPResponse
      */
     private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
     {
@@ -1579,6 +1596,7 @@ class NOUTClient
         );
 
         $oFileInRecord->setLastModifiedIfNotExists();
+
         if (!is_null($this->m_clCache)){
             $this->m_clCache->saveFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions, $oFileInRecord);
         }
