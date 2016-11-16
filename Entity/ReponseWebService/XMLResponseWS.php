@@ -27,7 +27,7 @@ class XMLResponseWS
 	protected $m_ndHeader;
 
 	/**
-	 * @var array tableau des erreur
+	 * @var OnlineError[]  tableau des erreur
 	 */
 	protected $m_TabError;
 
@@ -47,17 +47,26 @@ class XMLResponseWS
 		$clEnvelope   = simplexml_load_string($sXML);
 
 		//calcul du nom du namespace de l'enveloppe
-		$tabNamespace    = $clEnvelope->getNamespaces();
+		$tabNamespaceDuXML    = $clEnvelope->getNamespaces();
+		// tableau associatif nom => url
 
+		// Il n'y a que ces 4 là qui sont possibles pour l'enveloppe SOAP (standard w3c)
+		// les deux mêmes avec / final ou nom pour compatibilité avec vieille version de NOUTOnline
         $aNamespacePossible = array(
             'http://www.w3.org/2003/05/soap-envelope/',
             'http://schemas.xmlsoap.org/soap/envelope/',
             'http://www.w3.org/2003/05/soap-envelope',
             'http://schemas.xmlsoap.org/soap/envelope',
         );
-        foreach($aNamespacePossible as $sNamespacePossible){
-            $this->m_sNamespaceSOAP = array_search($sNamespacePossible, $tabNamespace);
-            if ($this->m_sNamespaceSOAP){
+
+		//recherche les namespaces possible dans les namespances du XML
+        foreach($aNamespacePossible as $sUrlNamespacePossible)
+		{
+            $this->m_sNamespaceSOAP = array_search($sUrlNamespacePossible, $tabNamespaceDuXML); // false si ne trouve pas la valeur dans le tableau
+			//renvoi la clé si trouvé, donc le nom du namespace
+
+			if ($this->m_sNamespaceSOAP !== false) // Si le namespace de l'enveloppe est un de ceux autorisés
+			{
                 break;
             }
         }
@@ -69,15 +78,19 @@ class XMLResponseWS
 		//on parse les erreurs si c'en est une
 		$this->m_TabError = null;
 
+		/* @var $ndFault \SimpleXMLElement */
 		$ndFault = isset($this->m_ndBody) ? $this->m_ndBody->children($this->m_sNamespaceSOAP, true)->Fault : null;
+
 		if (!empty($ndFault))
 		{
 			//le noeud ListErr fils de  Detail
+			/* @var $ndListErr \SimpleXMLElement */
 			$ndListErr = $ndFault->children($this->m_sNamespaceSOAP, true)->Detail->children()->ListErr;
 
 			//on recherche le namespace pour les erreurs SIMAX http://www.nout.fr/soap/error
 			foreach ($ndListErr->children('http://www.nout.fr/soap/error') as $ndError)
 			{
+				/* @var $ndError \SimpleXMLElement */
 				$clError = new OnlineError($ndError->children()->Code['Name'],
 					$ndError->children()->Code->Numero,
 					$ndError->children()->Code->Category,
@@ -217,9 +230,33 @@ class XMLResponseWS
     public function getData()
     {
         $ndXML = $this->getNodeXML();
-
         return (string)$ndXML->Data;
     }
+
+    /**
+     * @return array
+     */
+	public function getFileAttributes()
+	{
+        $ndXML = $this->getNodeXML(); // Récupération du noeud xml
+
+        /* @var $DataElement \SimpleXMLElement */
+        $DataElement 	= $ndXML->Data; // Récupération du noeud data fils du noeud xml
+        $aAttributesXml = $DataElement->attributes('http://www.nout.fr/soap'); // Va récupérer le préfixe déclaré dans l'entête SOAP
+
+        $aDataAttributes = [];
+
+        foreach($aAttributesXml as $key => $value)
+        {
+            $aDataAttributes[$key] = (string)$value;
+        }
+
+        // Ajout des données de fichier
+        $aDataAttributes['data'] = $this->getData();
+
+        return $aDataAttributes;
+
+	}
 
 	/**
 	 * @return CurrentAction : action en cours
@@ -236,6 +273,7 @@ class XMLResponseWS
 	 */
 	public function clGetConnectedUser()
 	{
+		/* @var $clConnectedUser \SimpleXMLElement */
 		$clConnectedUser = $this->m_ndHeader->children()->ConnectedUser;
 
 		return new ConnectedUser(
@@ -341,7 +379,11 @@ class XMLResponseWS
 	 */
 	protected function _clGetNodeResponse()
 	{
-		return $this->m_ndBody->children()[0];
+        // Récupère les enfants de Body
+        $children = $this->m_ndBody->children();
+
+        // Renvoi le premier enfant
+		return $children[0];
 	}
 
     /**
@@ -367,6 +409,7 @@ class XMLResponseWS
 	public function getNodeXML()
 	{
 		$clNodeResponse = $this->_clGetNodeResponse();
+
 		if (isset($clNodeResponse))
 		{
 			return $clNodeResponse->xml;
@@ -468,6 +511,7 @@ class XMLResponseWS
 	public function sGetReport()
 	{
 		$ndXML = $this->getNodeXML();
+
 		if (!isset($ndXML))
 		{
 			return '';
@@ -541,6 +585,8 @@ class XMLResponseWS
 	const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
 	const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
 
+	//types virtuels pour traitement spéciaux
+    const VIRTUALRETURNTYPE_FILE = "File";
 
     //les différent type d'affichage pour les listes
     const DISPLAYMODE_List = 'List';
