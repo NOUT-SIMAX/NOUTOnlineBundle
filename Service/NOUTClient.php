@@ -967,6 +967,7 @@ class NOUTClient
                 $clActionResult->setElement($clReponseXML->clGetElement());
 
                 $aFileData  = $clReponseXML->getFileAttributes();   // Récupérer les attributs d'un éventuel fichier
+
                 if(array_key_exists("filename", $aFileData))
                 {
                     $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
