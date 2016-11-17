@@ -13,6 +13,7 @@ use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
+use NOUT\Bundle\ContextsBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
@@ -55,6 +56,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
@@ -938,7 +940,6 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
             case XMLResponseWS::RETURNTYPE_EXCEPTION:
 
-            case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
 
             case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
             case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
@@ -948,17 +949,19 @@ class NOUTClient
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
             }
 
+
+            case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
             case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
             {
+
                 // Instance d'un parseur
                 $clResponseParser = new ReponseWSParser();
 
                 /** @var ParserList $clParser */
                 $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
-                $list = $clParser->getList($clReponseXML);
-
-                $clActionResult->setData($list);
+                $clSelectorList = new SelectorList($clParser->getList($clReponseXML));
+                $clActionResult->setData($clSelectorList);
                 break;
             }
 
@@ -1340,6 +1343,29 @@ class NOUTClient
         $clParamSelect->Form = $sIDFormulaire;
 
         $clReponseXML = $this->m_clSOAPProxy->selectForm($clParamSelect, $this->_aGetTabHeader($aTabHeaderSuppl)); // Deuxième paramètre = array
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+
+    /**
+     * @param $sIDTemplate
+     * @param $sIDContexte
+     * @return ActionResult
+     */
+    public function oSelectTemplate($sIDTemplate, $sIDContexte)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDTemplate', $sIDTemplate, null);
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_ActionContext => $sIDContexte
+        );
+
+        // Paramètres obligatoires
+        $clParamSelect = new SelectPrintTemplate();
+        $clParamSelect->Template = $sIDTemplate;
+
+        $clReponseXML = $this->m_clSOAPProxy->selectPrintTemplate($clParamSelect, $this->_aGetTabHeader($aTabHeaderSuppl)); // Deuxième paramètre = array
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
