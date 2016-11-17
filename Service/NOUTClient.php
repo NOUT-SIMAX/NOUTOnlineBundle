@@ -1428,7 +1428,7 @@ class NOUTClient
      * @param HTTPResponse $oRet
      * @return ActionResult
      */
-    protected function _oMakeResultFromFile(HTTPResponse $oRet)
+    protected function _oMakeResultFromFile(NOUTFileInfo $oRet)
     {
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($oRet);
@@ -1498,6 +1498,7 @@ class NOUTClient
         if (!isset($oFileInRecord) || ($oFileInRecord === false))
         {
             //on a pas l'image en cache avec les options en question, il faut la récuperer
+            /** @var HTTPResponse $oFileInRecord */
             $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
                 $sIDFormulaire,
                 $sIDEnreg,
@@ -1506,7 +1507,6 @@ class NOUTClient
                 $aTabOptions,
                 $clIdentification
             );
-
             $oFileInRecord->setLastModifiedIfNotExists();
 
             if (!is_null($this->m_clCache))
@@ -1568,7 +1568,7 @@ class NOUTClient
      * @param $idColumn
      * @param $idRecord
      * @param array $aTabOptions
-     * @return false|mixed|HTTPResponse
+     * @return false|NOUTFileInfo
      */
     private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
     {
@@ -1587,6 +1587,7 @@ class NOUTClient
         }
 
         //on a pas l'image en cache avec les options en question, il faut la récuperer
+        /** @var HTTPResponse $oFileInRecord */
         $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
             $idForm,
             $idRecord,
@@ -1595,17 +1596,19 @@ class NOUTClient
             $aTabOptions,
             $clIdentification
         );
-
         $oFileInRecord->setLastModifiedIfNotExists();
 
+        $oNoutFileInfo = new NOUTFileInfo();
+        $oNoutFileInfo->initFromHTTPResponse($oFileInRecord);
+
         if (!is_null($this->m_clCache)){
-            $this->m_clCache->saveFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions, $oFileInRecord);
+            $this->m_clCache->saveFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions, $oNoutFileInfo);
         }
 
-        return $oFileInRecord;
+        return $oNoutFileInfo;
     }
 
-    public function saveFileInCache(UploadedFile $file, $idcontexte, $idihm, $idcolonne)
+    public function saveUploadFileInCache(UploadedFile $file, $idcontexte, $idihm, $idcolonne)
     {
         $data = new NOUTFileInfo();
         $data->initFromUploadedFile($file);
@@ -1616,12 +1619,16 @@ class NOUTClient
 
         //gestion du cache
         $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
-        // $clActionResult->setLastModified(new \DateTime('@'.filemtime($filePath))); // Erreur si le fichier n'existe pas
 
         return $clActionResult;
     }
 
-
+    /**
+     * @param $idcontexte
+     * @param $idihm
+     * @param $name
+     * @return ActionResult
+     */
     public function getFileInCache($idcontexte, $idihm, $name)
     {
         $data = $this->m_clCache->fetchFileFromName($idcontexte, $idihm, $name);
