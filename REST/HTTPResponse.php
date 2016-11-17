@@ -148,6 +148,18 @@ class HTTPResponse
         $this->headers['Last-Modified']->value = gmdate('D, d M Y H:i:s T');
     }
 
+    /**
+     * @return string|null
+     */
+    public function getLastModified()
+    {
+        if (array_key_exists('Last-Modified', $this->headers))
+        {
+            return $this->headers['Last-Modified']->value;
+        }
+
+        return null;
+    }
 
     public function getDTLastModified()
     {
