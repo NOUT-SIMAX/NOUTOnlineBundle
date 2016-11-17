@@ -7,7 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
-use NOUT\Bundle\ContextsBundle\Entity\NOUTFileInfo;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 

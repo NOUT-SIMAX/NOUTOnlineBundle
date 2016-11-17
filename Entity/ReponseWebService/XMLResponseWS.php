@@ -7,6 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 
 /**
  * Class XMLResponseWS
@@ -234,33 +235,31 @@ class XMLResponseWS
     }
 
     /**
-     * @return array
+     * @return NOUTFileInfo
      */
-	public function getFileAttributes()
+	public function getFile()
 	{
         $ndXML = $this->getNodeXML(); // Récupération du noeud xml
 
-        $aDataAttributes = [];
         if ($ndXML->count()>0)
         {
             /* @var $DataElement \SimpleXMLElement */
             $DataElement 	= $ndXML->Data; // Récupération du noeud data fils du noeud xml
             if ($DataElement->count()>0)
             {
+                /** @var \SimpleXMLElement[] $aAttributesXml */
                 $aAttributesXml = $DataElement->attributes('http://www.nout.fr/soap'); // Va récupérer le préfixe déclaré dans l'entête SOAP
-                if ($aAttributesXml->count()>0)
+                $oFilename = $aAttributesXml['filename'];
+                if (isset($oFilename) && !empty((string)$oFilename))
                 {
-                    foreach($aAttributesXml as $key => $value)
-                    {
-                        $aDataAttributes[$key] = (string)$value;
-                    }
+                    $oNOUTFileInfo = new NOUTFileInfo();
+                    $oNOUTFileInfo->initFromDataTag($DataElement, $aAttributesXml);
+                    return $oNOUTFileInfo;
                 }
-                // Ajout des données de fichier
-                $aDataAttributes['data'] = $this->getData();
             }
         }
 
-        return $aDataAttributes;
+        return null;
 	}
 
 	/**

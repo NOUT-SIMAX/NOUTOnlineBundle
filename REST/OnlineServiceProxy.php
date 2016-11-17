@@ -12,6 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
@@ -433,18 +434,26 @@ class OnlineServiceProxy
 	}
 
     /**
-     * @param $sIDTableau
-     * @param $sIDEnreg
-     * @param $sIDColonne
-     * @param $aTabParam
-     * @param $aTabOption
+     * @param                $sIDTableau
+     * @param                $sIDEnreg
+     * @param                $sIDColonne
+     * @param                $aTabParam
+     * @param                $aTabOption
      * @param Identification $clIdentification
-     * @return HTTPResponse
+     * @return NOUTFileInfo
+     * @throws \Exception
      */
     public function oGetFileInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
     {
         $sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
-        return $this->_oExecute('GetColInRecord', $sURI);
+
+        $oHTTPResponse = $this->_oExecute('GetColInRecord', $sURI);
+        $oHTTPResponse->setLastModifiedIfNotExists();
+
+        $oNOUTFileInfo = new NOUTFileInfo();
+        $oNOUTFileInfo->initFromHTTPResponse($oHTTPResponse);
+
+        return $oNOUTFileInfo;
     }
 
     /*
@@ -454,7 +463,6 @@ class OnlineServiceProxy
 	public function sGetFileFromUrl($sURL, $sDest = '')
 	{
 		$result = $this->_oExecute('GetColInRecord', $sURL, $sDest); // On veut la réponse complète ici
-
 		return $result;
 	}
 
