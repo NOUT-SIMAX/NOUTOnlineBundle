@@ -13,12 +13,12 @@ use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
 use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\ContextsBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
@@ -966,23 +966,18 @@ class NOUTClient
             {
                 $clActionResult->setElement($clReponseXML->clGetElement());
 
-                $aFileData  = $clReponseXML->getFileAttributes();   // Récupérer les attributs d'un éventuel fichier
-
-                if(array_key_exists("filename", $aFileData))
+                $oNOUTFileInfo  = $clReponseXML->getFile();   // Récupérer éventuellement un fichier
+                if (is_null($oNOUTFileInfo))
                 {
-                    $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
-                    $nameForCache = uniqid();
-                    $clActionResult->setData($nameForCache);
-
-                    // Mise en cache du fichier
-                    $this->m_clCache->save(NOUTClientCache::CACHE_Session, $nameForCache,  $aFileData);
-                }
-                else // Cas normal
-                {
+                    // Cas normal
                     $clActionResult->setData($clReponseXML->sGetReport());
                 }
+                else
+                {
+                    $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
+                    $clActionResult->setData($oNOUTFileInfo);
 
-
+                }
                 break;
             }
 
@@ -1465,7 +1460,7 @@ class NOUTClient
      * @param $sIDColonne
      * @param $sIDFormulaire
      * @param array $aTabPHPManipulation
-     * @return HTTPResponse
+     * @return NOUTFileInfo
      */
     protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $aTabPHPManipulation=array())
     {
@@ -1484,22 +1479,22 @@ class NOUTClient
             }
 
             if (!is_null($this->m_clCache)){
-                $oFileInRecord = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName);
-                if (isset($oFileInRecord) && ($oFileInRecord !== false)){
-                    return $oFileInRecord; //on l'image manipuler, on la récupère
+                $oNOUTFileInfo = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName);
+                if (isset($oNOUTFileInfo) && ($oNOUTFileInfo !== false)){
+                    return $oNOUTFileInfo; //on l'image manipuler, on la récupère
                 }
             }
         }
 
         if (!is_null($this->m_clCache)){
-            $oFileInRecord = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
+            $oNOUTFileInfo = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
         }
 
-        if (!isset($oFileInRecord) || ($oFileInRecord === false))
+        if (!isset($oNOUTFileInfo) || ($oNOUTFileInfo === false))
         {
             //on a pas l'image en cache avec les options en question, il faut la récuperer
-            /** @var HTTPResponse $oFileInRecord */
-            $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
+            /** @var NOUTFileInfo $oFileInRecord */
+            $oNOUTFileInfo  = $this->m_clRESTProxy->oGetFileInRecord(
                 $sIDFormulaire,
                 $sIDEnreg,
                 $sIDColonne,
@@ -1507,12 +1502,11 @@ class NOUTClient
                 $aTabOptions,
                 $clIdentification
             );
-            $oFileInRecord->setLastModifiedIfNotExists();
 
             if (!is_null($this->m_clCache))
             {
                 //on sauve l'image non manipulée
-                $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $oFileInRecord);
+                $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $oNOUTFileInfo);
             }
         }
 
@@ -1521,24 +1515,24 @@ class NOUTClient
         {
             foreach($aTabPHPManipulation as $name=>$option)
             {
-                if (!call_user_func($option['callback'], $option['value'], $oFileInRecord))
+                if (!call_user_func($option['callback'], $option['value'], $oNOUTFileInfo))
                 {
                     $this->m_clCache->deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
                     $this->m_clCache->deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName);
-                    $oFileInRecord->setNoCache(true);
-                    return $oFileInRecord;
+                    $oNOUTFileInfo->setNoCache(true);
+                    return $oNOUTFileInfo;
                 }
             }
 
             if (!is_null($this->m_clCache))
             {
                 //on sauve l'image modifiée
-                $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName, $oFileInRecord);
+                $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName, $oNOUTFileInfo);
             }
         }
 
 
-        return $oFileInRecord;
+        return $oNOUTFileInfo;
     }
 
     // Langage::TABL_ModeleFichier
@@ -1587,8 +1581,8 @@ class NOUTClient
         }
 
         //on a pas l'image en cache avec les options en question, il faut la récuperer
-        /** @var HTTPResponse $oFileInRecord */
-        $oFileInRecord  = $this->m_clRESTProxy->oGetFileInRecord(
+        /** @var NOUTFileInfo $oFileInRecord */
+        $oNOUTFileInfo  = $this->m_clRESTProxy->oGetFileInRecord(
             $idForm,
             $idRecord,
             $idColumn,
@@ -1596,23 +1590,39 @@ class NOUTClient
             $aTabOptions,
             $clIdentification
         );
-        $oFileInRecord->setLastModifiedIfNotExists();
-
-        $oNoutFileInfo = new NOUTFileInfo();
-        $oNoutFileInfo->initFromHTTPResponse($oFileInRecord);
 
         if (!is_null($this->m_clCache)){
-            $this->m_clCache->saveFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions, $oNoutFileInfo);
+            $this->m_clCache->saveFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions, $oNOUTFileInfo);
         }
 
-        return $oNoutFileInfo;
+        return $oNOUTFileInfo;
     }
 
+    /**
+     * @param UploadedFile $file
+     * @param              $idcontexte
+     * @param              $idihm
+     * @param              $idcolonne
+     * @return ActionResult
+     */
     public function saveUploadFileInCache(UploadedFile $file, $idcontexte, $idihm, $idcolonne)
     {
         $data = new NOUTFileInfo();
         $data->initFromUploadedFile($file);
-        $name = $this->m_clCache->saveFile($idcontexte, $idihm, '', $idcolonne, '', array(), $data);
+        return $this->saveNOUTFileInCache($data, $idcontexte, $idihm, $idcolonne);
+    }
+
+
+    /**
+     * @param NOUTFileInfo $file
+     * @param              $idcontexte
+     * @param              $idihm
+     * @param              $idcolonne
+     * @return ActionResult
+     */
+    public function saveNOUTFileInCache(NOUTFileInfo $file, $idcontexte, $idihm, $idcolonne)
+    {
+        $name = $this->m_clCache->saveFile($idcontexte, $idihm, '', $idcolonne, '', array(), $file);
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($name);
@@ -1622,6 +1632,7 @@ class NOUTClient
 
         return $clActionResult;
     }
+
 
     /**
      * @param $idcontexte

@@ -196,6 +196,11 @@ class NOUTClientCache
         {
             $sName.='_'.$sListeOptions;
         }
+        if (empty($sName))
+        {
+            //on a un nom vide, on génère un nom unique
+            $sName = uniqid();
+        }
         return $this->_sSanitizeName($sName);
     }
 
