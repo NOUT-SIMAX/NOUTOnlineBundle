@@ -52,7 +52,9 @@ class NOUTFileInfo
      */
     public $last_modified;
 
-
+    /**
+     *
+     */
     public function __construct()
     {
         $this->filename = null;
@@ -65,7 +67,9 @@ class NOUTFileInfo
 
     }
 
-
+    /**
+     * @param UploadedFile $file
+     */
     public function initFromUploadedFile(UploadedFile $file)
     {
         $this->filename     = $file->getClientOriginalName();
@@ -77,6 +81,9 @@ class NOUTFileInfo
         //$file->getCTime();
     }
 
+    /**
+     * @param HTTPResponse $response
+     */
     public function initFromHTTPResponse(HTTPResponse $response)
     {
         $this->filename = $response->getFilename();
@@ -91,6 +98,10 @@ class NOUTFileInfo
         $this->last_modified = $response->getLastModified();
     }
 
+    /**
+     * @param \SimpleXMLElement $ndData
+     * @param $aAttributes
+     */
     public function initFromDataTag(\SimpleXMLElement $ndData, $aAttributes)
     {
         $this->mimetype = (string)$aAttributes['typemime'];
@@ -127,7 +138,6 @@ class NOUTFileInfo
     {
         $this->no_cache = $no_cache;
     }
-
 
 
     public function getFilename()
