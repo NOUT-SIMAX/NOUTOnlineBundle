@@ -433,12 +433,14 @@ class NOUTClient
     }
 
     /**
-     * récupère les infos du menu
+     * récupère les infos du menu,
+     * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
+     *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
      */
-    protected function _oGetInfoIHM()
+    protected function _oGetInfoIhmMenu()
     {
         $sUsername = $this->_oGetToken()->getLoginSIMAX();
-        $oInfoIHM = $this->fetchFromCache(NOUTClientCache::CACHE_IHM, "info_$sUsername");
+        $oInfoIHM = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_$sUsername");
         if (isset($oInfoIHM) && ($oInfoIHM !== false)){
             return $oInfoIHM; //on a déjà les infos du menu
         }
@@ -452,17 +454,19 @@ class NOUTClient
         $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
         $oInfoIHM = $clIHMLoader->oGetInfoIHM();
 
-        $this->_saveInCache(NOUTClientCache::CACHE_IHM, "info_$sUsername", $oInfoIHM);
+        $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_$sUsername", $oInfoIHM);
         return $oInfoIHM;
     }
 
     /**
-     * récupère les infos du menu
+     * récupère les infos d'ihm lié au menu (menu, toolbar, et icone centraux)
+     * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
+     *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
      */
-    protected function __oGetIHMPart($method, $prefix)
+    protected function __oGetIhmMenuPart($method, $prefix)
     {
         $sUsername = $this->_oGetToken()->getLoginSIMAX();
-        $aTabMenu = $this->fetchFromCache(NOUTClientCache::CACHE_IHM, "info_{$prefix}_{$sUsername}");
+        $aTabMenu = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_{$sUsername}");
         if (isset($aTabMenu) && ($aTabMenu !== false)){
             return $aTabMenu; //on a déjà les infos du menu
         }
@@ -497,7 +501,7 @@ class NOUTClient
             }
         }
 
-        $this->_saveInCache(NOUTClientCache::CACHE_IHM, "info_{$prefix}_{$sUsername}", $aInfo);
+        $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_{$sUsername}", $aInfo);
         return $aInfo;
     }
 
@@ -540,17 +544,17 @@ class NOUTClient
      * @param $prefix
      * @return ActionResult
      */
-    protected function _oGetIHMPart($member_name, $method_name, $prefix)
+    protected function _oGetIhmMenuPart($member_name, $method_name, $prefix)
     {
         $clActionResult = new ActionResult(null);
         if (!$this->_oGetToken()->isVersionSup('1637.02'))
         {
             //l'ancien système
-            $oInfoMenu = $this->_oGetInfoIHM();
+            $oInfoMenu = $this->_oGetInfoIhmMenu();
             $clActionResult->setData($oInfoMenu->$member_name);
         } else
         {
-            $tabMenu = $this->__oGetIHMPart($method_name, $prefix);
+            $tabMenu = $this->__oGetIhmMenuPart($method_name, $prefix);
             $clActionResult->setData($tabMenu);
         }
 
@@ -566,7 +570,7 @@ class NOUTClient
      */
     public function getTabMenu()
     {
-        return $this->_oGetIHMPart('aMenu', 'sGetMenu', 'menu');
+        return $this->_oGetIhmMenuPart('aMenu', 'sGetMenu', 'menu');
     }
 
     /**
@@ -575,7 +579,7 @@ class NOUTClient
      */
     public function getCentralIcon()
     {
-        return $this->_oGetIHMPart('aBigIcon', 'sGetCentralIcon', 'home');
+        return $this->_oGetIhmMenuPart('aBigIcon', 'sGetCentralIcon', 'home');
     }
 
     /**
@@ -584,7 +588,7 @@ class NOUTClient
      */
     public function getToolbar()
     {
-        return $this->_oGetIHMPart('aToolbar', 'sGetToolbar', 'toolbar');
+        return $this->_oGetIhmMenuPart('aToolbar', 'sGetToolbar', 'toolbar');
     }
 
 
