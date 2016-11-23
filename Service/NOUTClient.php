@@ -870,13 +870,13 @@ class NOUTClient
     }
 
 
-
     /**
      * Affichage d'une liste via l'action recherche
+     * @param array $tabParamQuery
      * @param $sIDTableau
      * @param string $sIDContexte
-     * @param array $tabParamQuery
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * @return ActionResult
+     * @throws \Exception
      */
     public function oExecSearch(array $tabParamQuery, $sIDTableau, $sIDContexte = '')
     {
