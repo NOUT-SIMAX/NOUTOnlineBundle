@@ -1404,13 +1404,34 @@ class NOUTClient
     // Fin Elements liés et les sous-listes
     // ------------------------------------------------------------------------------------
 
+    /**
+     * @param $idcontext
+     * @param $starttime
+     * @param $endtime
+     * @return ActionResult
+     */
+    public function getSchedulerInfo($idcontext, $starttime, $endtime)
+    {
 
+        // Création des options
+        $aTabParam = array(RESTProxy::PARAM_StartTime => $starttime, RESTProxy::PARAM_EndTime => $endtime);
+
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+
+        $sRet = $this->m_clRESTProxy->sGetSchedulerInfo($aTabParam, $clIdentification);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($sRet);
+
+        return $clActionResult;
+    }
 
     /**
-     * @param $idformulaire
-     * @param $query
      * @param $idcontext
+     * @param $idformulaire
      * @param $idcallingcolumn
+     * @param $query
+     * @return ActionResult
      */
     public function getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query)
     {
@@ -1425,16 +1446,17 @@ class NOUTClient
     }
 
     /**
-     * @param $idformulaire
-     * @param $query
      * @param $idcontext
+     * @param $idformulaire
      * @param $idcallingcolumn
+     * @param $query
+     * @return HTTPResponse
      */
     private function _getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query)
     {
         // Création des options
         $aTabOption = array();
-        $aTabParam = array('CallingColumn' => $idcallingcolumn);
+        $aTabParam = array(RESTProxy::PARAM_CallingColumn => $idcallingcolumn);
 
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
 
