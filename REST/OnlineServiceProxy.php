@@ -370,6 +370,21 @@ class OnlineServiceProxy
     }
 
     /**
+     * récupère des évènements
+     * @param array          $aTabParam
+     * @param Identification $clIdentification
+     * @return string
+     * @throws \Exception
+     */
+    public function sGetSchedulerInfo(array $aTabParam, Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest('GetSchedulerInfo', $aTabParam, array(), $clIdentification);
+
+        return $this->_oExecute('GetSchedulerInfo', $sURI)->content;
+    }
+
+
+    /**
      * récupère la barre de menu
      * @return string
      */
@@ -467,13 +482,12 @@ class OnlineServiceProxy
 	}
 
     /**
-     * @param $sIDForm
-     * @param $sQuery
-     * @param $aTabParam
-     * @param $aTabOption
+     * @param                $sIDForm
+     * @param                $sQuery
+     * @param                $aTabParam
+     * @param                $aTabOption
      * @param Identification $clIdentification
-     * @param string $sDest
-     * @return \stdClass
+     * @return HTTPResponse
      * @throws \Exception
      */
 	public function sGetSuggestFromQuery($sIDForm, $sQuery,  $aTabParam, $aTabOption, Identification $clIdentification)
@@ -517,23 +531,24 @@ class OnlineServiceProxy
 	const TYPEUTIL_UTILISATEUR = 1;
 	const TYPEUTIL_SUPERVISEUR = 2;
 
-	const PARAM_TestRestart = 'TestRestart';
-	const PARAM_Login       = 'Login';
-	const PARAM_Table       = 'Table';
-	const PARAM_TypeGraph   = 'TypeGraph';
-	const PARAM_DPI         = 'DPI';
-	const PARAM_Index       = 'Index';
-	const PARAM_Axes        = 'Axes';
-	const PARAM_OnlyData    = 'OnlyData';
-	const PARAM_Items       = 'Items';
-	const PARAM_MoveType    = 'MoveType';
-	const PARAM_Scale       = 'Scale';
-	const PARAM_Offset      = 'Offset';
-	const PARAM_StartTime   = 'StartTime';
-	const PARAM_EndTime     = 'EndTime';
-	const PARAM_Resource    = 'Resource';
-	const PARAM_RealOnly    = 'RealOnly';
-	const PARAM_Recursive   = 'Recursive';
+	const PARAM_TestRestart     = 'TestRestart';
+	const PARAM_Login           = 'Login';
+	const PARAM_Table           = 'Table';
+	const PARAM_TypeGraph       = 'TypeGraph';
+	const PARAM_DPI             = 'DPI';
+	const PARAM_Index           = 'Index';
+	const PARAM_Axes            = 'Axes';
+	const PARAM_OnlyData        = 'OnlyData';
+	const PARAM_Items           = 'Items';
+	const PARAM_MoveType        = 'MoveType';
+	const PARAM_Scale           = 'Scale';
+	const PARAM_Offset          = 'Offset';
+	const PARAM_StartTime       = 'StartTime';
+	const PARAM_EndTime         = 'EndTime';
+	const PARAM_Resource        = 'Resource';
+	const PARAM_RealOnly        = 'RealOnly';
+	const PARAM_Recursive       = 'Recursive';
+    const PARAM_CallingColumn   = 'CallingColumn';
 
 	const OPTION_First              = 'First';
 	const OPTION_Length             = 'Length';
