@@ -418,7 +418,8 @@ abstract class StructureColonne
 
                     $MonolineTransform2Type = [
                         self::OPTION_Transform_Secret   => 'simax_password',
-                        self::OPTION_Transform_Email    => 'simax_email'
+                        self::OPTION_Transform_Email    => 'simax_email',
+                        self::OPTION_Transform_Url      => 'simax_url'
                     ];
 
                     $transformOption = $this->getOption(self::OPTION_Transform);
