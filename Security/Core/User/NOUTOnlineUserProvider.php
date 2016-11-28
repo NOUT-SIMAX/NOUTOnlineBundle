@@ -39,7 +39,13 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 	public function __construct(OnlineServiceFactory $serviceFactory, ConfigExtranet $clConfigExtranet, ConfigurationDialogue $configurationDialogue)
 	{
         $this->m_clConfigExtranet   = $clConfigExtranet;
-		$this->m_clRESTProxy        = $serviceFactory->clGetRESTProxy($configurationDialogue);
+		try{
+			$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+		}
+		catch(\Exception $e){
+			$this->m_clRESTProxy = null;
+			$this->last_exception = $e;
+		}
 	}
 
 	/**
@@ -54,6 +60,11 @@ class NOUTOnlineUserProvider implements UserProviderInterface
         {
             $username = $this->m_clConfigExtranet->getUser();
         }
+
+		if(is_null($this->m_clRESTProxy))
+		{
+			throw $this->last_exception;
+		}
 
 		// Try service
 		$nTypeUtilisateur = $this->m_clRESTProxy->nGetUserExists($username);

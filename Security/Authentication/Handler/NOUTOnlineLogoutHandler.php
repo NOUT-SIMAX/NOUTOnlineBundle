@@ -47,8 +47,16 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
 	public function __construct(OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, EventDispatcherInterface $eventDispatcher)
 	{
         $this->m_clConfigurationDialogue = $configurationDialogue;
-		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
         $this->__eventDispatcher = $eventDispatcher;
+
+        try{
+            $this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
+        }
+        catch(\Exception $e){
+            $this->m_clSOAPProxy = null;
+            $this->last_exception = $e;
+        }
+
 	}
 
 	/**

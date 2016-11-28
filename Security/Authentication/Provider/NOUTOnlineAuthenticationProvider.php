@@ -123,8 +123,17 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 
 		$this->m_clClientInformation = $clClientInfo;
         $this->m_clConfigDialogue = $configurationDialogue;
-		$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
-		$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+
+		try{
+			$this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
+			$this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+		}
+		catch(\Exception $e){
+			$this->m_clSOAPProxy = null;
+			$this->m_clRESTProxy = null;
+			$this->last_exception = $e;
+		}
+
 	}
 
 	/**
@@ -289,8 +298,6 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
                 $sPassword  = $token->getPasswordSIMAX();
             }
 
-
-
             $oUsernameToken = new UsernameToken(
                 $sUser,
                 $sPassword,
@@ -298,6 +305,12 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
                 $this->m_clConfigDialogue->getSecret());
 
             $oGetTokenSessionParam = new GetTokenSession();
+
+			if(is_null($this->m_clSOAPProxy))
+			{
+				throw $this->last_exception;
+			}
+
             $oGetTokenSessionParam->UsernameToken = $this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken);
 
             if($this->m_clConfigExtranet->isExtranet())
