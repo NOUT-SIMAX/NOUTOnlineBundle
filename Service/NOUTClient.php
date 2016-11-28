@@ -1405,18 +1405,21 @@ class NOUTClient
     // ------------------------------------------------------------------------------------
 
     /**
-     * @param $idcontext
-     * @param $starttime
-     * @param $endtime
+     * @param $idContext
+     * @param $startTime
+     * @param $endTime
      * @return ActionResult
      */
-    public function getSchedulerInfo($idcontext, $starttime, $endtime)
+    public function getSchedulerInfo($idContext, $startTime, $endTime)
     {
 
         // Création des options
-        $aTabParam = array(RESTProxy::PARAM_StartTime => $starttime, RESTProxy::PARAM_EndTime => $endtime);
+        $aTabParam = array(
+            RESTProxy::PARAM_StartTime  => $startTime,
+            RESTProxy::PARAM_EndTime    => $endTime
+        );
 
-        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+        $clIdentification = $this->_clGetIdentificationREST($idContext, true);
 
         $sRet = $this->m_clRESTProxy->sGetSchedulerInfo($aTabParam, $clIdentification);
 
