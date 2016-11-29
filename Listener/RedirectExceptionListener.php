@@ -64,6 +64,7 @@ class RedirectExceptionListener
 						//c'est l'erreur utilisateur déconnecté, il faut redirigé sur la page de login
 						$event->setResponse(new RedirectResponse($this->_router->generate('login', array())));
 					}
+					break;
 				}
 				case OnlineError::ERR_NOUTONLINE_OFF:
 				{
@@ -100,6 +101,7 @@ class RedirectExceptionListener
 						// On redirige sur la page de login
 						$event->setResponse(new RedirectResponse($this->_router->generate('login', array())));
 					}
+					break;
 				}
 				default:
 				{
