@@ -1419,7 +1419,7 @@ class NOUTClient
             RESTProxy::PARAM_EndTime    => $endTime
         );
 
-        $clIdentification = $this->_clGetIdentificationREST($idContext, true);
+        $clIdentification = $this->_clGetIdentificationREST($idContext, false);
 
         $sRet = $this->m_clRESTProxy->sGetSchedulerInfo($aTabParam, $clIdentification);
 
