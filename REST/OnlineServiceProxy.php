@@ -380,7 +380,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetSchedulerInfo', $aTabParam, array(), $clIdentification);
 
-        return $this->_oExecute('GetSchedulerInfo', $sURI)->content;
+        return $this->_oExecute('GetSchedulerInfo', $sURI);
     }
 
 
