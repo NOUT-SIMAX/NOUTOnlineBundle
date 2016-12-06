@@ -17,6 +17,7 @@ use NOUT\Bundle\SessionManagerBundle\Entity\User;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 
 class NOUTOnlineUserProvider implements UserProviderInterface
@@ -84,10 +85,17 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 	 * @param UserInterface $user
 	 * @return User|UserInterface
 	 */
-	public function refreshUser(UserInterface $user)
-	{
-		return $this->loadUserByUsername($user->getUsername());
-	}
+    public function refreshUser(UserInterface $user)
+    {
+        $class = get_class($user);
+        if(!$this->supportsClass($class))
+        {
+            $message = sprintf('Unsupported class type : %s', $class);
+            throw new UnsupportedUserException($message);
+        }
+
+        return $this->loadUserByUsername($user->getUsername());
+    }
 
 	/**
 	 * @param string $class
