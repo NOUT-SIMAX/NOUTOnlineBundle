@@ -60,8 +60,30 @@ class Configuration implements ConfigurationInterface
                     ->info('Indique s\'il faut logger les requetes a NOUTOnline.')
                     ->defaultValue(true)
                 ->end()
+                ->append($this->addAuthNode())
             ->end()//children
         ;
         return $treeBuilder;
+    }
+
+    public function addAuthNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('auth');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->enumNode('mode')
+            ->info("mode d'authentification pour NOUTOnline")
+            ->values(array('OASIS', 'base64'))
+            ->defaultValue('OASIS')
+            ->end()
+            ->scalarNode('secret')
+            ->defaultValue('')
+            ->end()
+            ->end()
+        ;
+        return $node;
     }
 }

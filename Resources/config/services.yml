@@ -8,7 +8,7 @@ services:
 
     nout_online.connection_manager:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager
-        arguments:  ['%nout_web_site.auth%']
+        arguments:  ['%nout_online.auth%']
 
     # pour la barre de debug
     nout_online.logger:
@@ -36,7 +36,7 @@ services:
             - '%nout_online.apiuuid%'
             - '%version_site%'
             - '%nout.client% %societe%'
-            - '%nout_web_site.auth%'
+            - '%nout_online.auth%'
 
     #factory pour les proxy
     nout_online.service_factory:
