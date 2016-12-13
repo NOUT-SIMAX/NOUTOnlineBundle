@@ -34,6 +34,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserScheduler;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
@@ -999,6 +1000,42 @@ class NOUTClient
                 /** @var ParserRecordList $clParser */
                 $clActionResult->setData($clParser->getRecord($clReponseXML));
                 $clActionResult->setValidateError($clReponseXML->getValidateError());
+
+                break;
+            }
+
+            case XMLResponseWS::RETURNTYPE_SCHEDULER:
+            {
+                // Bug dans InitFromXmlXsd si trop volumineux
+                // OutOfMemoryException in ParserRecordList.php line 183:
+                // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
+
+                /** @var Count $totalElements */
+                $totalElements = $clReponseXML->clGetCount();
+
+                // Par sécurité quand on affiche une liste
+                if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
+                {
+                    //@@@ TODO trad
+                    throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
+                }
+
+                // Instance d'un parseur
+                $clResponseParser = new ReponseWSParser();
+
+                /** @var ParserScheduler $clParser */
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+                // dump($clParser);
+                // clParser est bien du type ParserList mais n'a pas encore les données
+
+                $list   = $clParser->getList($clReponseXML);
+                $users  = $clParser->getScheduler($clReponseXML); // Les utilisateurs pour un planning partagé
+
+                $clActionResult
+                    ->setData($list) //le pas écraser list sinon on perd les boutons
+                    ->setValidateError($clReponseXML->getValidateError())
+                    ->setCount($clReponseXML->clGetCount());
 
                 break;
             }
