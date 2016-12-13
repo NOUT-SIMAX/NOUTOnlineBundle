@@ -405,7 +405,24 @@ class XMLResponseWS
         return;
     }
 
-	/**
+
+    /**
+     * récupère le noeud xml des ressources du planning de tous
+     * @return \SimpleXMLElement
+     */
+    public function getNodeXMLRessource()
+    {
+        $clNodeSchedulerResource = $this->m_ndHeader->children()->SchedulerResource;
+        if (isset($clNodeSchedulerResource))
+        {
+            return $clNodeSchedulerResource->xml;
+        }
+
+        return;
+    }
+
+
+    /**
 	 * récupère le noeud xml dans la réponse
 	 * @param string $sOperation : operation lancée
 	 * @return \SimpleXMLElement
@@ -455,6 +472,7 @@ class XMLResponseWS
     public function getNodeXSDParam()
     {
 		// Provoque l'erreur "Node no longer exists" avec ajax_ville
+        /** @var \SimpleXMLElement $clNodeSchedulerResource */
 		$clNodeFilter = $this->m_ndHeader->children()->Filter;
 
         if (isset($clNodeFilter) && ($clNodeFilter->count()>0))
@@ -462,6 +480,24 @@ class XMLResponseWS
 			// Erreur : "Node no longer exists" alors que dans le isSet
 			// Données mal parsées ?
             return $clNodeFilter->children('http://www.w3.org/2001/XMLSchema', false)->schema;
+        }
+    }
+
+
+    /**
+     * récupère le noeud schema des ressources du planning de tous
+     * @return \SimpleXMLElement|null
+     */
+    public function getNodeXSDRessource()
+    {
+        /** @var \SimpleXMLElement $clNodeSchedulerResource */
+        $clNodeSchedulerResource = $this->m_ndHeader->children()->SchedulerResource;
+
+        if (isset($clNodeSchedulerResource) && ($clNodeSchedulerResource->count()>0))
+        {
+            // Erreur : "Node no longer exists" alors que dans le isSet
+            // Données mal parsées ?
+            return $clNodeSchedulerResource->children('http://www.w3.org/2001/XMLSchema', false)->schema;
         }
     }
 
@@ -571,8 +607,9 @@ class XMLResponseWS
 	//réponse particulière
 	const RETURNTYPE_XSD                = 'XSD';
 	const RETURNTYPE_IDENTIFICATION     = 'Identification';
-	const RETURNTYPE_PLANNING           = 'Planning';
-	const RETURNTYPE_GLOBALSEARCH       = 'GlobalSearch';
+	const RETURNTYPE_PLANNING           = 'Planning'; // Vieux planning
+	const RETURNTYPE_SCHEDULER          = 'Scheduler'; // Nouveau planning
+	const RETURNTYPE_GLOBALSEARCH   	= 'GlobalSearch';
 	const RETURNTYPE_LISTCALCULATION    = 'ListCalculation';
 	const RETURNTYPE_EXCEPTION          = 'Exception';
 

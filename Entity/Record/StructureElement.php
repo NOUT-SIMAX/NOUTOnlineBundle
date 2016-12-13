@@ -67,11 +67,11 @@ class StructureElement
 		$this->m_sLibelle                   = $sLibelle;
 		$this->m_clFiche					= new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
 
-		$this->m_MapIDColonne2Structure = array();
-        $this->m_TabBouton=array();
-        $this->m_TabBoutonReadOnly=array();
-        $this->m_TabBoutonRemplacementAutre=array();
-        $this->m_TabBoutonRemplacementValidation=array();
+		$this->m_MapIDColonne2Structure 			= array();
+        $this->m_TabBouton							= array();
+        $this->m_TabBoutonReadOnly					= array();
+        $this->m_TabBoutonRemplacementAutre			= array();
+        $this->m_TabBoutonRemplacementValidation	= array();
 	}
 
     /**
@@ -345,7 +345,9 @@ class StructureElement
 		{
             /** @var StructureColonne $clStructureColonne */
 			if ($clStructureColonne->getTypeElement() == StructureColonne::TM_Tableau)
+			{
 				$aRet[$clStructureColonne->getIDColonne()] = $clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID);
+			}
 		}
 
 		return $aRet;
