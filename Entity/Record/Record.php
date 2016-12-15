@@ -619,7 +619,7 @@ class Record
                 {
                     $sValue=implode('|', array_values($sValue));
                 }
-                $sXML.='<id_'.$sIDColonne.'>'.$sValue.'</id_'.$sIDColonne.'>';
+                $sXML.='<id_'.$sIDColonne.'>'.htmlspecialchars($sValue).'</id_'.$sIDColonne.'>';
             }
         }
 
