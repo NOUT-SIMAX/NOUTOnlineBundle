@@ -65,6 +65,7 @@ class EnregTableauArray implements \Iterator
 	public function GetTabIDEnreg($nIDTableau = null, $bMemeTaille = false)
 	{
 		$aRet = array();
+
 		foreach ($this->m_Tab as $clEnreg)
 		{
 			if (($clEnreg->m_nIDTableau == $nIDTableau) || empty($nIDTableau))
