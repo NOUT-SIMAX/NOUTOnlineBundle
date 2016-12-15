@@ -436,6 +436,12 @@ abstract class StructureColonne
                         return 'xs_base64Binary';
                     }
 
+                    if ($this->isOption(self::OPTION_Modele_CreditCard)) // Est-ce que l'option est présente
+                    {
+                        return 'simax_creditCard';
+                    }
+
+
                     return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
                 }
 				else
