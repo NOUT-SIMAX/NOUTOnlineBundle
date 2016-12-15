@@ -40,6 +40,7 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_VALIDATERECORD  	=> '_ParseRecord',
 			XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> '_ParseRecord',
 
+			XMLResponseWS::RETURNTYPE_SCHEDULER 		=> '_ParseScheduler',
 			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
 			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
 			XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
@@ -140,6 +141,32 @@ class ReponseWSParser
 
         return $clParser;
 	}
+
+	/**
+	 * @param XMLResponseWS $clXMLReponseWS
+	 * @return ParserList
+	 */
+	protected function _ParseScheduler(XMLResponseWS $clXMLReponseWS)
+	{
+		// Cette méthode est appelée par InitFromXmlXsd
+
+		// Création d'un Parser de liste
+		$clParser = new ParserScheduler();
+
+		// Parser les paramètres
+		// Permet de savoir combien on a d'éléments avant de traiter les données ?
+		$clParser->ParseParam($clXMLReponseWS);
+
+		// Parser la liste
+		$clParser->ParseList($clXMLReponseWS);
+
+		// Parser les utilisateurs
+		$clParser->ParseScheduler($clXMLReponseWS);
+
+
+		return $clParser;
+	}
+
 
 	/**
 	 * @param XMLResponseWS $clXMLReponseWS

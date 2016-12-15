@@ -9,6 +9,10 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 
+/*
+ * Parser pour le VIEUX planning (ancien site)
+ */
+
 class ParserPlanning extends Parser
 {
 
@@ -26,8 +30,7 @@ class ParserPlanning extends Parser
 
 	public function TypeEvent2Color(\SimpleXMLElement $clSchema)
 	{
-		$ndLayout = $clSchema->element
-			->children(self::NAMESPACE_NOUT_XSD)->layout;
+		$ndLayout = $clSchema->element->children(self::NAMESPACE_NOUT_XSD)->layout;
 
 		$this->m_MapTypeEvent2Color = array();
 

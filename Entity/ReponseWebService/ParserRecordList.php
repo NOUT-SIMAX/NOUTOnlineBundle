@@ -21,7 +21,7 @@ class ParserRecordList extends Parser
 	/**
 	 * @var ParserXSDSchema
 	 */
-	protected $m_clParserXSD=null;
+	protected $m_clParserXSD = null;
 
 	/**
 	 * @var array
@@ -48,8 +48,8 @@ class ParserRecordList extends Parser
 
 	public function __construct()
 	{
-		$this->m_clRecordCache = new RecordCache();
-		$this->m_TabEnregTableau = new EnregTableauArray();
+		$this->m_clRecordCache 		= new RecordCache();
+		$this->m_TabEnregTableau 	= new EnregTableauArray();
 	}
 
 	/**
@@ -58,7 +58,10 @@ class ParserRecordList extends Parser
 	 */
 	public function getRecord(XMLResponseWS $clResponseXML)
 	{
-		return $this->m_clRecordCache->getRecord($clResponseXML->clGetForm()->getID(), $clResponseXML->clGetElement()->getID());
+		return $this->m_clRecordCache->getRecord(
+			$clResponseXML->clGetForm()->getID(),
+			$clResponseXML->clGetElement()->getID()
+		);
 	}
 
 	/**
@@ -182,11 +185,13 @@ class ParserRecordList extends Parser
 		}
 
 		$aRecords = $this->m_clXML->xpath("/xml/id_{$sIDForm}[@n:xsdLevel=\"{$nNiv}\"]");
+
 		if (is_array($aRecords) && !empty($aRecords))
 		{
 			foreach ($aRecords as $clNoeud)
 			{
 				$clRecord = $this->__clParseRecord($nNiv, $clNoeud);
+
 				if (!is_null($clRecord))
 				{
 					$this->m_TabEnregTableau->Add($clRecord->getIDTableau(), $clRecord->getIDEnreg());
@@ -221,18 +226,22 @@ class ParserRecordList extends Parser
 	{
 		//<id_47909919412330 simax:id="33475861129246" simax:title="Janvier">
 
-		$TabAttrib = $clXML->attributes(self::NAMESPACE_NOUT_XML);
-		$TabAttribLayout = $clXML->attributes(self::NAMESPACE_NOUT_LAYOUT);
+		$TabAttrib          = $clXML->attributes(self::NAMESPACE_NOUT_XML);
+		$TabAttribLayout    = $clXML->attributes(self::NAMESPACE_NOUT_LAYOUT);
 
 		$sIDTableau = str_replace('id_', '', $clXML->getName());
 		$sIDEnreg   = (string) $TabAttrib['id'];
 
 		$clStructureElement = $this->m_clParserXSD->clGetStructureElement($sIDTableau);
-		$clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $nNiv, $clStructureElement);
+
+        $clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $nNiv, $clStructureElement);
         $clRecord->addOptions($TabAttrib);
         $clRecord->addOptionsLayout($TabAttribLayout); // Les attributs HTML sont ajoutés dans le record
+
         $subtitle = $TabAttrib['subtitle'];
-        if (!is_null($subtitle)){
+
+        if (!is_null($subtitle))
+        {
             $clRecord->setSubTitle((string)$subtitle);
         }
 
