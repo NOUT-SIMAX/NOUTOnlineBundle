@@ -185,9 +185,12 @@ class NOUTClient
      */
     public function getCacheSession()
     {
-        if (!is_null($this->m_clCache)){
+        if (!is_null($this->m_clCache))
+        {
             return $this->m_clCache->getCacheSession();
         }
+
+        return null;
     }
 
     /**
@@ -201,13 +204,24 @@ class NOUTClient
         {
             return $this->m_clCache->fetch($cache, $name);
         }
+
+        return null;
     }
 
+    /**
+     * @param $cache
+     * @param $name
+     * @param $data
+     * @return mixed|null
+     */
     protected function _saveInCache($cache, $name, $data)
     {
-        if (!is_null($this->m_clCache)){
+        if (!is_null($this->m_clCache))
+        {
             return $this->m_clCache->save($cache, $name, $data);
         }
+
+        return null;
     }
 
     /**
@@ -1034,6 +1048,7 @@ class NOUTClient
 
                 $clActionResult
                     ->setData($list) //le pas écraser list sinon on perd les boutons
+                    ->setExtraData($users)
                     ->setValidateError($clReponseXML->getValidateError())
                     ->setCount($clReponseXML->clGetCount());
 

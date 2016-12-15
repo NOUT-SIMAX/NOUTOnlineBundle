@@ -13,6 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Element;
 
 class ActionResult
 {
@@ -25,6 +26,12 @@ class ActionResult
 	 * @var mixed
 	 */
 	private $m_Data;
+
+	/**
+     * Les données en plus (par exemple liste utilisateurs)
+	 * @var mixed
+	 */
+	private $m_ExtraData;
 
 	/**
 	 * @var string
@@ -66,8 +73,6 @@ class ActionResult
      * @var Element
      */
     private $m_oElement;
-
-
 
 
 
@@ -141,6 +146,26 @@ class ActionResult
 	{
 		return $this->m_Data;
 	}
+
+    /**
+     * @param $extraData
+     * @return $this
+     */
+    public function setExtraData($extraData)
+    {
+        $this->m_ExtraData = $extraData;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExtraData()
+    {
+        return $this->m_ExtraData;
+    }
+
 
 	/**
 	 * @param $element
