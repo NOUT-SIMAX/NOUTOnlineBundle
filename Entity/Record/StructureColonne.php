@@ -417,9 +417,9 @@ abstract class StructureColonne
                 {
 
                     $MonolineTransform2Type = [
-                        self::OPTION_Transform_Secret   => 'simax_password',
-                        self::OPTION_Transform_Email    => 'simax_email',
-                        self::OPTION_Transform_Url      => 'simax_url'
+                        self::OPTION_Transform_Secret       => 'simax_password',
+                        self::OPTION_Transform_Email        => 'simax_email',
+                        self::OPTION_Transform_Url          => 'simax_url',
                     ];
 
                     $transformOption = $this->getOption(self::OPTION_Transform);
@@ -441,6 +441,10 @@ abstract class StructureColonne
                         return 'simax_creditCard';
                     }
 
+                    if ($this->isOption(self::OPTION_Modele_PhoneNumber)) // Est-ce que l'option est présente
+                    {
+                        return 'simax_phoneNumber';
+                    }
 
                     return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
                 }
@@ -574,8 +578,8 @@ abstract class StructureColonne
 	static public function s_GetModeleOption()
 	{
 		return array(
-			self::OPTION_Modele_PhoneNumber		,
-			self::OPTION_Modele_CreditCard    	,
+            self::OPTION_Modele_CreditCard      ,
+            self::OPTION_Modele_PhoneNumber     ,
 			self::OPTION_Modele_SocialSecurity	,
 			self::OPTION_Modele_BankDetails		,
 			self::OPTION_Modele_Directory		,
