@@ -61,6 +61,7 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue(true)
                 ->end()
                 ->append($this->addAuthNode())
+                ->append($this->addExtranetNode())
             ->end()//children
         ;
         return $treeBuilder;
@@ -82,6 +83,24 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('secret')
             ->defaultValue('')
             ->end()
+            ->end()
+        ;
+        return $node;
+    }
+
+
+    public function addExtranetNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('extranet');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('actif')->defaultValue(false)->end()
+            ->scalarNode('user')->defaultValue('')->end()
+            ->scalarNode('password')->defaultValue('')->end()
+            ->scalarNode('form')->defaultValue('')->end()
             ->end()
         ;
         return $node;
