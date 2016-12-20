@@ -56,3 +56,28 @@ body {
     border-top-right-radius: 7px;
 
 }
+
+.custom_logo_title {
+    position: absolute;
+    left: -250px;
+    top: -200px;
+}
+
+.custom_logo_title .custom_logo {
+    position: absolute;
+    height: 125px;
+    width: 500px;
+    left: 250px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.custom_logo_title .custom_title {
+    position: absolute;
+    height: 75px;
+    width: 500px;
+    top: 125px;
+    left: 250px;
+    text-align: center;
+}

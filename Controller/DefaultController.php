@@ -118,7 +118,8 @@ class DefaultController extends Controller
 		    'error'         => $error,
 		    'timezone_list' => TimeZone::s_aGetTabTimezone(),
 		    'last_timezone' => $session->get(NOUTToken::SESSION_LastTimeZone),
-            'customization'         => $this->getParameter('nout_web_site.customization'),
+            'customization' => $this->getParameter('nout_session_manager.customization'),
+            'extranet'      => $this->getParameter('nout_online.extranet')['actif'],
 	    ));
 
     }
@@ -137,8 +138,8 @@ class DefaultController extends Controller
 		return $this->render(
 			'NOUTSessionManagerBundle:Default:index.html.twig',
 			array(
-                'username'=>$oUser->getUsername(),
-                'tokensession'      =>$oToken->getSessionToken(),
+                'username'          => $oUser->getUsername(),
+                'tokensession'      => $oToken->getSessionToken(),
             )
 		);
 	}
