@@ -74,6 +74,7 @@ body {
 }
 
 .custom_logo_title .custom_title {
+    font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
     position: absolute;
     height: 75px;
     width: 500px;
