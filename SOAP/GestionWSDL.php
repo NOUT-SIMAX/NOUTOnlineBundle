@@ -42,7 +42,16 @@ class GestionWSDL
         $this->m_dVersion = 0;
 
         try {
-            $fHandle = @fopen($sUri, "r");
+
+            $context = stream_context_create(
+                array(
+                  'http'=>array(
+                      'timeout' => 2.0
+                  )
+                )
+            );
+
+            $fHandle = @fopen($sUri, 'r', false, $context);
             if ($fHandle)
             {
                 $sDebutWSDL='';

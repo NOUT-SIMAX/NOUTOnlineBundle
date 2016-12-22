@@ -207,7 +207,7 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-    protected function _sExecute_cURL($sURI)
+    protected function _sExecute_cURL($sURI, $timeout)
     {
         //initialisation de curl
         $curl = curl_init($sURI);
@@ -217,18 +217,19 @@ class OnlineServiceProxy
             ConfigurationDialogue::HTTP_SIMAX_CLIENT        . ': '  . $this->__ConfigurationDialogue->getSociete(),
             ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version. ': '  . $this->__ConfigurationDialogue->getVersion(),
         ));
+
+        if (!is_null($timeout))
+        {
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , (floatval($timeout)<1) ? 1 : intval($timeout));
+        }
+
         // ------------------------------------------------
         // Contenu du fichier
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($curl);
 
         // Vérifie si une erreur survient
-        if(curl_errno($curl))
-        {
-            $e = new \Exception(curl_error($curl));
-            curl_close($curl);
-            throw $e;
-        }
+        $this->_sExecute_cURL_TestError($curl);
 
 
         // ------------------------------------------------
@@ -238,12 +239,7 @@ class OnlineServiceProxy
         $headers_output = curl_exec($curl);
 
         // Vérifie si une erreur survient
-        if(curl_errno($curl))
-        {
-            $e = new \Exception(curl_error($curl));
-            curl_close($curl);
-            throw $e;
-        }
+        $this->_sExecute_cURL_TestError($curl);
 
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $headers = substr($headers_output, 0, $header_size);
@@ -255,11 +251,43 @@ class OnlineServiceProxy
     }
 
     /**
+     * @param $curl
+     * @throws \Exception
+     */
+    protected function _sExecute_cURL_TestError($curl)
+    {
+        $curl_errno = curl_errno($curl);
+        if(!$curl_errno){
+            return ;
+        }
+
+        switch ($curl_errno)
+        {
+            case CURLE_OPERATION_TIMEDOUT:
+            {
+                $curl_errmess = 'Failed to connect to '.$this->__ConfigurationDialogue->getHost().' port '.$this->__ConfigurationDialogue->getPort().': Connection timed out';
+                break;
+            }
+
+            default:
+            {
+                $curl_errmess = curl_error($curl);
+                break;
+            }
+
+        }
+
+        $e = new \Exception($curl_errmess);
+        curl_close($curl);
+        throw $e;
+    }
+
+    /**
      * @param $sURI
      * @return \stdClass
      * @throws \Exception
      */
-	protected function _sExecute_natif($sURI)
+	protected function _sExecute_natif($sURI, $timeout)
 	{
         //obligé de rajouter l'ip ici car j'ai pas accès au entête http
         $sIP = $this->__clInfoClient->getIP();
@@ -268,7 +296,19 @@ class OnlineServiceProxy
             $sURI .= '&ip=' . urlencode($sIP);
         }
 
-		if (($sResp = @file_get_contents($sURI)) === false)
+        $context=null;
+        if (!is_null($timeout))
+        {
+            $context = stream_context_create(
+                array(
+                    'http'=>array(
+                        'timeout' => floatval($timeout)
+                    )
+                )
+            );
+        }
+
+		if (($sResp = @file_get_contents($sURI, false, $context)) === false)
 		{
 			$aError = error_get_last();
 			if (empty($aError))
@@ -289,7 +329,7 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-	protected function _oExecute($sAction, $sURI)
+	protected function _oExecute($sAction, $sURI, $timeout=null)
 	{
 		if (isset($this->__clLogger))
 		{
@@ -304,11 +344,11 @@ class OnlineServiceProxy
 
 			if (extension_loaded('curl'))
 			{
-                $ret = $this->_sExecute_cURL($sURI);   // on utilise l'extension curl
+                $ret = $this->_sExecute_cURL($sURI, $timeout);   // on utilise l'extension curl
 			}
 			else
 			{
-                $ret = $this->_sExecute_natif($sURI);  // curl n'est pas disponible
+                $ret = $this->_sExecute_natif($sURI, $timeout);  // curl n'est pas disponible
 			}
 		}
 		catch(\Exception $e)
@@ -355,7 +395,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetVersion', array(), array(), new Identification());
 
-		return $this->_oExecute('GetVersion', $sURI)->content;
+		return $this->_oExecute('GetVersion', $sURI, 1)->content;
 	}
 
     /**
