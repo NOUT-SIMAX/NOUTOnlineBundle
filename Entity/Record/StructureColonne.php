@@ -431,19 +431,24 @@ abstract class StructureColonne
 
                     // --------- Cas particulier --------
 
-					if ($this->isOption(self::OPTION_Modele_Directory)) // Est-ce que l'option est présente
+					if ($this->isOption(self::OPTION_Modele_Directory))
                     {
                         return 'xs_base64Binary';
                     }
 
-                    if ($this->isOption(self::OPTION_Modele_CreditCard)) // Est-ce que l'option est présente
+                    if ($this->isOption(self::OPTION_Modele_CreditCard))
                     {
                         return 'simax_creditCard';
                     }
 
-                    if ($this->isOption(self::OPTION_Modele_PhoneNumber)) // Est-ce que l'option est présente
+                    if ($this->isOption(self::OPTION_Modele_PhoneNumber))
                     {
                         return 'simax_phoneNumber';
+                    }
+
+                    if ($this->isOption(self::OPTION_Modele_IpAddress))
+                    {
+                        return 'simax_IpV' . $this->getOption(self::OPTION_Modele_IpAddress) . 'Address';
                     }
 
                     return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
@@ -580,6 +585,7 @@ abstract class StructureColonne
 		return array(
             self::OPTION_Modele_CreditCard      ,
             self::OPTION_Modele_PhoneNumber     ,
+            self::OPTION_Modele_IpAddress     ,
 			self::OPTION_Modele_SocialSecurity	,
 			self::OPTION_Modele_BankDetails		,
 			self::OPTION_Modele_Directory		,
@@ -597,7 +603,8 @@ abstract class StructureColonne
 	}
 
 	// Attributs liés au modele
-	const OPTION_Modele_PhoneNumber		= "phoneNumber";
+    const OPTION_Modele_PhoneNumber		= "phoneNumber";
+    const OPTION_Modele_IpAddress		= "ipAddress";
 	const OPTION_Modele_CreditCard    	= "creditCard";
 	const OPTION_Modele_SocialSecurity	= "socialSecurity";
 	const OPTION_Modele_BankDetails		= "bankDetails";
