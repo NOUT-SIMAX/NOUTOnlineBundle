@@ -441,6 +441,11 @@ abstract class StructureColonne
                         return 'simax_creditCard';
                     }
 
+                    if ($this->isOption(self::OPTION_Modele_SocialSecurity))
+                    {
+                        return 'simax_socialSecurityNumber';
+                    }
+
                     if ($this->isOption(self::OPTION_Modele_PhoneNumber))
                     {
                         return 'simax_phoneNumber';
@@ -585,7 +590,7 @@ abstract class StructureColonne
 		return array(
             self::OPTION_Modele_CreditCard      ,
             self::OPTION_Modele_PhoneNumber     ,
-            self::OPTION_Modele_IpAddress     ,
+            self::OPTION_Modele_IpAddress       ,
 			self::OPTION_Modele_SocialSecurity	,
 			self::OPTION_Modele_BankDetails		,
 			self::OPTION_Modele_Directory		,
