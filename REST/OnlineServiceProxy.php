@@ -534,7 +534,7 @@ class OnlineServiceProxy
 	{
         $sEndPart = "autocomplete";
 
-		$sURI = $this->_sCreateRequest($sIDForm.'/'.$sQuery.'/'.$sEndPart, $aTabParam, $aTabOption, $clIdentification);
+		$sURI = $this->_sCreateRequest($sIDForm.'/'.urlencode($sQuery).'/'.$sEndPart, $aTabParam, $aTabOption, $clIdentification);
 
 		$result = $this->_oExecute('GetSuggestFromQuery', $sURI); // On veut la réponse complète ici
 
