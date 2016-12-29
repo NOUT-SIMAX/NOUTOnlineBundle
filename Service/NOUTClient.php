@@ -1464,11 +1464,10 @@ class NOUTClient
      */
     public function getSchedulerInfo($idContext, $startTime, $endTime)
     {
-
         // Création des options
         $aTabParam = array(
             RESTProxy::PARAM_StartTime  => $startTime,
-            RESTProxy::PARAM_EndTime    => $endTime
+            RESTProxy::PARAM_EndTime    => $endTime,
         );
 
         $clIdentification = $this->_clGetIdentificationREST($idContext, false);
