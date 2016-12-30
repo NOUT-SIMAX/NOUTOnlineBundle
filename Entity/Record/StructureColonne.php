@@ -441,6 +441,12 @@ abstract class StructureColonne
                         return 'simax_creditCard';
                     }
 
+
+                    if ($this->isOption(self::OPTION_Modele_Barcode))
+                    {
+                        return 'simax_barcode_' . $this->getOption(self::OPTION_Modele_Barcode);
+                    }
+
                     if ($this->isOption(self::OPTION_Modele_SocialSecurity))
                     {
                         return 'simax_socialSecurityNumber';
@@ -588,6 +594,7 @@ abstract class StructureColonne
 	static public function s_GetModeleOption()
 	{
 		return array(
+            self::OPTION_Modele_Barcode         ,
             self::OPTION_Modele_CreditCard      ,
             self::OPTION_Modele_PhoneNumber     ,
             self::OPTION_Modele_IpAddress       ,
@@ -608,6 +615,7 @@ abstract class StructureColonne
 	}
 
 	// Attributs liés au modele
+    const OPTION_Modele_Barcode         = "barCode";
     const OPTION_Modele_PhoneNumber		= "phoneNumber";
     const OPTION_Modele_IpAddress		= "ipAddress";
 	const OPTION_Modele_CreditCard    	= "creditCard";
