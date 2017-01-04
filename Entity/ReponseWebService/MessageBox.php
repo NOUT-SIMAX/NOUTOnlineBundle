@@ -10,13 +10,36 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class MessageBox
 {
+    /**
+     * @var string
+     */
+    protected $m_sTitle='';
+    /**
+     * @var string
+     */
+    protected $m_sMessage;
+    /**
+     * @var array
+     */
+    protected $m_TabButton;
 
-	public $m_sMessage;
-	public $m_TabButton;
+    /**
+     * @var int
+     */
+	protected $m_nDefaultBtn=0;
 
 	public function __construct(\SimpleXMLElement $clXML)
 	{
-		$this->m_sMessage = $clXML->children()->MessageBox->Children()->Message;
+	    /** @var \SimpleXMLElement $ndMessage */
+	    $ndMessage = $clXML->children()->MessageBox->Children()->Message;
+		$this->m_sMessage = (string)$ndMessage;
+
+		$aMessageAttributes = $ndMessage->attributes();
+		if (isset($aMessageAttributes['title']))
+		{
+		    $this->m_sTitle = (string)$aMessageAttributes['title'];
+        }
+
 
         // Besoin d'aller chercher les boutons en profondeur
 		foreach ($clXML->children()->MessageBox->Children()->ButtonList->Children()->TypeConfirmation as $noeudTypeConfirmation)
@@ -26,10 +49,15 @@ class MessageBox
 			$aTabAttributes = $noeudTypeConfirmation->attributes();
 			$sLibelle = (string)$aTabAttributes['title'];
 
+			if (isset($aTabAttributes['default']))
+            {
+                $this->m_nDefaultBtn = $nTypeConfirmation;
+            }
+
 			$this->m_TabButton[$nTypeConfirmation] = $sLibelle;
 		}
 
-        // Code XML pour référence
+        // Code XML pour rÃ©fÃ©rence
 		/*
 		 <xml>
 			<MessageBox>
@@ -44,6 +72,42 @@ class MessageBox
 		</xml>
 		*/
 	}
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->m_sTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->m_sMessage;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTabButton()
+    {
+        return $this->m_TabButton;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultBtn()
+    {
+        return $this->m_nDefaultBtn;
+    }
+
+
+
+
 
 	const IDOK          = 1;    //The OK button was selected.
 	const IDCANCEL      = 2;    //The Cancel button was selected.
