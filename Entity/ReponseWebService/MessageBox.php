@@ -30,14 +30,14 @@ class MessageBox
 
 	public function __construct(\SimpleXMLElement $clXML)
 	{
-	    /** @var \SimpleXMLElement $ndMessage */
-	    $ndMessage = $clXML->children()->MessageBox->Children()->Message;
+        /** @var \SimpleXMLElement $ndMessageBox */
+	    $ndMessageBox = $clXML->children()->MessageBox;
+	    $ndMessage = $ndMessageBox->Children()->Message;
 		$this->m_sMessage = (string)$ndMessage;
 
-		$aMessageAttributes = $ndMessage->attributes();
-		if (isset($aMessageAttributes['title']))
+		if (isset($ndMessageBox->Children()->Title))
 		{
-		    $this->m_sTitle = (string)$aMessageAttributes['title'];
+		    $this->m_sTitle = (string)$ndMessageBox->Children()->Title;
         }
 
 
