@@ -87,7 +87,6 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
             {
                 //Disconnect
                 $this->m_clSOAPProxy->disconnect($TabHeader);
-                $this->__eventDispatcher->dispatch('session.disconnect', new GenericEvent($oToken->getSessionToken()));
             }
             catch(\Exception $e)
             {
@@ -102,6 +101,15 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
                 {
                     throw new \Exception('Error on logout');
                 }
+            }
+
+            try
+            {
+                $this->__eventDispatcher->dispatch('session.disconnect', new GenericEvent($oToken->getSessionToken()));
+            }
+            catch(\Exception $e)
+            {
+                //on ne fait rien sur le netoyage de la session
             }
         }
 
