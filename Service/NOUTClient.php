@@ -1137,10 +1137,11 @@ class NOUTClient
      * @param $sIDContexte
      * @param Record $clRecord
      * @param int $autovalidate
+     * @param boolean $bComplete
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdate($sIDContexte, $idihm, Record $clRecord, $autovalidate = SOAPProxy::AUTOVALIDATE_None)
+    public function oUpdate($sIDContexte, $idihm, Record $clRecord, $autovalidate = SOAPProxy::AUTOVALIDATE_None, $bComplete=false)
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_InArray, '$autovalidate', $autovalidate, array(SOAPProxy::AUTOVALIDATE_None, SOAPProxy::AUTOVALIDATE_Cancel, SOAPProxy::AUTOVALIDATE_Validate));
@@ -1159,6 +1160,7 @@ class NOUTClient
         $aFilesToSend = $this->_getModifiedFiles($clRecord, $sIDContexte, $idihm);
         // -----------------------------------------------------
         $clParamUpdate->UpdateData = $clRecord->getUpdateData($aFilesToSend);
+        $clParamUpdate->Complete = $bComplete ? 1 : 0;
 
         //header
         $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext => $sIDContexte, SOAPProxy::HEADER_AutoValidate => $autovalidate);
