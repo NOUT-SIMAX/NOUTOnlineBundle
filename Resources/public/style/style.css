@@ -1,84 +1,89 @@
-
 @font-face {
-    font-family: 'DolceVita';
-    src: url('../../../font/theme/NOUT/Dolce Vita.ttf');
+  font-family: 'DolceVita';
+  src: url("../../../font/theme/NOUT/Dolce Vita.ttf");
 }
-
 body {
-    background-image: url('../../../img/sym/theme/NOUT/background.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-clip: border-box;
-    background-size: cover;
-
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-clip: border-box;
+  background-size: cover;
 }
+
 #loginbox {
-    height: 400px;
-    width: 500px;
-    left: 50%;
-    margin-left: -250px;
-    margin-top: -200px;
-    position: fixed;
-    top: 50%;
+  height: 400px;
+  width: 500px;
+  left: 50%;
+  margin-left: -250px;
+  margin-top: -200px;
+  position: fixed;
+  top: 50%;
 }
-.panel-heading, .btn-login  {
-    background-color: #80b6df;
-    color: white;
 
-    font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
+.panel-heading, .btn-login {
+  font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
-.btn-login:hover {
-    background-color: #449dd7;
-    color:white;
-}
-.btn-login.focus,
-.btn-login:focus,
-.btn-login.active.focus,
-.btn-login.active:focus,
-.btn-login.active:hover,
-.btn-login.focus:active,
-.btn-login:active:focus,
-.btn-login:active:hover {
-    background-color: #449dd7;
-    color:white;
-}
+
 .panel-footer {
-    font-size: xx-small;
-    color: gray;
-    background-color: transparent;
+  font-size: xx-small;
 }
-.panel {
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-}
-.panel-heading {
-    border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
 
+.panel {
+  border-radius: 8px;
+}
+
+.panel-heading {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
 }
 
 .custom_logo_title {
-    position: absolute;
-    left: -250px;
-    top: -200px;
+  position: absolute;
+  left: -250px;
+  top: -200px;
 }
-
 .custom_logo_title .custom_logo {
-    position: absolute;
-    height: 125px;
-    width: 500px;
-    left: 250px;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: contain;
+  position: absolute;
+  height: 125px;
+  width: 500px;
+  left: 250px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.custom_logo_title .custom_title {
+  font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
+  position: absolute;
+  height: 75px;
+  width: 500px;
+  top: 125px;
+  left: 250px;
+  text-align: center;
 }
 
-.custom_logo_title .custom_title {
-    font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
-    position: absolute;
-    height: 75px;
-    width: 500px;
-    top: 125px;
-    left: 250px;
-    text-align: center;
+body {
+  background-image: url("../../../img/sym/theme/NOUT/background.jpg");
 }
+
+.panel-heading {
+  background-color: #80b6df;
+  color: white;
+}
+
+.btn-login {
+  background-color: #80b6df;
+  color: white;
+}
+.btn-login:hover, .btn-login.focus, .btn-login:focus, .btn-login.active.focus, .btn-login.active:focus, .btn-login.active:hover, .btn-login.focus:active, .btn-login:active:focus, .btn-login:active:hover {
+  background-color: #4393d0;
+}
+
+.panel-footer {
+  color: gray;
+  background-color: transparent;
+}
+
+.panel {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/*# sourceMappingURL=style.css.map */

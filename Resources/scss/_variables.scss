@@ -1,0 +1,18 @@
+
+$body-background-image: url('../../../img/sym/theme/NOUT/background.jpg');
+
+//@if (not(variable-exists(panel-bgcolor))) {
+  $panel-bgcolor: rgba(255, 255, 255, 0.8);
+//}
+
+
+$panel-header-bgcolor: #80b6df;
+$panel-header-color: white;
+
+$panel-btn-bgcolor: #80b6df;
+$panel-btn-hover-bgcolor: darken($panel-btn-bgcolor, 15%); //valeur origine #449dd7
+$panel-btn-color: white;
+
+
+$panel-footer-bgcolor: transparent;
+$panel-footer-color: gray;

@@ -1,0 +1,63 @@
+
+@font-face {
+  font-family: 'DolceVita';
+  src: url('../../../font/theme/NOUT/Dolce Vita.ttf');
+}
+
+body {
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-clip: border-box;
+  background-size: cover;
+
+}
+#loginbox {
+  height: 400px;
+  width: 500px;
+  left: 50%;
+  margin-left: -250px;
+  margin-top: -200px;
+  position: fixed;
+  top: 50%;
+}
+.panel-heading, .btn-login  {
+  font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+.panel-footer {
+  font-size: xx-small;
+}
+.panel {
+  border-radius: 8px;
+}
+.panel-heading {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+
+}
+
+.custom_logo_title {
+  position: absolute;
+  left: -250px;
+  top: -200px;
+
+  .custom_logo {
+    position: absolute;
+    height: 125px;
+    width: 500px;
+    left: 250px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  .custom_title {
+    font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
+    position: absolute;
+    height: 75px;
+    width: 500px;
+    top: 125px;
+    left: 250px;
+    text-align: center;
+  }
+
+}

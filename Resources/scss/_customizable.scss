@@ -1,0 +1,34 @@
+
+
+body {
+  background-image: $body-background-image;
+}
+.panel-heading {
+  background-color: $panel-header-bgcolor;
+  color: $panel-header-color;
+}
+
+.btn-login {
+  background-color: $panel-btn-bgcolor;
+  color: $panel-btn-color;
+
+  &:hover,
+  &.focus,
+  &:focus,
+  &.active.focus,
+  &.active:focus,
+  &.active:hover,
+  &.focus:active,
+  &:active:focus,
+  &:active:hover {
+    background-color: $panel-btn-hover-bgcolor;
+  }
+}
+
+.panel-footer {
+  color: $panel-footer-color;
+  background-color: $panel-footer-bgcolor;
+}
+.panel {
+    background-color: $panel-bgcolor;
+}
