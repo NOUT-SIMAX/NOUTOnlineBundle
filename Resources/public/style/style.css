@@ -75,6 +75,7 @@ body {
 }
 .btn-login:hover, .btn-login.focus, .btn-login:focus, .btn-login.active.focus, .btn-login.active:focus, .btn-login.active:hover, .btn-login.focus:active, .btn-login:active:focus, .btn-login:active:hover {
   background-color: #4393d0;
+  color: white;
 }
 
 .panel-footer {
