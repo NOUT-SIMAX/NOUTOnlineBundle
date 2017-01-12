@@ -468,9 +468,17 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 	    try
 	    {
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+                //on met un temps infini pour windows pour l'appel à NOUTOnline
+                $old_time = ini_get('max_execution_time');
+                set_time_limit(0);
+            }
 		    //on fait l'appel a la methode mere
 		    /*$mResult =  */parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
 
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+                set_time_limit($old_time);
+            }
 	    }
 	    catch(SOAPException $e)
 	    {
