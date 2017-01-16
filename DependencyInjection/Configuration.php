@@ -42,9 +42,11 @@ class Configuration implements ConfigurationInterface
         $node
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('title')->defaultValue('')->end()
-            ->scalarNode('logo_file')->defaultValue('')->end()
-            ->scalarNode('css_file')->defaultValue('')->end()
+                ->scalarNode('title')->defaultValue('')->end()
+                ->scalarNode('logo_file')->defaultValue('')->end()
+                ->scalarNode('css_file')->defaultValue('')->end()
+                ->scalarNode('favicon_file')->defaultValue('')->end()
+                ->scalarNode('window_title')->defaultValue('')->end()
             ->end()
         ;
         return $node;
