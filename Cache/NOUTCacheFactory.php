@@ -9,6 +9,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
 
+use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Yaml\Yaml;
 
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
@@ -25,10 +27,17 @@ class NOUTCacheFactory
      */
     private $__cachedir;
 
-    function __construct(Router $router, $cachedir)
+
+    /**
+     * @var string
+     */
+    private $__cacheinfofile;
+
+    function __construct(Router $router, $cachedir, $configdir)
     {
         $this->__router = $router;
         $this->__cachedir = $cachedir;
+        $this->__cacheinfofile = $configdir.'/cache_info.yml';
     }
 
 
@@ -41,7 +50,24 @@ class NOUTCacheFactory
      */
     public function getCache($namespace, $prefix, $dirprefix)
     {
-        $baseurl = $_SERVER['SERVER_NAME'].$this->__router->generate('index');
+        if (isset($_SERVER) && isset($_SERVER['SERVER_NAME'])){
+            $server_name = $_SERVER['SERVER_NAME'];
+
+            //dump de la config
+            $dumper = new Dumper();
+            $sYaml = $dumper->dump(array('server_name'=>$server_name), 5);
+            file_put_contents($this->__cacheinfofile, $sYaml);
+        }
+        else {
+            $aParseYaml = file_exists($this->__cacheinfofile) ? Yaml::parse($this->__cacheinfofile) : array();
+            if (isset($aParseYaml['server_name'])){
+                $server_name=$aParseYaml['server_name'];
+            }
+            else {
+                $server_name='';
+            }
+        }
+        $baseurl = $server_name.$this->__router->generate('index');
 
         if (extension_loaded('apc') || extension_loaded('apcu'))
         {
