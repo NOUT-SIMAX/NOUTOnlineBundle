@@ -52,6 +52,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -809,10 +810,10 @@ class NOUTClient
 
     /**
      * Execute une action via son id
-     * @param string $tabParamQuery
-     * @param string $tabHeaderQuery
-     * @param string $sIDAction
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * @param array $tabParamQuery
+     * @param array $tabHeaderQuery
+     * @param       $sIDAction
+     * @return ActionResult
      */
     public function oExecIDAction(array $tabParamQuery, array $tabHeaderQuery = array(), $sIDAction)
     {
@@ -837,10 +838,10 @@ class NOUTClient
 
     /**
      * Execute une action via sa phrase
-     * @param string $sPhrase
+     * @param array  $tabParamQuery
+     * @param        $sPhrase
      * @param string $sIDContexte
-     * @param string $tabParamQuery
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * @return ActionResult
      */
     public function oExecSentence(array $tabParamQuery, $sPhrase, $sIDContexte = '')
     {
@@ -864,11 +865,10 @@ class NOUTClient
 
 
     /**
-     * Affichage d'une liste
-     * @param $sIDTableau
+     * @param array  $tabParamQuery
+     * @param        $sIDTableau
      * @param string $sIDContexte
-     * @param array $tabParamQuery
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * @return ActionResult
      */
     public function oExecList(array $tabParamQuery, $sIDTableau, $sIDContexte = '')
     {
@@ -926,6 +926,38 @@ class NOUTClient
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
+
+
+
+    /**
+     * Execute une action via son id
+     * @param string $tabParamQuery
+     * @param string $tabHeaderQuery
+     * @param Record $idenreg
+     * @param string $idcolonne
+     * @return ActionResult
+     */
+    public function oGetSublistContent(array $tabParamQuery, array $tabHeaderQuery = array(), Record $clRecord, $idcolonne)
+    {
+        //test des valeurs des paramètres
+        $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idcolonne, null);
+
+        //paramètre de l'action liste
+        $clParam = new GetSubListContent();
+
+        $this->_initStructParamFromTabParamRequest($clParam, $tabParamQuery);
+
+        $clParam->Record = $clRecord->getIDEnreg();
+        $clParam->Column = $idcolonne;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+
+        $clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
 
     /**
      * @param XMLResponseWS $clReponseXML
