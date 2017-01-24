@@ -77,7 +77,7 @@ class OptionDialogue extends WSDLOptionDialogue
 		$this->DisplayValue          = 0; 	// integer
 		$this->LanguageCode          = 12; 	// integer
 		$this->WithFieldStateControl = 1; 	// integer
-		$this->ListContentAsync      = 0; 	// integer
+		$this->ListContentAsync      = null; 	// integer
         $this->VersionMin            = 1; // integer
 
 		return $this;
