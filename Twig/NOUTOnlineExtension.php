@@ -60,22 +60,22 @@ class NOUTOnlineExtension extends \Twig_Extension
 	public function getFilters()
 	{
 		return array(
-            new \Twig_SimpleFilter('noutonline_beautify_soap_query', array($this, 'beautifySOAPQuery')),
+            new \Twig_SimpleFilter('noutonline_beautify_xml', array($this, 'beautifyXML')),
+            new \Twig_SimpleFilter('noutonline_beautify_json', array($this, 'beautifyJSON')),
 		);
 	}
 
 	/**
-	 * Minify the query
-	 *
 	 * @param string $query
-	 *
 	 * @return string
 	 */
-	public function beautifySOAPQuery($query)
+	public function beautifyXML($query)
 	{
 		$nPos = strpos($query, '<?xml ');
-		if (!$nPos)
-			return $query;
+		if ($nPos===false)
+        {
+            return $query;
+        }
 
 		$header = substr($query, 0, $nPos);
 		$xml = substr($query, $nPos);
@@ -89,12 +89,48 @@ class NOUTOnlineExtension extends \Twig_Extension
 		return $result;
 	}
 
+    /**
+     * @param string $query
+     * @return string
+     */
+    public function beautifyJSON($query)
+    {
+        $oTemp = json_decode($query);
+        return json_encode($oTemp, JSON_PRETTY_PRINT);
+    }
 
-	public function getFunctions()
+
+    public function getLanguageQuery($query)
+    {
+        if (strncmp(trim($query), '<?xml ', strlen('<?xml ')) == 0)
+        {
+            return 'markup';
+        }
+
+        if (    (strncmp(trim($query), 'http://', strlen('http://')) == 0)
+            ||  (strncmp(trim($query), 'https://', strlen('https://')) == 0))
+        {
+            return 'http';
+        }
+
+        $oTemp = json_decode($query);
+        if (json_last_error()==JSON_ERROR_NONE)
+        {
+            return 'json';
+        }
+
+        return 'txt';
+
+    }
+
+
+
+    public function getFunctions()
 	{
 		return array(
 			 new \Twig_SimpleFunction('noutonline_version', array($this, 'version')),
 			 new \Twig_SimpleFunction('noutonline_is_started', array($this, 'isStarted')),
+             new \Twig_SimpleFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
 		);
 	}
 

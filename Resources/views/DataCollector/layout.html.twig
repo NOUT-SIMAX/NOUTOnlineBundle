@@ -1,5 +1,31 @@
 {% extends 'WebProfilerBundle:Profiler:layout.html.twig' %}
 
+{% macro request(soap, sens, i, headers, content) %}
+	{% if headers is not empty %}
+		<pre class="code-{{ sens }}-{{ i }} line-numbers">
+			<code class="language-http">{{ headers }}</code>
+		</pre>
+	{% endif %}
+    {% if soap %}
+		<pre class="code-{{ sens }}-{{ i }} line-numbers ">
+			<code class="language-markup">{{ content | noutonline_beautify_xml  }}</code>
+		</pre>
+    {% else %}
+	    {% set language = noutonline_get_language_query(content) %}
+		<pre class="code-{{ sens }}-{{ i }} line-numbers">
+			{% if language == 'markup' %}
+				<code class="language-{{ language }}">{{ content | noutonline_beautify_xml }}</code>
+			{% elseif language == 'json' %}
+			    <code class="language-{{ language }}">{{ content | noutonline_beautify_json }}</code>
+			{% else %}
+				<code class="language-{{ language }}">{{ content }}</code>
+			{% endif %}
+		</pre>
+    {% endif %}
+{% endmacro %}
+
+{% import _self as macros %}
+
 {% block user %}
     <div class="sf-toolbar-status {{ class_plus }} sf-toolbar-status-{{ color_code }}">{{ collector.user }}</div>
     {% if collector.superviseur %}
@@ -85,16 +111,21 @@
 {% block head %}
 	{{ parent() }}
 
+	<link href="{{ asset('vendors/other_components/prism/prism.css')}}" rel="stylesheet" />
+
 	<style>
 		h3 {
 			margin-bottom: 0;
 		}
 
-		code {
+		pre {
 			display: none;
-			padding: 5px;
-			background-color: #ffffff;
 		}
+
+		code {
+			padding: 5px;
+		}
+
 	</style>
 
 {% endblock %}
@@ -164,23 +195,7 @@
 							<img title="Hide query" alt="-" id="hide-request-{{ i }}" class="hide" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display:none ; cursor: pointer;" />
 							<span>Request {{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms ({{ '%0.2f'|format(query.sendMS * 1000) }} ms)</span>
 						</div>
-						{% if query.soap and query.request_header is not empty%}
-							<code class="code-request-{{ i }}">
-								{{ query.request_header | noutonline_beautify_soap_query | nl2br }}
-							</code>
-							<code class="code-request-{{ i }} prettyprint linenums">
-								{{ query.request | noutonline_beautify_soap_query |nl2br }}
-							</code>
-						{% else %}
-							<code class="code-request-{{ i }}">
-								{{ query.request | noutonline_beautify_soap_query | nl2br }}
-							</code>
-						{% endif %}
-						{#
-						<code class="{% if query.soap %}prettyprint{% endif %}" id="code-request-{{ i }}">
-							{{ query.request | noutonline_beautify_soap_query | nl2br }}
-						</code>
-						#}
+						{{ macros.request(query.soap, 'request', i, query.request_header, query.request) }}
 					</div>
 					<div>
 						<div>
@@ -188,42 +203,21 @@
 							<img title="Hide query" alt="-" id="hide-response-{{ i }}" class="hide" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none; cursor: pointer;" />
 							<span>Response</span>
 						</div>
-
-						{% if query.soap and query.response_header is not empty%}
-							<code class="code-response-{{ i }}">
-								{{ query.response_header | noutonline_beautify_soap_query | nl2br }}
-							</code>
-							<code class="code-response-{{ i }} prettyprint linenums">
-								{{ query.response | noutonline_beautify_soap_query |nl2br }}
-							</code>
-						{% else %}
-							<code class="code-response-{{ i }}">
-								{{ query.response | noutonline_beautify_soap_query | nl2br }}
-							</code>
-						{% endif %}
-						{#
-						<code class="{% if query.xml %}prettyprint{% endif %}" id="code-response-{{ i }}">
-							{{ query.response | noutonline_beautify_soap_query |nl2br }}
-						</code>
-						#}
+                        {{ macros.request(query.soap, 'response', i, query.response_header, query.response) }}
 					</div>
 				</div>
 			</li>
 		{% endfor %}
 		</ul>
 
-		<script src="{{ asset('vendors/other_components/GooglePrettify/run_prettify.js') }}"></script>
+
+		<script src="{{ asset('vendors/other_components/clipboard-js/dist/clipboard.js')}}"></script>
+		<script src="{{ asset('vendors/other_components/prism/prism.js')}}"></script>
 		<script src="{{ asset('vendors/jquery/jquery.min.js') }}"></script>
 
 		<script type="text/javascript">//<![CDATA[
 
 			$( document ).ready(function() {
-
-
-//                vkbeautify.xml(text [,indent_pattern]);
-//                vkbeautify.json(text [,indent_pattern]);
-//                vkbeautify.css(text [,indent_pattern]);
-//                vkbeautify.sql(text [,indent_pattern]);
 
 
 				$('.expand').bind('click', function() {
