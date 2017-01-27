@@ -20,6 +20,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
@@ -102,13 +103,18 @@ class NOUTClient
     private $m_clOptionDialogue = null;
 
     /**
+     * @var string
+     */
+    private $m_sVersionMin;
+
+    /**
      * @param TokenStorage $security
      * @param OnlineServiceFactory $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory)
+    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin)
     {
         $this->__tokenStorage = $tokenStorage;
 
@@ -118,6 +124,7 @@ class NOUTClient
         $this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 
         $this->m_clConfigurationDialogue = $configurationDialogue;
+        $this->m_sVersionMin = $sVersionMin;
 
         //création du gestionnaire de cache
         if ($oSecurityToken instanceof NOUTToken)
@@ -174,11 +181,20 @@ class NOUTClient
 
     /**
      * récupère le numéro de version
-     * @return string
+     * @return NOUTOnlineVersion
      */
-    public function sGetVersion()
+    public function clGetVersion()
     {
-        return $this->m_clRESTProxy->sGetVersion();
+        return $this->m_clRESTProxy->clGetVersion();
+    }
+
+    /**
+     * teste le client pour savoir s'il correspond à la version minimale
+     * @return bool
+     */
+    public function isVersionMin()
+    {
+        return $this->clGetVersion()->isVersionSup($this->m_sVersionMin, true);
     }
 
     /**
