@@ -9,6 +9,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Twig;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
@@ -30,15 +32,22 @@ class NOUTOnlineExtension extends \Twig_Extension
 	 */
 	protected $m_clConfiguration;
 
+    /**
+     * @var string $m_sVersionMin
+     */
+	protected $m_sVersionMin;
+
 	/**
 	 * @param OnlineServiceFactory  $factory
 	 * @param ConfigurationDialogue $configuration
+     * @param string $sVersionMin
 	 */
-	public function __construct(OnlineServiceFactory $factory, ConfigurationDialogue $configuration)
+	public function __construct(OnlineServiceFactory $factory, ConfigurationDialogue $configuration, $sVersionMin)
 	{
 
 		$this->m_clServiceFactory = $factory;
 		$this->m_clConfiguration = $configuration;
+		$this->m_sVersionMin = $sVersionMin;
 	}
 
 
@@ -130,6 +139,7 @@ class NOUTOnlineExtension extends \Twig_Extension
 		return array(
 			 new \Twig_SimpleFunction('noutonline_version', array($this, 'version')),
 			 new \Twig_SimpleFunction('noutonline_is_started', array($this, 'isStarted')),
+             new \Twig_SimpleFunction('noutonline_is_versionmin', array($this, 'isVersionMin')),
              new \Twig_SimpleFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
 		);
 	}
@@ -141,10 +151,11 @@ class NOUTOnlineExtension extends \Twig_Extension
 	 */
 	public function version()
 	{
+        /** @var OnlineServiceProxy $clRest */
 		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
 		try
 		{
-			return $clRest->sGetVersion();
+			return $clRest->clGetVersion()->get();
 		}
 		catch(\Exception $e)
 		{
@@ -152,12 +163,33 @@ class NOUTOnlineExtension extends \Twig_Extension
 		}
 	}
 
+    /**
+     * @return bool
+     */
+	public function isVersionMin()
+    {
+        /** @var OnlineServiceProxy $clRest */
+        $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
+        try
+        {
+            /** @var NOUTOnlineVersion $clVersion */
+            $clVersion = $clRest->clGetVersion();
+        }
+        catch(\Exception $e)
+        {
+            return false;
+        }
+
+        return $clVersion->isVersionSup($this->m_sVersionMin, true);
+    }
+
 	/**
 	 * Test si NOUTOnline est démarré
 	 * @return bool
 	 */
 	public function isStarted()
 	{
+        /** @var OnlineServiceProxy $clRest */
 		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
         return $clRest->bIsStarted();
 	}

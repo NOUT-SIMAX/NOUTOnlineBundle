@@ -54,6 +54,7 @@ services:
         arguments:
             - @nout_online.service_factory
             - @nout_online.configuration_dialogue
+            - %nout_online.version_min%
         tags:
             - { name: twig.extension }
 

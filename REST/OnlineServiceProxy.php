@@ -13,6 +13,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
@@ -61,7 +62,7 @@ class OnlineServiceProxy
 	{
 		try
 		{
-			$this->sGetVersion();
+			$this->clGetVersion();
 			return true;
 		}
 		catch(\Exception $e)
@@ -389,13 +390,13 @@ class OnlineServiceProxy
 
 	/**
 	 * récupère la version de NOUTOnline
-	 * @return string
+	 * @return NOUTOnlineVersion
 	 */
-	public function sGetVersion()
+	public function clGetVersion()
 	{
 		$sURI = $this->_sCreateRequest('GetVersion', array(), array(), new Identification());
 
-		return $this->_oExecute('GetVersion', $sURI, 1)->content;
+		return $clVersion = new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, 1)->content);
 	}
 
     /**
