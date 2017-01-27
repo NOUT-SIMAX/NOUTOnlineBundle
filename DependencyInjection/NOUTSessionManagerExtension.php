@@ -30,5 +30,8 @@ class NOUTSessionManagerExtension extends Extension
             $container->setParameter('nout_session_manager.'.$key, $value);
         }
 
+
+        $container->setParameter('kernel.default_locale', $config['locale']);
+
     }
 }

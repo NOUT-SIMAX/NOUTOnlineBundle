@@ -26,7 +26,12 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
-            ->append($this->addCustomizationNode())
+                ->scalarNode('locale') //enumNode('locale')
+                    ->info('Langue du site.')
+                    //->values(array('fr', 'en'))
+                    ->defaultValue('fr')
+                ->end()
+                ->append($this->addCustomizationNode())
             ->end()
         ;
 
