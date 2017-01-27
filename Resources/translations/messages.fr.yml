@@ -4,6 +4,7 @@ login:
     connection: Connexion
     sign_in: Connectez-vous
     noutonline_no_answer: "NOUTOnline ne réponds pas.\nVérifier les points suivants :\n- le service est lancé\n- la licence est valide\n- le webservice est activé."
+    noutonline_no_versionmin: "La version de NOUTOnline est trop ancienne pour le site.\nVeuillez faire la mise à jour."
 error:
     page_shouldnt_show: Cette page ne devrait pas s'afficher
     configure_firewall: Veuillez configurer le pare-feu symfony correctement

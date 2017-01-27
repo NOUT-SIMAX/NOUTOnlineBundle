@@ -106,12 +106,12 @@ class DefaultController extends Controller
 
 	    return $this->render($this->_sGetTemplate('Security/index'), array(
 		    // last username entered by the user
-		    'last_username' => $session->get(Security::LAST_USERNAME),
-		    'error'         => $error,
-		    'timezone_list' => TimeZone::s_aGetTabTimezone(),
-		    'last_timezone' => $session->get(NOUTToken::SESSION_LastTimeZone),
-            'customization' => $this->getParameter('nout_session_manager.customization'),
-            'extranet'      => $this->getParameter('nout_online.extranet')['actif'],
+		    'last_username'             => $session->get(Security::LAST_USERNAME),
+		    'error'                     => $error,
+		    'timezone_list'             => TimeZone::s_aGetTabTimezone(),
+		    'last_timezone'             => $session->get(NOUTToken::SESSION_LastTimeZone),
+            'customization'             => $this->getParameter('nout_session_manager.customization'),
+            'extranet'                  => $this->getParameter('nout_online.extranet')['actif'],
 	    ));
 
     }

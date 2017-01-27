@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 
@@ -54,9 +55,9 @@ class NOUTToken extends UsernamePasswordToken
 
     /**
      * version du noutonline
-     * @var string m_sVersionNO
+     * @var NOUTOnlineVersion m_clVersionNO
      */
-    protected $m_sVersionNO;
+    protected $m_clVersionNO;
 
 	/**
 	 * {@inheritdoc}
@@ -201,19 +202,27 @@ class NOUTToken extends UsernamePasswordToken
 	}
 
     /**
-     * @return string
+     * @return NOUTOnlineVersion
      */
     public function getVersionNO()
     {
-        return $this->m_sVersionNO;
+        return $this->m_clVersionNO;
     }
 
     /**
-     * @param string $sVersionNO
+     * @param string|NOUTOnlineVersion $versionNO
+     * @return $this
      */
-    public function setVersionNO($sVersionNO)
+    public function setVersionNO($versionNO)
     {
-        $this->m_sVersionNO = $sVersionNO;
+        if ($versionNO instanceof NOUTOnlineVersion)
+        {
+            $this->m_clVersionNO = $versionNO;
+        }
+        else
+        {
+            $this->m_clVersionNO = new NOUTOnlineVersion($versionNO);
+        }
         return $this;
     }
 
@@ -222,28 +231,12 @@ class NOUTToken extends UsernamePasswordToken
      * @param      $sVersionMin
      * @param bool $bInclu
      */
-    public function isVersionSup($sVersionMin, $bInclu = true)
+    public function isVersionSup($sVersionMin, $bInclu)
     {
-        if (empty($this->m_sVersionNO)){
+        if (is_null($this->m_clVersionNO)){
             return false;
         }
-        $aVersionCur = array_slice(explode('.', $this->m_sVersionNO), -2);
-        $aVersionMin = array_slice(explode('.', $sVersionMin), -2);
-
-        if ((int)$aVersionCur[0]>(int)$aVersionMin[0]){
-            return true;
-        }
-        if ((int)$aVersionCur[0]<(int)$aVersionMin[0]){
-            return false;
-        }
-
-        if ((int)$aVersionCur[1]>(int)$aVersionMin[1]){
-            return true;
-        }
-        if ((int)$aVersionCur[1]<(int)$aVersionMin[1]){
-            return false;
-        }
-        return $bInclu;
+        return $this->m_clVersionNO->isVersionSup($sVersionMin, $bInclu);
     }
 
 
@@ -261,7 +254,7 @@ class NOUTToken extends UsernamePasswordToken
                 $this->m_sPasswordSIMAX,
                 $this->m_bExtranet,
                 $this->m_sLoginExtranet,
-                $this->m_sVersionNO,
+                $this->m_clVersionNO->get(),
                 is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
                 , parent::serialize()
             )
@@ -277,7 +270,7 @@ class NOUTToken extends UsernamePasswordToken
         $nbElem = count($aUnserialised);
         if ($nbElem>=9)
         {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $this->m_sVersionNO, $sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $versionNO, $sLangage, $parentStr) = $aUnserialised;
         }
         elseif ($nbElem>=8)
         {
@@ -291,6 +284,8 @@ class NOUTToken extends UsernamePasswordToken
         {
             list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $sLangage, $parentStr) = $aUnserialised;
         }
+
+        $this->m_clVersionNO = new NOUTOnlineVersion($versionNO);
 		$this->m_clLangage = new Langage('', '');
 		$this->m_clLangage->unserialize($sLangage);
 		parent::unserialize($parentStr);

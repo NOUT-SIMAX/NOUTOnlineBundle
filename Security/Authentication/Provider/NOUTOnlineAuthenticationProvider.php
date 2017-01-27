@@ -237,8 +237,8 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 
 			$authenticatedToken->setLangage(new Langage($sVersionLangage, $sVersionIcone));
 
-            $sVersionNO = $this->m_clRESTProxy->sGetVersion();
-            $authenticatedToken->setVersionNO($sVersionNO);
+            $clVersionNO = $this->m_clRESTProxy->clGetVersion();
+            $authenticatedToken->setVersionNO($clVersionNO);
 
 			return $authenticatedToken;
 		}
