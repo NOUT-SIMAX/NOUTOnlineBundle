@@ -35,7 +35,7 @@ services:
             - '%nout_online.protocole%'
             - '%nout_online.apiuuid%'
             - '%version_site%'
-            - '%nout.client% %societe%'
+            - '%nout.client%'
             - '%nout_online.auth%'
 
     #factory pour les proxy
