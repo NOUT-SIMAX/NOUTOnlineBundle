@@ -42,14 +42,16 @@ class InfoColonne
         {
             switch($sAttribName)
             {
-            case Record::OPTION_BGColor:
-            case Record::OPTION_Color:
-                $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
-                break;
+                case Record::OPTION_DisplayDefault:
+                case Record::OPTION_DisplayMode:
+                case Record::OPTION_BGColor:
+                case Record::OPTION_Color:
+                    $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
+                    break;
 
-            default:
-                $this->m_TabOptions[$sAttribName] = (int) $ndAttrib;
-                break;
+                default:
+                    $this->m_TabOptions[$sAttribName] = (int) $ndAttrib;
+                    break;
             }
         }
 	}

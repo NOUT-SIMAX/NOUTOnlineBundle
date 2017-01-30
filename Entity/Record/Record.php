@@ -349,7 +349,11 @@ class Record
         $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
         $record = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
 
-        return $record->getTitle();
+        if(isset($record))
+        {
+            return $record->getTitle();
+        }
+        return "";
     }
 
 
@@ -695,11 +699,13 @@ class Record
     }
 
 
-    const OPTION_Icon       = 'recordIconID';
-    const OPTION_RColor     = 'recordColor';
+    const OPTION_Icon           = 'recordIconID';
+    const OPTION_RColor         = 'recordColor';
 
-    const OPTION_Bold       = 'bold';
-    const OPTION_Color      = 'color';
-    const OPTION_BGColor    = 'bgcolor';
-    const OPTION_Italic     = 'italic';
+    const OPTION_Bold           = 'bold';
+    const OPTION_Color          = 'color';
+    const OPTION_BGColor        = 'bgcolor';
+    const OPTION_Italic         = 'italic';
+    const OPTION_DisplayMode    = 'displayMode';
+    const OPTION_DisplayDefault = 'displayDefault';
 }
