@@ -38,6 +38,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromAddress;
@@ -457,6 +458,12 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
             $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_WithFieldStateControl] = 1;
         }
 
+        //si on a pas de ListContentAsync precisé, on le mets à 1 (pour forcer le chargement des sous-listes en ajax)
+        if(is_null($this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_ListContentAsync]))
+        {
+            $this->__aListHeaders[self::HEADER_OptionDialogue][self::HEADER_OptionDialogue_ListContentAsync] = 1;
+        }
+
         //on ajoute l'id application
         $this->__aListHeaders[self::HEADER_APIUUID] = $this->__ConfigurationDialogue->getAPIUUID();
 
@@ -852,6 +859,20 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     public function getColInRecord(GetColInRecord $clWsdlType_GetColInRecord, $aHeaders = array())
     {
 	    return $this->call('GetColInRecord', array($clWsdlType_GetColInRecord) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetColInRecord
+     *
+     * @param GetSubListContent $clWsdlType_GetSubListContent
+     * @param array          $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getSubListContent(GetSubListContent $clWsdlType_GetSubListContent, $aHeaders = array())
+    {
+        return $this->call('GetSubListContent', array($clWsdlType_GetSubListContent) , null, null , $aHeaders);
     }
     //---
 
@@ -1473,16 +1494,17 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
     static public function s_isValidDialogOption($sDialogOption)
     {
-        return( $sDialogOption == self::HEADER_OptionDialogue_Readable ||
-                $sDialogOption == self::HEADER_OptionDialogue_DisplayValue ||
-                $sDialogOption == self::HEADER_OptionDialogue_EncodingOutput ||
+        return( ($sDialogOption == self::HEADER_OptionDialogue_Readable) ||
+                ($sDialogOption == self::HEADER_OptionDialogue_DisplayValue) ||
+                ($sDialogOption == self::HEADER_OptionDialogue_EncodingOutput) ||
                 // ReturnValue
                 // ReturnXSD
                 // HTTPForceReturn
-                $sDialogOption == self::HEADER_Ghost ||
+                ($sDialogOption == self::HEADER_Ghost) ||
                 // DefaultPagination
-                $sDialogOption == self::HEADER_OptionDialogue_LanguageCode
+                ($sDialogOption == self::HEADER_OptionDialogue_LanguageCode) ||
                 // ListContentAsync
+                ($sDialogOption == self::HEADER_OptionDialogue_ListContentAsync)
         );
 	}
 
@@ -1501,6 +1523,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	const HEADER_OptionDialogue_EncodingOutput  = 'EncodingOutput';
 	const HEADER_Ghost							= 'Ghost';
 	const HEADER_OptionDialogue_LanguageCode    = 'LanguageCode';
+    const HEADER_OptionDialogue_ListContentAsync= 'ListContentAsync';
 
     // Autres
 	const HEADER_WithFieldStateControl          = 'WithFieldStateControl'; // ?? Pas dans la doc

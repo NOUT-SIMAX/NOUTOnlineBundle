@@ -348,6 +348,9 @@ class Record
 
         $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
         $record = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
+        if (!isset($record)){
+            return '';
+        }
 
         if(isset($record))
         {

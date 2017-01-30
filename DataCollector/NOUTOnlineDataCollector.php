@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DataCollector;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -120,6 +121,9 @@ class NOUTOnlineDataCollector  extends DataCollector
      */
     public function getVersion()
     {
+        if ($this->data['version'] instanceof NOUTOnlineVersion){
+            return $this->data['version']->get();
+        }
         return $this->data['version'];
     }
 

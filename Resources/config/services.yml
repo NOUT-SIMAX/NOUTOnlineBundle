@@ -35,7 +35,7 @@ services:
             - '%nout_online.protocole%'
             - '%nout_online.apiuuid%'
             - '%version_site%'
-            - '%nout.client% %societe%'
+            - '%nout.client%'
             - '%nout_online.auth%'
 
     #factory pour les proxy
@@ -54,6 +54,7 @@ services:
         arguments:
             - @nout_online.service_factory
             - @nout_online.configuration_dialogue
+            - %nout_online.version_min%
         tags:
             - { name: twig.extension }
 
