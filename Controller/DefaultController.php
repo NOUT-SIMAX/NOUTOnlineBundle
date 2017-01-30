@@ -112,6 +112,7 @@ class DefaultController extends Controller
 		    'last_timezone'             => $session->get(NOUTToken::SESSION_LastTimeZone),
             'customization'             => $this->getParameter('nout_session_manager.customization'),
             'extranet'                  => $this->getParameter('nout_online.extranet')['actif'],
+            'version_min'               => $this->getParameter('nout_online.version_min'),
 	    ));
 
     }

@@ -47,6 +47,7 @@
             </div>
 		{% endif %}
 		<div class="panel" >
+            {% set isMin = true %}
 			<div class="panel-heading">
 				<div class="panel-title">{% if extranet %}<span class="glyphicon glyphicon-globe"></span> {% endif %}{{ 'login.sign_in' | trans }}</div>
 			</div>
@@ -61,7 +62,8 @@
                         {# NOUTOnline ne répond pas #}
                         {{ 'login.noutonline_no_answer' | trans | nl2br }}
                     {% elseif not noutonline_is_versionmin() %}
-                        {{ 'login.noutonline_no_versionmin' | trans | nl2br }}
+                        {% set isMin = false %}
+                        {{ 'login.noutonline_no_versionmin' | trans | replace({'%version%': version_min}) | nl2br }}
                     {% else %}
                         {# Tout va bien on peut se connecter #}
                         <div style="margin-bottom: 25px" class="input-group">
@@ -92,7 +94,7 @@
 			<div class="panel-footer">
 				© NOUTWeb {{ version_site }}
 				<br />
-				© NOUTOnline {{ noutonline_version() }}
+                © NOUTOnline <span {% if not isMin %}class="text-danger" style="font-weight: bold"{% endif %}>{{ noutonline_version() }}</span>
 			</div>
 		</div>
 	</div>
