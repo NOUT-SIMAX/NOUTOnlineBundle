@@ -236,7 +236,14 @@ class NOUTToken extends UsernamePasswordToken
         if (is_null($this->m_clVersionNO)){
             return false;
         }
-        return $this->m_clVersionNO->isVersionSup($sVersionMin, $bInclu);
+
+        if ($this->m_clVersionNO instanceof  NOUTOnlineVersion)
+        {
+            return $this->m_clVersionNO->isVersionSup($sVersionMin, $bInclu);
+        }
+
+        $clVersion = new NOUTOnlineVersion($this->m_clVersionNO);
+        return $clVersion->isVersionSup($sVersionMin, $bInclu);
     }
 
 
@@ -246,6 +253,17 @@ class NOUTToken extends UsernamePasswordToken
 	 */
 	public function serialize()
 	{
+        if (is_null($this->m_clVersionNO)){
+            $sVersion='';
+        }
+        elseif ($this->m_clVersionNO instanceof NOUTOnlineVersion) {
+            $sVersion = $this->m_clVersionNO->get();
+        }
+        else {
+            $sVersion = $this->m_clVersionNO;
+        }
+
+
 		return serialize(
             array(
                 $this->m_sIP,
@@ -254,7 +272,7 @@ class NOUTToken extends UsernamePasswordToken
                 $this->m_sPasswordSIMAX,
                 $this->m_bExtranet,
                 $this->m_sLoginExtranet,
-                $this->m_clVersionNO->get(),
+                $sVersion,
                 is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
                 , parent::serialize()
             )
