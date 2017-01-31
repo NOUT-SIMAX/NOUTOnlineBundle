@@ -104,7 +104,17 @@ class HTTPResponse
         // Parser les options
         foreach ($output as $headerKey => $headerValue)
         {
-            $options = explode(';', $headerValue);
+            $pattern = '/(?:.+(?:=".*")?[;$])|(?:.+(?:=".*")$)|(?:.+(?:=.*)?)$/U';
+            preg_match_all($pattern, $headerValue, $options);
+            if(is_array($options[0]))
+            {
+                $options = array_map(
+                    function($value) {
+                        return rtrim($value, ";");
+                    },
+                    $options[0]
+                );
+            }
 
             // if(count($options) > 1)
             {
