@@ -149,9 +149,7 @@ class OnlineServiceProxy
 	 * @param string $sAction le nom de l'action
 	 * @param array $aTabParam tableau des parametres
 	 * @param array $aTabOption tableau des options
-	 * @param UsernameToken $clUsernameToken pour l'identification
-	 * @param string $sTokenSession avec le token de la session
-	 * @param string $sIDContexte identifiant du contexte
+     * @param $clIdentification
 	 * @return string la requette rest
 	 */
 	private function _sCreateRequest($sAction, array $aTabParam, array $aTabOption, Identification $clIdentification)
@@ -420,6 +418,23 @@ class OnlineServiceProxy
     public function sGetSchedulerInfo(array $aTabParam, Identification $clIdentification)
     {
         $sURI = $this->_sCreateRequest('GetSchedulerInfo', $aTabParam, array(), $clIdentification);
+
+        return $this->_oExecute('GetSchedulerInfo', $sURI);
+    }
+
+    /**
+     * récupère des évènements
+     * @param array          $aTabParam
+     * @param Identification $clIdentification
+     * @param $idForm
+     * @param $idEnreg
+     * @param $idColumn
+     * @return string
+     * @throws \Exception
+     */
+    public function sGetSchedulerCardInfo($idForm, $idEnreg, $idColumn, array $aTabParam, Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest($idForm.'/'.$idEnreg.'/'.$idColumn.'/GetSchedulerInfo', $aTabParam, array(), $clIdentification);
 
         return $this->_oExecute('GetSchedulerInfo', $sURI);
     }
