@@ -1531,6 +1531,34 @@ class NOUTClient
     }
 
     /**
+     * @param $idContext
+     * @param $startTime
+     * @param $endTime
+     * @param $idForm
+     * @param $idEnreg
+     * @param $idColumn
+     * @return ActionResult
+     */
+    public function getSchedulerCardInfo($idContext, $idForm, $idEnreg, $idColumn, $startTime, $endTime)
+    {
+        //TODO : Remove duplicate code here and above
+        // Création des options
+        $aTabParam = array(
+            RESTProxy::PARAM_StartTime  => $startTime,
+            RESTProxy::PARAM_EndTime    => $endTime,
+        );
+
+        $clIdentification = $this->_clGetIdentificationREST($idContext, false);
+
+        $sRet = $this->m_clRESTProxy->sGetSchedulerCardInfo($idForm, $idEnreg, $idColumn, $aTabParam, $clIdentification);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($sRet);
+
+        return $clActionResult;
+    }
+
+    /**
      * @param $idcontext
      * @param $idformulaire
      * @param $idcallingcolumn
