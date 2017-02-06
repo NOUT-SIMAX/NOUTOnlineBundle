@@ -50,6 +50,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
@@ -1427,6 +1428,29 @@ class NOUTClient
         $clParamModify->ParamXML .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
 
         $clReponseXML = $this->m_clSOAPProxy->modify($clParamModify, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param $tabParamQuery
+     * @param $sIDContexte
+     * @return ActionResult
+     */
+    public function oDisplayElem(array $tabParamQuery, $sIDContexte, $idformulaire, $idenreg)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_ActionContext => $sIDContexte
+        );
+
+        $clParamDisplay = new Display();
+        $this->_initStructParamFromTabParamRequest($clParamDisplay, $tabParamQuery);
+        $clParamDisplay->Table = $idformulaire;
+        $clParamDisplay->ParamXML .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
+
+        $clReponseXML = $this->m_clSOAPProxy->display($clParamDisplay, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
