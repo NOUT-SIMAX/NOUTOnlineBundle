@@ -55,7 +55,7 @@
 				<form id="loginform" class="form-horizontal" role="form" action="{{ path('login_check') }}" method="post">
 					{% if error %}
 					<div style="margin-bottom: 25px" class="input-group col-sm-12">
-						<div id="login-alert" class="alert alert-danger col-sm-12 ">{{ error.message }}</div>
+						<div id="login-alert" class="alert alert-danger col-sm-12 ">{{ error.message|trans(error.messageData, 'security') }}</div>
 					</div>
 					{% endif %}
                     {% if not noutonline_is_started() %}

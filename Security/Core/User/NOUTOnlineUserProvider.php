@@ -78,7 +78,7 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 			return $user;
 		}
 
-		throw new UsernameNotFoundException(sprintf('No record found for user "%s"', $username));
+		throw new UsernameNotFoundException('Username {{ username }} could not be found.');
 	}
 
 	/**

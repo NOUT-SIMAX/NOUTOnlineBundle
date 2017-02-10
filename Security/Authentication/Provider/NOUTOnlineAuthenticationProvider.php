@@ -106,6 +106,7 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
                                 EncoderFactoryInterface $encoderFactory,
                                 $hideUserNotFoundExceptions = true )
 	{
+
 		if (empty($providerKey))
 		{
 			throw new \InvalidArgumentException('$providerKey must not be empty.');

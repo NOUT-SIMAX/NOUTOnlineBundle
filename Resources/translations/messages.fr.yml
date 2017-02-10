@@ -3,7 +3,7 @@ login:
     password: Mot de passe
     connection: Connexion
     sign_in: Connectez-vous
-    noutonline_no_answer: "NOUTOnline ne réponds pas.\nVérifier les points suivants :\n- le service est lancé\n- la licence est valide\n- le webservice est activé."
+    noutonline_no_answer: "NOUTOnline ne répond pas.\nVérifier les points suivants :\n- le service est lancé\n- la licence est valide\n- le webservice est activé."
     noutonline_no_versionmin: "La version minimale de NOUTOnline pour le site est %version%.\nVeuillez faire la mise à jour."
 error:
     page_shouldnt_show: Cette page ne devrait pas s'afficher
