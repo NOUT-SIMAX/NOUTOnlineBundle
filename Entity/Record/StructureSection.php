@@ -38,7 +38,7 @@ class StructureSection extends StructureColonne
 	}
 
 	/**
-	 * @return array
+	 * @return StructureColonne[]
 	 */
 	public function getTabStructureColonne()
 	{
