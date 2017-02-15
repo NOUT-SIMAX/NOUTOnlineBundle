@@ -38,6 +38,12 @@ abstract class StructureColonne
 	 */
 	protected $m_clStructureElemLie;
 
+    /**
+     * restriction sur la colonne
+     * @var ColonneRestriction
+     */
+	protected $m_clRestriction;
+
 
 	/**
 	 * retourne le type de l'élément
@@ -57,6 +63,7 @@ abstract class StructureColonne
 
 		$this->m_TabOptions          = array();
 		$this->m_clStructureElemLie  = null;
+		$this->m_clRestriction       = null;
 
 		$this->_InitInfoColonne($clAttribNOUT, $clAttribXS);
 	}
@@ -339,6 +346,19 @@ abstract class StructureColonne
         }
 
         return !$this->_isLongTextMonoline();
+    }
+
+    public function getMaxLength()
+    {
+        if ($this->m_eTypeElement != self::TM_Texte) {
+            return ;
+        }
+
+        if (!is_null($this->m_clRestriction) && $this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH)){
+            //texte avec restriction => n'est PAS texte multiligne
+            return $this->m_clRestriction->getRestriction(ColonneRestriction::R_MAXLENGTH);
+        }
+
     }
 
     /**
