@@ -9,6 +9,8 @@
 
 namespace NOUT\Bundle\WebSiteBundle\NOUTException;
 
+use Symfony\Component\Translation\Translator;
+
 abstract class NOUTExceptionLevel
 {
     const NOTICE_LEVEL = 0;

@@ -9,19 +9,21 @@
 
 namespace NOUT\Bundle\WebSiteBundle\NOUTException;
 
+use Symfony\Component\Translation\Translator;
+
 class NOUTExceptionFormatter
 {
-    /** @var int $level */
+    /** @var string $level */
     protected $level;
 
     /** @var  string $message */
     protected $message;
 
-    /** @var string $trace */
-    protected $trace;
-
     /** @var  int $code */
     protected $code;
+
+    /** @var \Exception $previous */
+    protected $previous;
 
     /**
      * NOUTExceptionFormatter constructor.
@@ -31,26 +33,40 @@ class NOUTExceptionFormatter
      */
     public function __construct($message, $e, $level = NOUTExceptionLevel::ERROR_LEVEL)
     {
-        $this->level = $level;
-        $this->message = $message;
-        $this->trace = $e->getTraceAsString();
-        $this->code = $e->getCode();
-    }
-
-    public function toArray()
-    {
-        try
-        {
-            $aException = array();
-            $aException['message']  = $this->message;
-            $aException['level']    = NOUTExceptionLevel::toString($this->level);
-            $aException['trace']    = $this->trace;
-            $aException['code']     = $this->code;
+        try{
+            $this->level = NOUTExceptionLevel::toString($level);
+            $this->message = $message;
+            $this->code = $e->getCode();
+            $this->exception = $e;
         }
-        catch (InvalidArgumentException $e)
+        catch (\InvalidArgumentException $e)
         {
             $e = new NOUTExceptionFormatter("Unable to format exception", $e, NOUTExceptionLevel::ERROR_LEVEL);
             return $e->toArray();
         }
+    }
+
+    /**
+     * @param Translator $translator
+     */
+    public function translate($translator)
+    {
+        $this->message = $translator->trans('messages.' . $this->message, array(), 'exceptions');
+        $this->level = $translator->trans('levels.' . $this->level, array(), 'exceptions');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function toArray()
+    {
+        $aException = array();
+        $aException['message']  = $this->message;
+        $aException['previous'] = $this->exception->__toString();
+        $aException['level']    = $this->level;
+        $aException['file']     = $this->exception->getFile();
+        $aException['line']     = $this->exception->getLine();
+        $aException['code']     = $this->code;
+        return $aException;
     }
 }
