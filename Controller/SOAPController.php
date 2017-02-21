@@ -14,7 +14,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList;
@@ -25,7 +24,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\MessageBox;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
+use NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
@@ -57,6 +56,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route; // this imports the annotations
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -67,7 +67,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route; // this imports the 
 class SOAPController extends ProxyController
 {
 	/**
-	 * @param $host
+	 * @param string $host
 	 * @return SOAPProxy
 	 */
 	protected function _clGetSOAPProxy($host)
@@ -81,8 +81,9 @@ class SOAPController extends ProxyController
 	 */
 	protected function _sConnexion(SOAPProxy $OnlineProxy)
 	{
-		//GetTokenSession
-		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession();
+		/** @var ConnectionManager $connectionManager */
+        $connectionManager = $this->get('nout_online.connection_manager');
+		$clGetTokenSession = $connectionManager->getGetTokenSession();
 		$clReponseXML      = $OnlineProxy->getTokenSession($clGetTokenSession);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());
@@ -119,19 +120,18 @@ class SOAPController extends ProxyController
 
 	protected function _bDeconnexion(SOAPProxy $OnlineProxy, $sTokenSession)
 	{
-		//récupération des headers
 		$TabHeader = $this->_aGetTabHeader($sTokenSession);
+        $clXMLResponse = $OnlineProxy->disconnect($TabHeader);
+		$this->_VarDumpRes('Disconnect', $clXMLResponse);
 
-		//Disconnect
-		$clReponseXML = $OnlineProxy->disconnect($TabHeader);
-		$this->_VarDumpRes('Disconnect', $clReponseXML);
-
-		return $clReponseXML;
+		return $clXMLResponse;
 	}
 
 	/**
-	 * pour tester la connexion/déconnexion
+	 * testing connection/disconnection
+     * @param string $host
 	 * @Route("/cnx/ok/{host}", name="online_soap_connexion", defaults={"host"=""})
+     * @return Response
 	 */
 	public function connexionAction($host)
 	{
@@ -154,7 +154,11 @@ class SOAPController extends ProxyController
 
 	/**
 	 * pour tester la connexion/déconnexion
+     * @param string $host
+     * @param int $error
 	 * @Route("/cnx/error_excpt/{error}/{host}", name="online_soap_cnx_error", defaults={"host"=""})
+     * @return Response
+     * TODO: error parameter is called but unused, consider removing
 	 */
 	public function cnxErrorAction($host, $error)
 	{
@@ -162,9 +166,11 @@ class SOAPController extends ProxyController
 
 		$OnlineProxy = $this->_clGetSOAPProxy($host);
 
-		//GetTokenSession
-		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
-		$clReponseXML      = $OnlineProxy->getTokenSession($clGetTokenSession);
+        /** @var ConnectionManager $connectionManager */
+        $connectionManager = $this->get('nout_online.connection_manager');
+        $clGetTokenSession = $connectionManager->getGetTokenSession();
+        $clReponseXML      = $OnlineProxy->getTokenSession($clGetTokenSession);
+
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML);
 		$this->_VarDumpRes('GetTokenSession', $clReponseXML->sGetTokenSession());
 
@@ -177,19 +183,24 @@ class SOAPController extends ProxyController
 
 	/**
 	 * pour tester la connexion/déconnexion
+     * @param string $host
+     * @param int $error
 	 * @Route("/cnx/error_try/{error}/{host}", name="online_soap_cnx_try_error", defaults={"host"=""})
+     * @return Response
+     * TODO: error parameter is called but unused, consider removing
 	 */
 	public function cnxTryErrorAction($host, $error)
 	{
 		ob_start();
 
-		$OnlineProxy = $this->_clGetSOAPProxy($host);
-		//GetTokenSession
-		$clGetTokenSession = $this->get('nout_online.connection_manager')->getGetTokenSession($error);
+        /** @var ConnectionManager $connectionManager */
+        $connectionManager = $this->get('nout_online.connection_manager');
+        $clGetTokenSession = $connectionManager->getGetTokenSession();
 
+        $OnlineProxy = $this->_clGetSOAPProxy($host);
 		try
 		{
-			$clReponseXML = $OnlineProxy->getTokenSession($clGetTokenSession);
+			$OnlineProxy->getTokenSession($clGetTokenSession);
 		}
 		catch (\Exception $e)
 		{
@@ -226,7 +237,7 @@ class SOAPController extends ProxyController
 		// caractères interdits dans une balise
 		$_pszCaractereInterdit = " ()[]<>':/!;\"%$&@*°";
 		// caractères interdits en début de balise
-		$_pszCaractereInterditDebut = "0123456789.-";
+		//$_pszCaractereInterditDebut = "0123456789.-";
 		// prefixe interdit en début de balise
 		$_pszChaineInterditDebut = "xml";
 
@@ -292,9 +303,11 @@ class SOAPController extends ProxyController
 	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
+     * @param string $displayMode
+     * @param string $sActionContexte
 	 * @return XMLResponseWS
 	 */
-	protected function _sList(SOAPProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte = '', $displayMode = OnlineServiceProxy::DISPLAYMODE_Liste)
+	protected function _sList(SOAPProxy $OnlineProxy, $sTokenSession, $form, $sActionContexte = '', $displayMode = SOAPProxy::DISPLAYMODE_Liste)
 	{
 		$clParamList              = new ListParams();
 		$clParamList->Table       = $form;
@@ -333,7 +346,10 @@ class SOAPController extends ProxyController
 	}
 
 	/**
+     * @param string $form
+     * @param string $host
 	 * @Route("/list/{form}/{host}", name="online_soap_list", defaults={"host"=""})
+     * @return Response
 	 */
 	public function listAction($form, $host)
 	{
@@ -351,6 +367,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
+		//TODO: clGetStructureElement() is not a method of ReponseWSParser
 		$StructForm   = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = $StructForm->getTabIDColonne();
 
@@ -399,8 +416,7 @@ class SOAPController extends ProxyController
 	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $sIDActionContexte
-	 * @param $form
-	 * @param $index
+	 * @param array $TabSelection
 	 * @return XMLResponseWS
 	 */
 	protected function _sSelectItems(SOAPProxy $OnlineProxy, $sTokenSession, $sIDActionContexte, $TabSelection)
@@ -416,7 +432,10 @@ class SOAPController extends ProxyController
 
 
 	/**
+     * @param string $form
+     * @param string $host
 	 * @Route("/chart/{form}/{host}", name="online_soap_chart", defaults={"host"=""})
+     * @return Response
 	 */
 	public function chartAction($form, $host)
 	{
@@ -431,15 +450,16 @@ class SOAPController extends ProxyController
 		$sActionContexte = $clReponseWSList->sGetActionContext();
 
 		$TabPossibleDM = $clReponseWSList->GetTabPossibleDisplayMode();
-		if (in_array(OnlineServiceProxy::DISPLAYMODE_Graphe, $TabPossibleDM))
+		if (in_array(SOAPProxy::DISPLAYMODE_Graphe, $TabPossibleDM))
 		{
 			$clParserList = new ReponseWSParser();
 			$clParserList->InitFromXmlXsd($clReponseWSList);
 
+			//TODO: GetTabEnregTableau() is not a method of ReponseWSParser
 			$TabIDEnreg = array_slice($clParserList->GetTabEnregTableau()->GetTabIDEnreg($clReponseWSList->clGetForm()->getID()), 0, 5);
 			$this->_sSelectItems($OnlineProxy, $sTokenSession, $sActionContexte, $TabIDEnreg);
 
-			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, OnlineServiceProxy::DISPLAYMODE_Graphe);
+			$clReponseWSGraphe = $this->_sList($OnlineProxy, $sTokenSession, $form, $sActionContexte, SOAPProxy::DISPLAYMODE_Graphe);
 			$nNbChart          = $clReponseWSGraphe->nGetNumberOfChart();
 
 			for ($i = 0; $i<$nNbChart; $i++)
@@ -447,6 +467,7 @@ class SOAPController extends ProxyController
 				$clReponseWSChart = $this->_sGetChart($OnlineProxy, $sTokenSession, $sActionContexte, $form, $i+1);
 				$clParser         = new ReponseWSParser();
 				$clParser->InitFromXmlXsd($clReponseWSChart);
+				//TODO: $m_clChart is not a member of ReponseWSParser
 				$this->_VarDumpRes('Chart', $clParser->m_clChart);
 			}
 		}
@@ -495,7 +516,10 @@ class SOAPController extends ProxyController
 	}
 
 	/**
+     * @param mixed $action
+     * @param string $host
 	 * @Route("/execute/{action}/{host}", name="online_soap_execute", defaults={"host"=""})
+     * @return Response
 	 */
 	public function executeAction($action, $host)
 	{
@@ -544,7 +568,9 @@ class SOAPController extends ProxyController
 	}
 
 	/**
+     * @param string $host
 	 * @Route("/drillthrought/{host}", name="online_soap_drillthrought", defaults={"host"=""})
+     * @return Response
 	 */
 	public function drillthroughtAction($host)
 	{
@@ -563,6 +589,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWSList);
 
+		//TODO: clGetStructureElement() is not a method of ReponseWSParser
 		$StructForm   = $clReponseWSParser->clGetStructureElement($clReponseWSList->clGetForm()->getID());
 		$TabIDColonne = $StructForm->getTabIDColonne();
 		$TabIDEnreg   = $clReponseWSParser->GetTabIDEnregFromForm($clReponseWSList->clGetForm()->getID());
@@ -592,13 +619,13 @@ class SOAPController extends ProxyController
 	 * @param $sTokenSession
 	 * @param $form
 	 * @param $colonne
-	 * @param $valeur
+	 * @param $value
 	 * @return XMLResponseWS
 	 */
-	protected function _sRequest(SOAPProxy $OnlineProxy, $sTokenSession, $form, $colonne, $valeur)
+	protected function _sRequest(SOAPProxy $OnlineProxy, $sTokenSession, $form, $colonne, $value)
 	{
 		$clFileNPI = new ConditionFileNPI();
-		$clFileNPI->EmpileCondition($colonne, ConditionColonne::COND_EQUAL, $valeur);
+		$clFileNPI->EmpileCondition($colonne, ConditionColonne::COND_EQUAL, $value);
 
 		$clParamRequest           = new Request();
 		$clParamRequest->Table    = $form;
@@ -614,6 +641,11 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/request/form/{form}/{colonne}/{valeur}/{host}", name="online_soap_request", defaults={"host"=""})
+     * @param string $form
+     * @param string $colonne
+     * @param string $valeur
+     * @param string $host
+     * @return Response
 	 */
 	public function requestAction($form, $colonne, $valeur, $host)
 	{
@@ -641,7 +673,9 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/request/param/{host}", name="online_soap_request_param", defaults={"host"=""})
-	 *
+	 * @param string $host
+     * @return Response
+     *
 	 * <RequestParam><Table>8267</Table>
 	 * <CondList>
 	 * <Condition> <CondCol>8521</CondCol><CondType>Equal</CondType><CondValue>8267</CondValue></Condition>  </Operator>
@@ -697,6 +731,9 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/search/{form}/{host}", name="online_soap_search", defaults={"host"=""})
+     * @param string $form
+     * @param string $host
+     * @return Response
 	 */
 	public function searchAction($form, $host)
 	{
@@ -748,6 +785,10 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/display/{form}/{id}/{host}", name="online_soap_display", defaults={"host"=""})
+     * @param string $form
+     * @param string $id
+     * @param string $host
+     * @return Response
 	 */
 	public function displayAction($form, $id, $host)
 	{
@@ -798,6 +839,10 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/print/{form}/{id}/{host}", name="online_soap_print", defaults={"host"=""})
+     * @param string $form
+     * @param string $id
+     * @param string $host
+     * @return Response
 	 */
 	public function printAction($form, $id, $host)
 	{
@@ -812,6 +857,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
+		//TODO: clGetData() is not a method of ReponseWSParser
 		$clData   = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
 
@@ -827,8 +873,8 @@ class SOAPController extends ProxyController
 	/**
 	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
-	 * @param $form
-	 * @param $id
+	 * @param string $sActionContexte
+	 * @param string $modele
 	 * @return XMLResponseWS
 	 */
 	protected function _sSelectPrintTemplate(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $modele)
@@ -845,7 +891,13 @@ class SOAPController extends ProxyController
 
 
 	/**
-	 * @Route("/select_print_template/{form}/{id}/{modele}/{host}", name="online_soap_select_print_template", defaults={"host"=""})
+	 * @Route("/select_print_template/{form}/{id}/{modele}/{host}",
+     *     name="online_soap_select_print_template", defaults={"host"=""})
+     * @param string $form
+     * @param string $id
+     * @param string $host
+     * @param string $modele
+     * @return Response
 	 */
 	public function selectPrintTemplateAction($form, $id, $host, $modele)
 	{
@@ -863,6 +915,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
+		//TODO: clGetData() is not a method of ReponseWSParser
 		$clData   = $clReponseWSParser->clGetData(0);
 		$html_raw = $clData->sGetRaw();
 
@@ -895,6 +948,11 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/getcolinrecord/{colonne}/{id}/{content}/{host}", name="online_soap_getcolinrecord", defaults={"host"=""})
+     * @param string $colonne
+     * @param string $id
+     * @param string $host
+     * @param string $content
+     * @return Response
 	 */
 	public function getColInRecordAction($colonne, $id, $host, $content)
 	{
@@ -923,6 +981,10 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/get_planning_info/{res}/{host}", name="online_soap_get_planning_info", defaults={"host"=""})
+     * @param string $res
+     * @param string $host
+     * @return Response
+     *
 	 * <Resource>36683203627649</Resource><StartTime>20140901000000</StartTime><EndTime>20140907000000</EndTime>
 	 */
 	public function getPlanningInfoAction($res, $host)
@@ -958,6 +1020,8 @@ class SOAPController extends ProxyController
 	 * Valide la dernière action du contexte
 	 * @param $sTokenSession
 	 * @param $nIDContexteAction
+     * @param SOAPProxy $OnlineProxy
+     * @return XMLResponseWS
 	 */
 	protected function _Validate(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
 	{
@@ -973,6 +1037,7 @@ class SOAPController extends ProxyController
 	 * Valide la dernière action du contexte
 	 * @param $sTokenSession
 	 * @param $nIDContexteAction
+     * @param SOAPProxy $OnlineProxy
 	 * @return XMLResponseWS
 	 */
 	protected function _sCancel(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction)
@@ -1012,7 +1077,7 @@ class SOAPController extends ProxyController
 	}
 
 
-	protected function _sUpdate(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction, $form, $id, $colonne, $valeur)
+	protected function _sUpdate(SOAPProxy $OnlineProxy, $sTokenSession, $nIDContexteAction, $form, $id, $colonne, $value)
 	{
 		$clParamUpdate        = new Update();
 		$clParamUpdate->Table = $form;
@@ -1021,7 +1086,7 @@ class SOAPController extends ProxyController
 		$clParamUpdate->ParamXML = "<$baliseXML>".htmlentities($id)."</$baliseXML>";
 
 		$baliseColonne             = $this->_sNettoieForm($colonne);
-		$clParamUpdate->UpdateData = "<xml><$baliseXML id=\"$id\"><$baliseColonne>".htmlentities($valeur)."</$baliseColonne></$baliseXML></xml>";
+		$clParamUpdate->UpdateData = "<xml><$baliseXML id=\"$id\"><$baliseColonne>".htmlentities($value)."</$baliseColonne></$baliseXML></xml>";
 
 		$clReponseXML = $OnlineProxy->update($clParamUpdate, $this->_aGetTabHeader($sTokenSession, $nIDContexteAction));
 		$this->_VarDumpRes('Update', $clReponseXML);
@@ -1031,7 +1096,12 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/modify/{form}/{id}/{colonne}/{valeur}/{host}", name="online_soap_modify", defaults={"host"=""})
-	 *
+	 * @param string $form
+     * @param string $id
+     * @param string $colonne
+     * @param string $valeur
+     * @param string $host
+     * @return Response
 	 * exemple GUID : /modify/41296233836619/219237638150324/45208949043557/deux
 	 */
 	public function modifyAction($form, $id, $colonne, $valeur, $host)
@@ -1050,7 +1120,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
-
+        //TODO: clGetRecord() is not a method of ReponseWSParser
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if ($clRecord instanceof Record)
 		{
@@ -1118,6 +1188,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
+		//TODO: clGetRecord is not a method of ReponseWSParser
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if ($clRecord instanceof Record)
 		{
@@ -1127,18 +1198,24 @@ class SOAPController extends ProxyController
 			//on valide
 			$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
 
+			//TODO: Accessing protected member. __get('m_nIDEnreg') will throw
 			return $clRecord->m_nIDEnreg;
 		}
 
 		echo '<p>On n\'a pas l\'enregistrement</p>';
 
-		return;
+		return null;
 	}
 
 	/**
 	 * @Route("/create/{form}/{colonne}/{valeur}/{host}", name="online_soap_create", defaults={"host"=""})
+	 * @param string $form
+     * @param string $colonne
+     * @param string $valeur
+     * @param string $host
+     * @return Response
 	 *
-	 * exemple GUID : /create/41296233836619/45208949043557/trois
+     * exemple GUID : /create/41296233836619/45208949043557/trois
 	 */
 	public function createAction($form, $colonne, $valeur, $host)
 	{
@@ -1161,8 +1238,10 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @param SOAPProxy $OnlineProxy
-	 * @param $sTokenSession
-	 * @param $form
+	 * @param string $sTokenSession
+	 * @param string $formDest
+     * @param string $formSrc
+     * @param string $elemSrc
 	 *
 	 * @return XMLResponseWS
 	 */
@@ -1182,8 +1261,15 @@ class SOAPController extends ProxyController
 
 
 	/**
-	 * @Route("/transform_into/{formSrc}/{formDest}/{colonne}/{valeur}/{host}", name="online_soap_transform_into", defaults={"host"=""})
-	 *
+	 * @Route("/transform_into/{formSrc}/{formDest}/{colonne}/{valeur}/{host}",
+     *     name="online_soap_transform_into", defaults={"host"=""})
+	 * @param string $formSrc
+     * @param string $formDest
+     * @param string $colonne
+     * @param string $valeur
+     * @param string $host
+     * @return Response
+     *
 	 * exemple GUID : /transform_into/51346223489588/40810668714136/40896568059607/trois
 	 */
 	public function transformIntoAction($formSrc, $formDest, $colonne, $valeur, $host)
@@ -1215,7 +1301,12 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/has_changed/{form}/{colonne}/{valeur}/{host}", name="online_soap_has_changed", defaults={"host"=""})
-	 *
+	 * @param string $form
+     * @param string $colonne
+     * @param string $valeur
+     * @param string $host
+     * @return Response
+     *
 	 * exemple GUID : /create/41296233836619/45208949043557/trois
 	 */
 	public function hasChangedAction($form, $colonne, $valeur, $host)
@@ -1235,6 +1326,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
+		//TODO: clGetRecord() is not a method of ReponseWSParser
 		$clRecord = $clReponseWSParser->clGetRecord($clReponseWS->clGetForm(), $clReponseWS->clGetElement());
 		if ($clRecord instanceof Record)
 		{
@@ -1249,10 +1341,12 @@ class SOAPController extends ProxyController
 				$this->_Validate($OnlineProxy, $sTokenSession, $sActionContexte);
 
 				//et on imprime
+                //TODO: Accessing protected variable m_nIDEnreg. __get('m_nIDEnreg') will throw
 				$clReponseWS       = $this->_sPrint($OnlineProxy, $sTokenSession, $form, $clRecord->m_nIDEnreg);
 				$clReponseWSParser = new ReponseWSParser();
 				$clReponseWSParser->InitFromXmlXsd($clReponseWS);
 
+				//TODO: clGetData() is not a method of ReponseWSParser
 				$clData   = $clReponseWSParser->clGetData(0);
 				$html_raw = $clData->sGetRaw();
 			}
@@ -1282,7 +1376,9 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/select_form/{form}/{host}", name="online_soap_select_form", defaults={"host"=""})
-	 *
+	 * @param string $form
+     * @param string $host
+     * @return Response
 	 * exemple GUID : /selectForm/48918773563102
 	 */
 	public function selectFormAction($form, $host)
@@ -1300,6 +1396,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseXML);
 
+		//TODO: GetTabIDEnregFromForm() is not a method of ReponseWSParser
 		$TabIDEnreg = $clReponseWSParser->GetTabIDEnregFromForm($clReponseXML->clGetForm()->getID());
 
 		//le selectForm en réponse du retour d'action ambigue
@@ -1319,15 +1416,15 @@ class SOAPController extends ProxyController
 	 * @param SOAPProxy $OnlineProxy
 	 * @param $sTokenSession
 	 * @param $form
-	 * @param $origine
+	 * @param $origin
 	 * @return XMLResponseWS
 	 */
-	protected function _sCreateFrom(SOAPProxy $OnlineProxy, $sTokenSession, $form, $origine)
+	protected function _sCreateFrom(SOAPProxy $OnlineProxy, $sTokenSession, $form, $origin)
 	{
 		$clParamCreateFrom           = new CreateFrom();
 		$clParamCreateFrom->Table    = $form;
 		$clParamCreateFrom->TableSrc = $form;
-		$clParamCreateFrom->ElemSrc  = $origine;
+		$clParamCreateFrom->ElemSrc  = $origin;
 
 		$clReponseXML = $OnlineProxy->createFrom($clParamCreateFrom, $this->_aGetTabHeader($sTokenSession));
 		$this->_VarDumpRes('CreateFrom', $clReponseXML);
@@ -1337,9 +1434,12 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/create_from/{form}/{origine}/{host}", name="online_soap_create_from", defaults={"host"=""})
-	 *
+	 * @param string $form
+     * @param string $origine
+     * @param string $host
+     * @return Response
+     *
 	 * exemple GUID : /create/41296233836619/45354977933184
-	 *
 	 */
 	public function createFromAction($form, $origine, $host)
 	{
@@ -1393,7 +1493,7 @@ class SOAPController extends ProxyController
 	protected function _sConfirmResponse(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, MessageBox $clMessageBox)
 	{
 		$clConfirm                   = new ConfirmResponse();
-		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
+		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->getTabButton()) ? MessageBox::IDYES : MessageBox::IDOK;
 
 		$clReponseWS = $OnlineProxy->ConfirmResponse($clConfirm, $this->_aGetTabHeader($sTokenSession, $sActionContexte));
 		$this->_VarDumpRes('ConfirmResponse', $clReponseWS);
@@ -1403,7 +1503,12 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/delete/{form}/{colonne}/{valeur}/{host}", name="online_soap_delete", defaults={"host"=""})
-	 *
+	 * @param string $form
+     * @param string $colonne
+     * @param string $valeur
+     * @param string $host
+     * @return Response
+     *
 	 * exemple GUID : /delete
 	 */
 	public function deleteAction($form, $colonne, $valeur, $host)
@@ -1466,6 +1571,8 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/reorder_list/{host}", name="online_soap_reorder_list", defaults={"host"=""})
+     * @param string $host
+     * @return Response
 	 */
 	public function ReorderListAction($host)
 	{
@@ -1484,6 +1591,7 @@ class SOAPController extends ProxyController
 		$clReponseWSParser = new ReponseWSParser();
 		$clReponseWSParser->InitFromXmlXsd($clReponseList);
 
+		//TODO: GetTabEnregTableau() is not a method of ReponseWSParser
 		$tabEnregTableauOrigine = $clReponseWSParser->GetTabEnregTableau();
 
 		$this->_sEnterReorderListMode($OnlineProxy, $sTokenSession, $clReponseList->sGetActionContext());
@@ -1515,7 +1623,6 @@ class SOAPController extends ProxyController
 	}
 
 
-
 	protected function _sSetOrderSubList(SOAPProxy $OnlineProxy, $sTokenSession, $sActionContexte, $nIDColonne, $tabIDEnreg, $nOffset)
 	{
 		$clSetOrderList = new SetOrderSubList($nIDColonne, $tabIDEnreg, $nOffset);
@@ -1538,6 +1645,8 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/reorder_sublist/{host}", name="online_soap_reorder_sublist", defaults={"host"=""})
+     * @param string $host
+     * @return Response
 	 */
 	public function ReorderSubListAction($host)
 	{
@@ -1554,6 +1663,7 @@ class SOAPController extends ProxyController
 		//on parse le XML pour avoir les enregistrement
 		$clParserModify = new ReponseWSParser();
 		$clParserModify->InitFromXmlXsd($clReponseModify);
+		//TODO: clGetRecord() is not a method of ReponseWSParser
 		$clRecord = $clParserModify->clGetRecord($clReponseModify->clGetForm(), $clReponseModify->clGetElement());
 		if ($clRecord instanceof Record)
 		{
@@ -1583,6 +1693,7 @@ class SOAPController extends ProxyController
 
 			$clParserGCIR = new ReponseWSParser();
 			$clParserGCIR->InitFromXmlXsd($clReponseGCIR);
+			//TODO: clGetData() is not a method of ReponseWSParser
 			$clData = $clParserGCIR->clGetData(0);
 
 			var_dump($clData->m_sContent, $clReponseReOrder->getValue());
@@ -1619,6 +1730,8 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/getstartautomatism/{host}", name="online_soap_getstartautomatism", defaults={"host"=""})
+     * @param string $host
+     * @return Response
 	 */
 	public function getStartAutomatismAction($host)
 	{
@@ -1658,6 +1771,8 @@ class SOAPController extends ProxyController
 	}
 	/**
 	 * @Route("/gettemporalautomatism/{host}", name="online_soap_gettemporalautomatism", defaults={"host"=""})
+     * @param string $host
+     * @return Response
 	 */
 	public function getTemporalAutomatismAction($host)
 	{
@@ -1668,7 +1783,7 @@ class SOAPController extends ProxyController
 		$sTokenSession = $this->_sConnexion($OnlineProxy);
 
 		//la liste
-		$clReponseWS = $this->_sGetTemporalAutomatism($OnlineProxy, $sTokenSession);
+		$this->_sGetTemporalAutomatism($OnlineProxy, $sTokenSession);
 
 		//la deconnexion
 		$this->_bDeconnexion($OnlineProxy, $sTokenSession);
@@ -1693,6 +1808,8 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/getendautomatism/{host}", name="online_soap_getendautomatism", defaults={"host"=""})
+     * @param string $host
+     * @return Response
 	 */
 	public function getEndAutomatismAction($host)
 	{
@@ -1720,6 +1837,8 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/getlanguages/{host}", name="online_soap_getlanguages", defaults={"host"=""})
+     * @param string $host
+     * @return Response
 	 */
 	public function getLanguagesAction($host)
 	{
@@ -1738,6 +1857,9 @@ class SOAPController extends ProxyController
 
 	/**
 	 * @Route("/gettablechild/{form}/{host}", name="online_soap_gettablechild", defaults={"host"=""})
+     * @param string $form
+     * @param string $host
+     * @return Response
 	 */
 	public function getTableChildAction($form, $host)
 	{
