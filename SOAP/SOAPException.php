@@ -15,7 +15,7 @@ class SOAPException extends \Exception
 	 */
 	protected $messageOrigine;
 
-	public function __construct($message = "", $code = 0, Exception $previous = null)
+	public function __construct($message = "", $code = 0, \Exception $previous = null)
 	{
 		$this->messageOrigine = $message;
 		parent::__construct($code.' '.$message, $code, $previous);
