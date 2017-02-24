@@ -31,18 +31,21 @@ class NOUTExceptionFormatter
      * @param \Exception $e
      * @param int $level
      */
-    public function __construct($message, $e, $level = NOUTExceptionLevel::ERROR_LEVEL)
+    public function __construct($message, $e, $level = self::LEVEL_ERROR)
     {
+        $level = $level ? $level : NOUTExceptionFormatter::LEVEL_ERROR;
         try{
-            $this->level = NOUTExceptionLevel::toString($level);
+            $this->level = self::levelToString($level);
             $this->message = $message;
             $this->code = $e->getCode();
             $this->exception = $e;
         }
         catch (\InvalidArgumentException $e)
         {
-            $e = new NOUTExceptionFormatter("Unable to format exception", $e, NOUTExceptionLevel::ERROR_LEVEL);
-            return $e->toArray();
+            $this->level = self::LEVEL_ERROR;
+            $this->message = "Unable to format exception";
+            $this->exception = $e;
+            $this->code = 0;
         }
     }
 
@@ -69,4 +72,27 @@ class NOUTExceptionFormatter
         $aException['code']     = $this->code;
         return $aException;
     }
+
+    /**
+     * @var int level
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public static function levelToString($level)
+    {
+        $aValues = array(
+            self::LEVEL_NOTICE      => 'Notice',
+            self::LEVEL_WARNING    => 'Warning',
+            self::LEVEL_ERROR       => 'Error',
+        );
+
+        if (!array_key_exists($level, $aValues))
+            throw new \InvalidArgumentException('Unknown error level');
+
+        return $aValues[$level];
+    }
+
+    const LEVEL_NOTICE = 0;
+    const LEVEL_WARNING = 1;
+    const LEVEL_ERROR = 2;
 }
