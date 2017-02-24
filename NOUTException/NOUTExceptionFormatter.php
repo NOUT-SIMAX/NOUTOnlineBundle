@@ -9,6 +9,7 @@
 
 namespace NOUT\Bundle\WebSiteBundle\NOUTException;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Component\Translation\Translator;
 
 class NOUTExceptionFormatter
@@ -21,9 +22,6 @@ class NOUTExceptionFormatter
 
     /** @var  int $code */
     protected $code;
-
-    /** @var \Exception $previous */
-    protected $previous;
 
     /**
      * NOUTExceptionFormatter constructor.
@@ -70,6 +68,7 @@ class NOUTExceptionFormatter
         $aException['file']     = $this->exception->getFile();
         $aException['line']     = $this->exception->getLine();
         $aException['code']     = $this->code;
+        $aException['details']  = $this->getNOUTOnlineMessage($this->exception);
         return $aException;
     }
 
@@ -90,6 +89,19 @@ class NOUTExceptionFormatter
             throw new \InvalidArgumentException('Unknown error level');
 
         return $aValues[$level];
+    }
+
+    /**
+     * Look for a NOUTOnline message in stack trace, returns an empty string if not found
+     * @param \Exception $e
+     * @return string
+     */
+    protected function getNOUTOnlineMessage(\Exception $e){
+        if($e instanceof SOAPException)
+            return $e->getMessageOrigine();
+        if(!is_null($e->getPrevious()))
+            return $this->getNOUTOnlineMessage($e->getPrevious());
+        return '';
     }
 
     const LEVEL_NOTICE = 0;
