@@ -27,11 +27,15 @@ class ConnectionInfos
      */
     protected $m_sExtranet = '';
 
-	public function __construct($sUsername, $bExtranet, $sExtranet)
+    /** @var string */
+    protected $m_sSessionToken = '';
+
+	public function __construct($sUsername, $bExtranet, $sExtranet, $sSessionToken)
 	{
-		$this->m_sUsername = $sUsername;
-		$this->m_bExtranet = $bExtranet;
-        $this->m_sExtranet = $sExtranet;
+		$this->m_sUsername      = $sUsername;
+		$this->m_bExtranet      = $bExtranet;
+        $this->m_sExtranet      = $sExtranet;
+        $this->m_sSessionToken  = $sSessionToken;
 	}
 
     /**
@@ -63,4 +67,11 @@ class ConnectionInfos
         return $this->m_bExtranet ? $this->m_sExtranet : $this->m_sUsername;
     }
 
+    /**
+     * @return string
+     */
+    public function getSessionToken()
+    {
+        return $this->m_sSessionToken;
+    }
 } 

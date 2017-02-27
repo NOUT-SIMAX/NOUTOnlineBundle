@@ -289,7 +289,10 @@ class NOUTClient
     public function getConnectionInfos()
     {
         $oToken = $this->_oGetToken();
-        return new ConnectionInfos($oToken->getLoginSIMAX(), $oToken->isExtranet(), $oToken->getLoginExtranet());
+        return new ConnectionInfos($oToken->getLoginSIMAX(),
+            $oToken->isExtranet(),
+            $oToken->getLoginExtranet(),
+            $oToken->getSessionToken());
     }
 
 
