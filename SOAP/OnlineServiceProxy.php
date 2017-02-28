@@ -467,11 +467,8 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         //on ajoute l'id application
         $this->__aListHeaders[self::HEADER_APIUUID] = $this->__ConfigurationDialogue->getAPIUUID();
 
-	    //
-	    if (isset($this->__clLogger)) //log des requetes
-        {
-            $this->__clLogger->startQuery();
-        }
+        //ajoute au log s'il faut
+	    $this->__startLogQuery();
 
 	    try
 	    {
@@ -489,26 +486,41 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    }
 	    catch(SOAPException $e)
 	    {
-		    if (isset($this->__clLogger)) //log des requetes
-            {
-                $sError = empty($this->response) ? $this->error_str : $this->response;
-                $this->__clLogger->stopQuery($this->request, $sError, $sOperation, true, null);
-            }
+            $sError = empty($this->response) ? $this->error_str : $this->response;
+	        $this->__stopLogQuery($sOperation, $sError);
 
 		    throw $e;
 	    }
 
-
-
-	    if (isset($this->__clLogger)) //log des requetes
-        {
-            $this->__clLogger->stopQuery($this->request, $this->response, $sOperation, true, null);
-        }
+        //ajoute au log s'il faut
+        $this->__stopLogQuery($sOperation, $this->response);
 
 	    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
         return $this->getXMLResponseWS();
     }
     //---
+
+    protected function __startLogQuery()
+    {
+        if (isset($this->__clLogger)) //log des requetes
+        {
+            $this->__clLogger->startQuery();
+        }
+    }
+    protected function __stopLogQuery($operation, $reponse)
+    {
+        if (isset($this->__clLogger)) //log des requetes
+        {
+            $extra = array();
+            if (isset($this->__aListHeaders[self::HEADER_SessionToken])){
+                $extra[NOUTOnlineLogger::EXTRA_TokenSession]=$this->__aListHeaders[self::HEADER_SessionToken];
+            }
+            if (isset($this->__aListHeaders[self::HEADER_ActionContext])){
+                $extra[NOUTOnlineLogger::EXTRA_ActionContext]=$this->__aListHeaders[self::HEADER_ActionContext];
+            }
+            $this->__clLogger->stopQuery($this->request, $reponse, $operation, true, $extra);
+        }
+    }
 
 
 	/**

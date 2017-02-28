@@ -100,9 +100,9 @@ class NOUTOnlineLogger
         $oCtxt->rest = !$bSOAP;
         $oCtxt->extra = $extra;
 
-        if (is_array($extra) && array_key_exists('http-headers', $extra))
+        if (is_array($extra) && array_key_exists(self::EXTRA_Http_Headers, $extra))
         {
-            $http_headers  = $extra['http-headers'];
+            $http_headers  = $extra[self::EXTRA_Http_Headers];
 
             if (is_array($http_headers) && array_key_exists('Content-Type', $http_headers))
             {
@@ -213,4 +213,9 @@ class NOUTOnlineLogger
 			);
 		}
 	}
+
+
+	const EXTRA_TokenSession    = 'tokensession';
+	const EXTRA_ActionContext   = 'actioncontext';
+	const EXTRA_Http_Headers    = 'http-headers';
 }
