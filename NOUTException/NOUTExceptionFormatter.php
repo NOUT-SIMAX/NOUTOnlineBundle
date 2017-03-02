@@ -29,18 +29,18 @@ class NOUTExceptionFormatter
      * @param \Exception $e
      * @param int $level
      */
-    public function __construct($message, $e, $level = self::LEVEL_ERROR)
+    public function __construct($message, $e, $level = null)
     {
-        $level = $level ? $level : NOUTExceptionFormatter::LEVEL_ERROR;
+        $level = ($level ? $level : NOUTException::getDefaultLevel());
         try{
-            $this->level = self::levelToString($level);
+            $this->level = NOUTExceptionLevel::toString($level);
             $this->message = $message;
             $this->code = $e->getCode();
             $this->exception = $e;
         }
         catch (\InvalidArgumentException $e)
         {
-            $this->level = self::LEVEL_ERROR;
+            $this->level = NOUTExceptionLevel::ERROR;
             $this->message = "Unable to format exception";
             $this->exception = $e;
             $this->code = 0;
@@ -73,25 +73,6 @@ class NOUTExceptionFormatter
     }
 
     /**
-     * @var int level
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public static function levelToString($level)
-    {
-        $aValues = array(
-            self::LEVEL_NOTICE      => 'Notice',
-            self::LEVEL_WARNING    => 'Warning',
-            self::LEVEL_ERROR       => 'Error',
-        );
-
-        if (!array_key_exists($level, $aValues))
-            throw new \InvalidArgumentException('Unknown error level');
-
-        return $aValues[$level];
-    }
-
-    /**
      * Look for a NOUTOnline message in stack trace, returns an empty string if not found
      * @param \Exception $e
      * @return string
@@ -103,8 +84,4 @@ class NOUTExceptionFormatter
             return $this->getNOUTOnlineMessage($e->getPrevious());
         return '';
     }
-
-    const LEVEL_NOTICE = 0;
-    const LEVEL_WARNING = 1;
-    const LEVEL_ERROR = 2;
 }
