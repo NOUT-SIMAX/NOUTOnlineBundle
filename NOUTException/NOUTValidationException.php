@@ -9,18 +9,8 @@
 namespace NOUT\Bundle\WebSiteBundle\NOUTException;
 use Symfony\Component\HttpFoundation\Response;
 
-class NOUTValidationException extends NOUTException
+class NOUTValidationException extends NOUTWebException
 {
-    /**
-     * @inheritdoc
-     */
-    public function getLevel()
-    {
-        return NOUTExceptionLevel::WARNING;
-    }
-
-    public function getStatus()
-    {
-        return Response::HTTP_UNPROCESSABLE_ENTITY;
-    }
+    const STATUS    = Response::HTTP_UNPROCESSABLE_ENTITY;
+    const LEVEL     = NOUTExceptionLevel::WARNING;
 }
