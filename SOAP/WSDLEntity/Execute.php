@@ -23,5 +23,6 @@ class Execute
     public $CallingColumn; 		// string
     public $CallingInfo; 		// CallingInfoType
 	public $DisplayMode; 		// DisplayModeParamEnum
+    public $BtnListMode;        // List action
 }
 //***

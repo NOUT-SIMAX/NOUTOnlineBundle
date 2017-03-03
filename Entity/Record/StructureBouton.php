@@ -19,6 +19,9 @@ class StructureBouton extends StructureColonne
 	 */
 	protected $m_clInfoBouton;
 
+	/** @var  string $m_ButtonID */
+	protected $m_ID;
+
 
 	/**
 	 * @param \SimpleXMLElement $clAttribNOUT
@@ -27,10 +30,18 @@ class StructureBouton extends StructureColonne
 	public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
 		parent::__construct('', $clAttribNOUT, $clAttribXS);
-
-		$this->m_nIDColonne = (string)$clAttribNOUT['idButton'];
+		//TODO: Build a real object id
+        $this->m_ID = spl_object_hash($clAttribNOUT);
+        $this->m_nIDColonne = (string)$clAttribNOUT['idButton'];
 		$this->m_clInfoBouton = new InfoButton($clAttribNOUT);
 	}
+
+    /**
+     * @return string
+     */
+	public function getID(){
+	    return $this->m_ID;
+    }
 
 	/**
 	 * @return InfoButton

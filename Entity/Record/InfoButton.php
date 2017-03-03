@@ -58,6 +58,7 @@ class InfoButton
 
 
     const TYPE_Imprimer = 'Imprimer';
+    const TYPE_Imprimer_liste = 'ImprimerListe';
     const TYPE_Supprimer = 'Supprimer';
     const TYPE_Ajouter = 'Ajouter';
     const TYPE_Modifier = 'Modifier';
