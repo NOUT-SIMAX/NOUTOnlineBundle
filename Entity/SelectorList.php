@@ -23,10 +23,14 @@ class SelectorList
      */
     protected $m_sTitle;
 
+    /**
+     * SelectorList constructor.
+     * @param RecordList $list
+     */
     public function __construct($list)
     {
         $this->m_clList = $list;
-        $this->m_sTitle = '';
+        $this->m_sTitle = $list->getTitle();
     }
 
     /**

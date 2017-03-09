@@ -59,6 +59,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
@@ -1023,6 +1024,7 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
             case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
+            case XMLResponseWS::RETURNTYPE_CHOICE:
             {
 
                 // Instance d'un parseur
@@ -1031,7 +1033,7 @@ class NOUTClient
                 /** @var ParserList $clParser */
                 $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
-                $clSelectorList = new SelectorList($clParser->getList($clReponseXML));
+                $clSelectorList = new SelectorList($clParser->getSelectorList($clReponseXML));
                 $clActionResult->setData($clSelectorList);
                 break;
             }
@@ -1499,6 +1501,22 @@ class NOUTClient
         $clParamSelect->Template = $sIDTemplate;
 
         $clReponseXML = $this->m_clSOAPProxy->selectPrintTemplate($clParamSelect, $this->_aGetTabHeader($aTabHeaderSuppl)); // Deuxième paramètre = array
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oSelectChoice($sIDChoice, $sIDDContexte)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDChoice', $sIDChoice, null);
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_ActionContext => $sIDDContexte
+        );
+
+        $clParamSelect = new SelectChoice();
+        $clParamSelect->Choice = $sIDChoice;
+
+        $clReponseXML = $this->m_clSOAPProxy->selectChoice($clParamSelect, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
