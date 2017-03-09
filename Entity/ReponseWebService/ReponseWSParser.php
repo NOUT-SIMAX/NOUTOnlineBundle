@@ -43,7 +43,8 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_SCHEDULER 		=> '_ParseScheduler',
 			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
 			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
-			XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
+            XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
+            XMLResponseWS::RETURNTYPE_CHOICE           	=> '_ParseList',
 
 			XMLResponseWS::RETURNTYPE_LISTCALCULATION 	=> '_ParseListCaculation',
 			XMLResponseWS::RETURNTYPE_REPORT          	=> null,

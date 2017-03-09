@@ -55,6 +55,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestParam;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ResetPasswordFailed;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
@@ -1321,6 +1322,19 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    return $this->call('SelectPrintTemplate', array($clWsdlType_SelectPrintTemplate) ,  null, null , $aHeaders);
     }
     //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectChoice
+     *
+     * @param SelectChoice $clWsdlType_SelectChoice
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function selectChoice(SelectChoice $clWsdlType_SelectChoice, $aHeaders = array())
+    {
+        return $this->call('SelectChoice', array($clWsdlType_SelectChoice) ,  null, null , $aHeaders);
+    }
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : SendMessage

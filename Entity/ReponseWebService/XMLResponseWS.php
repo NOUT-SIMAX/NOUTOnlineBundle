@@ -272,6 +272,19 @@ class XMLResponseWS
 		return new CurrentAction($clAction);
 	}
 
+    /**
+     * @return String title of the document
+     */
+    public function clGetTitle()
+    {
+        try{
+            return (string) $this->m_ndHeader->children()->Title;
+        }
+        catch(\Exception $e){
+            return '';
+        }
+    }
+
 	/**
 	 * @return ConnectedUser : utilisateur actuellement connecté
 	 */
@@ -619,6 +632,7 @@ class XMLResponseWS
 	const RETURNTYPE_VALIDATEACTION     = 'ValidateAction';
 	const RETURNTYPE_VALIDATERECORD     = 'ValidateEnreg';
 	const RETURNTYPE_PRINTTEMPLATE      = 'PrintTemplate';
+	const RETURNTYPE_CHOICE             = 'Choice';
 
 	//réponse de messagerie
 	const RETURNTYPE_MAILSERVICERECORD      = 'MailServiceRecord';

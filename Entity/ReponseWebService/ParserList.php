@@ -117,14 +117,6 @@ class ParserList extends Parser
         $sIDAction = $clReponseXML->clGetAction()->getID();
         $sTitre = $clReponseXML->clGetAction()->getTitle();
 
-
-        // Contrôle des variables OK
-//        dump($sIDForm);
-//        dump($sIDFormAction);
-//        dump($sIDAction);
-//        dump($sTitre);
-
-
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
 
@@ -147,6 +139,39 @@ class ParserList extends Parser
         // GetFullCache et GetRecord
         // $this->m_clParserList est un ParserRecordList
 
+
+        // Données pour la clList
+        //// Il faut donner le cache en paramètre
+        $clList->setRecordCache($this->m_clParserList->getFullCache());
+
+        return $clList;
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @return RecordList
+     * TODO: Refacto with above.
+     */
+    public function getSelectorList(XMLResponseWS $clReponseXML)
+    {
+        // Appel depuis le testController
+        // GetRecord sur non-objet = ERREUR
+
+        $sIDForm = $clReponseXML->clGetForm()->getID();
+        $sIDFormAction = $clReponseXML->clGetAction()->getIDForm();
+        $sIDAction = $clReponseXML->clGetAction()->getID();
+        $sTitre = $clReponseXML->clGetTitle();
+
+        $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
+
+
+        // Instance d'une nouvelle clList avec toutes les données précédentes
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
+        $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
+        $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
+
+        // Paramètres pour la clList
+        $clList->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));
 
         // Données pour la clList
         //// Il faut donner le cache en paramètre
