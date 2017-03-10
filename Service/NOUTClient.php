@@ -23,10 +23,19 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondColumn;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondType;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondValue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\CondListType;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Factory\CondListTypeFactory;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\AndOperator;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\OperatorType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
@@ -384,6 +393,28 @@ class NOUTClient
         $clParamRequest->ColList = new ColListType($TabColonneAff);
 
         return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($TabHeaderSuppl));
+    }
+
+    protected function _oNewRequest($table, CondListType $condList, array $tabColonAff, array $tabHeaderSuppl)
+    {
+        $clParamRequest = new Request();
+        $clParamRequest = '<Table>' . $table . '</Table>';
+        $clParamRequest .= '<CallingColumn>' . '</CallingColumn>';
+        $clParamRequest .= '<CallingInfo>' . '</CallingInfo>';
+        $clParamRequest .= '<ColList></ColList>';
+        $clParamRequest .= $condList->sToSoap();
+        $clParamRequest .= '<MaxResult>' . '</MaxResult>';
+        $clParamRequest .= '<Sort1>' . '</Sort1>';
+        $clParamRequest .= '<Sort2>' . '</Sort2>';
+        $clParamRequest .= '<Sort3>' . '</Sort3>';
+
+        /*
+        $clParamRequest->Table = $table;
+        $clParamRequest->CondList = $condList->sToSOAP();
+        $clParamRequest->ColList = new ColListType($tabColonAff);
+        */
+
+        return $this->m_clSOAPProxy->newRequest($clParamRequest, $this->_aGetTabHeader($tabHeaderSuppl));
     }
 
 
@@ -906,6 +937,111 @@ class NOUTClient
         }
 
         $clReponseXML = $this->m_clSOAPProxy->listAction($clParamListe, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string $contextID
+     * @return ActionResult
+     */
+    public function oGetDefaultExportAction($contextID)
+    {
+        $aTabColonne = array();
+        $default_export_action = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue(Langage::ACTION_Export)
+        );
+        $has_rights = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondType(CondType::COND_WITHRIGHT),
+            new CondValue('1')
+        );
+
+        $operator = new AndOperator();
+        $operator->addCondition($default_export_action)
+            ->addCondition($has_rights);
+
+        $condList = CondListTypeFactory::create($operator);
+
+        $aTabHeaderSuppl = array();
+        if(!empty($contextID))
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
+        $clReponseXML = $this->_oNewRequest(Langage::TABL_Action,
+            $condList,
+            $aTabColonne,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string $tableID
+     * @param string $contextID
+     * @return ActionResult
+     */
+    public function oGetExportsList($tableID, $contextID)
+    {
+        $aTabColonne = array();
+        $condition = new Condition(
+            new CondColumn(Langage::COL_EXPORT_IDTableau),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($tableID));
+        $condList = CondListTypeFactory::create($condition);
+
+        $aTabHeaderSuppl = array();
+        if(!empty($contextID))
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
+        $clReponseXML = $this->_oNewRequest(
+            Langage::TABL_Export, $condList,
+            $aTabColonne,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string $tableID
+     * @param string $contextID
+     * @return ActionResult
+     */
+    public function oGetExportsActions($tableID, $contextID)
+    {
+        $aTabColonne = array();
+        $table_actions = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDTableau),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($tableID)
+        );
+        $has_rights = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondType(CondType::COND_WITHRIGHT),
+            new CondValue('1')
+        );
+        $exports_type_actions = new Condition(
+            new CondColumn(Langage::COL_ACTION_TypeAction),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue(Langage::eTYPEACTION_Exporter)
+        );
+        $operator = new AndOperator();
+        $operator->addCondition($table_actions)
+            ->addCondition($has_rights)
+            ->addCondition($exports_type_actions);
+
+        $condList = CondListTypeFactory::create($operator);
+
+        $aTabHeaderSuppl = array();
+        if(!empty($contextID))
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
+        $clReponseXML = $this->_oNewRequest(
+            Langage::TABL_Action,
+            $condList,
+            $aTabColonne,
+            $aTabHeaderSuppl);
+
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
