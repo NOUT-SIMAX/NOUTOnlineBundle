@@ -403,7 +403,7 @@ class NOUTClient
         $clParamRequest .= '<CallingInfo>' . '</CallingInfo>';
         $clParamRequest .= '<ColList></ColList>';
         $clParamRequest .= $condList->sToSoap();
-        $clParamRequest .= '<MaxResult>' . '</MaxResult>';
+        $clParamRequest .= '<MaxResult>' . NOUTClient::MaxEnregs . '</MaxResult>';
         $clParamRequest .= '<Sort1>' . '</Sort1>';
         $clParamRequest .= '<Sort2>' . '</Sort2>';
         $clParamRequest .= '<Sort3>' . '</Sort3>';
@@ -1018,7 +1018,7 @@ class NOUTClient
         $has_rights = new Condition(
             new CondColumn(Langage::COL_ACTION_IDAction),
             new CondType(CondType::COND_WITHRIGHT),
-            new CondValue('1')
+            new CondValue(1)
         );
         $exports_type_actions = new Condition(
             new CondColumn(Langage::COL_ACTION_TypeAction),
