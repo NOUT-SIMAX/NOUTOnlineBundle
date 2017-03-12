@@ -9,16 +9,16 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
 
 class UniqueCondListType extends CondListType
 {
-    /** @var  ConditionColonne */
+    /** @var  Condition */
     protected $condition;
 
     /**
      * UniqueCondListType constructor.
-     * @param ConditionColonne $condition
+     * @param Condition $condition
      */
     public function __construct($condition)
     {

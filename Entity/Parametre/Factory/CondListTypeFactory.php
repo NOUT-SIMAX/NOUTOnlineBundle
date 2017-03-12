@@ -10,7 +10,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Factory;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\CondListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\MultipleCondListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\UniqueCondListType;
@@ -24,7 +24,7 @@ abstract class CondListTypeFactory
      * @return CondListType
      */
     public static function create($param){
-        if($param instanceof ConditionColonne)
+        if($param instanceof Condition)
             return new UniqueCondListType($param);
         if($param instanceof Operator)
         {

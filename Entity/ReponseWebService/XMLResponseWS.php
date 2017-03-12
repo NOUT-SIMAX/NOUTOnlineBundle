@@ -345,9 +345,9 @@ class XMLResponseWS
 	public function clGetCount()
 	{
 		$ndCount = $this->m_ndHeader->children()->Count;
-		if (!isset($ndCount))
+		if (!isset($ndCount) || empty($ndCount))
 		{
-			return;
+            return new Count();
 		}
 
 		$clCount                    = new Count();
