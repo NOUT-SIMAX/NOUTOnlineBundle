@@ -9,11 +9,11 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>{% if customization.window_title is not empty %}{{ customization.window_title }}{% else %}{{ 'login.sign_in' | trans }}{% endif %}</title>
+	<title>{% if customization.actif and customization.window_title is not empty %}{{ customization.window_title }}{% else %}{{ 'login.sign_in' | trans }}{% endif %}</title>
 	{% block stylesheets %}
 
         <!-- icon -->
-        {% if customization.favicon_file is not empty %}
+        {% if customization.actif and customization.favicon_file is not empty %}
             <link rel="icon" href="{{ asset('custom/') }}{{ customization.favicon_file }}" />
         {% else %}
             <link rel="shortcut icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico') }}" type="image/x-icon"/>
@@ -24,8 +24,8 @@
 		<link rel="stylesheet" href="{{ asset('vendors/bootstrap/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('bundles/noutsessionmanager/style/style.css') }}" />
 
-        {% if customization.css_file is not empty %}
-            <link rel="stylesheet" href="{{ asset('custom/') }}{{ customization.css_file }}?{{ version_asset }}" />
+        {% if customization.actif and customization.css_file is not empty %}
+            <link rel="stylesheet" href="{{ asset('custom/') }}{{ customization.css_file }}" />
         {% endif %}
 	{% endblock%}
 </head>
@@ -36,13 +36,15 @@
 	<div id="loginbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
         {% if customization.title is not empty or customization.logo_file is not empty %}
             <div class="custom_logo_title">
-                {% if customization.logo_file is not empty %}
-                    <div class="custom_logo" style="background-image: url('{{ asset('custom/') }}{{ customization.logo_file }}');"></div>
-                {% endif %}
-                {% if customization.title is not empty %}
-                <h1 class="custom_title">
-                {{ customization.title }}
-                </h1>
+                {% if customization.actif  %}
+                    {% if customization.logo_file is not empty %}
+                        <div class="custom_logo" style="background-image: url('{{ asset('custom/') }}{{ customization.logo_file }}');"></div>
+                    {% endif %}
+                    {% if customization.title is not empty %}
+                    <h1 class="custom_title">
+                    {{ customization.title }}
+                    </h1>
+                    {% endif %}
                 {% endif %}
             </div>
 		{% endif %}

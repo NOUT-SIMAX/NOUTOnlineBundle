@@ -47,6 +47,7 @@ class Configuration implements ConfigurationInterface
         $node
             ->addDefaultsIfNotSet()
             ->children()
+                ->booleanNode('actif')->defaultValue(false)->end()
                 ->scalarNode('title')->defaultValue('')->end()
                 ->scalarNode('logo_file')->defaultValue('')->end()
                 ->scalarNode('css_file')->defaultValue('')->end()
