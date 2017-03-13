@@ -19,4 +19,9 @@ abstract class SOAPParameter implements SOAPParemeterInterface
         $xml .= $this->getClosingTag();
         return $xml;
     }
+
+    public function __toString()
+    {
+        return $this->getContent();
+    }
 }

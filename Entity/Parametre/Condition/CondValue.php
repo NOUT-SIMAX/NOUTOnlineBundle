@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParameter;
 class CondValue extends SOAPParameter
 {
     /** @var  string $value */
-    protected $value;
+    public $value;
 
     public function __construct($value)
     {

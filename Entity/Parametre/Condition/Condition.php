@@ -14,11 +14,11 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParameter;
 class Condition extends SOAPParameter
 {
     /** @var  CondColumn */
-    protected $condColumn;
+    public $CondCol;
     /** @var  CondType */
-    protected $condType;
+    public $CondType;
     /** @var  CondValue */
-    protected $condValue;
+    public $CondValue;
 
     /**
      * Condition constructor.
@@ -28,9 +28,9 @@ class Condition extends SOAPParameter
      */
     public function __construct($condColumn, $condType, $condValue)
     {
-        $this->condType = $condType;
-        $this->condColumn = $condColumn;
-        $this->condValue = $condValue;
+        $this->CondType = $condType;
+        $this->CondCol = $condColumn;
+        $this->CondValue = $condValue;
     }
 
     public function getClosingTag()
@@ -40,9 +40,9 @@ class Condition extends SOAPParameter
 
     public function getContent()
     {
-        $content = $this->condColumn->sToSoap();
-        $content .= $this->condType->sToSoap();
-        $content .= $this->condValue->sToSoap();
+        $content = $this->CondCol->sToSoap();
+        $content .= $this->CondType->sToSoap();
+        $content .= $this->CondValue->sToSoap();
         return $content;
     }
 

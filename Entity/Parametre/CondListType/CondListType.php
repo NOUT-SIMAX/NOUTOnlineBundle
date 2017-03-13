@@ -9,10 +9,10 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPOptionalParameterInterface;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParameter;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParemeterInterface;
 
-abstract class CondListType extends SOAPParameter implements SOAPOptionalParameterInterface
+abstract class CondListType extends SOAPParameter implements SOAPParemeterInterface
 {
     /** @inheritdoc */
     public function getOpeningTag()
@@ -24,10 +24,5 @@ abstract class CondListType extends SOAPParameter implements SOAPOptionalParamet
     public function getClosingTag()
     {
         return '</CondList>';
-    }
-
-    public function getLoneTag()
-    {
-        return '<CondList/>';
     }
 }

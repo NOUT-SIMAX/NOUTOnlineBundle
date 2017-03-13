@@ -12,15 +12,25 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParameter;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParemeterInterface;
 
-abstract class Operator extends SOAPParameter
+class Operator extends SOAPParameter implements SOAPParemeterInterface
 {
     /** @var  string */
-    protected $type;
+    public $type;
     /** @var  ConditionColonne[] */
-    protected $conditions = array();
+    public $Conditions = array();
     /** @var Operator[] */
-    protected $operators = array();
+    protected $Operators = array();
+
+    /**
+     * Operator constructor.
+     * @param string $type
+     */
+    public function __construct($type)
+    {
+        $this->type = $type;
+    }
 
     public function getOpeningTag()
     {
@@ -35,10 +45,10 @@ abstract class Operator extends SOAPParameter
     public function getContent()
     {
         $content = '';
-        foreach($this->conditions as $condition){
+        foreach($this->Conditions as $condition){
             $content .= $condition->sToSOAP();
         }
-        foreach($this->operators as $operator){
+        foreach($this->Operators as $operator){
             $content .= $operator->sToSoap();
         }
         return $content;
@@ -49,7 +59,7 @@ abstract class Operator extends SOAPParameter
      * @return $this
      */
     public function addCondition($condition){
-        array_push($this->conditions, $condition);
+        array_push($this->Conditions, $condition);
         return $this;
     }
 
@@ -58,7 +68,7 @@ abstract class Operator extends SOAPParameter
      * @return $this
      */
     public function addOperator($operator){
-        array_push($this->operators, $operator);
+        array_push($this->Operators, $operator);
         return $this;
     }
 }

@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
 class UniqueCondListType extends CondListType
 {
     /** @var  Condition */
-    protected $condition;
+    public $Condition;
 
     /**
      * UniqueCondListType constructor.
@@ -22,11 +22,11 @@ class UniqueCondListType extends CondListType
      */
     public function __construct($condition)
     {
-        $this->condition = $condition;
+        $this->Condition = $condition;
     }
 
     public function getContent()
     {
-        return $this->condition->sToSOAP();
+        return $this->Condition->sToSOAP();
     }
 }

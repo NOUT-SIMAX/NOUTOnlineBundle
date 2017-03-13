@@ -32,7 +32,7 @@ class CondType extends SOAPParameter
     const COND_MENUVISIBLE         = 'MenuVisible';
 
     /** @var  string $type*/
-    protected $type;
+    public $type;
 
     public function __construct($type)
     {

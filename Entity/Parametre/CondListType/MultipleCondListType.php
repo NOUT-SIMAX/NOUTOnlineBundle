@@ -14,15 +14,15 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 class MultipleCondListType extends CondListType
 {
     /** @var  Operator $operator */
-    protected $operator;
+    public $Operator;
 
     public function __construct($operator)
     {
-        $this->operator = $operator;
+        $this->Operator = $operator;
     }
 
     public function getContent()
     {
-        return $this->operator->sToSoap();
+        return $this->Operator->sToSoap();
     }
 }

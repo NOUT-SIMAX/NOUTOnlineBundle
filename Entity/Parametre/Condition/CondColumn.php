@@ -14,11 +14,11 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParameter;
 class CondColumn extends SOAPParameter
 {
     /** @var  string $column */
-    protected $column;
+    public $Column;
 
     public function __construct($column)
     {
-        $this->column = $column;
+        $this->Column = $column;
     }
 
     public function getOpeningTag()
@@ -33,6 +33,6 @@ class CondColumn extends SOAPParameter
 
     public function getContent()
     {
-        return $this->column;
+        return $this->Column;
     }
 }
