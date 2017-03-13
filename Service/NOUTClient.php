@@ -33,7 +33,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\CondListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Factory\CondListTypeFactory;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\AndOperator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\OperatorType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
@@ -395,26 +394,14 @@ class NOUTClient
         return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($TabHeaderSuppl));
     }
 
-    protected function _oNewRequest($table, CondListType $condList, array $tabColonAff, array $tabHeaderSuppl)
+    protected function _oNewRequest($table, CondListType $condList, array $colList, array $tabHeaderSuppl)
     {
         $clParamRequest = new Request();
-        $clParamRequest = '<Table>' . $table . '</Table>';
-        $clParamRequest .= '<CallingColumn>' . '</CallingColumn>';
-        $clParamRequest .= '<CallingInfo>' . '</CallingInfo>';
-        $clParamRequest .= '<ColList></ColList>';
-        $clParamRequest .= $condList->sToSoap();
-        $clParamRequest .= '<MaxResult>' . NOUTClient::MaxEnregs . '</MaxResult>';
-        $clParamRequest .= '<Sort1>' . '</Sort1>';
-        $clParamRequest .= '<Sort2>' . '</Sort2>';
-        $clParamRequest .= '<Sort3>' . '</Sort3>';
-
-        /*
+        $clParamRequest->ColList = new ColListType($colList);
         $clParamRequest->Table = $table;
-        $clParamRequest->CondList = $condList->sToSOAP();
-        $clParamRequest->ColList = new ColListType($tabColonAff);
-        */
-
-        return $this->m_clSOAPProxy->newRequest($clParamRequest, $this->_aGetTabHeader($tabHeaderSuppl));
+        $clParamRequest->CondList = $condList;
+        $clParamRequest->MaxResult = self::MaxEnregs;
+        return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($tabHeaderSuppl));
     }
 
 
@@ -958,7 +945,7 @@ class NOUTClient
             new CondValue('1')
         );
 
-        $operator = new AndOperator();
+        $operator = new Operator(OperatorType::OP_AND);
         $operator->addCondition($default_export_action)
             ->addCondition($has_rights);
 
@@ -983,7 +970,7 @@ class NOUTClient
      */
     public function oGetExportsList($tableID, $contextID)
     {
-        $aTabColonne = array();
+        $colList = array(Langage::COL_EXPORT_Libelle);
         $condition = new Condition(
             new CondColumn(Langage::COL_EXPORT_IDTableau),
             new CondType(CondType::COND_EQUAL),
@@ -996,7 +983,7 @@ class NOUTClient
 
         $clReponseXML = $this->_oNewRequest(
             Langage::TABL_Export, $condList,
-            $aTabColonne,
+            $colList,
             $aTabHeaderSuppl);
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
@@ -1009,7 +996,7 @@ class NOUTClient
      */
     public function oGetExportsActions($tableID, $contextID)
     {
-        $aTabColonne = array();
+        $colList = array(Langage::COL_ACTION_Libelle);
         $table_actions = new Condition(
             new CondColumn(Langage::COL_ACTION_IDTableau),
             new CondType(CondType::COND_EQUAL),
@@ -1025,7 +1012,7 @@ class NOUTClient
             new CondType(CondType::COND_EQUAL),
             new CondValue(Langage::eTYPEACTION_Exporter)
         );
-        $operator = new AndOperator();
+        $operator = new Operator(OperatorType::OP_AND);
         $operator->addCondition($table_actions)
             ->addCondition($has_rights)
             ->addCondition($exports_type_actions);
@@ -1039,7 +1026,7 @@ class NOUTClient
         $clReponseXML = $this->_oNewRequest(
             Langage::TABL_Action,
             $condList,
-            $aTabColonne,
+            $colList,
             $aTabHeaderSuppl);
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
