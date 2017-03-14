@@ -51,6 +51,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('title')->defaultValue('')->end()
                 ->scalarNode('logo_file')->defaultValue('')->end()
                 ->scalarNode('css_file')->defaultValue('')->end()
+                ->scalarNode('css_text')->defaultValue('')->end()
                 ->scalarNode('favicon_file')->defaultValue('')->end()
                 ->scalarNode('window_title')->defaultValue('')->end()
             ->end()
