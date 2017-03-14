@@ -20,6 +20,10 @@ abstract class SOAPParameter implements SOAPParemeterInterface
         return $xml;
     }
 
+    /**
+     * NUSOAP client will try to get the parameter content by converting it to string
+     * @return string
+     */
     public function __toString()
     {
         return $this->getContent();
