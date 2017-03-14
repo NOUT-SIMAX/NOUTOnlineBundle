@@ -89,4 +89,14 @@ class InfoColonne
         return $this->m_TabOptions;
     }
 
+    public function isWritable()
+    {
+        $forbidden_states = array(
+            StructureColonne::OPTION_Hidden,
+            StructureColonne::OPTION_ReadOnly,
+            StructureColonne::OPTION_Disabled,
+        );
+        return !count(array_intersect($this->m_TabOptions, $forbidden_states));
+    }
+
 }
