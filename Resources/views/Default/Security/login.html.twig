@@ -27,6 +27,12 @@
         {% if customization.actif and customization.css_file is not empty %}
             <link rel="stylesheet" href="{{ asset('custom/') }}{{ customization.css_file }}" />
         {% endif %}
+
+        {% if customization.actif and customization.css_text is not empty %}
+            <style type="text/css">
+                {{ customization.css_text | raw }}
+            </style>
+        {% endif %}
 	{% endblock%}
 </head>
 <body>
