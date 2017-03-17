@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 
 /**
  * Class RecordList, Description d'une liste d'enregistrement
@@ -47,7 +48,7 @@ class RecordList
     protected $m_clStructElem;
 
     /**
-     * @var array;
+     * @var EnregTableauArray;
      * tableau qui contient les identifiants des enregistrements avec conservation de l'ordre de la réponse
      */
     protected $m_TabEnregTableau;
@@ -136,7 +137,7 @@ class RecordList
     }
 
     /**
-     * @return array
+     * @return EnregTableauArray
      */
     public function getTabIDEnreg()
     {
@@ -196,7 +197,5 @@ class RecordList
         $this->m_eDefaultDisplayMode = $eDefaultDisplayMode;
         return $this;
     }
-
-
 
 }

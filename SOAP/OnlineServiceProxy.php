@@ -1223,6 +1223,11 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
 	    return $this->call('Request', array($clWsdlType_Request) ,  null, null , $aHeaders);
     }
+
+    public function newRequest($requestParams, $aHeaders = array())
+    {
+        return $this->call('Request', '<Request>' . $requestParams . '</Request>', null, null, $aHeaders);
+    }
     //---
 
     /**

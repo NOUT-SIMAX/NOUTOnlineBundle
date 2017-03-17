@@ -1683,7 +1683,7 @@ class Langage
 
 	const ACTION_ActionClassiqueGenerique = 17272;
 
-
+    const ACTION_ListeRequetePourTous = 6274;
 
 
 	/*************************************************************
@@ -1707,10 +1707,11 @@ class Langage
 	const PA_RemplaceElem_IDOldElem  = 11970;
 	const PA_RemplaceElem_IDNewElem  = 11972;
 
-	const PA_Exporter_Repertoire      = 11505;
-//	const PA_Exporter_FormatExport    = 11501;
-//	const PA_Exporter_IDTableau       = 12343;
-//	const PA_Exporter_Requete         = 11499;
+	const PA_Exporter_Repertoire        = 11505;
+	const PA_Exporter_IDExport          = 15010;
+//	const PA_Exporter_FormatExport      = 11501;
+//	const PA_Exporter_IDTableau         = 12343;
+//	const PA_Exporter_Requete           = 11499;
 
 	const PA_Recherche_Global = 16990; //id de la checkbox permettant de preciser que la recherche est global dans filtre de liste.
 
@@ -1733,6 +1734,8 @@ class Langage
 	const PA_ConnexionExtranet_Extranet_Mdp    = 17218;
 	const PA_ConnexionExtranet_Intranet_Pseudo = 17299;
 	const PA_ConnexionExtranet_Intranet_Mdp    = 17300;
+
+	const PA_Requete_Tous_Form                  = 6293;
 
 
 
