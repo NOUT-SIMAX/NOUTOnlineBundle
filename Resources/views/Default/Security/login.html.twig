@@ -30,7 +30,7 @@
 
         {% if customization.actif and customization.css_text is not empty %}
             <style type="text/css">
-                {{ customization.css_text | raw }}
+                {{ customization.css_text | base64_decode | raw }}
             </style>
         {% endif %}
 	{% endblock%}
