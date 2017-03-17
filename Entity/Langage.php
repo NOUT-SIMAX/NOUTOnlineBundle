@@ -1683,7 +1683,7 @@ class Langage
 
 	const ACTION_ActionClassiqueGenerique = 17272;
 
-
+    const ACTION_ListeRequetePourTous = 6274;
 
 
 	/*************************************************************
@@ -1734,6 +1734,8 @@ class Langage
 	const PA_ConnexionExtranet_Extranet_Mdp    = 17218;
 	const PA_ConnexionExtranet_Intranet_Pseudo = 17299;
 	const PA_ConnexionExtranet_Intranet_Mdp    = 17300;
+
+	const PA_Requete_Tous_Form                  = 6293;
 
 
 
