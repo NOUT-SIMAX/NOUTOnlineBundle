@@ -63,7 +63,6 @@ services:
         tags:
             - { name: twig.extension }
 
-
     #pour les forms de test
     nout_online.form.test_radio:
         class:      NOUT\Bundle\NOUTOnlineBundle\Form\Test\TestRadioType

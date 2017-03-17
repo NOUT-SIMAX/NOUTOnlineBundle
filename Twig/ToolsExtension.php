@@ -51,4 +51,12 @@ class ToolsExtension extends \Twig_Extension
         return uniqid();
 	}
 
+
+    public function getFilters(){
+        return array(
+            new \Twig_SimpleFilter('base64_encode', 'base64_encode'),
+            new \Twig_SimpleFilter('base64_decode', 'base64_decode')
+        );
+    }
+
 } 
