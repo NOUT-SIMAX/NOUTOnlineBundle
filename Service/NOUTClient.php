@@ -927,6 +927,28 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    public function oExecListRequest($tableID, $contextID = '')
+    {
+        $colList = array();
+        $condition = new Condition(
+            new CondColumn(Langage::COL_REQUETE_IDTableau),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($tableID));
+        $condList = CondListTypeFactory::create($condition);
+
+        $aTabHeaderSuppl = array();
+        if(!empty($contextID))
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
+        $clReponseXML = $this->_oNewRequest(
+            Langage::TABL_Requete,
+            $condList,
+            $colList,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
     /**
      * @param string $contextID
      * @return ActionResult
