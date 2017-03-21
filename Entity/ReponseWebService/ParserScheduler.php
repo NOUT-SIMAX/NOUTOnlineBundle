@@ -34,7 +34,7 @@ class ParserScheduler extends ParserList
 
     /**
      * Parse le scheduler
-     * Ne doit pas être trop volumineuse
+     * Ne doit pas etre trop volumineuse
      * @param XMLResponseWS $clReponseXML
      */
     public function ParseScheduler(XMLResponseWS $clReponseXML)
@@ -43,12 +43,14 @@ class ParserScheduler extends ParserList
         $ndXML       = $clReponseXML->getNodeXMLRessource();
         $idForm      = Langage::TABL_Ressource; //toutes les ressources sont fils du tableau ressource
 
-        if (isset($ndSchema))
+        if (count($ndSchema)>0)
         {
             $this->m_clParserScheduler->ParseXSD($ndSchema, StructureElement::NV_XSD_List);
         }
 
-        $this->m_clParserScheduler->ParseXML($ndXML, $idForm, StructureElement::NV_XSD_List);
+        if (count($ndXML)>0){
+            $this->m_clParserScheduler->ParseXML($ndXML, $idForm, StructureElement::NV_XSD_List);
+        }
     }
 
     /**
@@ -61,10 +63,10 @@ class ParserScheduler extends ParserList
 
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
-        // Instance d'une nouvelle clList avec toutes les données précédentes
+        // Instance d'une nouvelle clList avec toutes les donnï¿½es prï¿½cï¿½dentes
         $clList = new RecordList('', '', $sIDForm, $this->m_clParserScheduler->m_TabEnregTableau, $clStructElem);
 
-        // Paramètres pour la clList
+        // Paramï¿½tres pour la clList
         $clList->setRecordCache($this->m_clParserScheduler->getFullCache());
         return $clList;
     }

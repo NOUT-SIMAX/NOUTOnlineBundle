@@ -506,7 +506,7 @@ class XMLResponseWS
         /** @var \SimpleXMLElement $clNodeSchedulerResource */
         $clNodeSchedulerResource = $this->m_ndHeader->children()->SchedulerResource;
 
-        if (isset($clNodeSchedulerResource) && ($clNodeSchedulerResource->count()>0))
+        if (count($clNodeSchedulerResource)>0)
         {
             // Erreur : "Node no longer exists" alors que dans le isSet
             // Données mal parsées ?
