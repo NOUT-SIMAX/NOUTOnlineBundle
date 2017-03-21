@@ -1146,7 +1146,6 @@ class NOUTClient
                 break; //on ne fait rien de plus
 
             case XMLResponseWS::RETURNTYPE_VALUE:
-            case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
             case XMLResponseWS::RETURNTYPE_CHART:
             case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
 
@@ -1254,6 +1253,7 @@ class NOUTClient
                 break;
             }
 
+            case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
             case XMLResponseWS::RETURNTYPE_LIST:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
