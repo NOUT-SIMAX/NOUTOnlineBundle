@@ -45,6 +45,7 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_CHOICE           	=> '_ParseList',
+            XMLResponseWS::RETURNTYPE_REQUESTFILTER     => '_ParseList',
 
 			XMLResponseWS::RETURNTYPE_LISTCALCULATION 	=> '_ParseListCaculation',
 			XMLResponseWS::RETURNTYPE_REPORT          	=> null,
