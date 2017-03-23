@@ -55,11 +55,13 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
@@ -945,6 +947,27 @@ class NOUTClient
             $condList,
             $colList,
             $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param int $contextID
+     * @param int[] $colList
+     * @return ActionResult
+     */
+    public function oExecListCalculation($contextID, $colList)
+    {
+        $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
+        $calcList = new CalculationListType();
+        $calcList->Calculation = CalculationListType::getAll();
+
+        $calculation = new GetCalculation();
+        $calculation->ColList = new ColListType($colList);
+        $calculation->CalculationList = $calcList;
+
+        $clReponseXML = $this->m_clSOAPProxy->getCalculation(new GetCalculation());
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
