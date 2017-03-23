@@ -15,6 +15,28 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 //-------------------------------------------------------------------------------------------------------------------
 class CalculationListType
 {
-	public $Calculation; // string
+    /** @var  string[] */
+	public $Calculation;
+
+	const SUM       = 'Sum';
+	const AVERAGE   = 'Average';
+	const MIN       = 'Min';
+	const MAX       = 'Max';
+	const COUNT     = 'Count';
+	const PERCENT   = 'Percent';
+
+    /**
+     * @return int[]
+     */
+	public static function getAll(){
+	    return array(
+	        self::SUM,
+            self::AVERAGE,
+            self::MIN,
+            self::MAX,
+            self::COUNT,
+            self::PERCENT,
+        );
+    }
 }
 //***
