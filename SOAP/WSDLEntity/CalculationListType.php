@@ -23,7 +23,6 @@ class CalculationListType
 	const MIN       = 'Min';
 	const MAX       = 'Max';
 	const COUNT     = 'Count';
-	const PERCENT   = 'Percent';
 
     /**
      * @return int[]
@@ -35,7 +34,6 @@ class CalculationListType
             self::MIN,
             self::MAX,
             self::COUNT,
-            self::PERCENT,
         );
     }
 }
