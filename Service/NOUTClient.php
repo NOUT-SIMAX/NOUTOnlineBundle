@@ -958,7 +958,9 @@ class NOUTClient
      */
     public function oExecListCalculation($contextID, $colList)
     {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest(array());
         $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
 
         $calcList = new CalculationListType();
         $calcList->Calculation = CalculationListType::getAll();
@@ -967,7 +969,7 @@ class NOUTClient
         $calculation->ColList = new ColListType($colList);
         $calculation->CalculationList = $calcList;
 
-        $clReponseXML = $this->m_clSOAPProxy->getCalculation(new GetCalculation());
+        $clReponseXML = $this->m_clSOAPProxy->getCalculation($calculation, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
