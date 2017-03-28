@@ -1124,6 +1124,11 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
 	    return $this->call('List', array($clWsdlType_List) ,  null, null , $aHeaders);
     }
+
+    public function getEndListCalculation($aHeaders)
+    {
+        return $this->call('GetEndListCalculation', null ,  null, null , $aHeaders);
+    }
     //----
 
     /**
