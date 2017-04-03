@@ -56,6 +56,61 @@ class StructureSection extends StructureColonne
 		return $this;
 	}
 
+    /**
+     * @return StructureSection[]
+     */
+    public function getSubSections()
+    {
+        $sections = array();
+        foreach($this->m_TabStructureColonne as $column)
+        {
+            if($column instanceof StructureSection)
+                $sections[] = $column;
+        }
+        return $sections;
+    }
+
+    /**
+     * @return StructureBouton[]
+     */
+    public function getButtons()
+    {
+        $buttons = array();
+        foreach($this->m_TabStructureColonne as $column)
+        {
+            if($column instanceof StructureBouton)
+                $buttons[] = $column;
+        }
+        return $buttons;
+    }
+
+    /**
+     * @return StructureElement[]
+     */
+    public function getElements()
+    {
+        $elements = array();
+        foreach($this->m_TabStructureColonne as $column)
+        {
+            if($column instanceof StructureElement)
+                $elements[] = $column;
+        }
+        return $elements;
+    }
+
+    /**
+     * @return StructureBouton[]
+     */
+    public function getData()
+    {
+        $data = array();
+        foreach($this->m_TabStructureColonne as $column)
+        {
+            if($column instanceof StructureDonnee)
+                $data[] = $column;
+        }
+        return $data;
+    }
 
     const LEVEL_FICHE   = 0;
     const LEVEL_PRINCIPAL = 1;
