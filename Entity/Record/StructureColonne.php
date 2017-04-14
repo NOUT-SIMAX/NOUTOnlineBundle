@@ -489,6 +489,17 @@ abstract class StructureColonne
 					return str_replace(array(':', '-'), array('_', '_'), self::TM_TexteMultiLigne);
 				}
 			}
+            case self::TM_Combo :
+            {
+                if (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 2)
+                {
+                    return 'simax_radio';
+                }
+                else
+                {
+                    return 'simax_choice';
+                }
+            }
 			default : // Correspond au != self::TM_Texte
 			{
 				return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
