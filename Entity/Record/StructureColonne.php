@@ -493,7 +493,7 @@ abstract class StructureColonne
             {
                 if (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 2)
                 {
-                    return 'simax_radio';
+                    return 'simax_radio'; //TODO: En cascade on affiche le combo ?
                 }
                 else
                 {
