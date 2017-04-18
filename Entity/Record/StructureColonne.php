@@ -491,7 +491,7 @@ abstract class StructureColonne
 			}
             case self::TM_Combo :
             {
-                if (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 2)
+                if (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 3)
                 {
                     return 'simax_radio'; //TODO: En cascade on affiche le combo ?
                 }
