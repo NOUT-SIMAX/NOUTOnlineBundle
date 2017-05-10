@@ -31,7 +31,7 @@ class NOUTExceptionFormatter
      */
     public function __construct($message, $e, $level = null)
     {
-        $level = ($level ? $level : NOUTWebException::getDefaultLevel());
+        $level = (!is_null($level) ? $level : NOUTWebException::getDefaultLevel());
         try{
             $this->level = NOUTExceptionLevel::toString($level);
             $this->message = $message;

@@ -12,5 +12,5 @@ use Symfony\Component\HttpFoundation\Response;
 class NOUTValidationException extends NOUTWebException
 {
     const STATUS    = Response::HTTP_UNPROCESSABLE_ENTITY;
-    const LEVEL     = NOUTExceptionLevel::WARNING;
+    const LEVEL     = NOUTExceptionLevel::NOTICE;
 }
