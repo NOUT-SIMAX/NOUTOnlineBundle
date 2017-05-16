@@ -616,6 +616,7 @@ class XMLResponseWS
 	//retourne des enregistrements
 	const RETURNTYPE_RECORD         = 'Record';
 	const RETURNTYPE_LIST           = 'List';
+	const RETURNTYPE_THUMBNAIL      = 'Thumbnail';
 
 	//réponse particulière
 	const RETURNTYPE_XSD                = 'XSD';

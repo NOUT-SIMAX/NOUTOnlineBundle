@@ -41,6 +41,7 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> '_ParseRecord',
 
 			XMLResponseWS::RETURNTYPE_SCHEDULER 		=> '_ParseScheduler',
+            XMLResponseWS::RETURNTYPE_THUMBNAIL         => '_ParseList',
 			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
 			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
