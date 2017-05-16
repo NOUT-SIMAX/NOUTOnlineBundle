@@ -1271,6 +1271,7 @@ class NOUTClient
             }
 
             case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
+            case XMLResponseWS::RETURNTYPE_THUMBNAIL:
             case XMLResponseWS::RETURNTYPE_LIST:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
