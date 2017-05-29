@@ -25,7 +25,7 @@ class SpecialParamListType
 	public $Sort2; 				// SortType
 	public $Sort3; 				// SortType
 
-    public function initFirstLength($first=0, $length=0)
+    public function initFirstLength($first=0, $length=50)
     {
         $this->First = $first;
         $this->Length = $length;
