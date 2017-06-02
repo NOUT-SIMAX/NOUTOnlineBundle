@@ -1169,7 +1169,6 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_XSD:
             case XMLResponseWS::RETURNTYPE_IDENTIFICATION:
             case XMLResponseWS::RETURNTYPE_PLANNING:
-            case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
             case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
             case XMLResponseWS::RETURNTYPE_EXCEPTION:
 
@@ -1270,6 +1269,7 @@ class NOUTClient
                 break;
             }
 
+            case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
             case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
             case XMLResponseWS::RETURNTYPE_THUMBNAIL:
             case XMLResponseWS::RETURNTYPE_LIST:
