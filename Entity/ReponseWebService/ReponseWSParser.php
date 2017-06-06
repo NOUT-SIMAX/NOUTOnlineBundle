@@ -44,6 +44,7 @@ class ReponseWSParser
             XMLResponseWS::RETURNTYPE_THUMBNAIL         => '_ParseList',
 			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
 			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
+            XMLResponseWS::RETURNTYPE_GLOBALSEARCH      => '_ParseList',
             XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_CHOICE           	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_REQUESTFILTER     => '_ParseList',

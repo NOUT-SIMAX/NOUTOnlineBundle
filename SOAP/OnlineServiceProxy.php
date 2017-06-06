@@ -831,7 +831,6 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
 	    return $this->call('Execute', array($clWsdlType_Execute) ,  null, null , $aHeaders);
     }
-    //---
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetCalculation
