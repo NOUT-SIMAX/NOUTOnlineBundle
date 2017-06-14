@@ -35,6 +35,11 @@ class CurrentAction
      */
     protected $m_nIDForm;
 
+    /**
+     * @var string
+     */
+    protected $m_userConfirmation;
+
 	/**
 	 * @param $sID : identifiant de l'action
 	 * @param $sTitle ; libellé de l'action
@@ -42,10 +47,11 @@ class CurrentAction
 	 */
 	public function __construct(\SimpleXMLElement $clAction)
 	{
-		$this->m_sID         = (string) $clAction;
-		$this->m_sTitle      = (string) $clAction['title'];
-		$this->m_nTypeAction = (int) $clAction['typeAction'];
-        $this->m_nIDForm     = (string) $clAction['actionForm'];
+		$this->m_sID                = (string) $clAction;
+		$this->m_sTitle             = (string) $clAction['title'];
+		$this->m_nTypeAction        = (int) $clAction['typeAction'];
+        $this->m_nIDForm            = (string) $clAction['actionForm'];
+        $this->m_userConfirmation   = (string) $clAction['userConfirmation'];
 	}
 
 	/**
@@ -80,5 +86,13 @@ class CurrentAction
 	{
 		return $this->m_sTitle;
 	}
+
+    /**
+     * @return string
+     */
+	public function getUserConfirmation()
+    {
+        return $this->m_userConfirmation;
+    }
 
 }
