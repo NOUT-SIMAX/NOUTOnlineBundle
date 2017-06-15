@@ -643,6 +643,8 @@ class XMLResponseWS
 
 	//types virtuels pour traitement spéciaux
     const VIRTUALRETURNTYPE_FILE = "File";
+    const VIRTUALRETURNTYPE_FILE_PREVIEW = "FilePreview";
+    const VIRTUALRETURNTYPE_CASCADE = 'Cascade';
 
     //les différent type d'affichage pour les listes
     const DISPLAYMODE_List = 'List';
