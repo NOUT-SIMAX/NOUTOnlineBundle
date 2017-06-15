@@ -1212,7 +1212,11 @@ class NOUTClient
                 {
                     $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
                     $clActionResult->setData($oNOUTFileInfo);
-
+                    if($clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_ModeleFichier ||
+                        $clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_NomFichier)
+                    {
+                        $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE_PREVIEW);
+                    }
                 }
                 break;
             }
