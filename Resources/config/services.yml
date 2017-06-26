@@ -46,7 +46,7 @@ services:
     #factory pour les caches
     nout_online.cache_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory
-        arguments:  [@router, "%kernel.cache_dir%", '%kernel.root_dir%/config']
+        arguments:  [@router, "%kernel.cache_dir%", '%kernel.root_dir%/config', @?debug.stopwatch]
 
     #les extension twigs
     nout_online.twig.nout_online_extension:

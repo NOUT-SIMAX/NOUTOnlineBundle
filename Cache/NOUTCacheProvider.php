@@ -9,6 +9,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
 
+use Symfony\Component\Stopwatch\Stopwatch;
+
 abstract class NOUTCacheProvider implements NOUTCacheInterface
 {
     /**
@@ -18,6 +20,29 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     protected $namespace = '';
 
+    /**
+     * @var Stopwatch
+     */
+    protected $__stopwatch;
+
+    public function __construct(Stopwatch $stopwatch=null)
+    {
+        $this->__stopwatch = $stopwatch;
+    }
+
+    protected function __startStopwatch($function)
+    {
+        if($this->__stopwatch){
+            $this->__stopwatch->start(get_class($this).'::'.$function);
+        }
+    }
+
+    protected function __stopStopwatch($function)
+    {
+        if($this->__stopwatch){
+            $this->__stopwatch->stop(get_class($this).'::'.$function);
+        }
+    }
 
     protected function _makeKey($id, $prefix)
     {
@@ -92,7 +117,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function fetch($id)
     {
-        return $this->_doFetch($this->_getNamespacedId($id));
+        $this->__startStopwatch(__FUNCTION__);
+
+        $oRet = $this->_doFetch($this->_getNamespacedId($id));
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**
@@ -104,7 +134,10 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function fetchMultiple(array $keys)
     {
+        $this->__startStopwatch(__FUNCTION__);
+
         if (empty($keys)) {
+            $this->__stopStopwatch(__FUNCTION__);
             return array();
         }
 
@@ -121,6 +154,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
             }
         }
 
+        $this->__stopStopwatch(__FUNCTION__);
         return $foundItems;
     }
 
@@ -135,12 +169,17 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function saveMultiple(array $keysAndValues, $lifetime = 0)
     {
+        $this->__startStopwatch(__FUNCTION__);
+
         $namespacedKeysAndValues = array();
         foreach ($keysAndValues as $key => $value) {
             $namespacedKeysAndValues[$this->_getNamespacedId($key)] = $value;
         }
 
-        return $this->_doSaveMultiple($namespacedKeysAndValues, $lifetime);
+        $oRet = $this->_doSaveMultiple($namespacedKeysAndValues, $lifetime);
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**
@@ -152,7 +191,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function deleteMultiple(array $keys)
     {
-        return $this->_doDeleteMultiple($keys);
+        $this->__startStopwatch(__FUNCTION__);
+
+        $oRet = $this->_doDeleteMultiple($keys);
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**
@@ -164,7 +208,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function contains($id)
     {
-        return $this->_doContains($this->_getNamespacedId($id));
+        $this->__startStopwatch(__FUNCTION__);
+
+        $oRet = $this->_doContains($this->_getNamespacedId($id));
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**
@@ -182,7 +231,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function save($id, $data, $lifeTime = 0)
     {
-        return $this->_doSave($this->_getNamespacedId($id), $data, $lifeTime);
+        $this->__startStopwatch(__FUNCTION__);
+
+        $oRet = $this->_doSave($this->_getNamespacedId($id), $data, $lifeTime);
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**
@@ -195,7 +249,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function delete($id)
     {
-        return $this->_doDelete($this->_getNamespacedId($id));
+        $this->__startStopwatch(__FUNCTION__);
+
+        $oRet = $this->_doDelete($this->_getNamespacedId($id));
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**
@@ -208,8 +267,13 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function deletePrefix($prefix='')
     {
+        $this->__startStopwatch(__FUNCTION__);
+
         $keys = $this->_doListEntry($this->_getNamespacedId($prefix));
-        return $this->_doDeleteMultiple($keys);
+        $oRet = $this->_doDeleteMultiple($keys);
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**
@@ -219,7 +283,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     public function flushAll()
     {
-        return $this->_doFlushAll();
+        $this->__startStopwatch(__FUNCTION__);
+
+        $oRet = $this->_doFlushAll();
+
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
     }
 
     /**

@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
 
+use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Yaml;
 
@@ -33,11 +34,18 @@ class NOUTCacheFactory
      */
     private $__cacheinfofile;
 
-    function __construct(Router $router, $cachedir, $configdir)
+
+    /**
+     * @var Stopwatch
+     */
+    private $__stopwatch;
+
+    function __construct(Router $router, $cachedir, $configdir, Stopwatch $stopwatch=null)
     {
         $this->__router = $router;
         $this->__cachedir = $cachedir;
         $this->__cacheinfofile = $configdir.'/cache_info.yml';
+        $this->__stopwatch = $stopwatch;
     }
 
 
@@ -71,17 +79,17 @@ class NOUTCacheFactory
 
         if (extension_loaded('apc') || extension_loaded('apcu'))
         {
-            $cache = new NOUTApcuCache();
+            $cache = new NOUTApcuCache($this->__stopwatch);
             $cache->setNamespace($namespace, $baseurl.$prefix);
         }
         elseif (extension_loaded('xcache'))
         {
-            $cache = new NOUTXCacheCache();
+            $cache = new NOUTXCacheCache($this->__stopwatch);
             $cache->setNamespace($namespace, $baseurl.$prefix);
         }
         else
         {
-            $cache = new NOUTFileCache();
+            $cache = new NOUTFileCache($this->__stopwatch);
 
             $cachedir = $this->__cachedir;
             if (!empty($dirprefix)){
