@@ -79,6 +79,7 @@ use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class NOUTClient
 {
@@ -120,15 +121,21 @@ class NOUTClient
     private $m_sVersionMin;
 
     /**
+     * @var Stopwatch
+     */
+    private $__stopwatch;
+
+    /**
      * @param TokenStorage $security
      * @param OnlineServiceFactory $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin)
+    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin, Stopwatch $stopwatch=null)
     {
         $this->__tokenStorage = $tokenStorage;
+        $this->__stopwatch = $stopwatch;
 
         $oSecurityToken = $this->_oGetToken();
 
@@ -1141,6 +1148,17 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    private function __startStopwatch($function, $plus){
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->start(get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus));
+        }
+    }
+
+    private function __stopStopwatch($function, $plus){
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->stop(get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus));
+        }
+    }
 
     /**
      * @param XMLResponseWS $clReponseXML
@@ -1157,6 +1175,7 @@ class NOUTClient
             $clActionResult->ReturnType = $ReturnTypeForce; //on force le return type
         }
 
+        $this->__startStopwatch(__FUNCTION__, $clActionResult->ReturnType);
         switch ($clActionResult->ReturnType)
         {
             case XMLResponseWS::RETURNTYPE_EMPTY:
@@ -1178,6 +1197,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
             case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
             {
+                $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
             }
 
@@ -1245,6 +1265,7 @@ class NOUTClient
                 if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
+                    $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
@@ -1285,6 +1306,7 @@ class NOUTClient
                 if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
+                    $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
@@ -1346,6 +1368,7 @@ class NOUTClient
 
         }
 
+        $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
         return $clActionResult;
     }
 

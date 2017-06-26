@@ -13,6 +13,7 @@ services:
             - @nout_online.configuration_dialogue
             - @nout_online.cache_factory
             - %nout_online.version_min%
+            - @?debug.stopwatch
 
     nout_contexts.session_disconnect_listener:
         class:  NOUT\Bundle\ContextsBundle\Service\SessionDisconnectListener
