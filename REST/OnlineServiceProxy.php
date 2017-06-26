@@ -372,13 +372,13 @@ class OnlineServiceProxy
         }
 
         if (isset($this->__stopwatch)){
-            $this->__stopwatch->start('NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy::_oExecute');
+            $this->__stopwatch->start(get_class($this).'::_oExecute');
         }
     }
     private function __stopLogQuery($uri, $reponse, $action, $header, Identification $clIdentification=null)
     {
         if (isset($this->__stopwatch)){
-            $this->__stopwatch->stop('NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy::_oExecute');
+            $this->__stopwatch->stop(get_class($this).'::_oExecute');
         }
 
         if (isset($this->__clLogger))
