@@ -20,6 +20,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class OnlineServiceProxy
 {
@@ -40,17 +41,23 @@ class OnlineServiceProxy
 	 */
 	private $__clInfoClient;
 
+    /**
+     * @var Stopwatch
+     */
+	private $__stopwatch;
+
 	/**
 	 * constructeur permettant d'instancier les classe de communication soap avec les bonne question
 	 * @param ClientInformation $clientInfo
 	 * @param ConfigurationDialogue $clConfig
 	 * @param NOUTOnlineLogger $_clLogger
 	 */
-	public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger)
+	public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, Stopwatch $stopwatch=null)
 	{
 		$this->__ConfigurationDialogue 	= $clConfig;
 		$this->__clLogger              	= $_clLogger;
 		$this->__clInfoClient 			= $clientInfo;
+		$this->__stopwatch              = $stopwatch;
 	}
 
 	/**
@@ -363,9 +370,17 @@ class OnlineServiceProxy
             //log des requetes
             $this->__clLogger->startQuery();
         }
+
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->start('NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy::_oExecute');
+        }
     }
     private function __stopLogQuery($uri, $reponse, $action, $header, Identification $clIdentification=null)
     {
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->stop('NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy::_oExecute');
+        }
+
         if (isset($this->__clLogger))
         {
             $extra = array();

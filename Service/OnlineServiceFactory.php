@@ -14,6 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class OnlineServiceFactory
 {
@@ -32,12 +33,18 @@ class OnlineServiceFactory
 	 */
 	protected $m_clClientInformation;
 
+    /**
+     * @var Stopwatch
+     */
+	protected $__stopwatch;
 
-	public function __construct(ClientInformation $clientInfo, NOUTOnlineLogger $logger, NOUTCacheFactory $cacheFactory)
+
+	public function __construct(ClientInformation $clientInfo, NOUTOnlineLogger $logger, NOUTCacheFactory $cacheFactory, Stopwatch $stopwatch=null)
 	{
 		$this->m_clLogger = $logger;
-		$this->m_clClientInformation=$clientInfo;
+		$this->__stopwatch = $stopwatch;
 
+		$this->m_clClientInformation=$clientInfo;
         $this->m_clCache = $cacheFactory->getCache('noutonline', '', '');
 	}
 
@@ -48,7 +55,7 @@ class OnlineServiceFactory
 	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration)
 	{
 
-		$OnlineService = new SOAPProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->m_clCache);
+		$OnlineService = new SOAPProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->__stopwatch, $this->m_clCache);
 		return $OnlineService; // Peut renvoyer une exception si pb de connexion
 
 	}
@@ -59,7 +66,7 @@ class OnlineServiceFactory
 	 */
 	public function clGetRESTProxy(ConfigurationDialogue $clConfiguration)
 	{
-		$OnlineService = new RESTProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger);
+		$OnlineService = new RESTProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->__stopwatch);
 		return $OnlineService;
 	}
 }

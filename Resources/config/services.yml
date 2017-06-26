@@ -41,7 +41,7 @@ services:
     #factory pour les proxy
     nout_online.service_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-        arguments:  [@nout_online.client_information, @nout_online.logger, @nout_online.cache_factory]
+        arguments:  [@nout_online.client_information, @nout_online.logger, @nout_online.cache_factory, @?debug.stopwatch]
 
     #factory pour les caches
     nout_online.cache_factory:
