@@ -1148,16 +1148,21 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
-    private function __startStopwatch($function, $plus){
+    private function __startStopwatch($eventName){
         if (isset($this->__stopwatch)){
-            $this->__stopwatch->start(get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus));
+            $this->__stopwatch->start($eventName);
         }
     }
 
-    private function __stopStopwatch($function, $plus){
+    private function __stopStopwatch($eventName){
         if (isset($this->__stopwatch)){
-            $this->__stopwatch->stop(get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus));
+            $this->__stopwatch->stop($eventName);
         }
+    }
+
+    private function _getStopWatchEventName($function, $plus)
+    {
+        return get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus);
     }
 
     /**
@@ -1175,7 +1180,8 @@ class NOUTClient
             $clActionResult->ReturnType = $ReturnTypeForce; //on force le return type
         }
 
-        $this->__startStopwatch(__FUNCTION__, $clActionResult->ReturnType);
+
+        $this->__startStopwatch($stopWatchEvent = $this->_getStopWatchEventName(__FUNCTION__, $clActionResult->ReturnType));
         switch ($clActionResult->ReturnType)
         {
             case XMLResponseWS::RETURNTYPE_EMPTY:
@@ -1197,7 +1203,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
             case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
             {
-                $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
+                $this->__stopStopwatch($stopWatchEvent);
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
             }
 
@@ -1265,7 +1271,7 @@ class NOUTClient
                 if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
-                    $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
+                    $this->__stopStopwatch($stopWatchEvent);
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
@@ -1306,7 +1312,7 @@ class NOUTClient
                 if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
-                    $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
+                    $this->__stopStopwatch($stopWatchEvent);
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
@@ -1368,7 +1374,7 @@ class NOUTClient
 
         }
 
-        $this->__stopStopwatch(__FUNCTION__, $clActionResult->ReturnType);
+        $this->__stopStopwatch($stopWatchEvent);
         return $clActionResult;
     }
 
