@@ -141,12 +141,22 @@ class Record
         foreach($tabAttribut as $name=>$attr)
         {
             $nCmp = strncasecmp($name, 'record', strlen('record'));
-            if ($nCmp==0)
+            //TODO: Remove quand Ninon aura maj l'envoi de recordWithChildren a la place de brancWithChildren
+            $dirtyCnmp = strncasecmp($name, 'branch', strlen('branch'));
+            if ($nCmp==0 || $dirtyCnmp == 0)
             {
                 $this->addOption($name, (string)$attr);
             }
         }
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->m_TabOptionsRecord;
     }
 
     /**

@@ -24,6 +24,7 @@ class SpecialParamListType
 	public $Sort1; 				// SortType
 	public $Sort2; 				// SortType
 	public $Sort3; 				// SortType
+    public $ItemTreeParent;     // Parent
 
     public function initFirstLength($first=0, $length=50)
     {
