@@ -1299,7 +1299,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
             case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
             case XMLResponseWS::RETURNTYPE_THUMBNAIL: //TODO: Remove
-            case "DataTree":
+            case "DataTree": //TODO: constant
             case XMLResponseWS::RETURNTYPE_LIST:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
