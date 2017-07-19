@@ -185,13 +185,11 @@ class ParserRecordList extends Parser
 		}
 
 		$aRecords = $this->m_clXML->xpath("/xml/id_{$sIDForm}[@n:xsdLevel=\"{$nNiv}\"]");
-
 		if (is_array($aRecords) && !empty($aRecords))
 		{
 			foreach ($aRecords as $clNoeud)
 			{
 				$clRecord = $this->__clParseRecord($nNiv, $clNoeud);
-
 				if (!is_null($clRecord))
 				{
 					$this->m_TabEnregTableau->Add($clRecord->getIDTableau(), $clRecord->getIDEnreg());

@@ -48,7 +48,6 @@ class Configuration implements ConfigurationInterface
 
                 ->integerNode('port')
                     ->info('Port du web service de NOUTOnline.')
-                    ->cannotBeEmpty()
                     ->defaultValue(8052)
                 ->end()//integerNode('port')
 

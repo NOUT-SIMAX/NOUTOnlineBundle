@@ -20,6 +20,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class OnlineServiceProxy
 {
@@ -40,17 +41,23 @@ class OnlineServiceProxy
 	 */
 	private $__clInfoClient;
 
+    /**
+     * @var Stopwatch
+     */
+	private $__stopwatch;
+
 	/**
 	 * constructeur permettant d'instancier les classe de communication soap avec les bonne question
 	 * @param ClientInformation $clientInfo
 	 * @param ConfigurationDialogue $clConfig
 	 * @param NOUTOnlineLogger $_clLogger
 	 */
-	public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger)
+	public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, Stopwatch $stopwatch=null)
 	{
 		$this->__ConfigurationDialogue 	= $clConfig;
 		$this->__clLogger              	= $_clLogger;
 		$this->__clInfoClient 			= $clientInfo;
+		$this->__stopwatch              = $stopwatch;
 	}
 
 	/**
@@ -327,10 +334,10 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-	protected function _oExecute($sAction, $sURI, Identification $clIdentification=null, $timeout=null)
+	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null)
 	{
 	    //demarre le log si necessaire
-		$this->__startLogQuery();
+		$this->__startLogQuery($function);
 
 		try
 		{
@@ -348,24 +355,32 @@ class OnlineServiceProxy
 		}
 		catch(\Exception $e)
 		{
-		    $this->__stopLogQuery($sURI, $e->getMessage(), $sAction, null, $clIdentification);
+		    $this->__stopLogQuery($sURI, $e->getMessage(), $sAction, null, $function, $clIdentification);
 			throw $e;
 		}
 
-        $this->__stopLogQuery($sURI, $ret->content, $sAction, $ret->headers, $clIdentification);
+        $this->__stopLogQuery($sURI, $ret->content, $sAction, $ret->headers, $function, $clIdentification);
 		return $ret;
 	}
 
-	private function __startLogQuery()
+	private function __startLogQuery($function)
     {
         if (isset($this->__clLogger))
         {
             //log des requetes
             $this->__clLogger->startQuery();
         }
+
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->start(get_class($this).'::'.$function);
+        }
     }
-    private function __stopLogQuery($uri, $reponse, $action, $header, Identification $clIdentification=null)
+    private function __stopLogQuery($uri, $reponse, $action, $header, $function, Identification $clIdentification=null)
     {
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->stop(get_class($this).'::'.$function);
+        }
+
         if (isset($this->__clLogger))
         {
             $extra = array();
@@ -396,7 +411,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetUserExists', array('login' => $login), array());
 
-		return (int) $this->_oExecute('GetUserExists', $sURI)->content;
+		return (int) $this->_oExecute('GetUserExists', $sURI, __FUNCTION__)->content;
 	}
 
 
@@ -408,7 +423,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetVersion', array(), array());
 
-		return $clVersion = new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, null, 1)->content);
+		return $clVersion = new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
 	}
 
     /**
@@ -419,7 +434,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetMenu', array(), array(), $clIdentification);
 
-        return $this->_oExecute('GetMenu', $sURI, $clIdentification)->content;
+        return $this->_oExecute('GetMenu', $sURI, __FUNCTION__, $clIdentification)->content;
     }
 
     /**
@@ -433,7 +448,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetSchedulerInfo', $aTabParam, array(), $clIdentification);
 
-        return $this->_oExecute('GetSchedulerInfo', $sURI, $clIdentification);
+        return $this->_oExecute('GetSchedulerInfo', $sURI, __FUNCTION__, $clIdentification);
     }
 
     /**
@@ -450,7 +465,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest($idForm.'/'.$idEnreg.'/'.$idColumn.'/GetSchedulerInfo', $aTabParam, array(), $clIdentification);
 
-        return $this->_oExecute('GetSchedulerInfo', $sURI, $clIdentification);
+        return $this->_oExecute('GetSchedulerInfo', $sURI, __FUNCTION__, $clIdentification);
     }
 
 
@@ -462,7 +477,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetToolbar', array(), array(), $clIdentification);
 
-        return $this->_oExecute('GetToolbar', $sURI, $clIdentification)->content;
+        return $this->_oExecute('GetToolbar', $sURI, __FUNCTION__, $clIdentification)->content;
     }
 
     /**
@@ -473,7 +488,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest('GetCentralIcon', array(), array(), $clIdentification);
 
-        return $this->_oExecute('GetCentralIcon', $sURI, $clIdentification)->content;
+        return $this->_oExecute('GetCentralIcon', $sURI, __FUNCTION__, $clIdentification)->content;
     }
 
 	/**
@@ -485,7 +500,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest('GetLangageVersion', array(), array(), $clIdentification);
 
-		return $this->_oExecute('GetLangageVersion', $sURI, $clIdentification)->content;
+		return $this->_oExecute('GetLangageVersion', $sURI, __FUNCTION__, $clIdentification)->content;
 	}
 
 	/**
@@ -498,7 +513,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest($idTableau.'/GetChecksum', array(), array(), $clIdentification);
 
-		return $this->_oExecute('GetChecksum', $sURI, $clIdentification)->content;
+		return $this->_oExecute('GetChecksum', $sURI, __FUNCTION__, $clIdentification)->content;
 	}
 
 	// IdTableau est IDForm
@@ -515,7 +530,7 @@ class OnlineServiceProxy
 	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
 	{
 		$sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
-        return $this->_oExecute('GetColInRecord', $sURI, $clIdentification)->content;
+        return $this->_oExecute('GetColInRecord', $sURI, __FUNCTION__, $clIdentification)->content;
 	}
 
     /**
@@ -532,7 +547,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
 
-        $oHTTPResponse = $this->_oExecute('GetColInRecord', $sURI, $clIdentification);
+        $oHTTPResponse = $this->_oExecute('GetColInRecord', $sURI, __FUNCTION__, $clIdentification);
         $oHTTPResponse->setLastModifiedIfNotExists();
 
         $oNOUTFileInfo = new NOUTFileInfo();
@@ -556,7 +571,7 @@ class OnlineServiceProxy
 
 		$sURI = $this->_sCreateRequest($sIDForm.'/'.urlencode($sQuery).'/'.$sEndPart, $aTabParam, $aTabOption, $clIdentification);
 
-		$result = $this->_oExecute('GetSuggestFromQuery', $sURI, $clIdentification); // On veut la réponse complète ici
+		$result = $this->_oExecute('GetSuggestFromQuery', $sURI, __FUNCTION__, $clIdentification); // On veut la réponse complète ici
 
 		return $result;
 	}

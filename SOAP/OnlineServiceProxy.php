@@ -69,6 +69,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ValidateFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\WithAutomaticResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ZipPJ;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Classe finale permettant la consomation du service web de simaxOnline de facon simplifié.
@@ -109,6 +110,11 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	private $__clLogger;
 
     /**
+     * @var Stopwatch
+     */
+	private $__stopwatch;
+
+    /**
      * @var GestionWSDL
      */
     private $__clGestionWSDL;
@@ -125,7 +131,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 * @param NOUTOnlineLogger      $_clLogger
 	 * @param NOUTCache             $cache
      */
-    public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, NOUTCacheProvider $cache=null)
+    public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, Stopwatch $stopwatch=null, NOUTCacheProvider $cache=null)
     {
         parent::__construct($clConfig->getWSDLUri(), $clConfig->getWsdl(), $clConfig->getHost(),$clConfig->getPort());
 
@@ -137,6 +143,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         $this->timeout = 300;
         $this->response_timeout = 300;
 	    $this->__clLogger = $_clLogger;
+	    $this->__stopwatch = $stopwatch;
 
 	    //il faut lire le début de endpoint pour avoir la version de la wsdl
         $this->__clGestionWSDL = new GestionWSDL($cache, $clConfig->getWSDLUri());
@@ -151,6 +158,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 		if (isset($this->__clLogger)) //log des requetes
 			$this->__clLogger->startSend();
 
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->start('NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy::send');
+        }
 	}
 
 	/**
@@ -158,8 +168,13 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	function __StopSend()
 	{
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->stop('NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy::send');
+        }
+
 		if (isset($this->__clLogger)) //log des requetes
 			$this->__clLogger->stopSend();
+
 	}
 
 	/**
@@ -507,9 +522,17 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         {
             $this->__clLogger->startQuery();
         }
+
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->start('NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy::call');
+        }
     }
     protected function __stopLogQuery($operation, $reponse)
     {
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->stop('NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy::call');
+        }
+
         if (isset($this->__clLogger)) //log des requetes
         {
             $extra = array();

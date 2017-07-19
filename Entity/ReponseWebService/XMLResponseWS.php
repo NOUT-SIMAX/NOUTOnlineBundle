@@ -649,4 +649,10 @@ class XMLResponseWS
     //les différent type d'affichage pour les listes
     const DISPLAYMODE_List = 'List';
     const DISPLAYMODE_Chart = 'Chart';
+    const DISPLAYMODE_Planning = 'Planning';
+    const DISPLAYMODE_Flowchart = 'Flowchart';
+    const DISPLAYMODE_DataTree = 'DataTree';
+    const DISPLAYMODE_Gantt = 'Gantt';
+    const DISPLAYMODE_Map = 'Map';
+    const DISPLAYMODE_Thumbnail = 'Thumbnail';
 }

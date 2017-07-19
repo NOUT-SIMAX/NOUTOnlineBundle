@@ -4,6 +4,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
@@ -30,7 +31,7 @@ class NOUTOnlineExtension extends Extension
             $container->setParameter('nout_online.' . $key, $value);
         }
 
-        if (!$container->getParameter('kernel.debug'))
+        if (!$container->getParameter('kernel.debug') || ($container->getParameter('kernel.environment')!='dev'))
         {
 
             /**
@@ -44,67 +45,45 @@ class NOUTOnlineExtension extends Extension
              *      because the file location retrieved from PHP reflection changes;
              * - When classes use the __DIR__ and __FILE__ constants, because their values will change when loading these classes from the classes.php file.
              */
-            $this->addClassesToCompile(array(
-                                           \NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy::class,
 
-                                           //\NOUT\Bundle\NOUTOnlineBundle\Entity\Header
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue::class,
+            $finder = new Finder();
+            $finder->files()->in(array(
+                __DIR__.'/../Cache',
+                __DIR__.'/../DataCollector',
+                __DIR__.'/../Entity',
+                __DIR__.'/../REST',
+                __DIR__.'/../SOAP',
+                __DIR__.'/../Service',
+                __DIR__.'/../Twig',
+             ))->name('*.php');
 
-                                           //\NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken::class,
+            $aClasses = array();
 
-                                           //\NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderSubList::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderList::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SetOrderSubList::class,
+            foreach ($finder as $file)
+            {
+                $filename = $file->getRealPath();
+                $aClasses[] = $this->_get_full_namespace($filename).'\\'.$this->_get_classname($filename);
+            }
 
-                                           //\NOUT\Bundle\NOUTOnlineBundle\Entity\REST
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification::class,
-
-                                           //\NOUT\Bundle\NOUTOnlineBundle\Entity\Record
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableau::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoButton::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureBouton::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection::class,
-
-
-                                           //\NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Parser::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserChart::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserListCalculation::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserPlanning::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserScheduler::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserXSDSchema::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser::class,
-
-
-                                           //\NOUT\Bundle\NOUTOnlineBundle\Entity
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\Langage::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo::class,
-                                           \NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion::class,
-                                       ));
+            $this->addClassesToCompile($aClasses);
         }
 
+    }
+
+    private function _get_full_namespace($filename) {
+        $lines = file($filename, FILE_IGNORE_NEW_LINES);
+        $grep = preg_grep('/^namespace /', $lines);
+        $namespaceLine = array_shift($grep);
+        $match = array();
+        preg_match('/^namespace (.*);$/', $namespaceLine, $match);
+        $fullNamespace = array_pop($match);
+
+        return $fullNamespace;
+    }
+
+    private function _get_classname($filename) {
+
+        return pathinfo($filename, PATHINFO_FILENAME);
     }
 
 }

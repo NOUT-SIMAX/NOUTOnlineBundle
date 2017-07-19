@@ -13,13 +13,13 @@ services:
     # pour la barre de debug
     nout_online.logger:
         class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger
-        arguments:  [@logger, "%nout_online.log%"]
+        arguments:  ['@logger', "%nout_online.log%"]
         tags:
             - { name: monolog.logger, channel: noutonline }
 
     nout_online.datacollector:
         class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector
-        arguments:  [@nout_online.logger, @security.token_storage]
+        arguments:  ['@nout_online.logger', '@security.token_storage']
         tags:
             - { name: data_collector, template: "NOUTOnlineBundle:DataCollector:layout.html.twig", id: "NOUTOnline" }
 
@@ -41,20 +41,20 @@ services:
     #factory pour les proxy
     nout_online.service_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
-        arguments:  [@nout_online.client_information, @nout_online.logger, @nout_online.cache_factory]
+        arguments:  ['@nout_online.client_information', '@nout_online.logger', '@nout_online.cache_factory', '@?debug.stopwatch']
 
     #factory pour les caches
     nout_online.cache_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory
-        arguments:  [@router, "%kernel.cache_dir%", '%kernel.root_dir%/config']
+        arguments:  ['@router', "%kernel.cache_dir%", '%kernel.root_dir%/config', '@?debug.stopwatch']
 
     #les extension twigs
     nout_online.twig.nout_online_extension:
         class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension
         arguments:
-            - @nout_online.service_factory
-            - @nout_online.configuration_dialogue
-            - %nout_online.version_min%
+            - '@nout_online.service_factory'
+            - '@nout_online.configuration_dialogue'
+            - '%nout_online.version_min%'
         tags:
             - { name: twig.extension }
 
