@@ -79,6 +79,7 @@ use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class NOUTClient
 {
@@ -120,15 +121,21 @@ class NOUTClient
     private $m_sVersionMin;
 
     /**
+     * @var Stopwatch
+     */
+    private $__stopwatch;
+
+    /**
      * @param TokenStorage $security
      * @param OnlineServiceFactory $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin)
+    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin, Stopwatch $stopwatch=null)
     {
         $this->__tokenStorage = $tokenStorage;
+        $this->__stopwatch = $stopwatch;
 
         $oSecurityToken = $this->_oGetToken();
 
@@ -1141,6 +1148,22 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    private function __startStopwatch($eventName){
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->start($eventName);
+        }
+    }
+
+    private function __stopStopwatch($eventName){
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->stop($eventName);
+        }
+    }
+
+    private function _getStopWatchEventName($function, $plus)
+    {
+        return get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus);
+    }
 
     /**
      * @param XMLResponseWS $clReponseXML
@@ -1157,6 +1180,8 @@ class NOUTClient
             $clActionResult->ReturnType = $ReturnTypeForce; //on force le return type
         }
 
+
+        $this->__startStopwatch($stopWatchEvent = $this->_getStopWatchEventName(__FUNCTION__, $clActionResult->ReturnType));
         switch ($clActionResult->ReturnType)
         {
             case XMLResponseWS::RETURNTYPE_EMPTY:
@@ -1178,6 +1203,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
             case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
             {
+                $this->__stopStopwatch($stopWatchEvent);
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
             }
 
@@ -1249,6 +1275,7 @@ class NOUTClient
                 if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
+                    $this->__stopStopwatch($stopWatchEvent);
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
@@ -1275,7 +1302,8 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
             case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
-            case XMLResponseWS::RETURNTYPE_THUMBNAIL:
+            case XMLResponseWS::RETURNTYPE_THUMBNAIL: //TODO: Remove
+            case "DataTree": //TODO: constant
             case XMLResponseWS::RETURNTYPE_LIST:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
@@ -1289,6 +1317,7 @@ class NOUTClient
                 if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
+                    $this->__stopStopwatch($stopWatchEvent);
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
@@ -1350,6 +1379,7 @@ class NOUTClient
 
         }
 
+        $this->__stopStopwatch($stopWatchEvent);
         return $clActionResult;
     }
 
