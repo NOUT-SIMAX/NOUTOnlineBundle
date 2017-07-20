@@ -539,13 +539,16 @@ class NOUTClient
 
         $aInfo = array();
         //on a pas les infos, il faut les calculer
-        $json = json_decode($this->m_clRESTProxy->$method($clIdentification));
+         $json = json_decode($this->m_clRESTProxy->$method($clIdentification));
         if (is_array($json) && (count($json) > 0))
         {
             foreach ($json as $objet)
             {
-                $itemMenu = $this->__oGetItemMenu($objet);
-                $aInfo[] = $itemMenu;
+                //TODO: Remove when annuler/refaire is implemented
+                if($objet->idaction != Langage::ACTION_Annulation && $objet->idaction != Langage::ACTION_Refaire) {
+                    $itemMenu = $this->__oGetItemMenu($objet);
+                    $aInfo[] = $itemMenu;
+                }
             }
 
             if ($prefix=='menu'){
@@ -594,8 +597,11 @@ class NOUTClient
         {
             foreach ($objSrc->tab_options as $objChild)
             {
-                $childMenu = $this->__oGetItemMenu($objChild);
-                $itemMenu->AddOptionMenu($childMenu);
+                //TODO: Remove when annuler/refaire is implemented
+                if($objChild->idaction != Langage::ACTION_Annulation && $objChild->idaction != Langage::ACTION_Refaire) {
+                    $childMenu = $this->__oGetItemMenu($objChild);
+                    $itemMenu->AddOptionMenu($childMenu);
+                }
             }
         }
 
