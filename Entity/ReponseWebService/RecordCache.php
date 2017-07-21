@@ -34,6 +34,10 @@ class RecordCache
 		$this->m_MapXMLKey2Record			= array();
 	}
 
+	public function getMapIDTableauIDEnreg2Record(){
+	    return $this->m_MapIDTableauIDEnreg2Record;
+    }
+
 	/**
 	 * @param Record $clRecord
 	 */

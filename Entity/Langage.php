@@ -1685,6 +1685,8 @@ class Langage
 
     const ACTION_ListeRequetePourTous = 6274;
 
+    const ACTION_Horaires_Ouverture = 9600;
+
 
 	/*************************************************************
 	 * IDENTIFIANT PARAMETRE D'ACTION
