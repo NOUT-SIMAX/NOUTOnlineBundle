@@ -138,13 +138,9 @@ class Record
      */
     public function addOptions(\SimpleXMLElement $tabAttribut)
     {
-        foreach($tabAttribut as $name=>$attr)
-        {
+        foreach($tabAttribut as $name=>$attr) {
             $nCmp = strncasecmp($name, 'record', strlen('record'));
-            //TODO: Remove quand Ninon aura maj l'envoi de recordWithChildren a la place de brancWithChildren
-            $dirtyCnmp = strncasecmp($name, 'branch', strlen('branch'));
-            if ($nCmp==0 || $dirtyCnmp == 0)
-            {
+            if ($nCmp==0) {
                 $this->addOption($name, (string)$attr);
             }
         }

@@ -33,12 +33,4 @@ abstract class CondListTypeFactory
         else
             throw new \InvalidArgumentException('Type ' . get_class($param) . ' not supported for Condlisttype');
     }
-
-    /**
-     * @param $string
-     * @return CondListType
-     */
-    public static function createFromString($string){
-        //TODO: Implement if needed
-    }
 }

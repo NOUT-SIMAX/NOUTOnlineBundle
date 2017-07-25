@@ -41,8 +41,8 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> '_ParseRecord',
 
 			XMLResponseWS::RETURNTYPE_SCHEDULER 		=> '_ParseScheduler',
-            XMLResponseWS::RETURNTYPE_THUMBNAIL         => '_ParseList', //TODO: Remove
-            "DataTree"                                  => '_ParseList', //TODO: Remove
+            XMLResponseWS::RETURNTYPE_THUMBNAIL         => '_ParseList',
+            XMLResponseWS::RETURNTYPE_DATATREE          => '_ParseList',
 			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
 			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_GLOBALSEARCH      => '_ParseList',
