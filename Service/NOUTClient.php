@@ -1308,8 +1308,8 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
             case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
-            case XMLResponseWS::RETURNTYPE_THUMBNAIL: //TODO: Remove
-            case "DataTree": //TODO: constant
+            case XMLResponseWS::RETURNTYPE_THUMBNAIL:
+            case XMLResponseWS::RETURNTYPE_DATATREE:
             case XMLResponseWS::RETURNTYPE_LIST:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
@@ -1357,11 +1357,8 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
             {
-                // TODO faire la vraie messageBox
-
                 // On fabrique la messageBox avec les données XML
                 $clActionResult->setData($clReponseXML->clGetMessageBox());
-
                 break;
             }
 
@@ -1762,7 +1759,6 @@ class NOUTClient
      */
     public function getSchedulerInfo($idContext, $startTime, $endTime)
     {
-        // Création des options
         $aTabParam = array(
             RESTProxy::PARAM_StartTime  => $startTime,
             RESTProxy::PARAM_EndTime    => $endTime,
@@ -1789,8 +1785,6 @@ class NOUTClient
      */
     public function getSchedulerCardInfo($idContext, $idForm, $idEnreg, $idColumn, $startTime, $endTime)
     {
-        //TODO : Remove duplicate code here and above
-        // Création des options
         $aTabParam = array(
             RESTProxy::PARAM_StartTime  => $startTime,
             RESTProxy::PARAM_EndTime    => $endTime,
