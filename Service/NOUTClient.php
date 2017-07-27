@@ -2166,4 +2166,5 @@ class NOUTClient
     const PARAM_CHECKSUM            = 'Checksum';
     const PARAM_CALLINGINFO         = 'CallingInfo';
     const PARAM_BTN_LISTMODE        = 'BtnListMode';
+    const PARAM_APIUSER             = 'APIUser';
 }
