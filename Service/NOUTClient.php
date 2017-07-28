@@ -523,6 +523,17 @@ class NOUTClient
     }
 
     /**
+     * @return string
+     * @param $idContext
+     */
+    public function getHelp($idContext)
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idContext, false);
+
+        return $this->m_clRESTProxy->sGetHelp($clIdentification);
+    }
+
+    /**
      * récupère les infos d'ihm lié au menu (menu, toolbar, et icone centraux)
      * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
      *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
@@ -642,6 +653,7 @@ class NOUTClient
     {
         return $this->_oGetIhmMenuPart('aMenu', 'sGetMenu', 'menu');
     }
+
 
     /**
      * retourne un tableau d'option de menu
