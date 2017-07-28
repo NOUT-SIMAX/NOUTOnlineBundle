@@ -438,6 +438,17 @@ class OnlineServiceProxy
     }
 
     /**
+     * @return string
+     * @param Identification $clIdentification
+     */
+    public function sGetHelp(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest('GetHelp', array(), array(), $clIdentification);
+
+        return $this->_oExecute('GetHelp', $sURI, __FUNCTION__, $clIdentification)->content;
+    }
+
+    /**
      * récupère des évènements
      * @param array          $aTabParam
      * @param Identification $clIdentification
