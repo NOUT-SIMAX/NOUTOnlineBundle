@@ -523,6 +523,17 @@ class NOUTClient
     }
 
     /**
+     * @return string
+     * @param $idContext
+     */
+    public function getHelp($idContext)
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idContext, false);
+
+        return $this->m_clRESTProxy->sGetHelp($clIdentification);
+    }
+
+    /**
      * récupère les infos d'ihm lié au menu (menu, toolbar, et icone centraux)
      * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
      *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
@@ -539,13 +550,16 @@ class NOUTClient
 
         $aInfo = array();
         //on a pas les infos, il faut les calculer
-        $json = json_decode($this->m_clRESTProxy->$method($clIdentification));
+         $json = json_decode($this->m_clRESTProxy->$method($clIdentification));
         if (is_array($json) && (count($json) > 0))
         {
             foreach ($json as $objet)
             {
-                $itemMenu = $this->__oGetItemMenu($objet);
-                $aInfo[] = $itemMenu;
+                //TODO: Remove when annuler/refaire is implemented
+                if($objet->idaction != Langage::ACTION_Annulation && $objet->idaction != Langage::ACTION_Refaire) {
+                    $itemMenu = $this->__oGetItemMenu($objet);
+                    $aInfo[] = $itemMenu;
+                }
             }
 
             if ($prefix=='menu'){
@@ -594,8 +608,11 @@ class NOUTClient
         {
             foreach ($objSrc->tab_options as $objChild)
             {
-                $childMenu = $this->__oGetItemMenu($objChild);
-                $itemMenu->AddOptionMenu($childMenu);
+                //TODO: Remove when annuler/refaire is implemented
+                if($objChild->idaction != Langage::ACTION_Annulation && $objChild->idaction != Langage::ACTION_Refaire) {
+                    $childMenu = $this->__oGetItemMenu($objChild);
+                    $itemMenu->AddOptionMenu($childMenu);
+                }
             }
         }
 
@@ -636,6 +653,7 @@ class NOUTClient
     {
         return $this->_oGetIhmMenuPart('aMenu', 'sGetMenu', 'menu');
     }
+
 
     /**
      * retourne un tableau d'option de menu
@@ -1238,7 +1256,11 @@ class NOUTClient
                 {
                     $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
                     $clActionResult->setData($oNOUTFileInfo);
-
+                    if($clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_ModeleFichier ||
+                        $clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_NomFichier)
+                    {
+                        $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE_PREVIEW);
+                    }
                 }
                 break;
             }
@@ -1298,8 +1320,8 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
             case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
-            case XMLResponseWS::RETURNTYPE_THUMBNAIL: //TODO: Remove
-            case "DataTree": //TODO: constant
+            case XMLResponseWS::RETURNTYPE_THUMBNAIL:
+            case XMLResponseWS::RETURNTYPE_DATATREE:
             case XMLResponseWS::RETURNTYPE_LIST:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
@@ -1347,11 +1369,8 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
             {
-                // TODO faire la vraie messageBox
-
                 // On fabrique la messageBox avec les données XML
                 $clActionResult->setData($clReponseXML->clGetMessageBox());
-
                 break;
             }
 
@@ -1752,7 +1771,6 @@ class NOUTClient
      */
     public function getSchedulerInfo($idContext, $startTime, $endTime)
     {
-        // Création des options
         $aTabParam = array(
             RESTProxy::PARAM_StartTime  => $startTime,
             RESTProxy::PARAM_EndTime    => $endTime,
@@ -1779,8 +1797,6 @@ class NOUTClient
      */
     public function getSchedulerCardInfo($idContext, $idForm, $idEnreg, $idColumn, $startTime, $endTime)
     {
-        //TODO : Remove duplicate code here and above
-        // Création des options
         $aTabParam = array(
             RESTProxy::PARAM_StartTime  => $startTime,
             RESTProxy::PARAM_EndTime    => $endTime,
@@ -2162,4 +2178,5 @@ class NOUTClient
     const PARAM_CHECKSUM            = 'Checksum';
     const PARAM_CALLINGINFO         = 'CallingInfo';
     const PARAM_BTN_LISTMODE        = 'BtnListMode';
+    const PARAM_APIUSER             = 'APIUser';
 }
