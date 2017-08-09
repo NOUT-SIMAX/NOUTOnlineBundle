@@ -49,6 +49,7 @@ class ReponseWSParser
             XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_CHOICE           	=> '_ParseList',
             XMLResponseWS::RETURNTYPE_REQUESTFILTER     => '_ParseList',
+            XMLResponseWS::RETURNTYPE_MAILSERVICELIST   => '_ParseMailServiceList',
 
 			XMLResponseWS::RETURNTYPE_LISTCALCULATION 	=> '_ParseListCaculation',
 			XMLResponseWS::RETURNTYPE_REPORT          	=> null,
@@ -146,6 +147,12 @@ class ReponseWSParser
 
         return $clParser;
 	}
+
+    protected function _ParseMailServiceList(XMLResponseWS $clXMLResponseWS) {
+	    $clParser = new MailServiceListParser();//TODO
+	    $clParser->parse($clXMLResponseWS);
+	    return $clParser;
+    }
 
 	/**
 	 * @param XMLResponseWS $clXMLReponseWS
