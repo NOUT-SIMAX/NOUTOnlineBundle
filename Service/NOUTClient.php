@@ -14,6 +14,8 @@ use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\ContextsBundle\Entity\SelectorList;
+use NOUT\Bundle\MessagingBundle\Entity\API\Folder;
+use NOUT\Bundle\MessagingBundle\Entity\API\FolderList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
@@ -1217,12 +1219,28 @@ class NOUTClient
 
 
             case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
-            case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
             case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
             case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
             {
                 $this->__stopStopwatch($stopWatchEvent);
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
+            }
+
+            case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
+            {
+                $idColumn = 'id_' . Langage::COL_MESSAGERIE_IDDossier;
+                $idName = 'id_' . Langage::COL_MESSAGERIE_Libelle;
+                $idParent = 'id_' . Langage::COL_MESSAGERIE_IDDossierPere;
+                $list = new FolderList();
+
+                foreach($clReponseXML->getNodeXML()->children() as $type => $child) {
+                    $id = (string) $child->$idColumn;
+                    $name = (string) $child->$idName;
+                    $parentID = (string) $child->$idParent;
+                    $list->add($id, $name, $parentID);
+                }
+                var_dump($list);
+                break;
             }
 
 
@@ -2159,6 +2177,28 @@ class NOUTClient
         }
 
         return $aModifiedFiles;
+    }
+
+    /**
+     * @param $requestParams
+     * @param $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetFolderList(array $requestHeaders, $requestParams)
+    {
+        //$clParam = new folderList();
+
+        //$this->_initStructParamFromTabParamRequest($clParam, $requestParams);
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        //$clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML = $this->m_clSOAPProxy->getFolderList($aTabHeaderSuppl, $requestParams);
+        return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
+        //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
     // Fin Fichiers
