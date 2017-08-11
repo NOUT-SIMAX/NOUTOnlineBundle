@@ -65,6 +65,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
@@ -2187,16 +2188,27 @@ class NOUTClient
      */
     public function oGetFolderList(array $requestHeaders, $requestParams)
     {
-        //$clParam = new folderList();
-
-        //$this->_initStructParamFromTabParamRequest($clParam, $requestParams);
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
-        //$clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         $clReponseXML = $this->m_clSOAPProxy->getFolderList($aTabHeaderSuppl, $requestParams);
+        return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
+        //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param $requestParams
+     * @param $requestHeaders
+     * @param $folderID
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetFolderContent(array $requestHeaders, $requestParams, $folderID)
+    {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $folderContent = new GetContentFolder();
+        $folderContent->IDFolder = $folderID;
+        $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
         return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
