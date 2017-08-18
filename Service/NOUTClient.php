@@ -70,6 +70,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
@@ -2211,6 +2212,29 @@ class NOUTClient
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
         return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+        $message = new ModifyMessage();
+        $message->IDMessage = $messageID;
+        $clReponseXML = $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl);
+        $ret = new \stdClass();
+        $ret->data = $clReponseXML->getNodeXML()->children();
+        $ret->references = array();
+        foreach($clReponseXML->getNodeXML()->children('simax', true)->Data as $datum) {
+            $messageData = new \stdClass();
+            $messageData->attributes = array();
+            foreach($datum->attributes('simax', true) as $attribute) {
+                $messageData->attributes[$attribute->getName()] = (string)$attribute;
+                $messageData->value = quoted_printable_decode(htmlentities((string)$datum));
+            }
+            array_push($ret->references, $messageData);
+        }
+        return $ret;
     }
 
     // Fin Fichiers
