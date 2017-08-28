@@ -2221,10 +2221,16 @@ class NOUTClient
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
         $message = new ModifyMessage();
         $message->IDMessage = $messageID;
-        $clReponseXML = $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl);
+        return $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
+        /*
         $ret = new \stdClass();
         $ret->data = $clReponseXML->getNodeXML()->children();
         $ret->references = array();
+        foreach($ret->data->children() as $child) {
+            $name = $child->getName();
+            //$ret->data->$name
+            $attributes = array();
+        }
         foreach($clReponseXML->getNodeXML()->children('simax', true)->Data as $datum) {
             $messageData = new \stdClass();
             $messageData->attributes = array();
@@ -2235,6 +2241,7 @@ class NOUTClient
             array_push($ret->references, $messageData);
         }
         return $ret;
+        */
     }
 
     // Fin Fichiers
