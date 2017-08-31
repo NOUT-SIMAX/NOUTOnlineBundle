@@ -79,6 +79,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -2212,6 +2213,17 @@ class NOUTClient
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
         return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oUpdateMessage(array $requestHeaders, $messageID, $xmlData) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+        $message = new UpdateMessage();
+        $message->IDMessage = $messageID;
+        $message->UpdateData = $xmlData;
+        return $this->m_clSOAPProxy->updateMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
     }
 
     public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
