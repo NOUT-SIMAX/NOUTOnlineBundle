@@ -2223,7 +2223,7 @@ class NOUTClient
         $message = new UpdateMessage();
         $message->IDMessage = $messageID;
         $message->UpdateData = $xmlData;
-        return $this->m_clSOAPProxy->updateMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
+        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl)->getNodeXML()->asXML();
     }
 
     public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
