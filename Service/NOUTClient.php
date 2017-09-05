@@ -2215,15 +2215,12 @@ class NOUTClient
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
-    public function oUpdateMessage(array $requestHeaders, $messageID, $xmlData) {
+    public function oUpdateMessage(array $requestHeaders, $xmlData) {
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
-        $message = new UpdateMessage();
-        $message->IDMessage = $messageID;
-        $message->UpdateData = $xmlData;
-        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl)->getNodeXML()->asXML();
+        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
     }
 
     public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
