@@ -14,6 +14,7 @@ use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
 use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\ContextsBundle\Entity\SelectorList;
+use NOUT\Bundle\MessagingBundle\Entity\API\FolderList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
@@ -63,10 +64,12 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
@@ -75,6 +78,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -1217,12 +1221,28 @@ class NOUTClient
 
 
             case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
-            case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
             case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
             case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
             {
                 $this->__stopStopwatch($stopWatchEvent);
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
+            }
+
+            case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
+            {
+                $idColumn = 'id_' . Langage::COL_MESSAGERIE_IDDossier;
+                $idName = 'id_' . Langage::COL_MESSAGERIE_Libelle;
+                $idParent = 'id_' . Langage::COL_MESSAGERIE_IDDossierPere;
+                $list = new FolderList();
+
+                foreach($clReponseXML->getNodeXML()->children() as $type => $child) {
+                    $id = (string) $child->$idColumn;
+                    $name = (string) $child->$idName;
+                    $parentID = (string) $child->$idParent;
+                    $list->add($id, $name, $parentID);
+                }
+                var_dump($list);
+                break;
             }
 
 
@@ -2159,6 +2179,77 @@ class NOUTClient
         }
 
         return $aModifiedFiles;
+    }
+
+    /**
+     * @param $requestParams
+     * @param $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetFolderList(array $requestHeaders, $requestParams)
+    {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $clReponseXML = $this->m_clSOAPProxy->getFolderList($aTabHeaderSuppl, $requestParams);
+        return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
+        //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param $requestParams
+     * @param $requestHeaders
+     * @param $folderID
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetFolderContent(array $requestHeaders, $requestParams, $folderID)
+    {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $folderContent = new GetContentFolder();
+        $folderContent->IDFolder = $folderID;
+        $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
+        return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
+        //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oUpdateMessage(array $requestHeaders, $xmlData) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
+    }
+
+    public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+        $message = new ModifyMessage();
+        $message->IDMessage = $messageID;
+        return $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
+        /*
+        $ret = new \stdClass();
+        $ret->data = $clReponseXML->getNodeXML()->children();
+        $ret->references = array();
+        foreach($ret->data->children() as $child) {
+            $name = $child->getName();
+            //$ret->data->$name
+            $attributes = array();
+        }
+        foreach($clReponseXML->getNodeXML()->children('simax', true)->Data as $datum) {
+            $messageData = new \stdClass();
+            $messageData->attributes = array();
+            foreach($datum->attributes('simax', true) as $attribute) {
+                $messageData->attributes[$attribute->getName()] = (string)$attribute;
+                $messageData->value = quoted_printable_decode(htmlentities((string)$datum));
+            }
+            array_push($ret->references, $messageData);
+        }
+        return $ret;
+        */
     }
 
     // Fin Fichiers
