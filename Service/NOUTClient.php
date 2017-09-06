@@ -1062,6 +1062,31 @@ class NOUTClient
      * @param string $contextID
      * @return ActionResult
      */
+    public function oGetImportsList($tableID, $contextID) {
+        $colList = array(Langage::COL_IMPORT_Libelle);
+        $condition = new Condition(
+            new CondColumn(Langage::COL_IMPORT_Formulaire),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($tableID));
+        $condList = CondListTypeFactory::create($condition);
+
+        $aTabHeaderSuppl = array();
+        if(!empty($contextID))
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
+        $clReponseXML = $this->_oNewRequest(
+            Langage::TABL_Import, $condList,
+            $colList,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string $tableID
+     * @param string $contextID
+     * @return ActionResult
+     */
     public function oGetExportsActions($tableID, $contextID)
     {
         $colList = array(Langage::COL_ACTION_Libelle);
@@ -1100,6 +1125,48 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    /**
+     * @param string $tableID
+     * @param string $contextID
+     * @return ActionResult
+     */
+    public function oGetImportsActions($tableID, $contextID)
+    {
+        $colList = array(Langage::COL_ACTION_Libelle);
+        $table_actions = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDTableau),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($tableID)
+        );
+        $has_rights = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondType(CondType::COND_WITHRIGHT),
+            new CondValue(1)
+        );
+        $imports_type_actions = new Condition(
+            new CondColumn(Langage::COL_ACTION_TypeAction),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue(Langage::eTYPEACTION_Importer)
+        );
+        $operator = new Operator(OperatorType::OP_AND);
+        $operator->addCondition($table_actions)
+            ->addCondition($has_rights)
+            ->addCondition($imports_type_actions);
+
+        $condList = CondListTypeFactory::create($operator);
+
+        $aTabHeaderSuppl = array();
+        if(!empty($contextID))
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
+
+        $clReponseXML = $this->_oNewRequest(
+            Langage::TABL_Action,
+            $condList,
+            $colList,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
 
     /**
      * Affichage d'une liste via l'action recherche
