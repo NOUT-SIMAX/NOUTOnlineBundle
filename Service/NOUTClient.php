@@ -156,7 +156,7 @@ class NOUTClient
         }
 
         $this->m_clOptionDialogue = new OptionDialogue();
-        $this->initOptionDialogue();
+        $this->_initOptionDialogue();
     }
 
     /**
@@ -275,7 +275,7 @@ class NOUTClient
     /**
      * initialise les options de dialogue
      */
-    protected function initOptionDialogue()
+    protected function _initOptionDialogue()
     {
         $this->m_clOptionDialogue->InitDefault();
         $this->m_clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
@@ -286,7 +286,7 @@ class NOUTClient
      * @param $propertyName
      * @param $value
      */
-    function setOptionDialogueProperty($propertyName, $value)
+    public function setOptionDialogueProperty($propertyName, $value)
     {
         if(property_exists($this->m_clOptionDialogue, $propertyName) && (SOAPProxy::s_isValidDialogOption($propertyName)))
         {
