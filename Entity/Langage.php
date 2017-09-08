@@ -1711,6 +1711,7 @@ class Langage
 
 	const PA_Exporter_Repertoire        = 11505;
 	const PA_Exporter_IDExport          = 15010;
+	const PA_Importer_IDImport          = 15009;
 //	const PA_Exporter_FormatExport      = 11501;
 //	const PA_Exporter_IDTableau         = 12343;
 //	const PA_Exporter_Requete           = 11499;
