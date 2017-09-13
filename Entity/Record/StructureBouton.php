@@ -10,6 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserXSDSchema;
 
 class StructureBouton extends StructureColonne
 {
@@ -22,18 +23,37 @@ class StructureBouton extends StructureColonne
 	/** @var  string $m_ButtonID */
 	protected $m_ID;
 
+	/** @var StructureBouton[] $subButtons */
+    protected $subButtons;
 
 	/**
 	 * @param \SimpleXMLElement $clAttribNOUT
 	 * @param \SimpleXMLElement $clAttribXS
+     * @param \SimpleXMLElement $subButtons
 	 */
-	public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
+	public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS, \SimpleXMLElement $subButtons = null)
 	{
 		parent::__construct('', $clAttribNOUT, $clAttribXS);
         $this->m_ID = spl_object_hash($clAttribNOUT);
         $this->m_nIDColonne = (string)$clAttribNOUT['idButton'];
 		$this->m_clInfoBouton = new InfoButton($clAttribNOUT);
+		$this->subButtons = array();
+        if (!is_null($subButtons)) {
+            foreach ($subButtons->children(ParserXSDSchema::NAMESPACE_XSD) as $subButton) {
+                /** @var \SimpleXMLElement $subButton */
+                $clAttribNOUT = $subButton->attributes(ParserXSDSchema::NAMESPACE_NOUT_XSD);
+                $clAttribXS   = $subButton->attributes(ParserXSDSchema::NAMESPACE_XSD);
+                array_push($this->subButtons, new StructureBouton($clAttribNOUT, $clAttribXS));
+            }
+        }
 	}
+
+    /**
+     * @return StructureBouton[]
+     */
+	public function getSubButtons() {
+	    return $this->subButtons;
+    }
 
     /**
      * @return string

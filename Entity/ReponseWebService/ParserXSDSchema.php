@@ -116,6 +116,7 @@ class ParserXSDSchema extends Parser
 
 		foreach ($clSequence->children(self::NAMESPACE_XSD) as $ndNoeud)
 		{
+		    /** @var \SimpleXMLElement $ndNoeud */
 			if ($ndNoeud->getName() != 'element')
 			{
 				//je cherche quel les xs:element
@@ -133,7 +134,18 @@ class ParserXSDSchema extends Parser
 				//c'est un bouton
 				case StructureColonne::TM_Bouton:
 				{
-					$clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS);
+				    $subButtons = null;
+				    try {
+				        $subButtons = $ndNoeud->children(self::NAMESPACE_XSD)->children(self::NAMESPACE_XSD);
+				        if($subButtons->count() == 0){
+                            $subButtons = null;
+                        }
+                    }
+                    catch (\Exception $e) {
+				        $subButtons = null;
+                    }
+
+					$clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS, $subButtons);
                     $bIsCol = $clStructElem->addButton($clStructureBouton);
 
 					if ($bIsCol) //c'est un colonne bouton qui n'est pas un bouton de substitution, on l'ajoute à la section
