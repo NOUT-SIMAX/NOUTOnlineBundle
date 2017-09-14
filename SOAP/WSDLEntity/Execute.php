@@ -24,5 +24,6 @@ class Execute
     public $CallingInfo; 		// CallingInfoType
 	public $DisplayMode; 		// DisplayModeParamEnum
     public $BtnListMode;        // List action
+    public $Final;
 }
 //***
