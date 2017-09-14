@@ -883,9 +883,10 @@ class NOUTClient
      * @param array $tabParamQuery
      * @param array $tabHeaderQuery
      * @param       $sIDAction
+     * @param       $final
      * @return ActionResult
      */
-    public function oExecIDAction(array $tabParamQuery, array $tabHeaderQuery = array(), $sIDAction)
+    public function oExecIDAction(array $tabParamQuery, array $tabHeaderQuery = array(), $sIDAction, $final = 0)
     {
         // Les paramètres du header sont passés par array
 
@@ -895,7 +896,7 @@ class NOUTClient
         $this->_initStructParamFromTabParamRequest($clParamExecute, $tabParamQuery);
 
         $clParamExecute->ID = (string)$sIDAction;             // identifiant de l'action (String)
-
+        $clParamExecute->Final = $final;
         //--------------------------------------------------------------------------------------------
         // Headers
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
