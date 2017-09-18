@@ -559,8 +559,12 @@ class NOUTClient
         {
             foreach ($json as $objet)
             {
-                //TODO: Remove when annuler/refaire is implemented
-                if($objet->idaction != Langage::ACTION_Annulation && $objet->idaction != Langage::ACTION_Refaire) {
+                //TODO: Remove when annuler/refaire/globalsearch is implemented
+                if(
+                    $objet->idaction != Langage::ACTION_Annulation &&
+                    $objet->idaction != Langage::ACTION_Refaire &&
+                    $objet->idaction != Langage::ACTION_RechercheGlobale
+                ) {
                     $itemMenu = $this->__oGetItemMenu($objet);
                     $aInfo[] = $itemMenu;
                 }
@@ -613,7 +617,11 @@ class NOUTClient
             foreach ($objSrc->tab_options as $objChild)
             {
                 //TODO: Remove when annuler/refaire is implemented
-                if($objChild->idaction != Langage::ACTION_Annulation && $objChild->idaction != Langage::ACTION_Refaire) {
+                if(
+                    $objChild->idaction != Langage::ACTION_Annulation &&
+                    $objChild->idaction != Langage::ACTION_Refaire &&
+                    $objChild->idaction != Langage::ACTION_RechercheGlobale
+                ) {
                     $childMenu = $this->__oGetItemMenu($objChild);
                     $itemMenu->AddOptionMenu($childMenu);
                 }
