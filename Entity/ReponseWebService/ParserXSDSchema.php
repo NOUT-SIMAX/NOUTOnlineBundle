@@ -134,18 +134,23 @@ class ParserXSDSchema extends Parser
 				//c'est un bouton
 				case StructureColonne::TM_Bouton:
 				{
-				    $subButtons = null;
-				    try {
-				        $subButtons = $ndNoeud->children(self::NAMESPACE_XSD)->children(self::NAMESPACE_XSD);
-				        if($subButtons->count() == 0){
-                            $subButtons = null;
+                    $ndSeqSousButtons = null;
+                    try
+                    {
+                        if ($ndNoeud->children(self::NAMESPACE_XSD)->count() > 0)
+                        {
+                            $ndSeqSousButtons = $ndNoeud->children(self::NAMESPACE_XSD)->complexType->children(self::NAMESPACE_XSD)->sequence;
+                            if ($ndSeqSousButtons->children(self::NAMESPACE_XSD)->count() == 0)
+                            {
+                                $ndSeqSousButtons = null;
+                            }
                         }
                     }
                     catch (\Exception $e) {
-				        $subButtons = null;
+                        $ndSeqSousButtons = null;
                     }
 
-					$clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS, $subButtons);
+					$clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS, $ndSeqSousButtons);
                     $bIsCol = $clStructElem->addButton($clStructureBouton);
 
 					if ($bIsCol) //c'est un colonne bouton qui n'est pas un bouton de substitution, on l'ajoute à la section
