@@ -52,8 +52,12 @@ class NOUTExceptionFormatter
      */
     public function translate($translator)
     {
-        $this->message = $translator->trans('messages.' . $this->message, array(), 'exceptions');
-        $this->level = $translator->trans('levels.' . $this->level, array(), 'exceptions');
+        if('messages.' . $this->message != $translator->trans('messages.' . $this->message, array(), 'exceptions')) {
+            $this->message = $translator->trans('messages.' . $this->message, array(), 'exceptions');
+        }
+        if('levels.' . $this->level != $translator->trans('levels.' . $this->level, array(), 'exceptions')) {
+            $this->level = $translator->trans('levels.' . $this->level, array(), 'exceptions');
+        }
     }
 
     /**
