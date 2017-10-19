@@ -35,6 +35,10 @@ class ColonneRestriction
         $this->m_TabRestriction[$Type]=$Valeur;
 	}
 
+	public  function getRestrictions() {
+	    return $this->m_TabRestriction;
+    }
+
 	/**
 	 * @param $key
 	 * @param $value
@@ -95,4 +99,13 @@ class ColonneRestriction
 	const R_MAXLENGTH   = 'maxLength';
 	const R_ENUMERATION = 'enumeration';
     const R_LENGTH      = 'length';
+
+    const R_NumericDisplay              = 'numericDisplay';
+    const ROPTION_Shape                 = 'form';
+    const ROPTION_Size                  = 'size';
+    const ROPTION_DisplayValue          = 'displayValue';
+
+    const R_NumericDisplay_Stage        = 'stage';
+    const RSTAGEOPTION_Value            = 'value';
+    const RSTAGEOPTION_Color            = 'color';
 }

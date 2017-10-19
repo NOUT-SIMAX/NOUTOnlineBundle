@@ -362,6 +362,13 @@ abstract class StructureColonne
     }
 
     /**
+     * @return ColonneRestriction|null
+     */
+    public function getRestriction() {
+        return $this->m_clRestriction;
+    }
+
+    /**
      * vrai si le champ est un texte monoligne
      * @return bool
      */
@@ -672,6 +679,7 @@ abstract class StructureColonne
 	const OPTION_Transform_Video			= "video";
 	const OPTION_Transform_Secret			= "secret";
 	const OPTION_Transform_Email			= "email";
+
 
     // Constantes pour les fusions
     const FUSIONTYPE_Aucun          = 0;
