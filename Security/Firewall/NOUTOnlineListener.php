@@ -94,4 +94,29 @@ class NOUTOnlineListener extends UsernamePasswordFormAuthenticationListener
 		return $clAuth;
 	}
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function requiresAuthentication(Request $request)
+    {
+        if(null !== $request->get($this->options['username_parameter'])) {
+            $target_path = strpos($this->options['default_target_path'], '?') !== false ?
+                $this->options['default_target_path'] :
+                $this->options['default_target_path'] . '?';
+            foreach($request->query->all() as $key => $value) {
+                if(!in_array($key, [
+                    $this->options['username_parameter'],
+                    $this->options['password_parameter'],
+                    $this->options['target_path_parameter']])
+                ) {
+                    $target_path .= "$key=$value&";
+                }
+            }
+            $request->attributes->set($this->options['target_path_parameter'], $target_path);
+            return true;
+        }
+
+        return parent::requiresAuthentication($request);
+    }
+
 } 
