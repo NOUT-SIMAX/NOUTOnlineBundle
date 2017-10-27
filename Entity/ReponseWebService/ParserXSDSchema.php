@@ -180,10 +180,13 @@ class ParserXSDSchema extends Parser
 
 
 					$aType2Methode = array(
-						StructureColonne::TM_Combo     => '_ParseXSDCombo',
-						StructureColonne::TM_ListeElem => '_ParseXSDListeElem',
-						//StructureColonne::TM_Tableau   => '_ParseXSDTableau',
-						''                             => '_ParseXSDColonne',
+						StructureColonne::TM_Combo      => '_ParseXSDCombo',
+						StructureColonne::TM_ListeElem  => '_ParseXSDListeElem',
+						//StructureColonne::TM_Tableau  => '_ParseXSDTableau',
+						''                              => '_ParseXSDColonne',
+                        StructureColonne::TM_Entier     => '_ParseXSDNumeric',
+                        StructureColonne::TM_Reel       => '_ParseXSDNumeric',
+                        StructureColonne::TM_Monetaire  => '_ParseXSDNumeric',
 					);
 
 					//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
@@ -322,4 +325,37 @@ class ParserXSDSchema extends Parser
 			$clStructColonne->setRestriction($clRestriction);
 		}
 	}
+
+	/**
+     * @param $nNiv
+     * @param StructureColonne $clStructColonne
+     * @param \SimpleXMLElement $ndNoeud
+     */
+	protected function _ParseXSDNumeric($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud) {
+        //TODO: Try generic code that handles any xml tree
+	    $ndSimpleType = $ndNoeud->children(self::NAMESPACE_XSD)->simpleType
+            ->children(self::NAMESPACE_XSD)->restriction;
+        $children = $ndSimpleType->children(self::NAMESPACE_NOUT_XSD);
+        $r_numericDisplay = ColonneRestriction::R_NumericDisplay;
+        if(!empty($ndSimpleType->$r_numericDisplay)) {
+            $ndNumericDisplay = $children->$r_numericDisplay;
+            $clRestriction = new ColonneRestriction();
+            foreach($ndNumericDisplay->attributes(self::NAMESPACE_NOUT_XSD) as $key => $value) {
+                $clRestriction->addRestrictionSimple($key,(string) $value);
+            }
+            $r_numericDisplay_stage = ColonneRestriction::R_NumericDisplay_Stage;
+            if(count($xsdStages = $ndNumericDisplay->children(self::NAMESPACE_NOUT_XSD)->$r_numericDisplay_stage) > 0) {
+                $aStages = array();
+                foreach($xsdStages as $stage) {
+                    $stageOption = new \stdClass();
+                    foreach ($stage->attributes(self::NAMESPACE_NOUT_XSD) as $key => $value) {
+                        $stageOption->$key = (string) $value;
+                    }
+                    array_push($aStages, $stageOption);
+                }
+            }
+            $clRestriction->addRestrictionSimple(ColonneRestriction::R_NumericDisplay_Stage, $aStages);
+            $clStructColonne->setRestriction($clRestriction);
+        }
+    }
 }
