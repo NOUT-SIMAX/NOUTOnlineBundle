@@ -19,5 +19,6 @@ class CreateFrom
 	public $Table; // string
 	public $TableSrc; // string
 	public $ElemSrc; // string
+    public $Final;
 }
 //***
