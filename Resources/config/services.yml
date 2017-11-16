@@ -37,6 +37,7 @@ services:
             - '%version_site%'
             - '%nout.client%'
             - '%nout_online.auth%'
+            - '%nout_online.version_dialogue_pref%'
 
     #factory pour les proxy
     nout_online.service_factory:
