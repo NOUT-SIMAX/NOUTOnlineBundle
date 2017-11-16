@@ -1632,13 +1632,14 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oCreateFrom($sIDContexte, $form, $record)
+    public function oCreateFrom($sIDContexte, $form, $record, $final)
     {
         //paramètre de l'action liste
         $clCreateFrom = new CreateFrom();
         $clCreateFrom->ElemSrc = $record;
         $clCreateFrom->Table = $form;
         $clCreateFrom->TableSrc = $form;
+        $clCreateFrom->Final = $final;
 
         //header
         $aTabHeaderSuppl = array();
