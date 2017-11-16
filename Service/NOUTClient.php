@@ -60,6 +60,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
@@ -1624,6 +1625,33 @@ class NOUTClient
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
+
+    /**
+     * Valide l'action courante du contexte
+     * @param $sIDContexte
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oCreateFrom($sIDContexte, $form, $record, $final)
+    {
+        //paramètre de l'action liste
+        $clCreateFrom = new CreateFrom();
+        $clCreateFrom->ElemSrc = $record;
+        $clCreateFrom->Table = $form;
+        $clCreateFrom->TableSrc = $form;
+        $clCreateFrom->Final = $final;
+
+        //header
+        $aTabHeaderSuppl = array();
+        if (!empty($sIDContexte))
+        {
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->createFrom($clCreateFrom, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
 
     /**
      * annulation
