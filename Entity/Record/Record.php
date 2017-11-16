@@ -80,6 +80,25 @@ class Record
 
     protected $sFilesXML;
 
+    /** @var  string */
+    protected $linkedTableID;
+
+    /**
+     * @return string
+     */
+    public function getLinkedTableID()
+    {
+        return $this->linkedTableID;
+    }
+
+    /**
+     * @param string $linkedTableID
+     */
+    public function setLinkedTableID($linkedTableID)
+    {
+        $this->linkedTableID = $linkedTableID;
+    }
+
 	/**
 	 * @param Form $clForm : information sur le formulaire
 	 */

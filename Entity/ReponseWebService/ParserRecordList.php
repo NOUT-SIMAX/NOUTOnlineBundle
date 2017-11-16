@@ -227,14 +227,17 @@ class ParserRecordList extends Parser
 		$TabAttrib          = $clXML->attributes(self::NAMESPACE_NOUT_XML);
 		$TabAttribLayout    = $clXML->attributes(self::NAMESPACE_NOUT_LAYOUT);
 
-		$sIDTableau = str_replace('id_', '', $clXML->getName());
-		$sIDEnreg   = (string) $TabAttrib['id'];
+		$sIDTableau     = str_replace('id_', '', $clXML->getName());
+		$sIDEnreg       = (string) $TabAttrib['id'];
+		$linkedTableID  = (string) $TabAttrib['linkedTableID'];
 
 		$clStructureElement = $this->m_clParserXSD->clGetStructureElement($sIDTableau);
 
         $clRecord = new Record($sIDTableau, $sIDEnreg, (string) $TabAttrib['title'], $nNiv, $clStructureElement);
         $clRecord->addOptions($TabAttrib);
         $clRecord->addOptionsLayout($TabAttribLayout); // Les attributs HTML sont ajoutés dans le record
+
+        $clRecord->setLinkedTableID($linkedTableID);
 
         $subtitle = $TabAttrib['subtitle'];
 
