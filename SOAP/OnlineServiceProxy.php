@@ -863,6 +863,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
      * @return XMLResponseWS
      * @access public
      */
+
     public function getCalculation(GetCalculation $clWsdlType_GetCalculation, $aHeaders = array())
     {
 	    return $this->call('GetCalculation', array((array)$clWsdlType_GetCalculation) ,  null, null , $aHeaders);
