@@ -46,6 +46,11 @@ class ConfigurationDialogue
 	 * @var int
 	 */
 	protected $m_nDureeSession;
+
+    /**
+     * @var int
+     */
+    protected $m_nVersionDialoguePref;
 	/**
 	 * @var string
 	 */
@@ -78,9 +83,11 @@ class ConfigurationDialogue
         $sAPIUUID = '',
         $sVersion='',
         $sSociete='',
-        array $aAuth=array()
+        array $aAuth=array(),
+        $nVersionDialPref=1
     )
 	{
+        $this->m_nVersionDialoguePref=$nVersionDialPref;
         $this->m_sAPIUUID     = trim($sAPIUUID);
 		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
@@ -252,6 +259,14 @@ class ConfigurationDialogue
 	{
 		return $this->m_sSociete;
 	}
+
+    /**
+     * @return int
+     */
+	public function getVersionDialoguePref()
+    {
+        return $this->m_nVersionDialoguePref;
+    }
 
 	const HTTP_SIMAX_CLIENT           = 'x-SIMAXService-Client';
 	const HTTP_SIMAX_CLIENT_IP        = 'x-SIMAXService-Client-IP';

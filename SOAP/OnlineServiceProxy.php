@@ -451,7 +451,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    if (!isset($this->__aListHeaders[self::HEADER_OptionDialogue]) || is_object($this->__aListHeaders[self::HEADER_OptionDialogue]))
 	    {
 		    if (!isset($this->__aListHeaders[self::HEADER_OptionDialogue]))//si le la partie optiondialogue du header n'est pas passer en param on la crée
-			    $this->__aListHeaders[self::HEADER_OptionDialogue] = new OptionDialogue();
+            {
+                $this->__aListHeaders[self::HEADER_OptionDialogue] = new OptionDialogue();
+                $this->__aListHeaders[self::HEADER_OptionDialogue]->InitDefault($this->__ConfigurationDialogue->getVersionDialoguePref());
+            }
 
 		    //on transforme l'objet en tableau associatif
 		  	$this->__aListHeaders[self::HEADER_OptionDialogue] = (array)$this->__aListHeaders[self::HEADER_OptionDialogue];

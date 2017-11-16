@@ -94,7 +94,7 @@ class SOAPController extends ProxyController
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
-		$clOptionDialogue->InitDefault();
+		$clOptionDialogue->InitDefault($this->getParameter('nout_online.version_dialogue_pref'));
 		$clOptionDialogue->DisplayValue          = OptionDialogue::DISPLAY_No_ID;
 		$clOptionDialogue->EncodingOutput        = 0;
 		$clOptionDialogue->LanguageCode          = 12;
