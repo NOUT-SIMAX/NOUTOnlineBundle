@@ -137,7 +137,7 @@ class NOUTClient
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin, Stopwatch $stopwatch=null)
+    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin, $nVersionDialPref, Stopwatch $stopwatch=null)
     {
         $this->__tokenStorage = $tokenStorage;
         $this->__stopwatch = $stopwatch;
@@ -157,7 +157,7 @@ class NOUTClient
         }
 
         $this->m_clOptionDialogue = new OptionDialogue();
-        $this->_initOptionDialogue();
+        $this->_initOptionDialogue($nVersionDialPref);
     }
 
     /**
@@ -276,9 +276,9 @@ class NOUTClient
     /**
      * initialise les options de dialogue
      */
-    protected function _initOptionDialogue()
+    protected function _initOptionDialogue($nVersionPref)
     {
-        $this->m_clOptionDialogue->InitDefault();
+        $this->m_clOptionDialogue->InitDefault($nVersionPref);
         $this->m_clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
         $this->m_clOptionDialogue->LanguageCode = $this->m_clConfigurationDialogue->getLangCode();
     }
