@@ -126,7 +126,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected function _clGetOptionDialogue()
 	{
 		$clOptionDialogue = new OptionDialogue();
-		$clOptionDialogue->InitDefault();
+		$clOptionDialogue->InitDefault(2);
 		$clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_No_ID;
 		$clOptionDialogue->LanguageCode = 12;
 		$clOptionDialogue->WithFieldStateControl = 1;
@@ -277,7 +277,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	protected function _ConfirmResponse($sTokenSession, $sActionContexte, MessageBox $clMessageBox)
 	{
 		$clConfirm = new ConfirmResponse();
-		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->m_TabButton) ? MessageBox::IDYES : MessageBox::IDOK;
+		$clConfirm->TypeConfirmation = array_key_exists(MessageBox::IDYES, $clMessageBox->getTabButton()) ? MessageBox::IDYES : MessageBox::IDOK;
 
 		return $this->__CallProxyFunction('ConfirmResponse', $clConfirm, $sTokenSession, $sActionContexte, false, null);
 	}

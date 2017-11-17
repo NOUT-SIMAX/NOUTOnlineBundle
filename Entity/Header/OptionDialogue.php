@@ -65,10 +65,11 @@ class OptionDialogue extends WSDLOptionDialogue
 		$this->ListContentAsync      = null; // integer
 	}
 
-	/**
-	 * @return $this
-	 */
-	public function InitDefault()
+    /**
+     * @param int $nVersionPref
+     * @return $this
+     */
+	public function InitDefault($nVersionPref=1)
 	{
 		$this->ReturnValue           = 1; 	// integer
 		$this->ReturnXSD             = 1; 	// integer
@@ -79,6 +80,7 @@ class OptionDialogue extends WSDLOptionDialogue
 		$this->WithFieldStateControl = 1; 	// integer
 		$this->ListContentAsync      = null; 	// integer
         $this->VersionMin            = 1; // integer
+        $this->VersionPref           = $nVersionPref; // integer
 
 		return $this;
 	}

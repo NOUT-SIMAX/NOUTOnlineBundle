@@ -17,5 +17,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 class SelectItems
 {
 	public $items; // string
+    public $CallingColumn;
 }
 //***
