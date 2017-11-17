@@ -75,6 +75,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
@@ -137,7 +138,7 @@ class NOUTClient
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin, Stopwatch $stopwatch=null)
+    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin, $nVersionDialPref, Stopwatch $stopwatch=null)
     {
         $this->__tokenStorage = $tokenStorage;
         $this->__stopwatch = $stopwatch;
@@ -157,7 +158,7 @@ class NOUTClient
         }
 
         $this->m_clOptionDialogue = new OptionDialogue();
-        $this->_initOptionDialogue();
+        $this->_initOptionDialogue($nVersionDialPref);
     }
 
     /**
@@ -276,9 +277,9 @@ class NOUTClient
     /**
      * initialise les options de dialogue
      */
-    protected function _initOptionDialogue()
+    protected function _initOptionDialogue($nVersionPref)
     {
-        $this->m_clOptionDialogue->InitDefault();
+        $this->m_clOptionDialogue->InitDefault($nVersionPref);
         $this->m_clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
         $this->m_clOptionDialogue->LanguageCode = $this->m_clConfigurationDialogue->getLangCode();
     }
@@ -1544,6 +1545,40 @@ class NOUTClient
             $clRecord->updateFromRecord($clRecortRes);
             $oRet->setData($clRecord);
         }
+
+        return $oRet;
+    }
+
+    /**
+     * @param $idContext
+     * @param $items
+     * @param $CallingColumn
+     * @param Record $clRecord
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oSelectItems($idContext, $items, $CallingColumn, $clRecord)
+    {
+        $clParamSelectItems                 = new SelectItems();
+        $clParamSelectItems->items          = $items;
+        $clParamSelectItems->CallingColumn  = $CallingColumn;
+
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext => $idContext);
+
+        $clReponseXML = $this->m_clSOAPProxy->selectItems($clParamSelectItems, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+
+        //c'est un update tout bête sans validation normalement on à le même enregistrement en entrée et en sortie
+        $clRecortRes = $oRet->getData();
+        if ($clRecord->getIDEnreg() != $clRecortRes->getIDEnreg())
+        {
+            throw new \Exception("l'update n'a pas retourné le bon enregistrement");
+        }
+
+        //on met à jour l'enregistrement d'origine à partir de celui renvoyé par NOUTOnline
+        $clRecord->updateFromRecord($clRecortRes);
+        $oRet->setData($clRecord);
 
         return $oRet;
     }

@@ -13,6 +13,7 @@ services:
             - @nout_online.configuration_dialogue
             - @nout_online.cache_factory
             - %nout_online.version_min%
+            - %nout_online.version_dialogue_pref%
             - @?debug.stopwatch
 
     nout_contexts.session_disconnect_listener:
