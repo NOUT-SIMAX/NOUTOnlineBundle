@@ -2347,6 +2347,7 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $folderContent = new GetContentFolder();
+        $folderContent->SpecialParamList = $requestParams;
         $folderContent->IDFolder = $folderID;
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
         return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
