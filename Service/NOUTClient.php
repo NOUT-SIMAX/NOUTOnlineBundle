@@ -2350,7 +2350,10 @@ class NOUTClient
         $folderContent->SpecialParamList = $requestParams;
         $folderContent->IDFolder = $folderID;
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
-        return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
+        $res = new \stdClass();
+        $res->data = $clReponseXML->getNodeXML()->children();
+        $res->totalCount = $clReponseXML->clGetCount()->m_nNbTotal;
+        return json_encode($res);
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
