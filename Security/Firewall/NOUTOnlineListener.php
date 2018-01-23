@@ -66,12 +66,14 @@ class NOUTOnlineListener extends UsernamePasswordFormAuthenticationListener
 			$username = trim($request->request->get($this->options['username_parameter'], null, true));
 			$password = $request->request->get($this->options['password_parameter'], null, true);
 			$timezone = $request->request->get('m_sTimeZone', null, true);
+			$locale = $request->request->get('m_sLocale', null, true);
 		}
 		else
 		{
 			$username = trim($request->get($this->options['username_parameter'], null, true));
 			$password = $request->get($this->options['password_parameter'], null, true);
 			$timezone = $request->get('m_sTimeZone', null, true);
+			$locale = $request->get('m_sLocale', null, true);
 		}
 
 		$request->getSession()->set(Security::LAST_USERNAME, $username);
@@ -79,6 +81,7 @@ class NOUTOnlineListener extends UsernamePasswordFormAuthenticationListener
 
 		$clToken = new NOUTToken($username, $password, $this->providerKey);
 		$clToken->setTimeZone($timezone);
+		$clToken->setLocale($locale);
         $clToken->setPasswordSIMAX($password);
 
 		try

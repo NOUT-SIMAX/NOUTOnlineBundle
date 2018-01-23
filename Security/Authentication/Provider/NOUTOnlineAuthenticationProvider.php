@@ -313,6 +313,7 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 			}
 
             $oGetTokenSessionParam->UsernameToken = $this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken);
+            $oGetTokenSessionParam->DefaultClientLanguageCode = $user->getLocale();
 
             if($this->m_clConfigExtranet->isExtranet())
             {
@@ -369,7 +370,7 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		try
 		{
 			$user = $this->userProvider->loadUserByUsername($username);
-
+            $user->setLocale($token->getLocale());
 			if (!$user instanceof UserInterface)
 			{
 				throw new AuthenticationServiceException('The user provider must return a UserInterface object.');

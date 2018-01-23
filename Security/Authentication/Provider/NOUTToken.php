@@ -24,6 +24,11 @@ class NOUTToken extends UsernamePasswordToken
 	/**
 	 * @var string
 	 */
+	protected $m_sLocale;
+
+	/**
+	 * @var string
+	 */
 	protected $m_sSessionToken;
 
 	/**
@@ -175,12 +180,28 @@ class NOUTToken extends UsernamePasswordToken
 		return $this;
 	}
 
+    /**
+     * @param string $sLocale
+     * @return $this$locale
+     */
+    public function setLocale($sLocale) {
+        $this->m_sLocale = $sLocale;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimeZone() {
+        return $this->m_sTimeZone;
+    }
+
 	/**
 	 * @return string
 	 */
-	public function getTimeZone()
+	public function getLocale()
 	{
-		return $this->m_sTimeZone;
+		return $this->m_sLocale;
 	}
 
 	/**
@@ -269,6 +290,7 @@ class NOUTToken extends UsernamePasswordToken
                 $this->m_sIP,
                 $this->m_sSessionToken,
                 $this->m_sTimeZone,
+                $this->m_sLocale,
                 $this->m_sPasswordSIMAX,
                 $this->m_bExtranet,
                 $this->m_sLoginExtranet,
@@ -288,19 +310,20 @@ class NOUTToken extends UsernamePasswordToken
         $nbElem = count($aUnserialised);
         if ($nbElem>=9)
         {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $versionNO, $sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $versionNO, $sLangage, $parentStr) = $aUnserialised;
         }
         elseif ($nbElem>=8)
         {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $sLangage, $parentStr) = $aUnserialised;
         }
         elseif ($nbElem>=6)
         {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sPasswordSIMAX, $sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $this->m_sPasswordSIMAX, $sLangage, $parentStr) = $aUnserialised;
         }
         else
         {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $sLangage, $parentStr) = $aUnserialised;
+            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $sLangage, $parentStr) = $aUnserialised;
         }
 
         $this->m_clVersionNO = new NOUTOnlineVersion($versionNO);

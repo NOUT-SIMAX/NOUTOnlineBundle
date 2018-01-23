@@ -4,7 +4,8 @@ namespace NOUT\Bundle\SessionManagerBundle\Controller;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
-use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\SessionManagerBundle\Entity\TimeZone;
 use NOUT\Bundle\SessionManagerBundle\Entity\User;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
@@ -23,7 +24,7 @@ class DefaultController extends Controller
 {
 
 	/**
-	 * @return OnlineServiceProxy;
+	 * @return RESTProxy;
 	 */
 	protected function _clGetRESTProxy()
 	{
@@ -32,6 +33,17 @@ class DefaultController extends Controller
 
 		return $clServiceFactory->clGetRESTProxy($clConfiguration);
 	}
+
+    /**
+     * @return SOAPProxy;
+     */
+    protected function _clGetSOAPProxy()
+    {
+        $clServiceFactory = $this->get('nout_online.service_factory');
+        $clConfiguration = $this->get('nout_online.configuration_dialogue');
+
+        return $clServiceFactory->clGetSoapProxy($clConfiguration);
+    }
 
 
 	protected function _aGetTabTimezone()
@@ -91,6 +103,16 @@ class DefaultController extends Controller
      */
     public function loginAction(Request $request)
     {
+        $map = array(
+            '12'    => array('code' => 12,  'lang' => 'Français',  'short' => 'fr'),
+            '10'    => array('code' => 10,  'lang' => 'Español',   'short' => 'es'),
+            '9'     => array('code' => 9,   'lang' => 'English',   'short' => 'en'),
+            '7'     => array('code' => 7,   'lang' => 'Deutsh',    'short' => 'de'),
+        );
+        /** @var array $languages */
+        $languages = (array) $this->_clGetSOAPProxy()->getLanguages(array())->getNodeXML()->LanguageCode;
+        $languages = array_map(function($language) use($map) {return $map[$language];}, $languages);
+
 	    $session = $request->getSession();
 
 	    // get the login error if there is one
@@ -113,6 +135,7 @@ class DefaultController extends Controller
             'customization'             => $this->getParameter('nout_session_manager.customization'),
             'extranet'                  => $this->getParameter('nout_online.extranet')['actif'],
             'version_min'               => $this->getParameter('nout_online.version_min'),
+            'available_languages'       => $languages,
 	    ));
 
     }
