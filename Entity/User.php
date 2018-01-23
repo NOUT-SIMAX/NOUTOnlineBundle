@@ -29,6 +29,11 @@ class User implements UserInterface
 	protected $m_TabRoles;
 
 	/**
+	 * @var array
+	 */
+	protected $m_Locale;
+
+	/**
 	 * @inheritdoc
 	 */
 
@@ -36,6 +41,15 @@ class User implements UserInterface
 	{
 		return $this->m_TabRoles;
 	}
+
+    public function getLocale() {
+	    return $this->m_Locale;
+    }
+
+    public function setLocale($locale) {
+	    $this->m_Locale = $locale;
+	    return $this;
+    }
 
 	/**
 	 * @param $sRole

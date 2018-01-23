@@ -18,6 +18,42 @@ body {
   position: fixed;
   top: 50%;
 }
+#loginbox .languages {
+  float: right;
+  position: relative;
+}
+#loginbox .languages .selected_language {
+  cursor: pointer;
+}
+#loginbox .languages .selected_language:after {
+  content: "\23F7";
+}
+#loginbox .languages .available_languages {
+  position: absolute;
+  top: calc(100% + 2px);
+  border-radius: 5px;
+  background: white;
+  color: black;
+  z-index: 3;
+  display: none;
+}
+#loginbox .languages .available_languages ul {
+  padding: 5px;
+  list-style: none;
+}
+#loginbox .languages .available_languages ul li {
+  cursor: pointer;
+  width: 150px;
+  margin-bottom: 3px;
+  border-radius: 5px;
+  padding: 3px;
+}
+#loginbox .languages .available_languages ul li:hover {
+  background: #ddd;
+}
+#loginbox .languages .available_languages ul li img {
+  margin-right: 20px;
+}
 
 .panel-heading, .btn-login {
   font-family: 'DolceVita', "Helvetica Neue",Helvetica,Arial,sans-serif;
