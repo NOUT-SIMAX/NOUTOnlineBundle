@@ -57,7 +57,22 @@
 		<div class="panel" >
             {% set isMin = true %}
 			<div class="panel-heading">
-				<div class="panel-title">{% if extranet %}<span class="glyphicon glyphicon-globe"></span> {% endif %}{{ 'login.sign_in' | trans }}</div>
+				<div class="panel-title">
+                    {% if extranet %}<span class="glyphicon glyphicon-globe"></span> {% endif %}
+                    {{ 'login.sign_in' | trans }}
+                    <div class="languages">
+                        <span class="selected_language"></span>
+                        <div class="available_languages">
+                           <ul class="available_languages">
+                                {% for language in available_languages %}
+                                    <li class="language" onclick="loadLanguage(code={{ language.code }})">
+                                        <img src="{{ asset("img/ihm/Flags/#{language.short}.png") }}" title="{{ language.lang }}"/>{{ language.lang }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 			</div>
 			<div style="padding-top:30px" class="panel-body" >
 				<form id="loginform" class="form-horizontal" role="form" action="{{ path('login_check') }}" method="post">
@@ -96,6 +111,7 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        <input id="m_sLocale" type="hidden" name="m_sLocale"/>
                         <div style="margin-top:10px" class="form-group">
                             <!-- Button -->
                             <div class="col-sm-12 controls">
@@ -121,6 +137,9 @@
 	<script type="text/javascript" src="{{ asset('vendors/jstz/jstz.min.js') }}"></script>
 
 	<script type="text/javascript">
+        var languages = {{ available_languages|json_encode|raw }};
+        var baseImgUrl = '{{ asset("img/ihm/Flags/") }}';
+        var $availableLanguages = $(".available_languages");
 		$( document ).ready(function() {
 			var hasSelected = $('#login-timezone').has('[selected]').length > 0;
 			if (!hasSelected)
@@ -128,7 +147,84 @@
 				var timezone = jstz.determine();
 				$("#login-timezone").val(timezone.name());
 			}
+
+			$(document).click(function(e) {
+			    if(
+			        e.target == $('.selected_language')[0] ||
+                    $(e.target).parents().toArray().find(function(el) {return el == $('.selected_language')[0]})
+                )
+			        return;
+                $availableLanguages.hide();
+            });
+
+			$(".selected_language").click(function() {
+                $availableLanguages.toggle();
+            });
+
+			$(".languages").on('dblclick', '.selected_language', function(e) { e.preventDefault() });
+
+            $availableLanguages.hide();
+			loadLanguage();
 		});
+
+		function loadLanguage(code = 12) {
+		    if(!languages.length || languages.length == 1) {
+		        $(".languages").remove();
+		        return;
+            }
+            var language = languages.find(function(language){ return language.code == code });
+            if(!language)
+                language = languages[0];
+            var $selectedLanguage = $('span.selected_language');
+            $selectedLanguage.html('<img src="' + baseImgUrl + language.short + '.png"/>');
+            $("#m_sLocale").val(language.code);
+            return languages[code];
+        };
+
+        // https://tc39.github.io/ecma262/#sec-array.prototype.find
+        if (!Array.prototype.find) {
+            Object.defineProperty(Array.prototype, 'find', {
+                value: function(predicate) {
+                    // 1. Let O be ? ToObject(this value).
+                    if (this == null) {
+                        throw new TypeError('"this" is null or not defined');
+                    }
+
+                    var o = Object(this);
+
+                    // 2. Let len be ? ToLength(? Get(O, "length")).
+                    var len = o.length >>> 0;
+
+                    // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                    if (typeof predicate !== 'function') {
+                        throw new TypeError('predicate must be a function');
+                    }
+
+                    // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                    var thisArg = arguments[1];
+
+                    // 5. Let k be 0.
+                    var k = 0;
+
+                    // 6. Repeat, while k < len
+                    while (k < len) {
+                        // a. Let Pk be ! ToString(k).
+                        // b. Let kValue be ? Get(O, Pk).
+                        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                        // d. If testResult is true, return kValue.
+                        var kValue = o[k];
+                        if (predicate.call(thisArg, kValue, k, o)) {
+                            return kValue;
+                        }
+                        // e. Increase k by 1.
+                        k++;
+                    }
+
+                    // 7. Return undefined.
+                    return undefined;
+                }
+            });
+        }
 	</script>
 {% endblock %}
 </body>
