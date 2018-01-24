@@ -168,6 +168,10 @@
 		});
 
 		function loadLanguage(code = 12) {
+		    if(!languages.length || languages.length == 1) {
+		        $(".languages").remove();
+		        return;
+            }
             var language = languages.find(function(language){ return language.code == code });
             if(!language)
                 language = languages[0];
