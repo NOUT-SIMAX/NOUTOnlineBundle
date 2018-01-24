@@ -97,7 +97,7 @@ class SOAPController extends ProxyController
 		$clOptionDialogue->InitDefault($this->getParameter('nout_online.version_dialogue_pref'));
 		$clOptionDialogue->DisplayValue          = OptionDialogue::DISPLAY_No_ID;
 		$clOptionDialogue->EncodingOutput        = 0;
-		$clOptionDialogue->LanguageCode          = 12;
+		$clOptionDialogue->LanguageCode          = 0;
 		$clOptionDialogue->WithFieldStateControl = 1;
 		$clOptionDialogue->ReturnXSD             = 1;
 

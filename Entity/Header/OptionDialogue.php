@@ -76,7 +76,7 @@ class OptionDialogue extends WSDLOptionDialogue
 		$this->Ghost                 = OptionDialogue::GHOST_VALID;
 		$this->DefaultPagination     = 20; 	// integer
 		$this->DisplayValue          = 0; 	// integer
-		$this->LanguageCode          = 12; 	// integer
+		$this->LanguageCode          = 0; 	// integer
 		$this->WithFieldStateControl = 1; 	// integer
 		$this->ListContentAsync      = null; 	// integer
         $this->VersionMin            = 1; // integer

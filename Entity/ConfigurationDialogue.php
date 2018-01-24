@@ -99,7 +99,7 @@ class ConfigurationDialogue
 		$this->m_nPort          = $sPort;
 		$this->m_sProtocolPrefix = $sProtocolPrefix;
 
-		$this->m_nLangCode    = 12;
+		$this->m_nLangCode    = 0;
 		$this->m_nDureeSession = 3600;
 
 		$this->m_sVersion=$sVersion;
