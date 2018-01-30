@@ -9,6 +9,11 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
+    nout_session.ajax_listener:
+        class: NOUT\Bundle\SessionManagerBundle\Listener\AjaxAuthenticationListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onCoreException, priority: 1000 }
+
     #http://blog.vandenbrand.org/2012/06/19/symfony2-authentication-provider-authenticate-against-webservice/
     nout_session.user_provider:
         class:      NOUT\Bundle\SessionManagerBundle\Security\Core\User\NOUTOnlineUserProvider
