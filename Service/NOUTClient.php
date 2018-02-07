@@ -67,6 +67,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
@@ -2405,6 +2406,18 @@ class NOUTClient
         return $ret;
         */
     }
+
+    public function oGetAttachment(array $requestHeaders, $messageId, $attachmentId) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+
+        $getPJ = new GetPJ();
+        $getPJ->IDMessage = $messageId;
+        $getPJ->IDPJ = $attachmentId;
+
+        return $this->m_clSOAPProxy->getPJ($getPJ, $aTabHeaderSuppl);
+    }
+
 
     // Fin Fichiers
     // ------------------------------------------------------------------------------------
