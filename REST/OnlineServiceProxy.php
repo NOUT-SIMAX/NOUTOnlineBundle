@@ -228,26 +228,21 @@ class OnlineServiceProxy
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , (floatval($timeout)<1) ? 1 : intval($timeout));
         }
 
-        // ------------------------------------------------
-        // Contenu du fichier
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        //autres options
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); //Demande du contenu du fichier
+        curl_setopt($curl, CURLOPT_HEADER, 1); // Demande des headers
+
+        //---------------------------
+        //execution
         $output = curl_exec($curl);
 
         // Vérifie si une erreur survient
         $this->_sExecute_cURL_TestError($curl);
 
-
-        // ------------------------------------------------
-        // Entêtes
-        curl_setopt($curl, CURLOPT_HEADER, 1); // Demande des headers
-
-        $headers_output = curl_exec($curl);
-
-        // Vérifie si une erreur survient
-        $this->_sExecute_cURL_TestError($curl);
-
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $headers = substr($headers_output, 0, $header_size);
+        $headers = substr($output, 0, $header_size);
+        $output = substr($output, $header_size);
+
         $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
         // ------------------------------------------------
 
