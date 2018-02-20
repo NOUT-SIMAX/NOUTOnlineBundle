@@ -9,7 +9,9 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 
-class InfoButton 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+
+class InfoButton
 {
     /**
      * @var array
@@ -57,12 +59,12 @@ class InfoButton
     }
 
 
-    const TYPE_Imprimer = 'Imprimer';
-    const TYPE_Imprimer_liste = 'ImprimerListe';
-    const TYPE_Supprimer = 'Supprimer';
-    const TYPE_Ajouter = 'Ajouter';
-    const TYPE_Modifier = 'Modifier';
-    const TYPE_Enlever = 'Enlever';
-    const TYPE_Creer = 'Créer';
-    const TYPE_Detail = 'Détail';
+    const TYPE_Imprimer = Langage::eTYPEACTION_Impression;
+    const TYPE_Imprimer_liste = Langage::eTYPEACTION_Impression;
+    const TYPE_Supprimer = Langage::eTYPEACTION_Suppression;
+    const TYPE_Ajouter = Langage::eTYPEACTION_AjouterA;
+    const TYPE_Modifier = Langage::eTYPEACTION_Modification;
+    const TYPE_Enlever = Langage::eTYPEACTION_EnleverDe;
+    const TYPE_Creer = Langage::eTYPEACTION_Creation;
+    const TYPE_Detail = Langage::eTYPEACTION_Consultation;
 }
