@@ -1,0 +1,11 @@
+login:
+    login: Login
+    password: Password
+    connection: Login
+    sign_in: Sign In
+    noutonline_no_answer: "NOUTOnline appears to be offline. Please check the following:\n- The service is running\n- You own a valid licence\n- The webservice has been turned on"
+    noutonline_no_versionmin: "The minimal version of NOUTOnline is %version%.\nPlease update your NOUTOnline installation"
+error:
+    page_shouldnt_show: This page shouldn't show
+    configure_firewall: Please configure the symfony firewall
+    contact_presta: Or contact your administrator
