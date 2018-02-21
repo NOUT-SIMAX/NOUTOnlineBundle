@@ -79,6 +79,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SendMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
@@ -2385,26 +2386,19 @@ class NOUTClient
         $message = new ModifyMessage();
         $message->IDMessage = $messageID;
         return $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
-        /*
-        $ret = new \stdClass();
-        $ret->data = $clReponseXML->getNodeXML()->children();
-        $ret->references = array();
-        foreach($ret->data->children() as $child) {
-            $name = $child->getName();
-            //$ret->data->$name
-            $attributes = array();
-        }
-        foreach($clReponseXML->getNodeXML()->children('simax', true)->Data as $datum) {
-            $messageData = new \stdClass();
-            $messageData->attributes = array();
-            foreach($datum->attributes('simax', true) as $attribute) {
-                $messageData->attributes[$attribute->getName()] = (string)$attribute;
-                $messageData->value = quoted_printable_decode(htmlentities((string)$datum));
-            }
-            array_push($ret->references, $messageData);
-        }
-        return $ret;
-        */
+    }
+
+    public function oSendMessage(array $requestHeaders, $requestParams, $messageID) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+        $message = new SendMessage();
+        $message->IDMessage = $messageID;
+        $result = $this->m_clSOAPProxy->sendMessage($message, $aTabHeaderSuppl);
+        if($result->sGetReturnType() !== XMLResponseWS::RETURNTYPE_EMPTY)
+            throw new \RuntimeException("Could not send message");
+        return true;
     }
 
     public function oGetAttachment(array $requestHeaders, $messageId, $attachmentId) {
