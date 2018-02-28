@@ -78,9 +78,9 @@ class NOUTClientCache
         switch($cache)
         {
         case self::CACHE_Session:
-            return $this->m_clCacheSession->save($name, $data);
+            return $this->m_clCacheSession->save($name, $data, self::TIMEOUT_1J);
         case self::CACHE_IHM:
-            return $this->m_clCacheIHM->save($name, $data);
+            return $this->m_clCacheIHM->save($name, $data, self::TIMEOUT_3J);
         case self::CACHE_Icone:
             return $this->m_clCacheIcones->save($name, $data);
         }
@@ -143,7 +143,7 @@ class NOUTClientCache
         }
         else
         {
-            return $this->m_clCacheIHM->save($sName, $data);
+            return $this->m_clCacheIHM->save($sName, $data, self::TIMEOUT_3J);
         }
     }
 
@@ -171,7 +171,7 @@ class NOUTClientCache
     public function saveFile($sIDContexte, $idihm, $sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption, $data)
     {
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        if ($this->m_clCacheSession->save(array($sIDContexte, $idihm, 'file', $sName), $data))
+        if ($this->m_clCacheSession->save(array($sIDContexte, $idihm, 'file', $sName), $data, self::TIMEOUT_1J))
         {
             return $sName;
         }
@@ -253,4 +253,10 @@ class NOUTClientCache
     const CACHE_Session     = 'session';
     const CACHE_IHM         = 'ihm';
     const CACHE_Icone       = 'icone';
+
+
+    const TIMEOUT_1H = 3600;
+    const TIMEOUT_1J = 86400;
+    const TIMEOUT_2J = 172800;
+    const TIMEOUT_3J = 259200;
 }
