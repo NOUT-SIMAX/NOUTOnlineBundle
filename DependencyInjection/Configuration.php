@@ -51,6 +51,11 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue(8052)
                 ->end()//integerNode('port')
 
+                ->integerNode('soap_socket_timeout')
+                    ->info('Timeout de socket pour SOAP')
+                    ->defaultValue(-1)
+                ->end()//integerNode('soap_socket_timeout')
+
                 ->scalarNode('apiuuid')
                     ->info('Identifiant du site pour la vérification par application de NOUTOnline.')
                     ->defaultValue('')

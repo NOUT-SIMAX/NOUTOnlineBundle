@@ -18,6 +18,10 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class OnlineServiceFactory
 {
+    /**
+     * @var int
+     */
+    protected $__soap_socket_timeout = -1;
 	/**
 	 * @var \NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger
 	 */
@@ -39,8 +43,13 @@ class OnlineServiceFactory
 	protected $__stopwatch;
 
 
-	public function __construct(ClientInformation $clientInfo, NOUTOnlineLogger $logger, NOUTCacheFactory $cacheFactory, Stopwatch $stopwatch=null)
+	public function __construct(ClientInformation $clientInfo,
+                                NOUTOnlineLogger $logger,
+                                NOUTCacheFactory $cacheFactory,
+                                Stopwatch $stopwatch=null,
+                                $soap_socket_timeout=SOAPProxy::SOCKET_TIMEOUT)
 	{
+	    $this->__soap_socket_timeout = $soap_socket_timeout;
 		$this->m_clLogger = $logger;
 		$this->__stopwatch = $stopwatch;
 
@@ -55,7 +64,12 @@ class OnlineServiceFactory
 	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration)
 	{
 
-		$OnlineService = new SOAPProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->__stopwatch, $this->m_clCache);
+		$OnlineService = new SOAPProxy($this->m_clClientInformation,
+                                       $clConfiguration,
+                                       $this->m_clLogger,
+                                       $this->__stopwatch,
+                                       $this->m_clCache,
+                                       $this->__soap_socket_timeout);
 		return $OnlineService; // Peut renvoyer une exception si pb de connexion
 
 	}
