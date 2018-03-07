@@ -131,7 +131,12 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 * @param NOUTOnlineLogger      $_clLogger
 	 * @param NOUTCache             $cache
      */
-    public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, Stopwatch $stopwatch=null, NOUTCacheProvider $cache=null)
+    public function __construct(ClientInformation $clientInfo,
+                                ConfigurationDialogue $clConfig,
+                                NOUTOnlineLogger $_clLogger,
+                                Stopwatch $stopwatch=null,
+                                NOUTCacheProvider $cache=null,
+                                $soap_socket_timeout=self::SOCKET_TIMEOUT)
     {
         parent::__construct($clConfig->getWSDLUri(), $clConfig->getWsdl(), $clConfig->getHost(),$clConfig->getPort());
 
@@ -141,7 +146,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         $this->forceEndpoint = $clConfig->getProtocolPrefix() . $clConfig->getHost() . ':' . $clConfig->getPort(); //on force l'ip et le port du fichier config
         // on force le timeout a 300s
         $this->timeout = 300;
-        $this->response_timeout = 300;
+        $this->response_timeout = $soap_socket_timeout;
 	    $this->__clLogger = $_clLogger;
 	    $this->__stopwatch = $stopwatch;
 
@@ -496,6 +501,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
                 $old_time = ini_get('max_execution_time');
                 set_time_limit(0);
             }
+
 		    //on fait l'appel a la methode mere
 		    /*$mResult =  */parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
 
@@ -1624,7 +1630,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 		return (in_array($sValueToVerif, $aTabPossible)) ? $sValueToVerif : $sDefaultValue;
 	}
 
-
+    const SOCKET_TIMEOUT = 300;
 }
 //***
 
