@@ -16,6 +16,12 @@ services:
             - %nout_online.version_dialogue_pref%
             - @?debug.stopwatch
 
+    nout_contexts.record_serializer:
+        class:  NOUT\Bundle\ContextsBundle\Service\RecordSerializer
+        arguments:
+            - @security.token_storage
+            - @nout_online.cache_factory
+
     nout_contexts.session_disconnect_listener:
         class:  NOUT\Bundle\ContextsBundle\Service\SessionDisconnectListener
         arguments: [@nout_online.cache_factory]
