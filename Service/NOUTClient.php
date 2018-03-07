@@ -116,11 +116,15 @@ class NOUTClient
      */
     private $__tokenStorage;
 
-
     /**
      * @var NOUTClientCache
      */
     private $m_clCache = null;
+
+    /**
+     * @var RecordSerializer|null
+     */
+    private $m_clRecordSerializer = null;
 
     /**
      * @var OptionDialogue
@@ -161,6 +165,7 @@ class NOUTClient
         if ($oSecurityToken instanceof NOUTToken)
         {
             $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
+            $this->m_clRecordSerializer = new RecordSerializer($tokenStorage, $cacheFactory);
         }
 
         $this->m_clOptionDialogue = new OptionDialogue();
@@ -1523,13 +1528,9 @@ class NOUTClient
         $clParamUpdate              = new Update();
         $clParamUpdate->Table       = $sIDForm;
         $clParamUpdate->ParamXML    = "<id_$sIDForm>$sIDEnreg</id_$sIDForm>";
-        // -----------------------------------------------------
-        // Fichiers
 
-        // Chercher tous les fichiers modifiés dans le Record // similaire à getStructforUpdateSOAP => getColonneFileModified
-        $aFilesToSend = $this->_getModifiedFiles($clRecord, $sIDContexte, $idihm);
-        // -----------------------------------------------------
-        $clParamUpdate->UpdateData = $clRecord->getUpdateData($aFilesToSend);
+        //m_clRecordSerializer->getRecordUpdateData fait la gestion des fichiers
+        $clParamUpdate->UpdateData = $this->m_clRecordSerializer->getRecordUpdateData($clRecord, $sIDContexte, $idihm);
         $clParamUpdate->Complete = $bComplete ? 1 : 0;
 
         //header
@@ -2257,74 +2258,6 @@ class NOUTClient
         return $clActionResult;
     }
 
-    /**
-     * on construit la structure qui contient tous les fichiers à envoyer
-     * @param $clRecord
-     * @param $idcontexte
-     * @param $idihm
-     * @return array
-     */
-    protected function _getModifiedFiles(Record $clRecord, $idcontexte, $idihm)
-    {
-        $aModifiedFiles = array();
-
-        $structElem = $clRecord->clGetStructElem();
-        $fiche = $structElem->getFiche();
-
-        $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $fiche, $aModifiedFiles);
-
-
-        return $aModifiedFiles;
-    }
-
-    /**
-     * recherche récursive des fichiers
-     * @param $clRecord
-     * @param $idcontexte
-     * @param $idihm
-     * @param $section
-     * @param $aModifiedFiles
-     * @return array
-     */
-    protected function _getFilesFromSection(Record $clRecord, $idcontexte, $idihm, StructureSection $section, $aModifiedFiles)
-    {
-        $structColonne = $section->getTabStructureColonne();
-
-        // Contient des structuresDonnes
-        foreach ($structColonne as $key => $colonne)
-        {
-            /**@var StructureDonnee $colonne */
-            $idColonne = $colonne->getIDColonne();
-            $typeElement = $colonne->getTypeElement();
-
-            if ($typeElement == StructureColonne::TM_Separateur)
-            {
-                /**@var StructureSection $colonne */
-                $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $colonne, $aModifiedFiles);
-            }
-            else if ($typeElement == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
-            {
-                // On a un fichier modifié, on doit le récupérer
-                $fullPath = $clRecord->getValCol($idColonne);
-                if ($fullPath != "")
-                {
-                    $name = explode('?', $fullPath); // Le nom du fichier se trouve après le path
-                    /** @var NOUTFileInfo $data */
-                    $file = $this->m_clCache->fetchFileFromName($idcontexte, $idihm, $name[0]);
-
-                    // Ajout du fichier dans le tableau
-                    $aModifiedFiles[$idColonne] = $file;
-                }
-                else
-                {
-                    $aModifiedFiles[$idColonne] = null;
-                }
-
-            }
-        }
-
-        return $aModifiedFiles;
-    }
 
     /**
      * @param $requestParams
