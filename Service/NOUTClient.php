@@ -55,6 +55,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
@@ -62,6 +63,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
@@ -2375,7 +2377,7 @@ class NOUTClient
         $message->CreateType = $type;
         if($originalMessage !== 'undefined')
             $message->IDMessage = $originalMessage;
-        return $this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();;
+        return $this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
     }
 
     public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
@@ -2410,6 +2412,32 @@ class NOUTClient
         $getPJ->IDPJ = $attachmentId;
 
         return $this->m_clSOAPProxy->getPJ($getPJ, $aTabHeaderSuppl);
+    }
+
+    /**
+     * @param array $requestHeaders
+     * @param $messageId
+     * @param $data
+     * @param $encoding
+     * @param $filename
+     * @param $size
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    public function oAddAttachment(array $requestHeaders, $messageId, $data, $encoding, $filename, $size) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+
+        $addPJ = new AddPJ();
+        $dataPJ = new DataPJType();
+        $dataPJ->filename = $filename;
+        $dataPJ->encoding = $encoding;
+        $dataPJ->size = $size;
+        $dataPJ->_ = $data;
+        $addPJ->IDMessage = $messageId;
+        $addPJ->DataPJ = $dataPJ;
+
+        return $this->m_clSOAPProxy->addPJ($addPJ, $aTabHeaderSuppl)->getNodeXML()->asXML();
     }
 
 
