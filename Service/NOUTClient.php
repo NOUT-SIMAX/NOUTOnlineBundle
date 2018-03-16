@@ -2292,7 +2292,7 @@ class NOUTClient
         $res = new \stdClass();
         $res->data = $clReponseXML->getNodeXML()->children();
         $res->totalCount = $clReponseXML->clGetCount()->m_nNbTotal;
-        return json_encode($res);
+        return $res;
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
@@ -2301,7 +2301,7 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
-        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
+        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl)->getNodeXML()->asXML();
     }
 
     public function oCreateMessage(array $requestHeaders, $type, $originalMessage) {
