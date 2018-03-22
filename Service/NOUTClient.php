@@ -2301,7 +2301,8 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
-        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl)->getNodeXML()->asXML();
+        $res = $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
+        return $res;
     }
 
     public function oCreateMessage(array $requestHeaders, $type, $originalMessage) {
