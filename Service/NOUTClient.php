@@ -77,11 +77,14 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
+use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTWebException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -1251,6 +1254,21 @@ class NOUTClient
 
         $clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oSetSublistOrder(array $tabHeaderQuery = array(), $column, $items) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+
+        $setSublistOrder = new SetOrderSubList();
+        $setSublistOrder->items = $items;
+        $setSublistOrder->column = $column;
+
+        $clXMLResponse = $this->m_clSOAPProxy->setOrderSubList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
+            return \explode('|', trim($clXMLResponse->getValue(), '|'));
+        }
+        else throw new NOUTValidationException("No valid ReturnType");
     }
 
     private function __startStopwatch($eventName){
