@@ -116,12 +116,13 @@ class ParserList extends Parser
         $sIDFormAction = $clReponseXML->clGetAction()->getIDForm();
         $sIDAction = $clReponseXML->clGetAction()->getID();
         $sTitre = $clReponseXML->clGetAction()->getTitle();
+        $withBtnOrder = $clReponseXML->clGetForm()->hasOrderBtn();
 
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
 
         // Instance d'une nouvelle clList avec toutes les données précédentes
-        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, $withBtnOrder);
         $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
         $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
 
