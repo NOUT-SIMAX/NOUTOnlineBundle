@@ -1495,24 +1495,6 @@ class NOUTClient
                 break;
             }
 
-
-            /**
-             * cas particulier, ici on triche
-             */
-            case XMLResponseWS::RETURNTYPE_COLINRECORD:
-            {
-                $clResponseParser = new ReponseWSParser();
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML, $clActionResult->ReturnType, $autreInfos);
-
-                $data = new \stdClass();
-                $data->cache = $clParser->getListFullCache();
-                $data->value = $clReponseXML->getData();
-
-                $clActionResult->setData($data);
-
-                break;
-            }
-
         }
 
         $this->__stopStopwatch($stopWatchEvent);
@@ -1621,47 +1603,6 @@ class NOUTClient
         $clReponseXML       = $this->m_clSOAPProxy->buttonAction($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
-        return $oRet;
-    }
-
-
-    /**
-     * @param $sIDContexte
-     * @param Record $clRecord
-     * @param $idColumn
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetColInRecord($sIDContexte, Record $clRecord, $idColumn)
-    {
-        //test des valeurs des paramètres
-        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
-        $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idColumn, null);
-
-        //header
-        $aTabHeaderSuppl = array(
-            SOAPProxy::HEADER_ActionContext => $sIDContexte,
-            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,
-            SOAPProxy::HEADER_APIUser => 0, //on utilise l'utilisateur d'application pour les droits
-        );
-
-        //paramètre de l'action liste
-        $clParam = new GetColInRecord();
-        $clParam->Record = $clRecord->getIDEnreg();
-        $clParam->Column = $idColumn;
-        $clParam->WantContent = 1;
-
-        $clReponseXML = $this->m_clSOAPProxy->getColInRecord($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-
-        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML, XMLResponseWS::RETURNTYPE_COLINRECORD, $idColumn);
-
-        $data = $oRet->getData();
-
-        //on met à jour l'enregistrement d'origine à partir de celui renvoyé par NOUTOnline
-        $clRecord->updateRecordLie($data->cache);
-        $clRecord->setValCol($idColumn, $data->value, false);
-        $oRet->setData($clRecord);
-
         return $oRet;
     }
 
