@@ -32,11 +32,11 @@ class Form
 	 */
 	public $m_TabSort;
 
-	public function __construct($nID, $sTitle)
+	public function __construct($nID, $sTitle, $withBtnOrderPossible)
 	{
 		$this->m_nID                   = (string) $nID;
 		$this->m_sTitle                = (string) $sTitle;
-		$this->m_bWithBtnOrderPossible = false;
+		$this->m_bWithBtnOrderPossible = !!$withBtnOrderPossible;
 		$this->m_TabSort               = array();
 	}
 
@@ -55,4 +55,8 @@ class Form
 	{
 		return $this->m_nID;
 	}
+
+    public function hasOrderBtn() {
+        return $this->m_bWithBtnOrderPossible;
+    }
 }
