@@ -77,6 +77,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
@@ -1256,6 +1257,13 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    /**
+     * @param array $tabHeaderQuery
+     * @param $column
+     * @param $items
+     * @return array
+     * @throws NOUTValidationException
+     */
     public function oSetSublistOrder(array $tabHeaderQuery = array(), $column, $items) {
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
 
@@ -1264,6 +1272,26 @@ class NOUTClient
         $setSublistOrder->column = $column;
 
         $clXMLResponse = $this->m_clSOAPProxy->setOrderSubList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
+            return \explode('|', trim($clXMLResponse->getValue(), '|'));
+        }
+        else throw new NOUTValidationException("No valid ReturnType");
+    }
+
+    /**
+     * @param array $tabHeaderQuery
+     * @param $items
+     * @return array
+     * @throws NOUTValidationException
+     */
+    public function oSetFullListOrder(array $tabHeaderQuery = array(), $items) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+
+        $setSublistOrder = new SetOrderList();
+        $setSublistOrder->items = $items;
+
+        $clXMLResponse = $this->m_clSOAPProxy->setOrderList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
             return \explode('|', trim($clXMLResponse->getValue(), '|'));
