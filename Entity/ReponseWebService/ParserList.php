@@ -117,12 +117,13 @@ class ParserList extends Parser
         $sIDAction = $clReponseXML->clGetAction()->getID();
         $sTitre = $clReponseXML->clGetAction()->getTitle();
         $withBtnOrder = $clReponseXML->clGetForm()->hasOrderBtn();
+        $withOrderActive = $clReponseXML->clGetForm()->hasOrderActive();
 
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
 
         // Instance d'une nouvelle clList avec toutes les données précédentes
-        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, $withBtnOrder);
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, $withBtnOrder, $withOrderActive);
         $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
         $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
 
@@ -167,7 +168,7 @@ class ParserList extends Parser
 
 
         // Instance d'une nouvelle clList avec toutes les données précédentes
-        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem);
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, false, false);
         $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
         $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
 

@@ -70,9 +70,9 @@ class RecordList
      */
     protected $possibleReorder;
 
+    protected $activeReorder;
 
-
-    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, StructureElement $clStructElem, $possibleReorder)
+    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, StructureElement $clStructElem, $possibleReorder, $activeReorder)
     {
         $this->m_sTitle = $sTitle;
         $this->m_sIDAction = $sIDAction;
@@ -80,6 +80,7 @@ class RecordList
         $this->m_clStructElem = $clStructElem;
         $this->m_TabEnregTableau = $TabIDEnreg;
         $this->possibleReorder = $possibleReorder;
+        $this->activeReorder = $activeReorder;
     }
 
     /**
@@ -188,6 +189,10 @@ class RecordList
 
     public function hasPossibleReorder() {
         return $this->possibleReorder;
+    }
+
+    public function hasActiveReorder() {
+        return $this->activeReorder;
     }
 
     /**
