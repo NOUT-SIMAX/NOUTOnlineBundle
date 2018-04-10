@@ -65,15 +65,22 @@ class RecordList
      */
     protected $m_eDefaultDisplayMode;
 
+    /**
+     * @var boolean $possibleReorder - Indicates wether the user should be able to reorder the recordlist
+     */
+    protected $possibleReorder;
 
+    protected $activeReorder;
 
-    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, StructureElement $clStructElem=null)
+    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, StructureElement $clStructElem, $possibleReorder, $activeReorder)
     {
         $this->m_sTitle = $sTitle;
         $this->m_sIDAction = $sIDAction;
         $this->m_nIDTableau = $sIDForm;
         $this->m_clStructElem = $clStructElem;
         $this->m_TabEnregTableau = $TabIDEnreg;
+        $this->possibleReorder = $possibleReorder;
+        $this->activeReorder = $activeReorder;
     }
 
     /**
@@ -178,6 +185,14 @@ class RecordList
     {
         $this->m_TabPossibleDisplayMode[]=$eDisplayMode;
         return $this;
+    }
+
+    public function hasPossibleReorder() {
+        return $this->possibleReorder;
+    }
+
+    public function hasActiveReorder() {
+        return $this->activeReorder;
     }
 
     /**

@@ -307,12 +307,7 @@ class XMLResponseWS
 	public function clGetForm()
 	{
 		$ndForm = $this->m_ndHeader->children()->Form;
-		$clForm = new Form($ndForm, $ndForm['title']);
-
-		if (isset($ndForm['withBtnOrderPossible']))
-		{
-			$clForm->m_bWithBtnOrderPossible = true;
-		}
+        $clForm = new Form($ndForm, $ndForm['title'], $ndForm['withBtnOrderPossible'], $ndForm['withBtnOrderActive']);
 
 		for ($n = 1; $n <= 3; $n++)
 		{
@@ -611,7 +606,6 @@ class XMLResponseWS
 	const RETURNTYPE_REQUESTFILTER  = 'RequestFilter';
 	const RETURNTYPE_CHART          = 'Chart';
 	const RETURNTYPE_NUMBEROFCHART  = 'NumberOfChart';
-    const RETURNTYPE_COLINRECORD    = 'ColInRecord';
 
 	//retourne des enregistrements
 	const RETURNTYPE_RECORD         = 'Record';
