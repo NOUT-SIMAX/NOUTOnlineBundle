@@ -72,7 +72,7 @@ class RecordList
 
     protected $activeReorder;
 
-    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, StructureElement $clStructElem, $possibleReorder, $activeReorder)
+    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder)
     {
         $this->m_sTitle = $sTitle;
         $this->m_sIDAction = $sIDAction;
