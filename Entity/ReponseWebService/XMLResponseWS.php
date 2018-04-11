@@ -307,12 +307,7 @@ class XMLResponseWS
 	public function clGetForm()
 	{
 		$ndForm = $this->m_ndHeader->children()->Form;
-        $clForm = new Form($ndForm, $ndForm['title'], $ndForm['withBtnOrderPossible']);
-
-		if (isset($ndForm['withBtnOrderPossible']))
-		{
-			$clForm->m_bWithBtnOrderPossible = true;
-		}
+        $clForm = new Form($ndForm, $ndForm['title'], $ndForm['withBtnOrderPossible'], $ndForm['withBtnOrderActive']);
 
 		for ($n = 1; $n <= 3; $n++)
 		{

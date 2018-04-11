@@ -64,7 +64,7 @@ class ParserScheduler extends ParserList
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
         // Instance d'une nouvelle clList avec toutes les donn�es pr�c�dentes
-        $clList = new RecordList('', '', $sIDForm, $this->m_clParserScheduler->m_TabEnregTableau, $clStructElem, false);
+        $clList = new RecordList('', '', $sIDForm, $this->m_clParserScheduler->m_TabEnregTableau, $clStructElem, false, false);
 
         // Param�tres pour la clList
         $clList->setRecordCache($this->m_clParserScheduler->getFullCache());
