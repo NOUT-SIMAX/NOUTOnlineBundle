@@ -21,6 +21,7 @@ class Form
 	public $checksum; // string
 	public $typeform; // string
 	public $withBtnOrderPossible; // integer
+    public $withBtnOrderActive;
 	public $sort1; // string
 	public $sort2; // string
 	public $sort3; // string
