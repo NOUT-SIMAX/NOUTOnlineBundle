@@ -26,18 +26,26 @@ class Form
 	 * si il est possible d'ordonner la liste
 	 */
 	public $m_bWithBtnOrderPossible;
+
+    /**
+     * @var bool
+     * order is active
+     */
+    public $m_bWithBtnOrderActive;
+
 	/**
 	 * @var array
 	 * tableau des tris appliqués à la liste
 	 */
 	public $m_TabSort;
 
-	public function __construct($nID, $sTitle)
+	public function __construct($nID, $sTitle, $withBtnOrderPossible, $withBtnOrderActive)
 	{
-		$this->m_nID                   = (string) $nID;
-		$this->m_sTitle                = (string) $sTitle;
-		$this->m_bWithBtnOrderPossible = false;
-		$this->m_TabSort               = array();
+		$this->m_nID                    = (string) $nID;
+		$this->m_sTitle                 = (string) $sTitle;
+		$this->m_bWithBtnOrderPossible  = !!$withBtnOrderPossible;
+		$this->m_bWithBtnOrderActive    = !!$withBtnOrderActive;
+		$this->m_TabSort                = array();
 	}
 
 	/**
@@ -55,4 +63,12 @@ class Form
 	{
 		return $this->m_nID;
 	}
+
+    public function hasOrderBtn() {
+        return $this->m_bWithBtnOrderPossible;
+    }
+
+    public function hasOrderActive() {
+	    return $this->m_bWithBtnOrderActive;
+    }
 }

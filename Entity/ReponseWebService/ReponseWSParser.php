@@ -55,9 +55,6 @@ class ReponseWSParser
 			XMLResponseWS::RETURNTYPE_REPORT          	=> null,
 			XMLResponseWS::RETURNTYPE_PLANNING        	=> '_ParsePlanning',
 			XMLResponseWS::RETURNTYPE_CHART           	=> '_ParseChart',
-
-            //cas particulier
-            XMLResponseWS::RETURNTYPE_COLINRECORD 	    => '_ParseColInRecord',
 		);
 
 
@@ -96,35 +93,6 @@ class ReponseWSParser
 
         return $clParser;
 	}
-
-    protected function _ParseColInRecord(XMLResponseWS $clReponseXML, $idColonne)
-    {
-        //on cherche le schema de la liste
-        $ndSchema  = $clReponseXML->getNodeSchema();
-        $xmlSchema = new \SimpleXMLElement($ndSchema->asXML());
-
-        /*
-<xs:element xs:name="id_52482111820129" simax:name="Liste Pays" simax:typeElement="simax-list" simax:printed="1" simax:withBtnOrder="1" simax:linkedTableXml="id_9495" simax:linkedTableID="9495" simax:withAddAndRemove="1">
-<xs:complexType>
-<xs:sequence>
-<xs:element xs:name="id_9495" simax:name="Liste (Pays)" xs:minOccurs="0" xs:maxOccurs="unbounded">
-         */
-        $aData = $xmlSchema->xpath("//xs:element[@xs:name='id_$idColonne']");
-        $clSchemaRoot = $aData[0]->children('xs', true)->complexType->children('xs', true)->sequence;
-        $idForm = (string)$aData[0]->attributes('http://www.nout.fr/XMLSchema')['linkedTableID'];
-
-
-        $ndXML  = $clReponseXML->getNodeXML();
-        $xmlXML = new \SimpleXMLElement($ndXML->xml->asXML());
-
-        $clParser = new ParserList();
-        $clParser->ParseListFromSchemaAndXML($idForm, $xmlXML, $clSchemaRoot);
-
-        return $clParser;
-    }
-
-
-
 
 	/**
 	 * @param XMLResponseWS $clXMLReponseWS
