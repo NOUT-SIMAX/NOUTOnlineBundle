@@ -42,6 +42,7 @@ class InfoColonne
         {
             switch($sAttribName)
             {
+                case Record::OPTION_Unit:
                 case Record::OPTION_DisplayDefault:
                 case Record::OPTION_DisplayMode:
                 case Record::OPTION_BGColor:
