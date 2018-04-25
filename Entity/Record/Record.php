@@ -736,4 +736,5 @@ class Record
     const OPTION_Italic         = 'italic';
     const OPTION_DisplayMode    = 'displayMode';
     const OPTION_DisplayDefault = 'displayDefault';
+    const OPTION_Unit           = 'unit';
 }
