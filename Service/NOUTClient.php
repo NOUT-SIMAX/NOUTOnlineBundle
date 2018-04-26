@@ -925,6 +925,23 @@ class NOUTClient
         return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
     }
 
+    public function oExecute(array $tabParamQuery, array $tabHeaderQuery) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+        $clParamExecute = new Execute();
+        foreach($tabParamQuery as $param => $value) {
+            if($param === 'ParamXML' && is_array($value)) { //We get this as an array if not empty but it's a string in wsdl
+                $stringVal = '';
+                foreach($value as $item => $itemValue) {
+                    $stringVal .= "<$item>$itemValue</$item>";
+                }
+                $value = $stringVal;
+            }
+            $clParamExecute->$param = $value;
+        }
+
+        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+    }
+
 
     /**
      * Execute une action via sa phrase
