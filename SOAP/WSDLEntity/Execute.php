@@ -13,7 +13,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
 
-class Execute
+class Execute implements SerializableEntity
 {
 	public $ID; 				// string
 	public $Sentence; 			// string
@@ -25,5 +25,25 @@ class Execute
 	public $DisplayMode; 		// DisplayModeParamEnum
     public $BtnListMode;        // List action
     public $Final;
+
+    static function getAttributes() {
+        return array();
+    }
+
+    static function getValueType() {
+        return array(
+            'DisplayMode'       => 'string',
+            'Sentence'          => 'string',
+            'ParamXML'          => 'string',
+            'CallingColumn'     => 'string',
+            'ID'                => 'string',
+            'SpecialParamList'  => SpecialParamListType::getEntityDefinition()
+        );
+    }
+
+    static function getEntityDefinition()
+    {
+        return new WSDLEntityDefinition(self::getAttributes(), self::getValueType());
+    }
 }
 //***
