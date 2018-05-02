@@ -14,9 +14,26 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
 
-class SortType
+class SortType implements SerializableEntity
 {
 	public $_; // string
 	public $asc; // string
+
+    static function getAttributes()
+    {
+        return array(
+            'asc'
+        );
+    }
+
+    static function getValueType()
+    {
+        return 'string';
+    }
+
+    static function getEntityDefinition()
+    {
+        return new WSDLEntityDefinition(self::getAttributes(), self::getValueType());
+    }
 }
 //***
