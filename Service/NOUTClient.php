@@ -925,6 +925,14 @@ class NOUTClient
         return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
     }
 
+    public function oExecute(array $tabParamQuery, array $tabHeaderQuery) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+        $clParamExecute = new Execute();
+        foreach($tabParamQuery as $param => $value) {
+            $clParamExecute->$param = $value;
+        }
+        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+    }
 
     /**
      * Execute une action via sa phrase
