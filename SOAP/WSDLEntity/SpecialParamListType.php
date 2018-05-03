@@ -14,7 +14,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
 
-class SpecialParamListType
+class SpecialParamListType implements SerializableEntity
 {
 	public $First; 				// integer
 	public $Length; 			// integer
@@ -30,6 +30,28 @@ class SpecialParamListType
     {
         $this->First = $first;
         $this->Length = $length;
+    }
+
+    static function getAttributes() {
+        return array();
+    }
+
+    static function getValueType()
+    {
+        return array(
+            'First' => 'string',
+            'Length' => 'string',
+            'WithBreakRow' => 'string',
+            'WithEndCalculation' => 'string',
+            'ChangePage' => 'string',
+            'Sort1' => SortType::getEntityDefinition(),
+            'Sort2' => SortType::getEntityDefinition(),
+            'Sort3' => SortType::getEntityDefinition()
+        );
+    }
+
+    static function getEntityDefinition() {
+        return new WSDLEntityDefinition(self::getAttributes(), self::getValueType());
     }
 }
 //***
