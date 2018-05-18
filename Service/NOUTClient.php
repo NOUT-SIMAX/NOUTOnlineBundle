@@ -67,6 +67,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\FilterType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
@@ -77,6 +78,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
@@ -2284,6 +2286,30 @@ class NOUTClient
         $folderContent->SpecialParamList = $requestParams;
         $folderContent->IDFolder = $folderID;
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
+        $res = new \stdClass();
+        $res->data = $clReponseXML->getNodeXML()->children();
+        $res->totalCount = $clReponseXML->clGetCount()->m_nNbTotal;
+        return $res;
+        //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oGetMessageRequest(array $requestHeaders, $requestParams, $filters, $startdate, $endDate) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $requestMessage = new RequestMessage();
+        $requestMessage->SpecialParamList = $requestParams;
+        $requestMessage->StartDate = $startdate;
+        $requestMessage->EndDate = $endDate;
+        $requestMessage->Filter = new FilterType();
+        $requestMessage->Filter->Way = $filters->way;
+        $requestMessage->Filter->State = $filters->state;
+        $requestMessage->Filter->Inner = $filters->inner;
+        $requestMessage->Filter->Email = $filters->email;
+        $requestMessage->Filter->Spam = $filters->spam;
+        $requestMessage->Filter->Max = $filters->max;
+        $requestMessage->Filter->From = $filters->from;
+        $requestMessage->Filter->Containing = $filters->containing;
+        $clReponseXML = $this->m_clSOAPProxy->getRequestMesage($requestMessage, $aTabHeaderSuppl);
         $res = new \stdClass();
         $res->data = $clReponseXML->getNodeXML()->children();
         $res->totalCount = $clReponseXML->clGetCount()->m_nNbTotal;
