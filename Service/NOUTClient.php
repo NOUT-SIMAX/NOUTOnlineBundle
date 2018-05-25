@@ -90,6 +90,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
@@ -2323,6 +2324,21 @@ class NOUTClient
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
         $res = $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
+        return $res;
+    }
+
+    public function oUpdateMessages(array $requestHeaders, $messages, $column, $value) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+
+        $updateMessages = new UpdateColumnMessageValueInBatch();
+        $updateMessages->IDMessage = $messages;
+        $updateMessages->Column = $column;
+        $updateMessages->Value = $value;
+        
+        $res = $this->m_clSOAPProxy->updateMessages($updateMessages, $aTabHeaderSuppl);
         return $res;
     }
 
