@@ -1495,6 +1495,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     }
     //---
 
+    public function updateMessages($updateColumnMessageValueInBatch, $aHeaders = array()) {
+        return $this->call('UpdateColumnMessageValueInBatch', array($updateColumnMessageValueInBatch), null, null, $aHeaders);
+    }
+
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Validate
      *
