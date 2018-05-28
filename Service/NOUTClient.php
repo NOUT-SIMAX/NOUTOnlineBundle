@@ -2289,7 +2289,8 @@ class NOUTClient
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
         $res = new \stdClass();
         $res->data = $clReponseXML->getNodeXML()->children();
-        $res->totalCount = $clReponseXML->clGetCount()->m_nNbTotal;
+        $res->totalCount = $clReponseXML->clGetFolderCount()->m_nNbReceived;
+        $res->unreadCount = $clReponseXML->clGetFolderCount()->m_nNbUnread;
         return $res;
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
