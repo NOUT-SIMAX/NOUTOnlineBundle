@@ -2387,6 +2387,12 @@ class NOUTClient
         return $this->m_clSOAPProxy->getPJ($getPJ, $aTabHeaderSuppl);
     }
 
+    public function oPrintMessage($messageId) {
+        $clIdentification = $this->_clGetIdentificationREST(null, false);
+
+        return $this->m_clRESTProxy->sPrintMessage($messageId, $clIdentification);
+    }
+
     /**
      * @param array $requestHeaders
      * @param $messageId
