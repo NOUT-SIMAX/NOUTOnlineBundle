@@ -193,7 +193,7 @@ class NOUTClient
         switch ($sTypeTest)
         {
             case self::TP_NotEmpty:
-                if (empty($sValeurParametre))
+                if (empty($sValeurParametre) && $sValeurParametre !== "0")
                 {
                     throw new \Exception('the value of the parameter ' . $sNomParametre . ' must not be empty.');
                 }
