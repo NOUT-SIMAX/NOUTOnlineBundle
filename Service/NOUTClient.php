@@ -1635,7 +1635,7 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oButtonAction($sIDContexte, $idButton)
+    public function oButtonAction($sIDContexte, $idButton, $dataRecord = null)
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
@@ -1648,6 +1648,16 @@ class NOUTClient
         $clReponseXML       = $this->m_clSOAPProxy->buttonAction($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        if($dataRecord !== null) {
+            $clRecortRes = $oRet->getData();
+            if ($dataRecord->getIDEnreg() != $clRecortRes->getIDEnreg())
+            {
+                throw new \Exception("l'action du bouton n'a pas retourné le bon enregistrement");
+            }
+            $dataRecord->updateFromRecord($clRecortRes);
+            $oRet->setData($dataRecord);
+        }
+
         return $oRet;
     }
 
