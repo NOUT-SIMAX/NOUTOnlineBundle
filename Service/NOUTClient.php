@@ -2363,6 +2363,27 @@ class NOUTClient
         return $this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
     }
 
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetReplyTemplates() {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest(array());
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $specialParamList = new SpecialParamListType();
+        $specialParamList->First = 0;
+        $specialParamList->Length = 50;
+        $specialParamList->WithEndCalculation = 0;
+        $execaction = new Execute();
+        $execaction->ID = Langage::ACTION_RechercherReponseType;
+        $execaction->SpecialParamList = $specialParamList;
+        $oRet = $this->m_clSOAPProxy->execute($execaction, $aTabHeaderSuppl);
+        if(!$oRet->sGetReturnType() === XMLResponseWS::RETURNTYPE_LIST) {
+            throw new \Exception("Expected List but got " . $oRet->sGetReturnType());
+        }
+        return $oRet->getNodeXML()->asXML();
+    }
+
     public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
