@@ -2353,11 +2353,12 @@ class NOUTClient
         return $res;
     }
 
-    public function oCreateMessage(array $requestHeaders, $type, $originalMessage) {
+    public function oCreateMessage(array $requestHeaders, $type, $originalMessage, $templateId) {
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $message = new CreateMessage();
         $message->CreateType = $type;
+        $message->IDAnswerType = $templateId;
         if($originalMessage !== 'undefined')
             $message->IDMessage = $originalMessage;
         return $this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
