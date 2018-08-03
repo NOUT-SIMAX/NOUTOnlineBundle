@@ -245,7 +245,22 @@ class ParserXSDSchema extends Parser
 
                 $clAttribXS   = $ndElement->attributes(self::NAMESPACE_XSD);
                 $clAttribNOUT = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
-                $clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS);
+                $ndSeqSousButtons = null;
+                try
+                {
+                    if ($ndElement->children(self::NAMESPACE_XSD)->count() > 0)
+                    {
+                        $ndSeqSousButtons = $ndElement->children(self::NAMESPACE_XSD)->complexType->children(self::NAMESPACE_XSD)->sequence;
+                        if ($ndSeqSousButtons->children(self::NAMESPACE_XSD)->count() == 0)
+                        {
+                            $ndSeqSousButtons = null;
+                        }
+                    }
+                }
+                catch (\Exception $e) {
+                    $ndSeqSousButtons = null;
+                }
+                $clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS, $ndSeqSousButtons);
                 $bIsCol = $clStructureElemLie->addButton($clStructureBouton);
                 if ($bIsCol) //si vide, c'est un bouton d'action sur le formulaire (supprimer, imprimer...)
                 {
