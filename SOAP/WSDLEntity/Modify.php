@@ -18,5 +18,6 @@ class Modify
 {
 	public $Table; // string
 	public $ParamXML; // string
+    public $UpdateData; //string
 }
 //***
