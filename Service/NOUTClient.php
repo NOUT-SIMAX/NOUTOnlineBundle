@@ -1794,20 +1794,37 @@ class NOUTClient
     /**
      * @param $tabParamQuery
      * @param $sIDContexte
+     * @param \stdClass $updateData
      * @return ActionResult
+     * @throws \Exception
      */
-    public function oModifyElem(array $tabParamQuery, $sIDContexte, $idformulaire, $idenreg)
+    public function oModifyElem(array $tabParamQuery, $sIDContexte, $idformulaire, $idenreg, $updateData = null)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
-
-        $aTabHeaderSuppl = array(
-            SOAPProxy::HEADER_ActionContext => $sIDContexte
-        );
 
         $clParamModify = new Modify();
         $this->_initStructParamFromTabParamRequest($clParamModify, $tabParamQuery);
         $clParamModify->Table = $idformulaire;
         $clParamModify->ParamXML .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
+
+        if(!is_null($updateData)) {
+            $aTabHeaderSuppl = array(
+                SOAPProxy::HEADER_ActionContext => $sIDContexte,
+                SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Validate
+            );
+            $sUpdateData = "<xml><id_$idformulaire>";
+            $sUpdateData.= '<id_'.$updateData->idColumn.'>';
+            $sUpdateData.= $updateData->val;
+            $sUpdateData .= '</id_'.$updateData->idColumn.'>';
+            $sUpdateData.= '</id_'.$idformulaire.'></xml>';
+
+            $clParamModify->UpdateData = $sUpdateData;
+        }
+        else {
+            $aTabHeaderSuppl = array(
+                SOAPProxy::HEADER_ActionContext => $sIDContexte
+            );
+        }
 
         $clReponseXML = $this->m_clSOAPProxy->modify($clParamModify, $this->_aGetTabHeader($aTabHeaderSuppl));
 
