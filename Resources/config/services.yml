@@ -64,4 +64,9 @@ services:
         tags:
             - { name: 'monolog.logger', channel: 'security' }
 
+    nout_session.login_success_handler:
+        class: NOUT\Bundle\SessionManagerBundle\Security\Authentication\Handler\LoginSuccessHandler
+        public: false
+        arguments: [ @security.http_utils, [], @router ]
+
 
