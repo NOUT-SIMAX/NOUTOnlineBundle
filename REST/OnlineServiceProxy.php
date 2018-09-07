@@ -582,7 +582,20 @@ class OnlineServiceProxy
 		return $result;
 	}
 
+	public function sPrintMessage($messageId, $clIdentification) {
+	    $identification = $this->_sCreateIdentification($clIdentification);
 
+        $host = $this->__ConfigurationDialogue->getServiceAddress();
+
+        $printMessage = new PrintMessage($messageId, $host);
+        $printMessage->setIdentification($identification);
+
+        $sURI = $printMessage->generateRoute();
+
+        $result = $this->_oExecute('printMessage', $sURI, __FUNCTION__);
+
+	    return $result;
+    }
 
     /**
      * Parse les entêtes pour fournir une sortie au format natif
@@ -603,9 +616,6 @@ class OnlineServiceProxy
 
         return $headers;
     }
-
-
-
 
 
 	const TYPEUTIL_NONE        = 0;
