@@ -55,33 +55,42 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\FilterType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SendMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
@@ -2302,9 +2311,38 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $folderContent = new GetContentFolder();
+        $folderContent->SpecialParamList = $requestParams;
         $folderContent->IDFolder = $folderID;
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
-        return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
+        $res = new \stdClass();
+        $res->data = $clReponseXML->getNodeXML()->children();
+        $res->totalCount = $clReponseXML->clGetFolderCount()->m_nNbReceived;
+        $res->unreadCount = $clReponseXML->clGetFolderCount()->m_nNbUnread;
+        return $res;
+        //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oGetMessageRequest(array $requestHeaders, $requestParams, $filters, $startdate, $endDate) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $requestMessage = new RequestMessage();
+        $requestMessage->SpecialParamList = $requestParams;
+        $requestMessage->StartDate = $startdate;
+        $requestMessage->EndDate = $endDate;
+        $requestMessage->Filter = new FilterType();
+        $requestMessage->Filter->Way = $filters->way;
+        $requestMessage->Filter->State = $filters->state;
+        $requestMessage->Filter->Inner = $filters->inner;
+        $requestMessage->Filter->Email = $filters->email;
+        $requestMessage->Filter->Spam = $filters->spam;
+        $requestMessage->Filter->Max = $filters->max;
+        $requestMessage->Filter->From = $filters->from;
+        $requestMessage->Filter->Containing = $filters->containing;
+        $clReponseXML = $this->m_clSOAPProxy->getRequestMesage($requestMessage, $aTabHeaderSuppl);
+        $res = new \stdClass();
+        $res->data = $clReponseXML->getNodeXML()->children();
+        $res->totalCount = $clReponseXML->clGetCount()->m_nNbTotal;
+        return $res;
         //return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
@@ -2313,7 +2351,55 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
-        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
+        $res = $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
+        return $res;
+    }
+
+    public function oUpdateMessages(array $requestHeaders, $messages, $column, $value) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+
+        $updateMessages = new UpdateColumnMessageValueInBatch();
+        $updateMessages->IDMessage = $messages;
+        $updateMessages->Column = $column;
+        $updateMessages->Value = $value;
+        
+        $res = $this->m_clSOAPProxy->updateMessages($updateMessages, $aTabHeaderSuppl);
+        return $res;
+    }
+
+    public function oCreateMessage(array $requestHeaders, $type, $originalMessage, $templateId) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $message = new CreateMessage();
+        $message->CreateType = $type;
+        $message->IDAnswerType = $templateId;
+        if($originalMessage !== 'undefined')
+            $message->IDMessage = $originalMessage;
+        return $this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
+    }
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetReplyTemplates() {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest(array());
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $specialParamList = new SpecialParamListType();
+        $specialParamList->First = 0;
+        $specialParamList->Length = 50;
+        $specialParamList->WithEndCalculation = 0;
+        $execaction = new Execute();
+        $execaction->ID = Langage::ACTION_RechercherReponseType;
+        $execaction->SpecialParamList = $specialParamList;
+        $oRet = $this->m_clSOAPProxy->execute($execaction, $aTabHeaderSuppl);
+        if(!$oRet->sGetReturnType() === XMLResponseWS::RETURNTYPE_LIST) {
+            throw new \Exception("Expected List but got " . $oRet->sGetReturnType());
+        }
+        return $oRet->getNodeXML()->asXML();
     }
 
     public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
@@ -2324,27 +2410,76 @@ class NOUTClient
         $message = new ModifyMessage();
         $message->IDMessage = $messageID;
         return $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
-        /*
-        $ret = new \stdClass();
-        $ret->data = $clReponseXML->getNodeXML()->children();
-        $ret->references = array();
-        foreach($ret->data->children() as $child) {
-            $name = $child->getName();
-            //$ret->data->$name
-            $attributes = array();
-        }
-        foreach($clReponseXML->getNodeXML()->children('simax', true)->Data as $datum) {
-            $messageData = new \stdClass();
-            $messageData->attributes = array();
-            foreach($datum->attributes('simax', true) as $attribute) {
-                $messageData->attributes[$attribute->getName()] = (string)$attribute;
-                $messageData->value = quoted_printable_decode(htmlentities((string)$datum));
-            }
-            array_push($ret->references, $messageData);
-        }
-        return $ret;
-        */
     }
+
+    public function oSendMessage(array $requestHeaders, $requestParams, $messageID) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
+        $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
+        $message = new SendMessage();
+        $message->IDMessage = $messageID;
+        $result = $this->m_clSOAPProxy->sendMessage($message, $aTabHeaderSuppl);
+        if($result->sGetReturnType() !== XMLResponseWS::RETURNTYPE_EMPTY)
+            throw new \RuntimeException("Could not send message");
+        return true;
+    }
+
+    public function oGetAttachment(array $requestHeaders, $messageId, $attachmentId) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+
+
+        $getPJ = new GetPJ();
+        $getPJ->IDMessage = $messageId;
+        $getPJ->IDPJ = $attachmentId;
+
+        return $this->m_clSOAPProxy->getPJ($getPJ, $aTabHeaderSuppl);
+    }
+
+    public function oPrintMessage($messageId) {
+        $clIdentification = $this->_clGetIdentificationREST(null, false);
+
+        return $this->m_clRESTProxy->sPrintMessage($messageId, $clIdentification);
+    }
+
+    /**
+     * @param array $requestHeaders
+     * @param $messageId
+     * @param $data
+     * @param $encoding
+     * @param $filename
+     * @param $size
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    public function oAddAttachment(array $requestHeaders, $messageId, $data, $encoding, $filename, $size) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+
+        $addPJ = new AddPJ();
+        $dataPJ = new DataPJType();
+        $dataPJ->filename = $filename;
+        $dataPJ->encoding = $encoding;
+        $dataPJ->size = $size;
+        $dataPJ->_ = $data;
+        $addPJ->IDMessage = $messageId;
+        $addPJ->DataPJ = $dataPJ;
+
+        return $this->m_clSOAPProxy->addPJ($addPJ, $aTabHeaderSuppl)->getNodeXML()->asXML();
+    }
+
+    public function oDeleteAttachment(array $requestHeaders, $messageId, $attachmentId) {
+        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+
+        $deletePJ = new DeletePJ();
+        $deletePJ->IDMessage = $messageId;
+        $deletePJ->IDPJ = $attachmentId;
+
+        return $this->m_clSOAPProxy->deletePj($deletePJ, $aTabHeaderSuppl)->getNodeXML()->asXML();
+    }
+
 
     // Fin Fichiers
     // ------------------------------------------------------------------------------------
