@@ -18,5 +18,11 @@ class CreateMessage
 	public $CreateType; // CreateTypeEnum
 	public $IDMessage; // string
 	public $IDAnswerType; // string
+
+    const CREATE_TYPE_EMPTY = 'Empty';
+    const CREATE_TYPE_FORWARD = 'Forward';
+    const CREATE_TYPE_ANSWER = 'Answer';
+    const CREATE_TYPE_ANSWER_ALL = 'Answer All';
+    const CREATE_TYPE_ANSWER_TYPE = 'Answer Type';
 }
 //***

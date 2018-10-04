@@ -372,7 +372,6 @@ class ParserRecordList extends Parser
                 {
                     $Valeur = (string) $ndColonne;
                 }
-
                 $clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false); //false car pas modifier par l'utilisateur ici
                 break;
 			}

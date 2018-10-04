@@ -602,17 +602,18 @@ abstract class StructureColonne
 	const OPTION_TableType_ViewTable  = "view";
 
 	// Attributs pour les boutons
-	const OPTION_IDAction       = "idAction";
-	const OPTION_IDBouton       = "idButton";
-	const OPTION_Sentence       = "sentence";
-	const OPTION_TypeAction     = "actionType";
-	const OPTION_IDTypeAction   = "actionTypeID";
-	const OPTION_TypeSelection  = "typeSelection";
-	const OPTION_Icone          = "icon";
-	const OPTION_WithValidation = "withValidation";
-    const OPTION_Substitution   = "substitution";
-	const OPTION_IDColToUpdate  = "columnToUpdate";
-	const OPTION_IDColSelection = "columnSelection";
+	const OPTION_IDAction           = "idAction";
+	const OPTION_IDBouton           = "idButton";
+	const OPTION_Sentence           = "sentence";
+	const OPTION_TypeAction         = "actionType";
+	const OPTION_IDTypeAction       = "actionTypeID";
+	const OPTION_TypeSelection      = "typeSelection";
+	const OPTION_Icone              = "icon";
+	const OPTION_WithValidation     = "withValidation";
+    const OPTION_Substitution       = "substitution";
+	const OPTION_IDColToUpdate      = "columnToUpdate";
+	const OPTION_IDColSelection     = "columnSelection";
+	const OPTION_ColumnAssignation  = "columnAssignation";
 
 	// Attributs des separateurs
 	const OPTION_ModeMultiC      = "multiColumnMode";

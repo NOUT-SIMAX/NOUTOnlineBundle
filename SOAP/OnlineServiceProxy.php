@@ -935,6 +935,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     }
     //---
 
+    public function getRequestMesage($requestMessage, $aHeaders = array()) {
+        return $this->call('RequestMessage', array($requestMessage), null, null, $aHeaders);
+    }
+
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetEndAutomatism
      *
@@ -1490,6 +1494,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    return $this->call('UpdateMessage', $xmlData ,  null, null , $aHeaders);
     }
     //---
+
+    public function updateMessages($updateColumnMessageValueInBatch, $aHeaders = array()) {
+        return $this->call('UpdateColumnMessageValueInBatch', array($updateColumnMessageValueInBatch), null, null, $aHeaders);
+    }
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Validate
