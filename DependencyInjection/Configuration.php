@@ -62,7 +62,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->booleanNode('log')
                     ->info('Indique s\'il faut logger les requetes a NOUTOnline.')
-                    ->defaultValue(true)
+                    ->defaultValue(false)
                 ->end()
                 ->append($this->addAuthNode())
                 ->append($this->addExtranetNode())
