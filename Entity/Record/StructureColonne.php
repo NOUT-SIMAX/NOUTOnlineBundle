@@ -549,6 +549,7 @@ abstract class StructureColonne
 	const TM_Bouton     = 'simax-button';
 	const TM_Combo      = 'simax-choice';
 	const TM_Fichier    = 'xs:base64Binary';
+    const TM_HTML       = 'simax-html';
 
 
     const OPTION_Name       = 'name';
