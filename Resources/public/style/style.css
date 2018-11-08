@@ -96,6 +96,12 @@ body {
   text-align: center;
 }
 
+@media screen and (max-width: 479px) {
+  #loginbox .panel {
+    width: 95vw;
+    margin: auto;
+  }
+}
 body {
   background-image: url("../../../img/sym/theme/NOUT/background.jpg");
 }
