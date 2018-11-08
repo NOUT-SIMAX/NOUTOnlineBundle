@@ -75,6 +75,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Merge;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -1699,6 +1700,24 @@ class NOUTClient
         }
 
         $clReponseXML = $this->m_clSOAPProxy->createFrom($clCreateFrom, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oMerge($sIDContexte, $form, $dstRecord, $srcRecords) {
+        //paramètre de l'action liste
+        $clMerge = new  Merge();
+        $clMerge->ElemSrc = $srcRecords;
+        $clMerge->Table = $form;
+        $clMerge->ElemDest= $dstRecord;
+
+        //header
+        $aTabHeaderSuppl = array();
+        if (!empty($sIDContexte))
+        {
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->merge($clMerge, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
