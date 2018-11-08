@@ -44,6 +44,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromAddress;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Merge;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
@@ -740,6 +741,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    return $this->call('CreateFrom', array($clWsdlType_CreateFrom) ,  null, null , $aHeaders);
     }
     //---
+
+    public function merge(Merge $merge, $aHeaders = array()) {
+        return $this->call('Merge', array($merge), null, null, $aHeaders);
+    }
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateMessage
