@@ -43,7 +43,25 @@ class StructureBouton extends StructureColonne
                 /** @var \SimpleXMLElement $subButton */
                 $clAttribNOUT = $subButton->attributes(ParserXSDSchema::NAMESPACE_NOUT_XSD);
                 $clAttribXS   = $subButton->attributes(ParserXSDSchema::NAMESPACE_XSD);
-                array_push($this->subButtons, new StructureBouton($clAttribNOUT, $clAttribXS));
+
+                $ndSeqSousButtons = null;
+                try
+                {
+                    $shema = ParserXSDSchema::NAMESPACE_XSD;
+                    if ($subButton->children($shema)->count() > 0)
+                    {
+                        $ndSeqSousButtons = $subButton->children($shema)->complexType->children($shema)->sequence;
+                        if ($ndSeqSousButtons->children($shema)->count() == 0)
+                        {
+                            $ndSeqSousButtons = null;
+                        }
+                    }
+                }
+                catch (\Exception $e) {
+                    $ndSeqSousButtons = null;
+                }
+
+                array_push($this->subButtons, new StructureBouton($clAttribNOUT, $clAttribXS, $ndSeqSousButtons));
             }
         }
 	}

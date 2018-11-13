@@ -45,6 +45,16 @@ class ParserRecordList extends Parser
 	 */
 	protected $m_clXML;
 
+    /**
+     * @var \SimpleXMLElement
+     */
+	protected $imports;
+
+    /**
+     * @var \SimpleXMLElement
+     */
+	protected $exports;
+
 
 	public function __construct()
 	{
@@ -118,6 +128,22 @@ class ParserRecordList extends Parser
 		$this->m_clParserXSD = new ParserXSDSchema();
 		$this->m_clParserXSD->Parse($nNiv, $ndSchema);
 	}
+
+	public function getImports() {
+	    return $this->imports;
+    }
+
+    public function setImports(\SimpleXMLElement $imports) {
+        $this->imports = $imports;
+    }
+
+    public function getExports() {
+        return $this->exports;
+    }
+
+    public function setExports(\SimpleXMLElement $exports) {
+	    $this->exports = $exports;
+    }
 
 	/**
 	 * @param string $sTagName

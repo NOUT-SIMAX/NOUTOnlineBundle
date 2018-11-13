@@ -72,7 +72,11 @@ class RecordList
 
     protected $activeReorder;
 
-    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder)
+    protected $exports;
+
+    protected $imports;
+
+    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder, $exports, $imports)
     {
         $this->m_sTitle = $sTitle;
         $this->m_sIDAction = $sIDAction;
@@ -81,6 +85,8 @@ class RecordList
         $this->m_TabEnregTableau = $TabIDEnreg;
         $this->possibleReorder = $possibleReorder;
         $this->activeReorder = $activeReorder;
+        $this->exports = $exports;
+        $this->imports = $imports;
     }
 
     /**
@@ -165,6 +171,20 @@ class RecordList
     public function getTabPossibleDisplayMode()
     {
         return $this->m_TabPossibleDisplayMode;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExports() {
+        return $this->exports;
+    }
+
+    /**
+     * @return array
+     */
+    public function getImports() {
+        return $this->imports;
     }
 
     /**
