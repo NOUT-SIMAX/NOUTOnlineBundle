@@ -63,8 +63,32 @@ class ParserScheduler extends ParserList
 
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
+        $exports = array();
+        if(!is_null($this->m_clParserList->getExports())) {
+            foreach($this->m_clParserList->getExports() as $xmlExport) {
+                $export = new \stdClass();
+                foreach($xmlExport->attributes() as $name => $value) {
+                    $export->$name = (string) $value;
+                }
+                $export->value = (string) $xmlExport;
+                array_push($exports, $export);
+            }
+        }
+
+        $imports = array();
+        if(!is_null($this->m_clParserList->getImports())) {
+            foreach($this->m_clParserList->getImports() as $xmlImport) {
+                $import = new \stdClass();
+                foreach($xmlImport->attributes() as $name => $value) {
+                    $import->$name = (string) $value;
+                }
+                $import->value = (string) $xmlImport;
+                array_push($imports, $import);
+            }
+        }
+
         // Instance d'une nouvelle clList avec toutes les donn�es pr�c�dentes
-        $clList = new RecordList('', '', $sIDForm, $this->m_clParserScheduler->m_TabEnregTableau, $clStructElem, false, false);
+        $clList = new RecordList('', '', $sIDForm, $this->m_clParserScheduler->m_TabEnregTableau, $clStructElem, false, false, $exports, $imports);
 
         // Param�tres pour la clList
         $clList->setRecordCache($this->m_clParserScheduler->getFullCache());
