@@ -1561,11 +1561,11 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     //---
 
     public function export($export, $aHeaders = array()) {
-        return $this->call('Export', $export, null, null, $aHeaders);
+        return $this->call('Export', array($export), null, null, $aHeaders);
     }
 
-    public function import($export, $aHeaders = array()) {
-        return $this->call('Export', $export, null, null, $aHeaders);
+    public function import($import, $aHeaders = array()) {
+        return $this->call('Export', array($import), null, null, $aHeaders);
     }
 
 	static public function s_isValidHeaderProp($sHeaderProp)
