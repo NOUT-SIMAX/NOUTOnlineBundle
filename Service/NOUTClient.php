@@ -64,6 +64,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
@@ -1155,12 +1156,27 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oImport($tableId, $actionId, $importId, $file) {
+    public function oImport($tableId, $actionId, $importId, UploadedFile $file = null) {
+        $data = null;
+
+        if($file instanceof UploadedFile) {
+            $encoding = 'base64';
+            $filename = $file->getClientOriginalName();
+            $size = $file->getSize();
+            $fileData = base64_encode(stream_get_contents(fopen($file->getRealPath(), 'rb')));
+
+            $data = new DataType();
+            $data->filename = $filename;
+            $data->encoding = $encoding;
+            $data->size = $size;
+            $data->_ = $fileData;
+        }
         $import = new Import();
+
         $import->Table = $tableId;
         $import->ID = $actionId;
         $import->Import = $importId;
-        $import->File = $file;
+        $import->File = $data;
 
         $clReponseXML = $this->m_clSOAPProxy->import($import, $this->_aGetTabHeader(array()));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
