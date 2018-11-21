@@ -17,6 +17,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 class AddPJ
 {
 	public $IDMessage; // string
-	public $DataPJ; // DataPJType
+	public $DataPJ; // DataType
 }
 //***

@@ -610,7 +610,35 @@ class XMLResponseWS
 		return $TabLanguages;
 	}
 
+    /**
+     * @return \SimpleXMLElement
+     */
+    public function getExportsNode()
+    {
+        $exports = $this->m_ndHeader->children()->Exports;
+        if (empty($exports))
+        {
+            return null;
+        }
 
+        //le noeud XSDSchema n'a qu'un fils
+        return $exports->Export;
+    }
+
+    /**
+     * @return \SimpleXMLElement
+     */
+    public function getImportsNode()
+    {
+        $imports = $this->m_ndHeader->children()->Imports;
+        if (empty($imports))
+        {
+            return null;
+        }
+
+        //le noeud XSDSchema n'a qu'un fils
+        return $imports->children();
+    }
 
 	//réponse générique
 	const RETURNTYPE_EMPTY          = 'Empty';

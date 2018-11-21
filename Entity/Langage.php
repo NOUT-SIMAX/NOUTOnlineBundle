@@ -87,13 +87,16 @@ class Langage
 	{
         // Indique quels boutons sont dispo en readOnly
 		$isReadOnlyButton =[
+            self::eTYPEACTION_Unknown       => false,
             self::eTYPEACTION_Creation      => false,
             self::eTYPEACTION_Modification  => false,
             self::eTYPEACTION_Liste         => false,
 			self::eTYPEACTION_Suppression   => false,
             self::eTYPEACTION_AjouterA      => false,
             self::eTYPEACTION_EnleverDe     => false,
-            self::eTYPEACTION_Particuliere     => false,
+            self::eTYPEACTION_Particuliere  => false,
+            self::eTYPEACTION_Exporter      => true,
+            self::eTYPEACTION_Importer      => false,
 
             self::eTYPEACTION_Consultation  => true,
             self::eTYPEACTION_Impression    => true,
