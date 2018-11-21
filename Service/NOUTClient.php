@@ -64,9 +64,11 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Export;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\FilterType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
@@ -74,6 +76,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Import;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Merge;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
@@ -1117,6 +1120,65 @@ class NOUTClient
             $colList,
             $aTabHeaderSuppl);
 
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param $tableId
+     * @param $actionId
+     * @param $exportId
+     * @param $format
+     * @param $module
+     * @param $colType
+     * @param $items
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExport($tableId, $actionId, $exportId, $format, $module, $colType, $items) {
+        $export = new Export();
+        $export->Table = $tableId;
+        $export->ID = $actionId;
+        $export->Export = $exportId;
+        $export->Format = $format;
+        $export->Module = $module;
+        $export->ColType = $colType;
+        $export->items = $items;
+
+        $clReponseXML = $this->m_clSOAPProxy->export($export, $this->_aGetTabHeader(array()));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param $tableId
+     * @param $actionId
+     * @param $importId
+     * @param $file
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oImport($tableId, $actionId, $importId, UploadedFile $file = null) {
+        $data = null;
+
+        if($file instanceof UploadedFile) {
+            $encoding = 'base64';
+            $filename = $file->getClientOriginalName();
+            $size = $file->getSize();
+            $fileData = base64_encode(stream_get_contents(fopen($file->getRealPath(), 'rb')));
+
+            $data = new DataType();
+            $data->filename = $filename;
+            $data->encoding = $encoding;
+            $data->size = $size;
+            $data->_ = $fileData;
+        }
+        $import = new Import();
+
+        $import->Table = $tableId;
+        $import->ID = $actionId;
+        $import->Import = $importId;
+        $import->File = $data;
+
+        $clReponseXML = $this->m_clSOAPProxy->import($import, $this->_aGetTabHeader(array()));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
