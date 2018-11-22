@@ -131,30 +131,8 @@ class ParserList extends Parser
         $withBtnOrder = $clReponseXML->clGetForm()->hasOrderBtn();
         $withOrderActive = $clReponseXML->clGetForm()->hasOrderActive();
 
-        $exports = array();
-        if(!is_null($this->m_clParserList->getExports())) {
-            foreach($this->m_clParserList->getExports() as $xmlExport) {
-                $export = new \stdClass();
-                foreach($xmlExport->attributes() as $name => $value) {
-                    $export->$name = (string) $value;
-                }
-                $export->value = (string) $xmlExport;
-                array_push($exports, $export);
-            }
-        }
-
-        $imports = array();
-        if(!is_null($this->m_clParserList->getImports())) {
-            foreach($this->m_clParserList->getImports() as $xmlImport) {
-                $import = new \stdClass();
-                foreach($xmlImport->attributes() as $name => $value) {
-                    $import->$name = (string) $value;
-                }
-                $import->value = (string) $xmlImport;
-                array_push($imports, $import);
-            }
-        }
-
+        $exports = $this->_getExports();
+        $imports = $this->_getImports();
 
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
@@ -186,6 +164,43 @@ class ParserList extends Parser
     }
 
     /**
+     * @return array
+     */
+    protected function _getExports()
+    {
+        $exports = array();
+        if(!is_null($this->m_clParserList->getExports())) {
+            foreach($this->m_clParserList->getExports() as $xmlExport) {
+                $export = new \stdClass();
+                foreach($xmlExport->attributes() as $name => $value) {
+                    $export->$name = (string) $value;
+                }
+                $export->value = (string) $xmlExport;
+                array_push($exports, $export);
+            }
+        }
+        return $exports;
+    }
+    /**
+     * @return array
+     */
+    protected function _getImports()
+    {
+        $imports = array();
+        if(!is_null($this->m_clParserList->getImports())) {
+            foreach($this->m_clParserList->getImports() as $xmlImport) {
+                $import = new \stdClass();
+                foreach($xmlImport->attributes() as $name => $value) {
+                    $import->$name = (string) $value;
+                }
+                $import->value = (string) $xmlImport;
+                array_push($imports, $import);
+            }
+        }
+        return $imports;
+    }
+
+    /**
      * @param XMLResponseWS $clReponseXML
      * @return RecordList
      * TODO: Refacto with above.
@@ -203,8 +218,11 @@ class ParserList extends Parser
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
 
+        $exports = $this->_getExports();
+        $imports = $this->_getImports();
+
         // Instance d'une nouvelle clList avec toutes les données précédentes
-        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, false, false);
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, false, false, $exports, $imports);
         $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
         $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
 
