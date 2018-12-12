@@ -578,7 +578,7 @@ class NOUTClient
 
         $aInfo = array();
         //on a pas les infos, il faut les calculer
-         $json = json_decode($this->m_clRESTProxy->$method($clIdentification));
+        $json = json_decode($this->m_clRESTProxy->$method($clIdentification));
         if (is_array($json) && (count($json) > 0))
         {
             foreach ($json as $objet)
@@ -611,7 +611,9 @@ class NOUTClient
             }
         }
 
-        $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_{$sUsername}", $aInfo);
+        if (!json_last_error()){
+            $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_{$sUsername}", $aInfo);
+        }
         return $aInfo;
     }
 
