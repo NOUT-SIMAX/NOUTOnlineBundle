@@ -40,7 +40,7 @@ abstract class StructureColonne
 
     /**
      * restriction sur la colonne
-     * @var ColonneRestriction
+     * @var ColonneRestriction|null
      */
 	protected $m_clRestriction;
 
@@ -270,6 +270,32 @@ abstract class StructureColonne
 		return $this;
 	}
 
+    /**
+     * @return ColonneRestriction|null
+     */
+    public function clGetRestriction() {
+        return $this->m_clRestriction;
+    }
+
+    /**
+     * @param $type
+     */
+    public function getRestriction($type)
+    {
+        if ($this->m_clRestriction){
+            return $this->m_clRestriction->getRestriction($type);
+        }
+        return array();
+    }
+
+    public function getIconRestriction($type)
+    {
+        if ($this->m_clRestriction){
+            return $this->m_clRestriction->getIconRestriction($type);
+        }
+        return array();
+    }
+
 	/**
 	 * @return string
 	 */
@@ -361,12 +387,6 @@ abstract class StructureColonne
 
     }
 
-    /**
-     * @return ColonneRestriction|null
-     */
-    public function getRestriction() {
-        return $this->m_clRestriction;
-    }
 
     /**
      * vrai si le champ est un texte monoligne
@@ -498,7 +518,7 @@ abstract class StructureColonne
 			}
             case self::TM_Combo :
             {
-                if (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 3) {
+                if (isset($this->m_clRestriction) && (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 3)) {
                     return 'simax_radio';
                 }
                 else {

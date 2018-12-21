@@ -23,6 +23,7 @@ class ColonneRestriction
 	public function __construct()
 	{
 		$this->m_TabRestriction  = array();
+		$this->m_IconRestriction = array();
 	}
 
 	/**
@@ -71,7 +72,7 @@ class ColonneRestriction
             return $this->m_IconRestriction[$Type];
         }
 
-		return null;
+		return array();
 	}
 
 	/**
@@ -84,7 +85,7 @@ class ColonneRestriction
             return $this->m_TabRestriction[$type];
         }
 
-        return null;
+        return array();
 	}
 
     /**
