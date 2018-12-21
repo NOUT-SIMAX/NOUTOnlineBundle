@@ -17,12 +17,6 @@ class StructureDonnee extends StructureColonne
 	protected $m_bRequired;
 
 	/**
-	 * @var ColonneRestriction|null restriction sur le champ
-	 */
-	protected $m_clRestriction;
-
-
-	/**
 	 * @param                   $sID
 	 * @param \SimpleXMLElement $clAttribNOUT
 	 * @param \SimpleXMLElement $clAttribXS
@@ -32,16 +26,8 @@ class StructureDonnee extends StructureColonne
 		parent::__construct($sID, $clAttribNOUT, $clAttribXS);
 
 		$this->m_bRequired = (isset($clAttribXS['use']) && ((string) $clAttribXS['use'] === 'required')); //xs:use="required"
-		$this->m_clRestriction       = null;
 	}
 
-	/**
-	 * @return null|ColonneRestriction
-	 */
-	public function getRestriction()
-	{
-		return $this->m_clRestriction;
-	}
 
 
 
