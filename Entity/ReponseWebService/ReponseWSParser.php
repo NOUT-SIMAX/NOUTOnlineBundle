@@ -70,7 +70,8 @@ class ReponseWSParser
 		}
 
 		// Appel des fonctions à la volée grâce au tableau de méthodes
-		return $this->$aPtrFct[$sReturnType]($clXMLReponseWS, $autreInfos);
+        $method = $aPtrFct[$sReturnType];
+		return $this->$method($clXMLReponseWS, $autreInfos);
 
 	}
 
