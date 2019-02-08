@@ -78,7 +78,7 @@ class NOUTOnlineUserProvider implements UserProviderInterface
 			return $user;
 		}
 
-		throw new UsernameNotFoundException('Username {{ username }} could not be found.');
+		throw new UsernameNotFoundException('The user or password is incorrect.');
 	}
 
 	/**

@@ -152,7 +152,8 @@ class NOUTOnlineAuthenticationProvider implements AuthenticationProviderInterfac
 		$username = $token->getUsername();
 		if (empty($username))
         {
-            $username = 'NONE_PROVIDED';
+            //$username = 'NONE_PROVIDED';
+            throw new UsernameNotFoundException('You must enter a username.');
         }
 
 		try
