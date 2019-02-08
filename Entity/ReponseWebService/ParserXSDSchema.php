@@ -192,7 +192,8 @@ class ParserXSDSchema extends Parser
 					//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
 					if (($ndNoeud->children(self::NAMESPACE_XSD)->count()>0) && array_key_exists($eTypeElement, $aType2Methode))
 					{
-						$this->$aType2Methode[$eTypeElement]($nNiv, $clStructColonne, $ndNoeud);
+					    $method = $aType2Methode[$eTypeElement];
+						$this->$method($nNiv, $clStructColonne, $ndNoeud);
 					}
 
 					$clStructSection->addColonne($clStructColonne);
