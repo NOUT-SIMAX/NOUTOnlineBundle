@@ -112,6 +112,7 @@ class DefaultController extends Controller
         /** @var array $languages */
         $languages = (array) $this->_clGetSOAPProxy()->getLanguages(array())->getNodeXML()->LanguageCode;
         $languages = array_map(function($language) use($map) {return $map[$language];}, $languages);
+        $bSelectLanguage=count($languages)>1;
 
 	    $session = $request->getSession();
 
@@ -136,6 +137,7 @@ class DefaultController extends Controller
             'extranet'                  => $this->getParameter('nout_online.extranet')['actif'],
             'version_min'               => $this->getParameter('nout_online.version_min'),
             'available_languages'       => $languages,
+            'select_language'           => $bSelectLanguage,
 	    ));
 
     }
