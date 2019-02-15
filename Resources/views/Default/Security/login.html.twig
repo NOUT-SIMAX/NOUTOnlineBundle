@@ -60,18 +60,20 @@
 				<div class="panel-title">
                     {% if extranet %}<span class="glyphicon glyphicon-globe"></span> {% endif %}
                     {{ 'login.sign_in' | trans }}
-                    <div class="languages">
-                        <span class="selected_language"></span>
-                        <div class="available_languages">
-                           <ul class="available_languages">
-                                {% for language in available_languages %}
-                                    <li class="language" onclick="loadLanguage(code={{ language.code }})">
-                                        <img src="{{ asset("img/ihm/Flags/#{language.short}.png") }}" title="{{ language.lang }}"/>{{ language.lang }}
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                    {% if select_language %}
+                        <div class="languages">
+                            <span class="selected_language"></span>
+                            <div class="available_languages">
+                               <ul class="available_languages">
+                                    {% for language in available_languages %}
+                                        <li class="language" onclick="loadLanguage(code={{ language.code }})">
+                                            <img src="{{ asset("img/ihm/Flags/#{language.short}.png") }}" title="{{ language.lang }}"/>{{ language.lang }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
 			</div>
 			<div style="padding-top:30px" class="panel-body" >
