@@ -2474,9 +2474,18 @@ class NOUTClient
         $clMessageXSD=$clParserXSD->clGetStructureElement('16510');
         $clStructureColonne=$clMessageXSD->getStructureColonne('16078'); // adresse de retour
         assert($clStructureColonne->getTypeElement()==StructureColonne::TM_Combo);
-        $TabCompteEmail=$clStructureColonne->clGetRestriction()->getRestriction(ColonneRestriction::R_ENUMERATION);
+        $aTabCompteEmail=$clStructureColonne->clGetRestriction()->getRestriction(ColonneRestriction::R_ENUMERATION);
 
-        return $resCreate->getNodeXML()->asXML();
+        $xml=$resCreate->getNodeXML();
+        $xmlEmails=$xml->addChild('emails');
+        foreach( $aTabCompteEmail as $id => $sCompte)
+        {
+            $xmlEmail=$xmlEmails->addChild('email');
+            $xmlEmail->addChild('compte', $sCompte);
+            $xmlEmail->addChild('id', $id);
+        }
+
+        return $xml->asXML();
     }
 
     /**
