@@ -2588,6 +2588,23 @@ class NOUTClient
     }
 
 
+    public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', false);
+
+        $this->m_clRESTProxy->sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, $clIdentification);
+    }
+
+    public function sGetSignature($compteID)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', false);
+
+        $aTabParam=[];
+        $aTabOption=[];
+
+        return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
+    }
+
     // Fin Fichiers
     // ------------------------------------------------------------------------------------
 
