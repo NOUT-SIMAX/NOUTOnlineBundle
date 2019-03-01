@@ -38,6 +38,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\OperatorType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
@@ -47,6 +48,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserScheduler;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserXSDSchema;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
@@ -103,6 +105,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Stopwatch\Stopwatch;
+
 
 class NOUTClient
 {
@@ -2461,7 +2464,28 @@ class NOUTClient
         $message->IDAnswerType = $templateId;
         if($originalMessage !== 'undefined')
             $message->IDMessage = $originalMessage;
-        return $this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
+
+        $resCreate=$this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl);
+
+        // depuis le schema on retrouve la liste des comptes email (adresse de retour)
+        $ndSchema=$resCreate->getNodeSchema();
+        $clParserXSD = new ParserXSDSchema();
+        $clParserXSD->Parse(0, $ndSchema);
+        $clMessageXSD=$clParserXSD->clGetStructureElement('16510');
+        $clStructureColonne=$clMessageXSD->getStructureColonne('16078'); // adresse de retour
+        assert($clStructureColonne->getTypeElement()==StructureColonne::TM_Combo);
+        $aTabCompteEmail=$clStructureColonne->clGetRestriction()->getRestriction(ColonneRestriction::R_ENUMERATION);
+
+        $xml=$resCreate->getNodeXML();
+        $xmlEmails=$xml->addChild('emails');
+        foreach( $aTabCompteEmail as $id => $sCompte)
+        {
+            $xmlEmail=$xmlEmails->addChild('email');
+            $xmlEmail->addChild('compte', $sCompte);
+            $xmlEmail->addChild('id', $id);
+        }
+
+        return $xml->asXML();
     }
 
     /**
@@ -2471,6 +2495,7 @@ class NOUTClient
     public function oGetReplyTemplates() {
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest(array());
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $aTabHeaderSuppl[OnlineServiceProxy::HEADER_AutoValidate]=OnlineServiceProxy::AUTOVALIDATE_Cancel; //on ne garde pas le contexte ouvert
         $specialParamList = new SpecialParamListType();
         $specialParamList->First = 0;
         $specialParamList->Length = 50;
@@ -2564,6 +2589,23 @@ class NOUTClient
     }
 
 
+    public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', false);
+
+        $this->m_clRESTProxy->sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, $clIdentification);
+    }
+
+    public function sGetSignature($compteID)
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', false);
+
+        $aTabParam=[];
+        $aTabOption=[];
+
+        return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
+    }
+
     // Fin Fichiers
     // ------------------------------------------------------------------------------------
 
@@ -2581,5 +2623,4 @@ class NOUTClient
     const PARAM_CHECKSUM            = 'Checksum';
     const PARAM_CALLINGINFO         = 'CallingInfo';
     const PARAM_BTN_LISTMODE        = 'BtnListMode';
-    const PARAM_APIUSER             = 'APIUser';
 }
