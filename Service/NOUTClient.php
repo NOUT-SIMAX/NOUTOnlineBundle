@@ -2495,6 +2495,7 @@ class NOUTClient
     public function oGetReplyTemplates() {
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest(array());
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
+        $aTabHeaderSuppl[OnlineServiceProxy::HEADER_AutoValidate]=OnlineServiceProxy::AUTOVALIDATE_Cancel; //on ne garde pas le contexte ouvert
         $specialParamList = new SpecialParamListType();
         $specialParamList->First = 0;
         $specialParamList->Length = 50;
@@ -2622,5 +2623,4 @@ class NOUTClient
     const PARAM_CHECKSUM            = 'Checksum';
     const PARAM_CALLINGINFO         = 'CallingInfo';
     const PARAM_BTN_LISTMODE        = 'BtnListMode';
-    const PARAM_APIUSER             = 'APIUser';
 }
