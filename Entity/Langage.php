@@ -491,7 +491,7 @@ class Langage
 //	const COL_COMPTEEMAIL_AdresseEMail = 1227;
 //
 //	const COL_COMPTEEMAIL_FAI           = 1231;
-//	const COL_COMPTEEMAIL_Signature     = 15259;
+	const COL_COMPTEEMAIL_Signature     = 15259;
 //	const COL_COMPTEEMAIL_Pseudo        = 15261;
 //	const COL_COMPTEEMAIL_AdresseDefaut = 15866;
 //
