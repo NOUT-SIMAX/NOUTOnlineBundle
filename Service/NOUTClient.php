@@ -2456,7 +2456,8 @@ class NOUTClient
         return $res;
     }
 
-    public function oCreateMessage(array $requestHeaders, $type, $originalMessage, $templateId) {
+    public function oCreateMessage(array $requestHeaders, $type, $originalMessage, $templateId)
+    {
         $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $message = new CreateMessage();
@@ -2476,6 +2477,7 @@ class NOUTClient
         assert($clStructureColonne->getTypeElement()==StructureColonne::TM_Combo);
         $aTabCompteEmail=$clStructureColonne->clGetRestriction()->getRestriction(ColonneRestriction::R_ENUMERATION);
 
+        // ajoute les comptes a l'xml
         $xml=$resCreate->getNodeXML();
         $xmlEmails=$xml->addChild('emails');
         foreach( $aTabCompteEmail as $id => $sCompte)
@@ -2483,6 +2485,20 @@ class NOUTClient
             $xmlEmail=$xmlEmails->addChild('email');
             $xmlEmail->addChild('compte', $sCompte);
             $xmlEmail->addChild('id', $id);
+        }
+
+        // compte du message
+        $aElemIDCompte=$xml->id_16510->id_16078;
+        if ($aElemIDCompte)
+        {
+            $nIDCompte=(int)$aElemIDCompte;
+            // si on doit ajouter la signature
+            if ($this->bGetSiAjouteSignature($nIDCompte, $type))
+            {
+                $sSignature=$this->sGetSignature($nIDCompte);
+                if ($sSignature!="")
+                    $xml->addChild('signature', $sSignature);
+            }
         }
 
         return $xml->asXML();
@@ -2604,6 +2620,26 @@ class NOUTClient
         $aTabOption=[];
 
         return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
+    }
+
+    public function bGetSiAjouteSignature($compteID, $sType)
+    {
+//        const CREATE_TYPE_EMPTY = 'Empty';
+//        const CREATE_TYPE_FORWARD = 'Forward';
+//        const CREATE_TYPE_ANSWER = 'Answer';
+//        const CREATE_TYPE_ANSWER_ALL = 'Answer All';
+//        const CREATE_TYPE_ANSWER_TYPE = 'Answer Type';
+
+        $nIDCol=($sType=='Empty') ? Langage::COL_COMPTEEMAIL_SignatureNouveau : Langage::COL_COMPTEEMAIL_SignatureRepondre;
+
+        $clIdentification = $this->_clGetIdentificationREST('', false);
+
+        $aTabParam=[];
+        $aTabOption=[];
+
+        $sRes=$this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
+
+        return $sRes!=="Non";
     }
 
     // Fin Fichiers
