@@ -2493,12 +2493,19 @@ class NOUTClient
         {
             $nIDCompte=(string)$aElemIDCompte;
             // si on doit ajouter la signature
-            if ($this->bGetSiAjouteSignature($nIDCompte, $type))
-            {
-                $sSignature=$this->sGetSignature($nIDCompte);
-                if ($sSignature!="")
-                    $xml->addChild('signature', $sSignature);
+            $sSignature="";
+            try{
+                if ($this->bGetSiAjouteSignature($nIDCompte, $type))
+                {
+                    $sSignature=$this->sGetSignature($nIDCompte);
+                }
             }
+            catch(\Exception $e)
+            {
+                $sSignature="";
+            }
+            if ($sSignature!="")
+                $xml->addChild('signature', $sSignature);
         }
 
         return $xml->asXML();
