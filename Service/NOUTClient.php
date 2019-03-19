@@ -2491,7 +2491,7 @@ class NOUTClient
         $aElemIDCompte=$xml->id_16510->id_16078;
         if ($aElemIDCompte)
         {
-            $nIDCompte=(int)$aElemIDCompte;
+            $nIDCompte=(string)$aElemIDCompte;
             // si on doit ajouter la signature
             if ($this->bGetSiAjouteSignature($nIDCompte, $type))
             {
