@@ -161,8 +161,19 @@ class NOUTOnlineLogger
 				$this->_getContext(true, $sOperation, $bSOAP, $extra)
 			);
 
+			//il faut
+            $sFromPourLog = $sFrom;
+
+            if (!$bSOAP &&
+                isset($extra['http-headers']) &&
+                isset($extra['http-headers']['Content-Type']) &&
+                (strncmp($extra['http-headers']['Content-Type']->value, 'text/', strlen('text/'))!=0)
+            ){
+                $sFromPourLog = base64_encode($sFrom);
+            }
+
 			$this->m_clMonolog->debug(
-				$sFrom,
+                $sFromPourLog,
 				$this->_getContext(false, $sOperation, $bSOAP, $extra)
 			);
 
@@ -197,7 +208,14 @@ class NOUTOnlineLogger
 			else
 			{
 				$sRequest  = $sTo;
-				$sResponse = $sFrom;
+                $sResponse = $sFrom;
+
+                if (isset($extra['http-headers']) &&
+                    isset($extra['http-headers']['Content-Type']) &&
+                    (strncmp($extra['http-headers']['Content-Type']->value, 'image/', strlen('image/'))==0)
+                ){
+                    $sResponse = '<img src="data:'.$extra['http-headers']['Content-Type']->value.';base64,'.$sFromPourLog.'"/>';
+                }
 			}
 
 			$this->m_TabQueries[] = array(
