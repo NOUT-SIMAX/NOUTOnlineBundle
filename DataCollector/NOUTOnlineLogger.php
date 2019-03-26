@@ -167,7 +167,8 @@ class NOUTOnlineLogger
             if (!$bSOAP &&
                 isset($extra['http-headers']) &&
                 isset($extra['http-headers']['Content-Type']) &&
-                (strncmp($extra['http-headers']['Content-Type']->value, 'text/', strlen('text/'))!=0)
+                (strncmp($extra['http-headers']['Content-Type']->value, 'text/', strlen('text/'))!=0) &&
+                (strcmp($extra['http-headers']['Content-Type']->value, 'application/json')!=0)
             ){
                 $sFromPourLog = base64_encode($sFrom);
             }
