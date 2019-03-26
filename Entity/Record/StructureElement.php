@@ -56,15 +56,22 @@ class StructureElement
 	protected $m_MapIDColonne2Structure;
 
 
+    /**
+     * @var bool
+     */
+	protected $m_bWithGhost;
+
+
 	/**
 	 * @param $sID
 	 * @param $sLibelle
 	 * @param $nNiv
 	 */
-	public function __construct($sID, $sLibelle)
+	public function __construct($sID, $sLibelle, $bWithGhost = false)
 	{
 		$this->m_nID                        = $sID;
 		$this->m_sLibelle                   = $sLibelle;
+		$this->m_bWithGhost                 = $bWithGhost;
 		$this->m_clFiche					= new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
 
 		$this->m_MapIDColonne2Structure 			= array();
@@ -154,6 +161,14 @@ class StructureElement
 
 		return $this->m_MapIDColonne2Structure[$sIDColonne]->getTypeElement();
 	}
+
+    /**
+     * @return bool
+     */
+	public function isWithGhost()
+    {
+        return $this->m_bWithGhost;
+    }
 
 	/**
 	 * @param string $sIDColonne identifiant de la colonne

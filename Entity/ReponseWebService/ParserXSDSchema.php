@@ -82,7 +82,7 @@ class ParserXSDSchema extends Parser
 		$sIDTableau = str_replace('id_', '', $TabAttribXS['name']);
 
 		$TabAttribSIMAX = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
-		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name']);
+		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name'], ((int) $TabAttribSIMAX['withGhost'])==1);
 
 		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
 		if ($ndElement->children(self::NAMESPACE_XSD)->count()>0)
