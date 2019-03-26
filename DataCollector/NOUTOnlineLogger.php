@@ -163,11 +163,12 @@ class NOUTOnlineLogger
 
 			//il faut
             $sFromPourLog = $sFrom;
+            $sMimeType = isset($extra['http-headers']) && isset($extra['http-headers']['Content-Type']) ? trim($extra['http-headers']['Content-Type']->value) : null;
 
             if (!$bSOAP &&
-                isset($extra['http-headers']) &&
-                isset($extra['http-headers']['Content-Type']) &&
-                (strncmp($extra['http-headers']['Content-Type']->value, 'text/', strlen('text/'))!=0)
+                isset($sMimeType) &&
+                (strncasecmp($sMimeType, 'text/', strlen('text/'))!=0) &&
+                (strcasecmp($sMimeType, 'application/json')!=0)
             ){
                 $sFromPourLog = base64_encode($sFrom);
             }
