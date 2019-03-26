@@ -12,6 +12,7 @@ namespace NOUT\Bundle\ContextsBundle\Service;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
@@ -29,9 +30,9 @@ class RecordSerializer
         $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
     }
 
-    public function getRecordUpdateData(Record $clRecord, $idcontexte, $idihm)
+    public function getRecordUpdateData(Record $clRecord, $idcontexte, $idihm, $bIsParam=false)
     {
-        $aFilesToSend = $this->_getModifiedFiles($clRecord, $idcontexte, $idihm);
+        $aFilesToSend = $this->_getModifiedFiles($clRecord, $idcontexte, $idihm, $bIsParam);
         return $clRecord->getUpdateData($aFilesToSend);
     }
 
@@ -51,7 +52,7 @@ class RecordSerializer
         }
 
         $sIDForm = $clRecord->getIDTableau();
-        $paramXML = str_replace(array("<xml><id_$sIDForm>", "</id_$sIDForm></xml>"), array('',''), $this->getRecordUpdateData($clRecord, $idcontexte, $idihm));
+        $paramXML = str_replace(array("<xml><id_$sIDForm>", "</id_$sIDForm></xml>"), array('',''), $this->getRecordUpdateData($clRecord, $idcontexte, $idihm, true));
 
         return $paramXML;
     }
@@ -63,14 +64,14 @@ class RecordSerializer
      * @param $idihm
      * @return array
      */
-    protected function _getModifiedFiles(Record $clRecord, $idcontexte, $idihm)
+    protected function _getModifiedFiles(Record $clRecord, $idcontexte, $idihm, $bIsParam)
     {
         $aModifiedFiles = array();
 
         $structElem = $clRecord->clGetStructElem();
         $fiche = $structElem->getFiche();
 
-        $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $fiche, $aModifiedFiles);
+        $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $fiche, $aModifiedFiles, $bIsParam);
 
 
         return $aModifiedFiles;
@@ -85,12 +86,13 @@ class RecordSerializer
      * @param $aModifiedFiles
      * @return array
      */
-    protected function _getFilesFromSection(Record $clRecord, $idcontexte, $idihm, StructureSection $section, $aModifiedFiles)
+    protected function _getFilesFromSection(Record $clRecord, $idcontexte, $idihm, StructureSection $section, $aModifiedFiles, $bIsParam)
     {
-        $structColonne = $section->getTabStructureColonne();
+        /** @var StructureDonnee[] $TabStructColonne */
+        $TabStructColonne = $section->getTabStructureColonne();
 
         // Contient des structuresDonnes
-        foreach ($structColonne as $key => $colonne)
+        foreach ($TabStructColonne as $key => $colonne)
         {
             /**@var StructureDonnee $colonne */
             $idColonne = $colonne->getIDColonne();
@@ -100,8 +102,14 @@ class RecordSerializer
             {
                 /**@var StructureSection $colonne */
                 $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $colonne, $aModifiedFiles);
+                continue;
             }
-            else if ($typeElement == StructureColonne::TM_Fichier && $clRecord->isModified($idColonne))
+
+            $bModeleFichier = ($typeElement == StructureColonne::TM_Fichier);
+            $bModeleCheminDeFichier = $colonne->isOption(StructureColonne::OPTION_Modele_Directory);
+            $bColModified = $clRecord->isModified($idColonne);
+
+            if ( ($bModeleFichier || ($bModeleCheminDeFichier && $bIsParam)) && $bColModified)
             {
                 // On a un fichier modifié, on doit le récupérer
                 $fullPath = $clRecord->getValCol($idColonne);
