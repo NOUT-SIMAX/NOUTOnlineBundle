@@ -101,7 +101,7 @@ class RecordSerializer
             if ($typeElement == StructureColonne::TM_Separateur)
             {
                 /**@var StructureSection $colonne */
-                $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $colonne, $aModifiedFiles);
+                $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $colonne, $aModifiedFiles, $bIsParam);
                 continue;
             }
 
