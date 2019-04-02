@@ -67,7 +67,7 @@ class NOUTExceptionFormatter
     {
         $aException = array();
         $aException['message']  = $this->message;
-        $aException['stacktrace'] = $this->exception->__toString();
+        $aException['stacktrace'] = $this->exception->__toString();//$this->exception->getTraceAsString();
         $aException['level']    = $this->level;
         $aException['file']     = $this->exception->getFile();
         $aException['line']     = $this->exception->getLine();
