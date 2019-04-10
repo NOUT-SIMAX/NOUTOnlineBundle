@@ -16,6 +16,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 
 class UpdateFilter
 {
+	public $ID; // string
 	public $UpdateData; // string
 }
 //***
