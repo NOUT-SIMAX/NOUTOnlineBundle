@@ -639,6 +639,8 @@ abstract class StructureColonne
 	// Attributs des separateurs
 	const OPTION_ModeMultiC      = "multiColumnMode";
 	const OPTION_SensMultiC      = "multiColumnWay";
+	const OPTION_SideBySide      = "sideBySide";
+	const OPTION_Width           = "width";
 	const OPTION_SectionComputed = "sectionComputed";
 	const OPTION_SectionLevel    = "sectionLevel";
 	const OPTION_BackgroundColor = "backgroundColor";
