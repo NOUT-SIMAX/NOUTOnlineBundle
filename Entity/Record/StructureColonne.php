@@ -344,13 +344,14 @@ abstract class StructureColonne
 
 	/**
 	 * @param $sOption
+     * @param $default
 	 * @return string|null
 	 */
-	public function getOption($sOption)
+	public function getOption($sOption, $default=null)
 	{
 		if (!isset($this->m_TabOptions[$sOption]))
 		{
-			return null;
+			return $default;
 		}
 
 		return $this->m_TabOptions[$sOption];
