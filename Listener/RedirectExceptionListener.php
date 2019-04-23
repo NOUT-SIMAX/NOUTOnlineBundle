@@ -45,7 +45,7 @@ class RedirectExceptionListener
 		{
 			switch($exception->getCode())
 			{
-				case OnlineError::ERR_UTIL_DECONNECTE:
+				case OnlineError::ERR_WS_UTIL_DECONNECTE:
 				{
 					$request = $event->getRequest();
 					$session = $request->getSession();

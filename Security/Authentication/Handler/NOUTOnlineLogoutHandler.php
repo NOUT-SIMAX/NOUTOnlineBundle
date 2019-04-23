@@ -94,7 +94,7 @@ class NOUTOnlineLogoutHandler implements LogoutHandlerInterface
                 $clReponseXML = $this->m_clSOAPProxy->getXMLResponseWS();
                 if ($clReponseXML instanceof XMLResponseWS)
                 {
-                    if ($clReponseXML->getNumError()!=OnlineError::ERR_UTIL_DECONNECTE)
+                    if ($clReponseXML->getNumError()!=OnlineError::ERR_WS_UTIL_DECONNECTE)
                         throw new \Exception($clReponseXML->getMessError());
                 }
                 else
