@@ -41,8 +41,8 @@ class NOUTOnlineErreurTest extends NOUTOnlineTest {
 		$this->assertThat(
 			$nErreur,
 			$this->logicalOr(
-				$this->equalTo(OnlineError::ERR_UTIL_NONRESOLU),
-				$this->equalTo(OnlineError::ERR_UTIL_INCONNU)
+				$this->equalTo(OnlineError::ERR_WS_UTIL_NONRESOLU),
+				$this->equalTo(OnlineError::ERR_WS_UTIL_INCONNU)
 			)
 		);
 
@@ -60,7 +60,7 @@ class NOUTOnlineErreurTest extends NOUTOnlineTest {
 			$nCategorie = $XMLResponseWS->getCatError();
 		}
 		$this->assertEquals(OnlineError::CAT_SIMAXSERVICE, $nCategorie);
-		$this->assertEquals(OnlineError::ERR_UTIL_PASSERRINTRA, $nErreur);
+		$this->assertEquals(OnlineError::ERR_WS_UTIL_PASSERRINTRA, $nErreur);
 	}
 
 	/**
@@ -89,7 +89,7 @@ class NOUTOnlineErreurTest extends NOUTOnlineTest {
 			//echo "\n$nCategorie $nErreur\n";
 		}
 		$this->assertEquals(OnlineError::CAT_SIMAXSERVICE, $nCategorie);
-		$this->assertEquals(OnlineError::ERR_UTIL_DECONNECTE, $nErreur);
+		$this->assertEquals(OnlineError::ERR_WS_UTIL_DECONNECTE, $nErreur);
 	}
 
 } 

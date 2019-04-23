@@ -87,6 +87,7 @@ class ModifiedNusoapClient extends SOAPClient
 			$this->fault = true;
 
 			$sErrCode = -1;
+			$nErrCategorie = '';
 			$sErrMsg  = '';
 			if (is_array($mReturn['Detail']) && 
 				is_array($mReturn['Detail']['ListErr']) && 
@@ -99,12 +100,14 @@ class ModifiedNusoapClient extends SOAPClient
 				foreach ($mReturn['Detail']['ListErr']['Error'] as $tabError)
 				{
 					$sErrCode = $tabError['Code']['Numero'];
+                    $nErrCategorie = $tabError['Code']['Category'];
 					$sErrMsg = utf8_encode($tabError['Message']);
 				}
 			}
 			else
 			{
 				$sErrCode = $mReturn['Detail']['ListErr']['Error']['Code']['Numero'];
+                $nErrCategorie = $mReturn['Detail']['ListErr']['Error']['Code']['Category'];
 				$sErrMsg = htmlspecialchars($mReturn['Detail']['ListErr']['Error']['Message']);
 			}
 			
@@ -124,7 +127,7 @@ class ModifiedNusoapClient extends SOAPClient
 			}
 
 
-			throw new SOAPException($this->getError(), $sErrCode);
+			throw new SOAPException($this->getError(), $sErrCode, $nErrCategorie);
             // Appeler la fenêtre modale Bootstrap
 
             // Se fait en JS

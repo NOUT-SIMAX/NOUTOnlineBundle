@@ -15,9 +15,12 @@ class SOAPException extends \Exception
 	 */
 	protected $messageOrigine;
 
-	public function __construct($message = "", $code = 0, \Exception $previous = null)
+	protected $_category;
+
+	public function __construct($message = "", $code = 0, $category = 0, \Exception $previous = null)
 	{
 		$this->messageOrigine = $message;
+		$this->_category = $category;
 		parent::__construct($code.' '.$message, $code, $previous);
 	}
 
@@ -28,4 +31,14 @@ class SOAPException extends \Exception
 	{
 		return $this->messageOrigine;
 	}
+
+    /**
+     * @return int
+     */
+    public function getCategory()
+    {
+        return $this->_category;
+    }
+
+
 }
