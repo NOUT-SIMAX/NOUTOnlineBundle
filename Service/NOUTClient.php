@@ -97,6 +97,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
@@ -1662,6 +1663,47 @@ class NOUTClient
 
         return $oRet;
     }
+
+
+    /**
+     * @param $sIDContexte
+     * @param Record $clRecord
+     * @param int $autovalidate
+     * @param boolean $bComplete
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oUpdateFilter($sIDContexte, $idihm, Record $clRecord)
+    {
+        //test des valeurs des paramètres
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+
+
+        $clParamUpdate              = new UpdateFilter();
+        //m_clRecordSerializer->getRecordUpdateData fait la gestion des fichiers
+        $clParamUpdate->ID = $clRecord->getIDEnreg();
+        $clParamUpdate->UpdateData = $this->m_clRecordSerializer->getRecordUpdateData($clRecord, $sIDContexte, $idihm, true);
+
+        //header
+        $aTabHeaderSuppl = array(SOAPProxy::HEADER_ActionContext => $sIDContexte);
+        $clReponseXML = $this->m_clSOAPProxy->updateFilter($clParamUpdate, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+
+        //c'est un update tout bête sans validation normalement on à le même enregistrement en entrée et en sortie
+        $clRecortRes = $oRet->getData();
+        if ($clRecord->getIDEnreg() != $clRecortRes->getIDEnreg())
+        {
+            throw new \Exception("l'update n'a pas retourné le bon enregistrement");
+        }
+
+        //on met à jour l'enregistrement d'origine à partir de celui renvoyé par NOUTOnline
+        $clRecord->updateFromRecord($clRecortRes);
+        $oRet->setData($clRecord);
+
+        return $oRet;
+    }
+
 
     /**
      * @param $idContext
