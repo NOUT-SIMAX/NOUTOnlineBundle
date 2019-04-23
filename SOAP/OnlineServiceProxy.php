@@ -65,6 +65,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ValidateFolder;
@@ -1454,6 +1455,20 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     public function update(Update $clWsdlType_Update, $aHeaders = array())
     {
 	    return $this->call('Update', array($clWsdlType_Update) ,  null, null , $aHeaders);
+    }
+
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Update
+     *
+     * @param UpdateFilter $clWsdlType_Update
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function updateFilter(UpdateFilter $clWsdlType_UpdateFilter, $aHeaders = array())
+    {
+        return $this->call('UpdateFilter', array($clWsdlType_UpdateFilter) ,  null, null , $aHeaders);
     }
 
     //----

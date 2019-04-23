@@ -55,11 +55,20 @@ class StructureElement
 	 */
 	protected $m_MapIDColonne2Structure;
 
-
     /**
      * @var bool
      */
 	protected $m_bWithGhost;
+
+    /**
+     * @var int
+     */
+	protected $m_eMultiColMode;
+
+    /**
+     * @var int
+     */
+    protected $m_eMultiColWay;
 
 
 	/**
@@ -73,6 +82,8 @@ class StructureElement
 		$this->m_sLibelle                   = $sLibelle;
 		$this->m_bWithGhost                 = $bWithGhost;
 		$this->m_clFiche					= new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
+		$this->m_eMultiColMode              = StructureSection::MODE_1COlONNE;
+		$this->m_eMultiColWay               = StructureSection::SENS_HORIZONTAL;
 
 		$this->m_MapIDColonne2Structure 			= array();
         $this->m_TabBouton							= array();
@@ -80,6 +91,35 @@ class StructureElement
         $this->m_TabBoutonRemplacementAutre			= array();
         $this->m_TabBoutonRemplacementValidation	= array();
 	}
+
+    /**
+     * @param int $eMode
+     * @param int $eWay
+     * @return $this
+     */
+	public function setMultiColonneInfo($eMode, $eWay)
+    {
+        $this->m_eMultiColMode = $eMode;
+        $this->m_eMultiColWay = $eWay;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function eGetMultiColonneMode()
+    {
+        return $this->m_eMultiColMode;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function eGetMultiColonneWay()
+    {
+        return $this->m_eMultiColWay;
+    }
 
     /**
      * @param StructureColonne $clStructColonne
