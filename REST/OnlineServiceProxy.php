@@ -201,7 +201,7 @@ class OnlineServiceProxy
             $no_error = new OnlineError(0, 0, 0, '');
             $no_error->parseFromREST($output);
             //il y a une erreur, il faut parser l'erreur
-            $e = new SOAPException($no_error->getMessage(), $no_error->getCode());
+            $e = new SOAPException($no_error->getMessage(), $no_error->getCode(), $no_error->getCategorie());
             throw $e;
         }
         return $ret;
