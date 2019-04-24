@@ -66,6 +66,29 @@ class RedirectExceptionListener
 					}
 					break;
 				}
+//                case OnlineError::ERR_WS_APPLI_NONAUTORISE:
+//                case OnlineError::ERR_WS_REST_DESACTIVE:
+//                case OnlineError::ERR_WS_SOAP_DESACTIVE:
+//                {
+//                    $request = $event->getRequest();
+//                    $session = $request->getSession();
+//                    if ($request->isXmlHttpRequest())
+//                    {
+//                        //si la requête est une requête ajax, on retourne un 403
+//                        //on passe en paramètre toutes les informations nécessaire pour la redirection vers la page de login
+//                        $aParam = array('exception'=>json_encode(array('message'=>$exception->getMessageOrigine(), 'code'=>$exception->getCode())));
+//
+//                        $event->setResponse(new Response($this->_router->generate('forbidden', $aParam), 403));
+//                    }
+//                    else
+//                    {
+//                        $session->set(Security::AUTHENTICATION_ERROR, array('message'=>$exception->getMessage()));
+//
+//                        //c'est l'erreur utilisateur déconnecté, il faut redirigé sur la page de login
+//                        $event->setResponse(new RedirectResponse($this->_router->generate('login', array())));
+//                    }
+//                    break;
+//                }
 				case OnlineError::ERR_NOUTONLINE_OFF:
 				{
 					$request = $event->getRequest();

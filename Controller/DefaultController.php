@@ -110,7 +110,13 @@ class DefaultController extends Controller
             '7'     => array('code' => 7,   'lang' => 'Deutsh',    'short' => 'de'),
         );
         /** @var array $languages */
-        $languages = (array) $this->_clGetSOAPProxy()->getLanguages(array())->getNodeXML()->LanguageCode;
+        try{
+            $languages = (array) $this->_clGetSOAPProxy()->getLanguages(array())->getNodeXML()->LanguageCode;
+        }
+        catch (\Exception $e)
+        {
+            $languages = array();
+        }
         $languages = array_map(function($language) use($map) {return $map[$language];}, $languages);
         $bSelectLanguage=count($languages)>1;
 
