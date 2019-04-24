@@ -12,6 +12,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
@@ -137,12 +138,48 @@ class NOUTOnlineExtension extends \Twig_Extension
     public function getFunctions()
 	{
 		return array(
+			 new \Twig_SimpleFunction('noutonline_state', array($this, 'state')),
 			 new \Twig_SimpleFunction('noutonline_version', array($this, 'version')),
 			 new \Twig_SimpleFunction('noutonline_is_started', array($this, 'isStarted')),
              new \Twig_SimpleFunction('noutonline_is_versionmin', array($this, 'isVersionMin')),
              new \Twig_SimpleFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
 		);
 	}
+
+    /**
+     * Get NOUTOnline State
+     * @return \stdClass
+     */
+	public function state()
+    {
+        /** @var OnlineServiceProxy $clRest */
+
+        $ret = new  \stdClass();
+        $ret->isStarted = false;
+        $ret->error = '';
+        $ret->version = '';
+        $ret->isVersionMin = false;
+
+        try
+        {
+            $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
+            $ret->isStarted = $clRest->bIsStarted();
+
+            $clVersion = $clRest->clGetVersion();
+
+            $ret->version = $clVersion->get();
+            $ret->isVersionMin = $clVersion->isVersionSup($this->m_sVersionMin, true);
+        }
+        catch (\Exception $e)
+        {
+            if ($e instanceof SOAPException){
+                $ret->isStarted = true;
+            }
+            $ret->error = $e->getMessage();
+        }
+
+        return $ret;
+    }
 
 	/**
 	 * Get NOUTOnline Version
