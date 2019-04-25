@@ -47,6 +47,7 @@ class InfoColonne
                 case Record::OPTION_DisplayMode:
                 case Record::OPTION_BGColor:
                 case Record::OPTION_Color:
+                case StructureColonne::OPTION_TypeElement:
                     $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
                     break;
 

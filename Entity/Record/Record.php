@@ -592,10 +592,11 @@ class Record
     {
 
         $SIMAXStyleToCSS = array(
-            "color"     => "color",         // Couleur du texte
-            "bgcolor"   => "background",    // Couleur de fond
-            "bold"      => "font-weight",   // Epaisseur (blod..)
-            "italic"    => "font-style"     // Normal, italique..
+            "color"         => "color",         // Couleur du texte
+            "bgcolor"       => "background",    // Couleur de fond
+            "bold"          => "font-weight",   // Epaisseur (blod..)
+            "italic"        => "font-style",    // Normal, italique..
+            "typeElement"   => "text-align"     // Alignement du texte en fonction du type de la colonne
         );
 
         if (array_key_exists($option, $SIMAXStyleToCSS))
@@ -617,6 +618,17 @@ class Record
 
         switch($option)
         {
+            case "typeElement":
+            {
+                switch ($value)
+                {
+                case StructureColonne::TM_Entier:
+                case StructureColonne::TM_Monetaire:
+                case StructureColonne::TM_Reel:
+                    return "right";
+                }
+                return null;
+            }
             case "bold":
             case "italic":
             {

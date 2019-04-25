@@ -564,13 +564,14 @@ abstract class StructureColonne
     const TM_TexteMultiLigne = 'xs:multilinestring';
 
 	//type complexe
+    const TM_Fichier    = 'xs:base64Binary';
 	const TM_Tableau    = 'simax-element';
 	const TM_ListeElem  = 'simax-list';
 	const TM_Separateur = 'simax-section';
 	const TM_Bouton     = 'simax-button';
 	const TM_Combo      = 'simax-choice';
-	const TM_Fichier    = 'xs:base64Binary';
     const TM_HTML       = 'simax-html';
+    const TM_CalculAuto = 'simax-autoComputed';
 
 
     const OPTION_Name       = 'name';
