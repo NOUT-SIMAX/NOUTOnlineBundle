@@ -94,14 +94,19 @@
                         </div>
 					</div>
 					{% endif %}
-                    {% if not noutonline_is_started() %}
-                        {# NOUTOnline ne répond pas #}
+                    {% set no_state = noutonline_state() %}
+                    {% if not no_state.isStarted %}
+                         NOUTOnline ne répond pas
                         {{ 'login.noutonline_no_answer' | trans | nl2br }}
-                    {% elseif not noutonline_is_versionmin() %}
-                        {% set isMin = false %}
-                        {{ 'login.noutonline_no_versionmin' | trans | replace({'%version%': version_min}) | nl2br }}
+                    {% elseif not no_state.isVersionMin %}
+                        {% if no_state.version is not empty %}
+                            {% set isMin = false %}
+                            {{ 'login.noutonline_no_versionmin' | trans | replace({'%version%': version_min}) | nl2br }}
+                        {% else %}
+                            {{ no_state.error | trans }}
+                        {% endif %}
                     {% else %}
-                        {# Tout va bien on peut se connecter #}
+                         {#<!-- Tout va bien on peut se connecter -->#}
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                             <input id="login-username" type="text" class="form-control" name="m_sLogin" value="{{ last_username }}" placeholder="{{ 'login.login' | trans }}" required
@@ -133,7 +138,7 @@
 			<div class="panel-footer">
 				© NOUTWeb {{ version_site }}
 				<br />
-                © NOUTOnline <span {% if not isMin %}class="text-danger" style="font-weight: bold"{% endif %}>{{ noutonline_version() }}</span>
+                © NOUTOnline <span {% if not isMin %}class="text-danger" style="font-weight: bold"{% endif %}>{{ no_state.version }}</span>
 			</div>
 		</div>
 	</div>
