@@ -99,7 +99,10 @@ class DefaultController extends Controller
      * Route de génération du formulaire de connexion
      * Comme c'est pour l'identification, on n'utilise pas de formBuilder, uniquement un template twig avec le formulaire dedans
      *
-     * @Route("/login/", name="login", options={"expose"=true})
+     * @Route("/login/",
+     *     name="login",
+     *     options={"expose"=true}
+     * )
      */
     public function loginAction(Request $request)
     {
@@ -151,7 +154,9 @@ class DefaultController extends Controller
 	/**
 	 *  Route de génération du formulaire de connexion
 	 *
-	 * @Route("/", name="session_index")
+	 * @Route("/",
+     *     name="session_index"
+     * )
 	 */
 	public function indexAction()
 	{
