@@ -112,12 +112,12 @@ class RedirectExceptionListener
 		{
 			switch($exception->getCode())
 			{
-                case OnlineError::ERR_UTIL_PASSERRINTRA:
+                case OnlineError::ERR_WS_UTIL_PASSERRINTRA:
                 {
                     $this->_onDeconnecteError($event, $exception);
                     break;
                 }
-				case OnlineError::ERR_UTIL_DECONNECTE:
+				case OnlineError::ERR_WS_UTIL_DECONNECTE:
 				{
 				    $this->_onDeconnecteError($event, $exception);
 					break;
