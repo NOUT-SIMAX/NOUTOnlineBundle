@@ -30,7 +30,9 @@ use Symfony\Component\HttpFoundation\Request;
 class AutresController extends Controller
 {
 	/**
-	 * @Route("/", name="online_autres_index")
+	 * @Route("/",
+     *     name="online_autres_index"
+     * )
 	 */
 	public function indexAction()
 	{
@@ -49,7 +51,9 @@ class AutresController extends Controller
 	}
 
 	/**
-	 * @Route("/allman", name="online_autres_allmanfixer")
+	 * @Route("/allman",
+     *     name="online_autres_allmanfixer"
+     * )
 	 */
 	public function allmanAction()
 	{
@@ -101,7 +105,9 @@ class AutresController extends Controller
 	}
 
     /**
-     * @Route("/formradio", name="online_autres_formradio")
+     * @Route("/formradio",
+     *     name="online_autres_formradio"
+     * )
      */
     public function formradioAction(Request $request)
     {

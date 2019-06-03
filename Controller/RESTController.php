@@ -30,8 +30,10 @@ class RESTController extends ProxyController
 	}
 
 	/**
-	 * @Route("/test/{host}", name="online_rest_test", defaults={"host"=""})
-	 *
+	 * @Route("/test/{host}",
+     *     name="online_rest_test",
+     *     defaults={"host"=""}
+     * )
 	 */
 	public function restTestAction($host)
 	{
