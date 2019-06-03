@@ -1130,6 +1130,7 @@ class NOUTClient
     }
 
     /**
+     * @param $ctxtId
      * @param $tableId
      * @param $actionId
      * @param $exportId
@@ -1140,7 +1141,7 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oExport($tableId, $actionId, $exportId, $format, $module, $colType, $items) {
+    public function oExport($ctxtId, $tableId, $actionId, $exportId, $format, $module, $colType, $items) {
         $export = new Export();
         $export->Table = $tableId;
         $export->ID = $actionId;
@@ -1150,7 +1151,7 @@ class NOUTClient
         $export->ColType = $colType;
         $export->items = $items;
 
-        $clReponseXML = $this->m_clSOAPProxy->export($export, $this->_aGetTabHeader(array()));
+        $clReponseXML = $this->m_clSOAPProxy->export($export, $this->_aGetTabHeader(array(SOAPProxy::HEADER_ActionContext => $ctxtId)));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
