@@ -13,11 +13,16 @@
 	{% block stylesheets %}
 
         <!-- icon -->
-        {% if customization.actif and customization.favicon_file is not empty %}
-            <link rel="icon" href="{{ asset('custom/') }}{{ customization.favicon_file }}" />
+        {% if app.debug %}
+            <link rel="shortcut icon" href="{{ asset('bundles/noutsessionmanager/img/favicon-debug.ico') ~ "?v=13.1" }}" type="image/x-icon"/>
+            <link rel="icon" href="{{ asset('bundles/noutsessionmanager/img/favicon-debug.ico') ~ "?v=13.1" }}" type="image/x-icon"/>
         {% else %}
-            <link rel="shortcut icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico')  ~ "?v=13.1" }}" type="image/x-icon"/>
-            <link rel="icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico')  ~ "?v=13.1" }}" type="image/x-icon"/>
+            {% if customization.actif and customization.favicon_file is not empty %}
+                <link rel="icon" href="{{ asset('custom/') }}{{ customization.favicon_file }}" />
+            {% else %}
+                <link rel="shortcut icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico')  ~ "?v=13.1" }}" type="image/x-icon"/>
+                <link rel="icon" href="{{ asset('bundles/noutsessionmanager/img/favicon.ico')  ~ "?v=13.1" }}" type="image/x-icon"/>
+            {% endif %}
         {% endif %}
 
 		<!-- feuille de style -->
