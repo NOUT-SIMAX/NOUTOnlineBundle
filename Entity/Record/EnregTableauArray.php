@@ -8,7 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-class EnregTableauArray implements \Iterator
+class EnregTableauArray implements \Iterator, \Countable
 {
 	/**
 	 * @var array
@@ -22,6 +22,11 @@ class EnregTableauArray implements \Iterator
 		$this->_key  = 0;
 		$this->m_Tab = array();
 	}
+
+    public function count()
+    {
+        return count($this->m_Tab);
+    }
 
 	public function rewind()
 	{
