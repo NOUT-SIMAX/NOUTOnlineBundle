@@ -191,16 +191,16 @@
 					#}
 					<div>
 						<div>
-							<img title="Expand query" alt="+" id="expand-request-{{ i }}" class="expand" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
-							<img title="Hide query" alt="-" id="hide-request-{{ i }}" class="hide" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display:none ; cursor: pointer;" />
+							<img title="Expand query" alt="+" id="expand-request-{{ i }}" class="expand" src="{{ asset('img/debug/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
+							<img title="Hide query" alt="-" id="hide-request-{{ i }}" class="hide" src="{{ asset('img/debug/blue_picto_less.gif') }}" style="display:none ; cursor: pointer;" />
 							<span>Request {{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms ({{ '%0.2f'|format(query.sendMS * 1000) }} ms)</span>
 						</div>
 						{{ macros.request(query.soap, 'request', i, query.request_header, query.request) }}
 					</div>
 					<div>
 						<div>
-							<img title="Expand query" alt="+" id="expand-response-{{ i }}" class="expand" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
-							<img title="Hide query" alt="-" id="hide-response-{{ i }}" class="hide" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none; cursor: pointer;" />
+							<img title="Expand query" alt="+" id="expand-response-{{ i }}" class="expand" src="{{ asset('img/debug/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
+							<img title="Hide query" alt="-" id="hide-response-{{ i }}" class="hide" src="{{ asset('img/debug/blue_picto_less.gif') }}" style="display: none; cursor: pointer;" />
 							<span>Response</span>
 						</div>
                         {{ macros.request(query.soap, 'response', i, query.response_header, query.response) }}
