@@ -695,6 +695,7 @@ abstract class StructureColonne
 	const OPTION_Modele_Latitude		= "latitude";
 	const OPTION_Modele_Longitude		= "longitude";
     const OPTION_Modele_Search  		= "search";
+    const OPTION_Modele_ComboBox  		= "comboBox";
 	//Si ajout au dessus, rajouter dans la méthode s_GetModeleOption
 
 	// Attributs de transformation
