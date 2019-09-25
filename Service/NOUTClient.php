@@ -1735,16 +1735,18 @@ class NOUTClient
     /**
      * @param string $sIDContexte
      * @param string $idButton
+     * @param int $nSaveBefore
      * @return ActionResult
      * @throws \Exception
      */
-    public function oButtonAction($sIDContexte, $idButton, $dataRecord = null)
+    public function oButtonAction($sIDContexte, $idButton, $nSaveBefore, $dataRecord = null)
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
         $clParam                = new ButtonAction();
         $clParam->CallingColumn = $idButton;
+        $clParam->SaveBefore = $nSaveBefore;
 
         //header
         $aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
