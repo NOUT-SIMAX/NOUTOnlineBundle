@@ -119,13 +119,13 @@ class ItemMenu
 
 
 	/**
-	 * @param $sIDOptionMenu
+	 * @param $idOptionMenu
 	 * @param $sLibelle
 	 * @param $bEstOptionMenu
 	 */
-	public function __construct($sIDOptionMenu, $sLibelle, $bEstOptionMenu)
+	public function __construct($idOptionMenu, $sLibelle, $bEstOptionMenu)
 	{
-		$this->idOptionMenu = $sIDOptionMenu;
+		$this->idOptionMenu = is_string($idOptionMenu) ? $idOptionMenu : sprintf ( "%.0f", $idOptionMenu );
 		$this->title = str_replace('&&', '&', $sLibelle);
 		$this->optionMenu = $bEstOptionMenu;
 	}
@@ -144,7 +144,7 @@ class ItemMenu
      */
     public function setIdMenuParent($idMenuParent)
     {
-        $this->idMenuParent = $idMenuParent;
+        $this->idMenuParent = is_string($idMenuParent) ? $idMenuParent : sprintf("%.0f", $idMenuParent);
         return $this;
     }
 
@@ -162,7 +162,7 @@ class ItemMenu
      */
     public function setIdOptionMenu($idOptionMenu)
     {
-        $this->idOptionMenu = $idOptionMenu;
+        $this->idOptionMenu = is_string($idOptionMenu) ? $idOptionMenu : sprintf("%.0f", $idOptionMenu);
         return $this;
     }
 
@@ -252,7 +252,7 @@ class ItemMenu
      */
     public function setIdAction($idAction)
     {
-        $this->idAction = $idAction;
+        $this->idAction = is_string($idAction) ? $idAction : sprintf("%.0f", $idAction);
         return $this;
     }
 
