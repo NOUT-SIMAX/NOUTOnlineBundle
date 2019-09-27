@@ -22,13 +22,19 @@ class ActionResult
 	 */
 	public $ReturnType;
 
+
+    /**
+     * @var string
+     */
+    public $IDIHM;
+
 	/**
 	 * @var mixed
 	 */
 	private $m_Data;
 
 	/**
-     * Les données en plus (par exemple liste utilisateurs)
+     * Les donnÃ©es en plus (par exemple liste utilisateurs)
 	 * @var mixed
 	 */
 	private $m_ExtraData;
@@ -84,6 +90,7 @@ class ActionResult
 		if (isset($clReponseXML))
 		{
 			$this->ReturnType    = $clReponseXML->sGetReturnType();
+            $this->IDIHM         = $clReponseXML->sGetIDIHM();
 			$this->m_sIDContexte = $clReponseXML->sGetActionContext();
 			$this->m_clAction    = $clReponseXML->clGetAction();
             $this->m_sIDContexteToValidateOnClose = $clReponseXML->sGetContextToValidateOnClose();
@@ -92,6 +99,7 @@ class ActionResult
 		else
 		{
 			$this->ReturnType    = null;
+			$this->IDIHM         = null;
 			$this->m_sIDContexte = '';
             $this->m_clAction    = null;
             $this->m_sIDContexteToValidateOnClose = '';
