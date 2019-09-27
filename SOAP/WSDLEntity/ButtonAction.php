@@ -18,7 +18,7 @@ class ButtonAction
 {
 	public $CallingColumn; // string
 	public $CallingInfo; // CallingInfoType
-	public $ColumnSelection; // ColumnSelection
-
+	public $ColumnSelection; // ColumnSelection[]
+	public $SaveBefore; // integer
 }
 //***

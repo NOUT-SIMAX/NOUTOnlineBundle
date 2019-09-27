@@ -9,7 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 
-class ValidateError
+class ValidateError implements \JsonSerializable
 {
 	/**
 	<ValidateError>
@@ -69,4 +69,11 @@ class ValidateError
 	{
 		return $this->m_TabIDColonne[$indice];
 	}
+
+    public function jsonSerialize() {
+        return array(
+            'message' => $this->m_sMessage,
+            'columns' => $this->m_TabIDColonne,
+        );
+    }
 } 
