@@ -285,6 +285,19 @@ class XMLResponseWS
         }
     }
 
+    /**
+     * @return String title of the document
+     */
+    public function sGetIDIHM()
+    {
+        try{
+            return (string) $this->m_ndHeader->children()->IDIHM;
+        }
+        catch(\Exception $e){
+            return null;
+        }
+    }
+
 	/**
 	 * @return ConnectedUser : utilisateur actuellement connecté
 	 */

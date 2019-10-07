@@ -124,6 +124,7 @@ class ModifiedNusoapClient extends SOAPClient
 			if (!isset($sErrCode))
 			{
 				$sErrCode = -1;
+                $nErrCategorie = '';
 			}
 
 

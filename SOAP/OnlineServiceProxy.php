@@ -209,7 +209,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	 */
 	function loadWSDL() {
 		$this->wsdl = $this->_loadWSDLFromCache();
-		if (!$this->wsdl)
+		if (!$this->wsdl || !empty($this->wsdl->error_str))
 		{
 			$this->wsdl = new WSDL('',$this->proxyhost,$this->proxyport,$this->proxyusername,$this->proxypassword,$this->timeout,$this->response_timeout,$this->curl_options,$this->use_curl);
 			$this->wsdl->setCredentials($this->username, $this->password, $this->authtype, $this->certRequest);
