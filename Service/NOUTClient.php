@@ -61,6 +61,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ColumnSelection;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
@@ -849,8 +850,9 @@ class NOUTClient
      * @param $oParam
      * @param $aTabParamRequest
      */
-    protected function _initStructParamFromTabParamRequest($oParam, $aTabParamRequest)
+    protected function _oGetParam($classname, $aTabParamRequest)
     {
+        $oParam = new $classname();
         foreach ($aTabParamRequest as $property => $valeur)
         {
             if (property_exists($oParam, $property))
@@ -869,6 +871,7 @@ class NOUTClient
         {
             $oParam->{self::PARAM_PARAMXML} = '';
         }
+        return $oParam;
     }
 
     /**
@@ -876,7 +879,7 @@ class NOUTClient
      * @param $aTabHeaderQuery
      * @return $aTabHeaderSuppl
      */
-    protected function _initStructHeaderFromTabHeaderRequest($aTabHeaderQuery)
+    protected function _aGetHeaderSuppl($aTabHeaderQuery)
     {
         $aTabHeaderSuppl = array();
 
@@ -930,27 +933,24 @@ class NOUTClient
 
         //--------------------------------------------------------------------------------------------
         // Paramètres
-        $clParamExecute = new Execute();
-        $this->_initStructParamFromTabParamRequest($clParamExecute, $tabParamQuery);
+        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
+        $clParam->ID = (string)$sIDAction;             // identifiant de l'action (String)
+        $clParam->Final = $final;
 
-        $clParamExecute->ID = (string)$sIDAction;             // identifiant de l'action (String)
-        $clParamExecute->Final = $final;
         //--------------------------------------------------------------------------------------------
         // Headers
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         //--------------------------------------------------------------------------------------------
         // L'action
-        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+        return $this->_oExecute($clParam, $aTabHeaderSuppl);
     }
 
     public function oExecute(array $tabParamQuery, array $tabHeaderQuery) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
-        $clParamExecute = new Execute();
-        foreach($tabParamQuery as $param => $value) {
-            $clParamExecute->$param = $value;
-        }
-        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
+        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
+
+        return $this->_oExecute($clParam, $aTabHeaderSuppl);
     }
 
     /**
@@ -964,10 +964,8 @@ class NOUTClient
     {
         //--------------------------------------------------------------------------------------------
         // Création de $clParamExecute
-        $clParamExecute = new Execute();
-        $this->_initStructParamFromTabParamRequest($clParamExecute, $tabParamQuery);
-
-        $clParamExecute->Sentence = (string)$sPhrase;
+        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
+        $clParam->Sentence = (string)$sPhrase;
         //--------------------------------------------------------------------------------------------
 
         //header
@@ -977,7 +975,7 @@ class NOUTClient
             $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
         }
 
-        return $this->_oExecute($clParamExecute, $aTabHeaderSuppl);
+        return $this->_oExecute($clParam, $aTabHeaderSuppl);
     }
 
 
@@ -990,9 +988,8 @@ class NOUTClient
     public function oExecList(array $tabParamQuery, $sIDTableau, $sIDContexte = '')
     {
         //paramètre de l'action liste
-        $clParamListe = new ListParams();
-        $this->_initStructParamFromTabParamRequest($clParamListe, $tabParamQuery);
-        $clParamListe->Table = $sIDTableau;
+        $clParam = $this->_oGetParam(ListParams::class, $tabParamQuery);
+        $clParam->Table = $sIDTableau;
 
         //header
         $aTabHeaderSuppl = array();
@@ -1001,7 +998,7 @@ class NOUTClient
             $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
         }
 
-        $clReponseXML = $this->m_clSOAPProxy->listAction($clParamListe, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML = $this->m_clSOAPProxy->listAction($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
@@ -1034,7 +1031,7 @@ class NOUTClient
      */
     public function oExecListCalculation($contextID)
     {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest(array());
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl(array());
         $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
 
         $clReponseXML = $this->m_clSOAPProxy->getEndListCalculation($this->_aGetTabHeader($aTabHeaderSuppl));
@@ -1286,9 +1283,8 @@ class NOUTClient
     public function oExecSearch(array $tabParamQuery, $sIDTableau, $sIDContexte = '')
     {
         //paramètre de l'action liste
-        $clParamSearch = new Search();
-        $this->_initStructParamFromTabParamRequest($clParamSearch, $tabParamQuery);
-        $clParamSearch->Table = $sIDTableau;
+        $clParam = $this->_oGetParam(Search::class, $tabParamQuery);
+        $clParam->Table = $sIDTableau;
 
         //header
         $aTabHeaderSuppl = array();
@@ -1297,7 +1293,7 @@ class NOUTClient
             $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
         }
 
-        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML = $this->m_clSOAPProxy->search($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
@@ -1329,16 +1325,13 @@ class NOUTClient
         $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idcolonne, null);
 
         //paramètre de l'action liste
-        $clParam = new GetSubListContent();
-
-        $this->_initStructParamFromTabParamRequest($clParam, $tabParamQuery);
-
+        $clParam = $this->_oGetParam(GetSubListContent::class, $tabParamQuery);
         $clParam->Record = $clRecord->getIDEnreg();
         $clParam->Column = $idcolonne;
 
         //--------------------------------------------------------------------------------------------
         // Headers
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
@@ -1352,7 +1345,7 @@ class NOUTClient
      * @throws NOUTValidationException
      */
     public function oSetSublistOrder(array $tabHeaderQuery = array(), $column, $items) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $setSublistOrder = new SetOrderSubList();
         $setSublistOrder->items = $items;
@@ -1373,7 +1366,7 @@ class NOUTClient
      * @throws NOUTValidationException
      */
     public function oSetFullListOrder(array $tabHeaderQuery = array(), $items) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($tabHeaderQuery);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $setSublistOrder = new SetOrderList();
         $setSublistOrder->items = $items;
@@ -1743,16 +1736,19 @@ class NOUTClient
     /**
      * @param string $sIDContexte
      * @param string $idButton
+     * @param object $ColumnSelection
+     * @param int $nSaveBefore
      * @return ActionResult
      * @throws \Exception
      */
-    public function oButtonAction($sIDContexte, $idButton, $dataRecord = null)
+    public function oButtonAction($sIDContexte, $idButton, $ColumnSelection, $dataRecord = null)
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
         $clParam                = new ButtonAction();
         $clParam->CallingColumn = $idButton;
+        $clParam->ColumnSelection = $ColumnSelection;
 
         //header
         $aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
@@ -1894,13 +1890,12 @@ class NOUTClient
 //        public $SpecialParamList; 	// SpecialParamListType
 //        public $Checksum; 			// integer
 //        public $DisplayMode; 		    // DisplayModeParamEnum
-        $clParamSearch = new Search();
-        $this->_initStructParamFromTabParamRequest($clParamSearch, $tabParamQuery);
+        $clParam = $this->_oGetParam(Search::class, $tabParamQuery);
         // Ajout des paramètres
-        $clParamSearch->Table = $sIDFormulaire;
+        $clParam->Table = $sIDFormulaire;
 
 
-        $clReponseXML = $this->m_clSOAPProxy->search($clParamSearch, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML = $this->m_clSOAPProxy->search($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
@@ -1918,13 +1913,11 @@ class NOUTClient
             SOAPProxy::HEADER_ActionContext => $sIDContexte
         );
 
-        $clParamCreate = new Create();
-
-        // Ajout des paramètres
-        $clParamCreate->Table = $sIDFormulaire;
+        $clParam = $this->_oGetParam(Create::class, $tabParamQuery);
+        $clParam->Table = $sIDFormulaire;
 
 
-        $clReponseXML = $this->m_clSOAPProxy->create($clParamCreate, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML = $this->m_clSOAPProxy->create($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
@@ -1940,8 +1933,7 @@ class NOUTClient
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
-        $clParamModify = new Modify();
-        $this->_initStructParamFromTabParamRequest($clParamModify, $tabParamQuery);
+        $clParamModify = $this->_oGetParam(Modify::class, $tabParamQuery);
         $clParamModify->Table = $idformulaire;
         $clParamModify->ParamXML .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
 
@@ -1982,8 +1974,7 @@ class NOUTClient
             SOAPProxy::HEADER_ActionContext => $sIDContexte
         );
 
-        $clParamDisplay = new Display();
-        $this->_initStructParamFromTabParamRequest($clParamDisplay, $tabParamQuery);
+        $clParamDisplay = $this->_oGetParam(Display::class, $tabParamQuery);
         $clParamDisplay->Table = $idformulaire;
         $clParamDisplay->ParamXML .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
 
@@ -2421,7 +2412,7 @@ class NOUTClient
      */
     public function oGetFolderList(array $requestHeaders, $requestParams)
     {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $clReponseXML = $this->m_clSOAPProxy->getFolderList($aTabHeaderSuppl, $requestParams);
         return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
@@ -2437,7 +2428,7 @@ class NOUTClient
      */
     public function oGetFolderContent(array $requestHeaders, $requestParams, $folderID)
     {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $folderContent = new GetContentFolder();
         $folderContent->SpecialParamList = $requestParams;
@@ -2452,7 +2443,7 @@ class NOUTClient
     }
 
     public function oGetMessageRequest(array $requestHeaders, $requestParams, $filters, $startdate, $endDate) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $requestMessage = new RequestMessage();
         $requestMessage->SpecialParamList = $requestParams;
@@ -2476,7 +2467,7 @@ class NOUTClient
     }
 
     public function oUpdateMessage(array $requestHeaders, $xmlData) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
@@ -2485,7 +2476,7 @@ class NOUTClient
     }
 
     public function oUpdateMessages(array $requestHeaders, $messages, $column, $value) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
@@ -2501,7 +2492,7 @@ class NOUTClient
 
     public function oCreateMessage(array $requestHeaders, $type, $originalMessage, $templateId)
     {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $message = new CreateMessage();
         $message->CreateType = $type;
@@ -2559,7 +2550,7 @@ class NOUTClient
      * @throws \Exception
      */
     public function oGetReplyTemplates() {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest(array());
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl(array());
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $aTabHeaderSuppl[OnlineServiceProxy::HEADER_AutoValidate]=OnlineServiceProxy::AUTOVALIDATE_Cancel; //on ne garde pas le contexte ouvert
         $specialParamList = new SpecialParamListType();
@@ -2577,7 +2568,7 @@ class NOUTClient
     }
 
     public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
@@ -2587,7 +2578,7 @@ class NOUTClient
     }
 
     public function oSendMessage(array $requestHeaders, $requestParams, $messageID) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
@@ -2600,7 +2591,7 @@ class NOUTClient
     }
 
     public function oGetAttachment(array $requestHeaders, $messageId, $attachmentId) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
 
 
@@ -2628,7 +2619,7 @@ class NOUTClient
      * @throws \Exception
      */
     public function oAddAttachment(array $requestHeaders, $messageId, $data, $encoding, $filename, $size) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
 
         $addPJ = new AddPJ();
@@ -2644,7 +2635,7 @@ class NOUTClient
     }
 
     public function oDeleteAttachment(array $requestHeaders, $messageId, $attachmentId) {
-        $aTabHeaderSuppl = $this->_initStructHeaderFromTabHeaderRequest($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
 
         $deletePJ = new DeletePJ();
