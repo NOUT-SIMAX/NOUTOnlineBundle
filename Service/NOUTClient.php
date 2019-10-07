@@ -583,7 +583,7 @@ class NOUTClient
 
         $aInfo = array();
         //on a pas les infos, il faut les calculer
-        $json = json_decode($this->m_clRESTProxy->$method($clIdentification));
+        $json = json_decode($this->m_clRESTProxy->$method($clIdentification), false, 512, JSON_BIGINT_AS_STRING);
         if (is_array($json) && (count($json) > 0))
         {
             foreach ($json as $objet)
