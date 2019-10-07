@@ -61,6 +61,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ColumnSelection;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
@@ -1735,17 +1736,19 @@ class NOUTClient
     /**
      * @param string $sIDContexte
      * @param string $idButton
+     * @param object $ColumnSelection
      * @param int $nSaveBefore
      * @return ActionResult
      * @throws \Exception
      */
-    public function oButtonAction($sIDContexte, $idButton, $dataRecord = null)
+    public function oButtonAction($sIDContexte, $idButton, $ColumnSelection, $dataRecord = null)
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
         $clParam                = new ButtonAction();
         $clParam->CallingColumn = $idButton;
+        $clParam->ColumnSelection = $ColumnSelection;
 
         //header
         $aTabHeaderSuppl    = array(SOAPProxy::HEADER_ActionContext=>$sIDContexte);
