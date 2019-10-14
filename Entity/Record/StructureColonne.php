@@ -237,6 +237,7 @@ abstract class StructureColonne
             self::TM_ListeElem,
             self::TM_Combo,
             self::TM_Fichier,
+            self::TM_HTML,
         );
 
         return in_array($this->m_eTypeElement, $aTypeSimple);
@@ -363,8 +364,12 @@ abstract class StructureColonne
      */
     public function isMultilineText()
     {
-        if ($this->m_eTypeElement != self::TM_Texte) {
+        if (!$this->_isText()) {
             return false;
+        }
+
+        if ($this->m_eTypeElement == self::TM_HTML){
+            return true;
         }
 
         if (!is_null($this->m_clRestriction) && $this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH)){
@@ -377,7 +382,7 @@ abstract class StructureColonne
 
     public function getMaxLength()
     {
-        if ($this->m_eTypeElement != self::TM_Texte) {
+        if (!$this->_isText()) {
             return ;
         }
 
@@ -395,7 +400,7 @@ abstract class StructureColonne
      */
     protected function _isMonolineText()
     {
-        if ($this->m_eTypeElement != self::TM_Texte){
+        if (!$this->_isText() || ($this->m_eTypeElement == self::TM_HTML)){
             return false;
         }
 
@@ -428,6 +433,11 @@ abstract class StructureColonne
         }
 
         return false;
+    }
+
+    protected function _isText()
+    {
+        return ($this->m_eTypeElement == self::TM_Texte) || ($this->m_eTypeElement == self::TM_HTML);
     }
 
 	//////////////////////////////////////////
