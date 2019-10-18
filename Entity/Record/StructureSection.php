@@ -45,6 +45,14 @@ class StructureSection extends StructureColonne
 		return $this->m_TabStructureColonne;
 	}
 
+    /**
+     * @return StructureColonne[]
+     */
+	public function getMapStructureColonneAplat()
+    {
+        return $this->m_MapIDColonne2Colonne;
+    }
+
 	/**
 	 * @param StructureColonne $clColonne
 	 * @return $this
