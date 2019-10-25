@@ -605,10 +605,10 @@ abstract class StructureColonne
 	const OPTION_Transform = "transform";
     const OPTION_Help = "help";
 
-
+    // Attributs pour element d'un tableau et sous-liste
+    const OPTION_LinkedTableXml = "linkedTableXml";
+    const OPTION_LinkedTableID  = "linkedTableID";
 	// Attributs pour element d'un tableau
-	const OPTION_LinkedTableXml = "linkedTableXml";
-	const OPTION_LinkedTableID  = "linkedTableID";
 	const OPTION_WithBtnOrdre   = "withBtnOrder";
 	const OPTION_WithoutDetail  = "withoutDetail";
     const OPTION_WithoutEdit    = "withoutEdit";
@@ -621,6 +621,7 @@ abstract class StructureColonne
 	const OPTION_Relation      = "withAddAndRemove";    // bestGroupeRelation
 	const OPTION_Relation11    = "withModifyAndRemove"; // bEstRelation11
 	const OPTION_UniqueElement = "uniqueElement";
+	const OPTION_SelectLink    = "selectLink";
 
 	// Attributs pour les textes
 	const OPTION_TextBoxSize   = "textBoxSize";
