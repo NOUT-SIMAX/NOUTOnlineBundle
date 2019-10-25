@@ -593,7 +593,7 @@ class Record
 
         $SIMAXStyleToCSS = array(
             "color"         => "color",         // Couleur du texte
-            "bgcolor"       => "background",    // Couleur de fond
+            "bgcolor"       => "background-color",    // Couleur de fond
             "bold"          => "font-weight",   // Epaisseur (blod..)
             "italic"        => "font-style",    // Normal, italique..
             "typeElement"   => "text-align"     // Alignement du texte en fonction du type de la colonne
