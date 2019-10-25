@@ -654,6 +654,7 @@ class XMLResponseWS
     }
 
 	//réponse générique
+    const RETURNTYPE_ERROR          = 'Error';
 	const RETURNTYPE_EMPTY          = 'Empty';
     const RETURNTYPE_DONOTHING      = 'DoNothing';
 	const RETURNTYPE_REPORT         = 'Report';
@@ -666,7 +667,7 @@ class XMLResponseWS
 	const RETURNTYPE_RECORD         = 'Record';
 	const RETURNTYPE_LIST           = 'List';
     const RETURNTYPE_THUMBNAIL      = 'Thumbnail';
-    const RETURNTYPE_DATATREE      = 'Datatree';
+    const RETURNTYPE_DATATREE       = 'Datatree';
 
 	//réponse particulière
 	const RETURNTYPE_XSD                = 'XSD';
