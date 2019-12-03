@@ -70,6 +70,11 @@ class StructureElement
      */
     protected $m_eMultiColWay;
 
+    /**
+     * @var string
+     */
+    protected $m_sBackgroundColor;
+
 
 	/**
 	 * @param $sID
@@ -84,6 +89,7 @@ class StructureElement
 		$this->m_clFiche					= new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
 		$this->m_eMultiColMode              = StructureSection::MODE_1COlONNE;
 		$this->m_eMultiColWay               = StructureSection::SENS_HORIZONTAL;
+		$this->m_sBackgroundColor           = '';
 
 		$this->m_MapIDColonne2Structure 			= array();
         $this->m_TabBouton							= array();
@@ -95,12 +101,14 @@ class StructureElement
     /**
      * @param int $eMode
      * @param int $eWay
+     * @param string $bgColor
      * @return $this
      */
-	public function setMultiColonneInfo($eMode, $eWay)
+	public function setMultiColonneInfo($eMode, $eWay, $bgColor)
     {
         $this->m_eMultiColMode = $eMode;
         $this->m_eMultiColWay = $eWay;
+        $this->m_sBackgroundColor = $bgColor;
         return $this;
     }
 
@@ -120,6 +128,16 @@ class StructureElement
     {
         return $this->m_eMultiColWay;
     }
+
+    /**
+     * @return string
+     */
+    public function getBackgroundColor()
+    {
+        return $this->m_sBackgroundColor;
+    }
+
+
 
     /**
      * @param StructureColonne $clStructColonne
