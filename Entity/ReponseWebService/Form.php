@@ -34,7 +34,7 @@ class Form
     public $m_bWithBtnOrderActive;
 
 	/**
-	 * @var array
+	 * @var ListSort[]
 	 * tableau des tris appliqués à la liste
 	 */
 	public $m_TabSort;
@@ -71,4 +71,14 @@ class Form
     public function hasOrderActive() {
 	    return $this->m_bWithBtnOrderActive;
     }
+
+    /**
+     * @return ListSort[]
+     */
+    public function getTabSort()
+    {
+        return $this->m_TabSort;
+    }
+
+
 }
