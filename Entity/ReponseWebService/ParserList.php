@@ -124,12 +124,16 @@ class ParserList extends Parser
         // Appel depuis le testController
         // GetRecord sur non-objet = ERREUR
 
-        $sIDForm = $clReponseXML->clGetForm()->getID();
-        $sIDFormAction = $clReponseXML->clGetAction()->getIDForm();
-        $sIDAction = $clReponseXML->clGetAction()->getID();
-        $sTitre = $clReponseXML->clGetAction()->getTitle();
-        $withBtnOrder = $clReponseXML->clGetForm()->hasOrderBtn();
-        $withOrderActive = $clReponseXML->clGetForm()->hasOrderActive();
+        $clAction = $clReponseXML->clGetAction();
+        $sIDFormAction = $clAction->getIDForm();
+        $sIDAction = $clAction->getID();
+        $sTitre =$clAction->getTitle();
+
+        $clForm = $clReponseXML->clGetForm();
+        $sIDForm = $clForm->getID();
+        $withBtnOrder = $clForm->hasOrderBtn();
+        $withOrderActive = $clForm->hasOrderActive();
+        $tabSort = $clForm->getTabSort();
 
         $exports = $this->_getExports();
         $imports = $this->_getImports();
@@ -137,7 +141,7 @@ class ParserList extends Parser
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
         // Instance d'une nouvelle clList avec toutes les données précédentes
-        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, $withBtnOrder, $withOrderActive, $exports, $imports);
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, $withBtnOrder, $withOrderActive, $exports, $imports, $tabSort);
         $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
         $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
 

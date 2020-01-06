@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ListSort;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 
 /**
@@ -66,27 +67,57 @@ class RecordList
     protected $m_eDefaultDisplayMode;
 
     /**
-     * @var boolean $possibleReorder - Indicates wether the user should be able to reorder the recordlist
+     * @var boolean $m_bPossibleReorder - Indicates wether the user should be able to reorder the recordlist
      */
-    protected $possibleReorder;
+    protected $m_bPossibleReorder;
 
-    protected $activeReorder;
+    /**
+     * @var bool
+     */
+    protected $m_bActiveReorder;
 
-    protected $exports;
+    /**
+     * @var
+     */
+    protected $m_TabExports;
 
-    protected $imports;
+    /**
+     * @var
+     */
+    protected $m_TabImports;
 
-    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder, $exports, $imports)
+
+    /**
+     * @var ListSort[]
+     * tableau des tris appliqués à la liste
+     */
+    protected $m_TabSort;
+
+    /**
+     * RecordList constructor.
+     * @param $sTitle
+     * @param $sIDAction
+     * @param $sIDForm
+     * @param $TabIDEnreg
+     * @param $clStructElem
+     * @param $possibleReorder
+     * @param $activeReorder
+     * @param $exports
+     * @param $imports
+     * @param $tabSort
+     */
+    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder, $exports, $imports, $tabSort)
     {
         $this->m_sTitle = $sTitle;
         $this->m_sIDAction = $sIDAction;
         $this->m_nIDTableau = $sIDForm;
         $this->m_clStructElem = $clStructElem;
         $this->m_TabEnregTableau = $TabIDEnreg;
-        $this->possibleReorder = $possibleReorder;
-        $this->activeReorder = $activeReorder;
-        $this->exports = $exports;
-        $this->imports = $imports;
+        $this->m_bPossibleReorder = $possibleReorder;
+        $this->m_bActiveReorder = $activeReorder;
+        $this->m_TabExports = $exports;
+        $this->m_TabImports = $imports;
+        $this->m_TabSort = $tabSort;
     }
 
     /**
@@ -177,15 +208,25 @@ class RecordList
      * @return array
      */
     public function getExports() {
-        return $this->exports;
+        return $this->m_TabExports;
     }
 
     /**
      * @return array
      */
     public function getImports() {
-        return $this->imports;
+        return $this->m_TabImports;
     }
+
+    /**
+     * @return ListSort[]
+     */
+    public function getTabSort()
+    {
+        return $this->m_TabSort;
+    }
+
+
 
     /**
      * @param array $tabPossibleDisplayMode
@@ -208,11 +249,11 @@ class RecordList
     }
 
     public function hasPossibleReorder() {
-        return $this->possibleReorder;
+        return $this->m_bPossibleReorder;
     }
 
     public function hasActiveReorder() {
-        return $this->activeReorder;
+        return $this->m_bActiveReorder;
     }
 
     /**
