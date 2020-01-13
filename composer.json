@@ -1,8 +1,13 @@
 {
-    "name": "NOUT/NOUTOnline",
+    "name": "nout/noutonline",
 	"type": "symfony-bundle",
+	"version": "1.0.1",
     "require": {
             "php": ">=5.3.0"
     },
-	"target-dir": "NOUT/Bundle/NOUTOnlineBundle",
+	"description": "dialogue avec le webservice NOUTOnline de l'ERP de NOUT",
+	"license": "MIT",
+	"autoload": {
+        "psr-4": { "NOUT\\Bundle\\NOUTOnlineBundle\\": "" }
+    }
 } 
