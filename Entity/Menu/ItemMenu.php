@@ -252,7 +252,7 @@ class ItemMenu
      */
     public function setIdAction($idAction)
     {
-        $this->idAction = is_string($idAction) ? $idAction : sprintf("%.0f", $idAction);
+        $this->idAction = is_string($idAction) ? $idAction : sprintf("%u", $idAction);
         return $this;
     }
 
