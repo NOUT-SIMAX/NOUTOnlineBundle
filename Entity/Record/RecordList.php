@@ -106,7 +106,7 @@ class RecordList
      * @param $imports
      * @param $tabSort
      */
-    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder, $exports, $imports, $tabSort)
+    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder, $exports, $imports, $tabSort=array())
     {
         $this->m_sTitle = $sTitle;
         $this->m_sIDAction = $sIDAction;
