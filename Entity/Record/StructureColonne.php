@@ -536,6 +536,15 @@ abstract class StructureColonne
                     return 'simax_choice';
                 }
             }
+            case self::TM_Tableau :
+            {
+                if ($this->isOption(StructureColonne::OPTION_Relation11)){
+                    return 'simax_element11';
+                }
+
+                return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
+            }
+
 			default : // Correspond au != self::TM_Texte
 			{
 				return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
