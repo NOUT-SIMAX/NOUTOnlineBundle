@@ -68,6 +68,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
@@ -1918,6 +1919,31 @@ class NOUTClient
 
 
         $clReponseXML = $this->m_clSOAPProxy->create($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+
+    /**
+     * @param $tabParamQuery
+     * @param $sIDFormulaire
+     * @param $sIDEnreg
+     * @param $sIDContexte
+     * @return ActionResult
+     */
+    public function oDeleteElem(array $tabParamQuery, $sIDFormulaire, $sIDEnreg, $sIDContexte)
+    {
+        $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_ActionContext => $sIDContexte
+        );
+
+        $clParam = $this->_oGetParam(Delete::class, $tabParamQuery);
+        $clParam->Table = $sIDFormulaire;
+        $clParam->ParamXML = "<id_$sIDFormulaire>$sIDEnreg</id_$sIDFormulaire>";
+
+        $clReponseXML = $this->m_clSOAPProxy->delete($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
