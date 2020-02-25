@@ -671,7 +671,8 @@ abstract class StructureColonne
 	const OPTION_AttributID = "id";
 
 	// Attributs pour les fichiers
-	const OPTION_Mime_Type				= "typeMime";
+	const OPTION_MimeType				= "typeMime";
+	const OPTION_Editable				= "editable";
 
 
 	static public function s_GetModeleOption()
