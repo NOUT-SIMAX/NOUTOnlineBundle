@@ -673,6 +673,8 @@ abstract class StructureColonne
 	// Attributs pour les fichiers
 	const OPTION_MimeType				= "typeMime";
 	const OPTION_Editable				= "editable";
+	const OPTION_CanvasWidth            = "canvasWidth";
+	const OPTION_CanvasHeight           = "canvasHeight";
 
 
 	static public function s_GetModeleOption()
