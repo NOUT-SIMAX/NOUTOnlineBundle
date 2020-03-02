@@ -93,28 +93,36 @@ class NOUTFileInfo
         file_put_contents($filetemp, $this->content);
 
         if ((strpos($mimetype, '/')!==false) && ($mimetype != $this->mimetype)){
-            //il faut convertir l'image
-            $im = imagecreatefromstring($this->content);
-
             $newExtension = substr($mimetype, strpos($mimetype, '/')+1);
 
-            if (preg_match('/jpg|jpeg/i', $newExtension)){
-                imagejpeg($im, $filetemp);
-            }
-            else if (preg_match('/png/i', $newExtension)){
-                imagepng($im, $filetemp);
-            }
-            else if (preg_match('/gif/i', $newExtension)){
-                imagegif($im, $filetemp);
-            }
-            else if (preg_match('/bmp/i', $newExtension)){
-                imagebmp($im, $filetemp);
-            }
-            imagedestroy($im);
+            $srcIsJpeg = preg_match('/jpg|jpeg/i', $this->mimetype);
+            $destIsJpeg = preg_match('/jpg|jpeg/i', $newExtension);
 
-            $this->mimetype = $mimetype;
-            $this->extension = $newExtension;
-            $this->content = file_get_contents($filetemp);
+            if (!($srcIsJpeg && $destIsJpeg)){
+
+                //il faut convertir l'image
+                $im = imagecreatefromstring($this->content);
+
+                if (preg_match('/jpg|jpeg/i', $newExtension)){
+                    $res = imagejpeg($im, $filetemp);
+                }
+                else if (preg_match('/png/i', $newExtension)){
+                    $res = imagepng($im, $filetemp);
+                }
+                else if (preg_match('/gif/i', $newExtension)){
+                    $res = imagegif($im, $filetemp);
+                }
+                else if (preg_match('/bmp/i', $newExtension)){
+                    $res = imagebmp($im, $filetemp);
+                }
+
+                $this->mimetype = $mimetype;
+                $this->extension = $newExtension;
+                $this->content = file_get_contents($filetemp);
+                imagedestroy($im);
+            }
+
+
         }
 
         $this->filename     = $idcolonne.'.'.$this->extension;
