@@ -77,8 +77,49 @@ class NOUTFileInfo
         $this->mimetype     = $file->getClientMimeType();
         $this->size         = $file->getClientSize();
         $this->content      = file_get_contents($file->getRealPath());
+    }
 
-        //$file->getCTime();
+    /**
+     * @param UploadedFile $file
+     */
+    public function initImgFromUploadedBase64Data($dataBase64, $mimetype, $idcolonne)
+    {
+        //data:image/png;
+        $this->mimetype     = substr($dataBase64, 5,strpos($dataBase64,  ';')-5);
+        $this->extension = substr($this->mimetype, strpos($this->mimetype, '/')+1);
+        $this->content      = file_get_contents($dataBase64);
+
+        $filetemp = tempnam(sys_get_temp_dir(), 'drawing');
+        file_put_contents($filetemp, $this->content);
+
+        if ((strpos($mimetype, '/')!==false) && ($mimetype != $this->mimetype)){
+            //il faut convertir l'image
+            $im = imagecreatefromstring($this->content);
+
+            $newExtension = substr($mimetype, strpos($mimetype, '/')+1);
+
+            if (preg_match('/jpg|jpeg/i', $newExtension)){
+                imagejpeg($im, $filetemp);
+            }
+            else if (preg_match('/png/i', $newExtension)){
+                imagepng($im, $filetemp);
+            }
+            else if (preg_match('/gif/i', $newExtension)){
+                imagegif($im, $filetemp);
+            }
+            else if (preg_match('/bmp/i', $newExtension)){
+                imagebmp($im, $filetemp);
+            }
+            imagedestroy($im);
+
+            $this->mimetype = $mimetype;
+            $this->extension = $newExtension;
+            $this->content = file_get_contents($filetemp);
+        }
+
+        $this->filename     = $idcolonne.'.'.$this->extension;
+        $this->size         = filesize($filetemp);
+        unlink($filetemp);
     }
 
     /**
