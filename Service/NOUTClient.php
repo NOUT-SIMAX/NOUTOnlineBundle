@@ -2387,6 +2387,23 @@ class NOUTClient
         return $this->saveNOUTFileInCache($data, $idcontexte, $idihm, $idcolonne);
     }
 
+    /**
+     * @param UploadedFile $file
+     * @param              $idcontexte
+     * @param              $idihm
+     * @param              $idcolonne
+     * @return ActionResult
+     */
+    public function saveBase64DataInCache($dataBase64, $mimetype, $idcontexte, $idihm, $idcolonne)
+    {
+//        $temp_file = tempnam(sys_get_temp_dir(), 'drawing');
+//        file_put_contents($temp_file, base64_decode($dataBase64));
+
+        $data = new NOUTFileInfo();
+        $data->initImgFromUploadedBase64Data($dataBase64, $mimetype, $idcolonne);
+        return $this->saveNOUTFileInCache($data, $idcontexte, $idihm, $idcolonne);
+    }
+
 
     /**
      * @param NOUTFileInfo $file
