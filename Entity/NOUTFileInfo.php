@@ -77,8 +77,57 @@ class NOUTFileInfo
         $this->mimetype     = $file->getClientMimeType();
         $this->size         = $file->getClientSize();
         $this->content      = file_get_contents($file->getRealPath());
+    }
 
-        //$file->getCTime();
+    /**
+     * @param UploadedFile $file
+     */
+    public function initImgFromUploadedBase64Data($dataBase64, $mimetype, $idcolonne)
+    {
+        //data:image/png;
+        $this->mimetype     = substr($dataBase64, 5,strpos($dataBase64,  ';')-5);
+        $this->extension = substr($this->mimetype, strpos($this->mimetype, '/')+1);
+        $this->content      = file_get_contents($dataBase64);
+
+        $filetemp = tempnam(sys_get_temp_dir(), 'drawing');
+        file_put_contents($filetemp, $this->content);
+
+        if ((strpos($mimetype, '/')!==false) && ($mimetype != $this->mimetype)){
+            $newExtension = substr($mimetype, strpos($mimetype, '/')+1);
+
+            $srcIsJpeg = preg_match('/jpg|jpeg/i', $this->mimetype);
+            $destIsJpeg = preg_match('/jpg|jpeg/i', $newExtension);
+
+            if (!($srcIsJpeg && $destIsJpeg)){
+
+                //il faut convertir l'image
+                $im = imagecreatefromstring($this->content);
+
+                if (preg_match('/jpg|jpeg/i', $newExtension)){
+                    $res = imagejpeg($im, $filetemp);
+                }
+                else if (preg_match('/png/i', $newExtension)){
+                    $res = imagepng($im, $filetemp);
+                }
+                else if (preg_match('/gif/i', $newExtension)){
+                    $res = imagegif($im, $filetemp);
+                }
+                else if (preg_match('/bmp/i', $newExtension)){
+                    $res = imagebmp($im, $filetemp);
+                }
+
+                $this->mimetype = $mimetype;
+                $this->extension = $newExtension;
+                $this->content = file_get_contents($filetemp);
+                imagedestroy($im);
+            }
+
+
+        }
+
+        $this->filename     = $idcolonne.'.'.$this->extension;
+        $this->size         = filesize($filetemp);
+        unlink($filetemp);
     }
 
     /**

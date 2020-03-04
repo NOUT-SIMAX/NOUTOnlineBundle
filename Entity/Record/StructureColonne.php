@@ -605,10 +605,10 @@ abstract class StructureColonne
 	const OPTION_Link        = 'link';
 	const OPTION_LinkControl = 'linkControl';    // pour les colonnes (controles de validité)
 
-	const OPTION_Hidden   = "hidden"; // Namespace déjà géré
-	const OPTION_ContainerCol   = "containerCol"; // Namespace déjà géré
-	const OPTION_ReadOnly = "readOnly";
-	const OPTION_Disabled = "disabled";
+    const OPTION_Hidden = "hidden"; // Namespace déjà géré
+    const OPTION_ContainerCol = "containerCol"; // Namespace déjà géré
+    const OPTION_ReadOnly = "readOnly";
+    const OPTION_Disabled = "disabled";
 
 	const OPTION_Required = "required";
 	const OPTION_Transform = "transform";
@@ -671,7 +671,14 @@ abstract class StructureColonne
 	const OPTION_AttributID = "id";
 
 	// Attributs pour les fichiers
-	const OPTION_Mime_Type				= "typeMime";
+	const OPTION_MimeType				= "typeMime";
+	const OPTION_Editable				= "editable";
+	const OPTION_CanvasWidth            = "canvasWidth";
+	const OPTION_CanvasHeight           = "canvasHeight";
+	const OPTION_WithWatermark          = "watermark";
+	const OPTION_WatermarkText          = "watermarkText";
+	const OPTION_WatermarkColor         = "watermarkColor";
+	const OPTION_WatermarkAngle         = "watermarkAngle";
 
 
 	static public function s_GetModeleOption()

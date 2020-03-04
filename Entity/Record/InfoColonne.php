@@ -48,6 +48,7 @@ class InfoColonne
                 case Record::OPTION_BGColor:
                 case Record::OPTION_Color:
                 case StructureColonne::OPTION_TypeElement:
+                case StructureColonne::OPTION_WithWatermark:
                     $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
                     break;
 
@@ -57,6 +58,15 @@ class InfoColonne
             }
         }
 	}
+
+    /**
+     * @param $dwOption
+     * @return bool
+     */
+	public function hasOption($dwOption)
+    {
+        return isset($this->m_TabOptions[$dwOption]);
+    }
 
     /**
      * @param $dwOption
