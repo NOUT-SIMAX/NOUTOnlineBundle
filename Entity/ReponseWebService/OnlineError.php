@@ -8,7 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-class OnlineError
+class OnlineError implements \JsonSerializable
 {
 	protected $m_nCode;
 	protected $m_nErreur;
@@ -23,6 +23,17 @@ class OnlineError
 		$this->m_nErreur    = (int) $nErreur;
 		$this->m_sMessage   = (string) $sMessage;
 	}
+
+
+    public function jsonSerialize() {
+        return array(
+            'code'       => $this->m_nCode,
+            'error'      => $this->m_nErreur,
+            'category'   => $this->m_nCategorie,
+            'message'    => $this->m_sMessage,
+            'parameters' => $this->m_TabParametres,
+        );
+    }
 
 	public function AddParameter(OnlineErrorParameter $clError)
 	{
