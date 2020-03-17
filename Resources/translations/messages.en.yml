@@ -5,6 +5,8 @@ login:
     sign_in: Sign In
     noutonline_no_answer: "NOUTOnline appears to be offline. Please check the following:\n- The service NOUTOnline is running\n- You own a valid licence\n- The webservice has been turned on"
     noutonline_no_versionmin: "The minimal version of NOUTOnline is %version%.\nPlease update your NOUTOnline installation"
+    reset_password: Forgot password ?
+    need_login: The user must not be empty
 error:
     page_shouldnt_show: This page shouldn't show
     configure_firewall: Please configure the symfony firewall
