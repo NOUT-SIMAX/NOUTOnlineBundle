@@ -83,20 +83,20 @@
 			</div>
 			<div style="padding-top:30px" class="panel-body" >
 				<form id="loginform" class="form-horizontal" role="form" action="{{ path('login_check') }}" method="post">
-					{% if error %}
-					<div style="margin-bottom: 25px" class="input-group col-sm-12">
-						<div id="login-alert" class="alert alert-danger col-sm-12 ">
-                            {% if error.messageData is defined %}
-                                {{ error.message|trans(error.messageData, 'security') }}
-                            {% else %}
-                                {{ error.message|trans }}
+					<div style="margin-bottom: 25px" class="input-group col-sm-12 {% if not error %}hidden{% endif %}">
+						<div id="login-alert" class="alert alert-danger col-sm-12 {% if not error %}hidden{% endif %}">
+                            {% if error %}
+                                {% if error.messageData is defined %}
+                                    {{ error.message|trans(error.messageData, 'security') }}
+                                {% else %}
+                                    {{ error.message|trans }}
+                                {% endif %}
                             {% endif %}
                         </div>
+                        <div id="login-info" class="alert alert-info col-sm-12 hidden"></div>
 					</div>
-					{% endif %}
                     {% set no_state = noutonline_state() %}
                     {% if not no_state.isStarted %}
-                         NOUTOnline ne répond pas
                         {{ 'login.noutonline_no_answer' | trans | nl2br }}
                     {% elseif not no_state.isVersionMin %}
                         {% if no_state.version is not empty %}
@@ -109,13 +109,11 @@
                          {#<!-- Tout va bien on peut se connecter -->#}
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                            <input id="login-username" type="text" class="form-control" name="m_sLogin" value="{{ last_username }}" placeholder="{{ 'login.login' | trans }}" required
-                                   onchange="$('#login-alert').hide()" oninput="$('#login-alert').hide()">
+                            <input id="login-username" type="text" class="form-control" name="m_sLogin" value="{{ last_username }}" placeholder="{{ 'login.login' | trans }}" required>
                         </div>
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="login-password" type="password" class="form-control" name="m_sPass" placeholder="{{ 'login.password' | trans }}"
-                                   onchange="$('#login-alert').hide()" oninput="$('#login-alert').hide()">
+                            <input id="login-password" type="password" class="form-control" name="m_sPass" placeholder="{{ 'login.password' | trans }}">
                         </div>
                         <div style="margin-bottom: 25px" class="input-group hidden">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
@@ -129,7 +127,10 @@
                         <div style="margin-top:10px" class="form-group">
                             <!-- Button -->
                             <div class="col-sm-12 controls">
-                                <button type="submit" class="btn btn-default btn-login" onclick="$('#login-alert').hide()">{{ 'login.connection' | trans }}</button>
+                                <button id="submit" type="submit" class="btn btn-default btn-login">{{ 'login.connection' | trans }}</button>
+                                {% if not extranet %}
+                                <a href="#" id="reset-password">{{ 'login.reset_password' | trans }}</a>
+                                {% endif %}
                             </div>
                         </div>
                     {% endif %}
@@ -151,40 +152,11 @@
 	<script type="text/javascript" src="{{ asset('vendors/jstz/jstz.min.js') }}"></script>
 
 	<script type="text/javascript">
-        var languages = {{ available_languages|json_encode|raw }};
-        var baseImgUrl = '{{ asset("img/ihm/Flags/") }}';
-        var $availableLanguages = $(".available_languages");
-		$( document ).ready(function() {
-			var hasSelected = $('#login-timezone').has('[selected]').length > 0;
-			if (!hasSelected)
-			{
-				var timezone = jstz.determine();
-				$("#login-timezone").val(timezone.name());
-			}
 
-			$(document).click(function(e) {
-			    if(
-			        e.target == $('.selected_language')[0] ||
-                    $(e.target).parents().toArray().find(function(el) {return el == $('.selected_language')[0]})
-                )
-			        return;
-                $availableLanguages.hide();
-            });
-
-			$(".selected_language").click(function() {
-                $availableLanguages.toggle();
-            });
-
-			$(".languages").on('dblclick', '.selected_language', function(e) { e.preventDefault() });
-
-            $availableLanguages.hide();
-			loadLanguage();
-		});
-
-		function loadLanguage(code = 12) {
-		    if(!languages.length || languages.length == 1) {
-		        $(".languages").remove();
-		        return;
+        function loadLanguage(code = 12) {
+            if(!languages.length || languages.length == 1) {
+                $(".languages").remove();
+                return;
             }
             var language = languages.find(function(language){ return language.code == code });
             if(!language)
@@ -239,6 +211,101 @@
                 }
             });
         }
+
+        var languages = {{ available_languages|json_encode|raw }};
+        var baseImgUrl = '{{ asset("img/ihm/Flags/") }}';
+        var $availableLanguages = $(".available_languages");
+		$( document ).ready(function() {
+		    var $loginInfo = $('#login-info');
+		    var $loginAlert = $('#login-alert');
+		    var $loginMessConteneur = $loginAlert.parent();
+
+			var hasSelected = $('#login-timezone').has('[selected]').length > 0;
+			if (!hasSelected)
+			{
+				var timezone = jstz.determine();
+				$("#login-timezone").val(timezone.name());
+			}
+
+			$(document).click(function(e) {
+			    if(
+			        e.target == $('.selected_language')[0] ||
+                    $(e.target).parents().toArray().find(function(el) {return el == $('.selected_language')[0]})
+                )
+			        return;
+                $availableLanguages.hide();
+            });
+
+			$(".selected_language").click(function() {
+                $availableLanguages.toggle();
+            });
+
+			$(".languages").on('dblclick', '.selected_language', function(e) { e.preventDefault() });
+
+            $availableLanguages.hide();
+			loadLanguage();
+
+			$("#login-username, #login-password").on('input change', function ()
+            {
+                $loginMessConteneur.addClass('hidden');
+                $loginInfo.addClass('hidden');
+                $loginAlert.addClass('hidden');
+            });
+			$("#submit").on('click', function ()
+            {
+                $loginMessConteneur.addClass('hidden');
+                $loginInfo.addClass('hidden');
+                $loginAlert.addClass('hidden');
+            })
+
+			$('#reset-password').on('click', function (event)
+            {
+                $loginMessConteneur.addClass('hidden');
+                $loginInfo.addClass('hidden');
+                $loginAlert.addClass('hidden');
+
+                event.preventDefault();
+                var login = $("#login-username").val();
+                if (!login.length) {
+                    $loginAlert.html("{{ 'login.need_login' | trans }}");
+                    $loginAlert.removeClass('hidden');
+                    $loginMessConteneur.removeClass('hidden');
+                }
+                else {
+                    $.ajax({
+                               url  : "{{ path('reset_password') }}",
+                               data : { login : login }
+                           })
+                     .done(function (data)
+                           {
+                               $loginInfo.html(data.message);
+                               $loginInfo.removeClass('hidden');
+                               $loginMessConteneur.removeClass('hidden');
+                           })
+                     .fail(function (jqx)
+                           {
+                                var data = jqx.responseJSON;
+                                if (Array.isArray(data) && data.length){
+                                    var error = data.shift();
+
+                                    $loginAlert.html(error.message);
+                                    $loginAlert.removeClass('hidden');
+                                    $loginMessConteneur.removeClass('hidden');
+                                }
+                                else{
+                                    if(data.hasOwnProperty('message')){
+                                        $loginAlert.html(data.message);
+                                        $loginAlert.removeClass('hidden');
+                                        $loginMessConteneur.removeClass('hidden');
+                                    }
+                                }
+                           });
+                }
+
+
+            })
+		});
+
 	</script>
 {% endblock %}
 </body>

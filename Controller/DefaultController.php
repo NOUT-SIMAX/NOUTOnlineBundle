@@ -6,6 +6,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ResetPasswordFailed;
 use NOUT\Bundle\SessionManagerBundle\Entity\TimeZone;
 use NOUT\Bundle\SessionManagerBundle\Entity\User;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
@@ -16,6 +17,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use NOUT\Bundle\SessionManagerBundle\Entity\ConnectionInfos;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 
@@ -172,4 +174,38 @@ class DefaultController extends Controller
             )
 		);
 	}
+
+    /**
+     * Route de génération du formulaire de connexion
+     * Comme c'est pour l'identification, on n'utilise pas de formBuilder, uniquement un template twig avec le formulaire dedans
+     *
+     * @Route("/reset_password/",
+     *     name="reset_password",
+     *     options={"expose"=true}
+     * )
+     */
+    public function resetPasswordAction(Request $request)
+    {
+        $param = new ResetPasswordFailed();
+        $param->Login = $request->get('login');
+
+        /** @var array $languages */
+        try{
+            /** @var XMLResponseWS $ret */
+            $ret = $this->_clGetSOAPProxy()->resetPasswordFailed($param);
+        }
+        catch (\Exception $e)
+        {
+            return new JsonResponse(array('message' => $e->getMessage()), 500);
+        }
+
+        if ($ret->bIsFault()){
+            //erreur
+            return new JsonResponse($ret->getTabError(), 500);
+        }
+
+        return new JsonResponse(array('message' => $ret->sGetReport()));
+
+    }
+
 }
