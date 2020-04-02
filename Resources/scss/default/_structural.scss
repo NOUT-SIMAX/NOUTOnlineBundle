@@ -107,9 +107,11 @@ body {
 }
 
 @media only screen and (max-width: 768px)and (orientation: portrait),
-only screen and (max-height: 768px)and (orientation: landscape) {
-  #loginbox .panel{
+only screen and (max-height: 768px)and (orientation: landscape){
+  #loginbox {
     width: 95vw;
     margin: auto;
+    left: auto;
+    top: 25%;
   }
 }
