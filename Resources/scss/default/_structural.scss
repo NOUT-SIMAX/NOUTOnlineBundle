@@ -106,10 +106,12 @@ body {
   font-size: smaller;
 }
 
-@media only screen and (max-width: 768px)and (orientation: portrait),
-only screen and (max-height: 768px)and (orientation: landscape) {
-  #loginbox .panel{
+@media only screen and (max-width: $screen-max-width) /*and (orientation: portrait),
+only screen and (max-height: $screen-max-height)and (orientation: landscape)*/{
+  #loginbox {
     width: 95vw;
     margin: auto;
+    left: auto;
+    top: 25%;
   }
 }
