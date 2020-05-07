@@ -30,7 +30,6 @@ class NOUTFileInfo
      */
     public $mimetype;
 
-
     /**
      * @var string
      */
@@ -169,6 +168,39 @@ class NOUTFileInfo
         {
             $this->content = (string)$ndData;
         }
+
+        if (strcasecmp($this->mimetype, 'text/html')==0){
+            $meta = $this->_getMetaTags($this->content);
+            if (array_key_exists('Content-Type', $meta)){
+                $this->mimetype = $meta['Content-Type'];
+            }
+        }
+
+    }
+
+    protected function _getMetaTags($str)
+    {
+        $pattern = '
+  ~<\s*meta\s
+
+  # using lookahead to capture type to $1
+    (?=[^>]*?
+    \b(?:name|property|http-equiv)\s*=\s*
+    (?|"\s*([^"]*?)\s*"|\'\s*([^\']*?)\s*\'|
+    ([^"\'>]*?)(?=\s*/?\s*>|\s\w+\s*=))
+  )
+
+  # capture content to $2
+  [^>]*?\bcontent\s*=\s*
+    (?|"\s*([^"]*?)\s*"|\'\s*([^\']*?)\s*\'|
+    ([^"\'>]*?)(?=\s*/?\s*>|\s\w+\s*=))
+  [^>]*>
+
+  ~ix';
+
+        if(preg_match_all($pattern, $str, $out))
+            return array_combine($out[1], $out[2]);
+        return array();
     }
 
 
