@@ -330,6 +330,15 @@ abstract class StructureColonne
 
         if (!empty($this->m_TabOptions[$sOption]))
         {
+            $val = $this->m_TabOptions[$sOption];
+            if (is_numeric($val)){
+                return ($val+0) != 0;
+            }
+
+            if (is_bool($val)){
+                return $val;
+            }
+
             return true;
         }
 
