@@ -125,7 +125,7 @@ class ItemMenu
 	 */
 	public function __construct($idOptionMenu, $sLibelle, $bEstOptionMenu)
 	{
-		$this->idOptionMenu = is_string($idOptionMenu) ? $idOptionMenu : sprintf ( "%.0f", $idOptionMenu );
+		$this->idOptionMenu = is_string($idOptionMenu) ? $idOptionMenu : sprintf ( "%u", $idOptionMenu );
 		$this->title = str_replace('&&', '&', $sLibelle);
 		$this->optionMenu = $bEstOptionMenu;
 	}
