@@ -3,16 +3,16 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <!-- Support pour IE -->
+    {# Support pour IE #}
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    {# The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags #}
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>{% if customization.actif and customization.window_title is not empty %}{{ customization.window_title }}{% else %}{{ 'login.sign_in' | trans }}{% endif %}</title>
 	{% block stylesheets %}
 
-        <!-- icon -->
+        {# icon #}
         {% if app.debug %}
             <link rel="shortcut icon" href="{{ asset('bundles/noutsessionmanager/img/favicon-debug.ico') ~ "?v=13.1" }}" type="image/x-icon"/>
             <link rel="icon" href="{{ asset('bundles/noutsessionmanager/img/favicon-debug.ico') ~ "?v=13.1" }}" type="image/x-icon"/>
@@ -25,7 +25,7 @@
             {% endif %}
         {% endif %}
 
-		<!-- feuille de style -->
+		{# feuille de style #}
 		<link rel="stylesheet" href="{{ asset('vendors/bootstrap/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('bundles/noutsessionmanager/style/style.css') }}" />
 
@@ -106,7 +106,7 @@
                             {{ no_state.error | trans }}
                         {% endif %}
                     {% else %}
-                         {#<!-- Tout va bien on peut se connecter -->#}
+                        {# Tout va bien on peut se connecter #}
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                             <input id="login-username" type="text" class="form-control" name="m_sLogin" value="{{ last_username }}" placeholder="{{ 'login.login' | trans }}" required>
@@ -125,7 +125,6 @@
                         </div>
                         <input id="m_sLocale" type="hidden" name="m_sLocale"/>
                         <div style="margin-top:10px" class="form-group">
-                            <!-- Button -->
                             <div class="col-sm-12 controls">
                                 <button id="submit" type="submit" class="btn btn-default btn-login">{{ 'login.connection' | trans }}</button>
                                 {% if not extranet %}
@@ -146,7 +145,7 @@
 {#</div>#}
 
 {% block javascripts %}
-	<!-- Latest compiled and minified JavaScript -->
+	{# Latest compiled and minified JavaScript #}
 	<script type="text/javascript" src="{{ asset('vendors/jquery/jquery.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('vendors/bootstrap/js/bootstrap.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('vendors/jstz/jstz.min.js') }}"></script>
