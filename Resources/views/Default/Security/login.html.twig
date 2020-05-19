@@ -135,11 +135,13 @@
                     {% endif %}
 				</form>
 			</div>
+            {% if display_version %}
 			<div class="panel-footer">
 				© NOUTWeb {{ version_site }}
 				<br />
                 © NOUTOnline <span {% if not isMin %}class="text-danger" style="font-weight: bold"{% endif %}>{{ no_state.version }}</span>
 			</div>
+            {% endif %}
 		</div>
 	</div>
 {#</div>#}
