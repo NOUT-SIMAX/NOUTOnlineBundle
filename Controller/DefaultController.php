@@ -147,6 +147,7 @@ class DefaultController extends Controller
             'customization'             => $this->getParameter('nout_session_manager.customization'),
             'extranet'                  => $this->getParameter('nout_online.extranet')['actif'],
             'version_min'               => $this->getParameter('nout_online.version_min'),
+            'display_version'           => $this->getParameter('nout_web_site.display_version'),
             'available_languages'       => $languages,
             'select_language'           => $bSelectLanguage,
 	    ));
