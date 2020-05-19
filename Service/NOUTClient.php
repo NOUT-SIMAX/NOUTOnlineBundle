@@ -2204,7 +2204,7 @@ class NOUTClient
         $clActionResult->setData($oRet);
 
         //gestion du cache de symfony
-        $clActionResult->setTypeCache($oRet->isNoCache() ? ActionResultCache::TYPECACHE_None : ActionResultCache::TYPECACHE_Public);
+        $clActionResult->setTypeCache($oRet->isNoCache() ? ActionResultCache::TYPECACHE_None : ActionResultCache::TYPECACHE_Private);
         $clActionResult->setLastModified($oRet->getDTLastModified());
 
         return $clActionResult;
@@ -2420,7 +2420,7 @@ class NOUTClient
         $clActionResult->setData($name);
 
         //gestion du cache
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
 
         return $clActionResult;
     }
@@ -2440,7 +2440,7 @@ class NOUTClient
         $clActionResult->setData($data);
 
         //gestion du cache
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Public);
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
         // $clActionResult->setLastModified(new \DateTime('@'.filemtime($filePath))); // Erreur si le fichier n'existe pas
 
         return $clActionResult;
