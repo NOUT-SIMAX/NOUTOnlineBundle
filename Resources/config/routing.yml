@@ -1,3 +1,0 @@
-nout_contextes_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: NOUTContextsBundle:Default:index }
