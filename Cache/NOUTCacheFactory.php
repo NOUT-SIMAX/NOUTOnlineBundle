@@ -44,7 +44,7 @@ class NOUTCacheFactory
     {
         $this->__router = $router;
         $this->__cachedir = $cachedir;
-        $this->__cacheinfofile = $configdir.'/cache_info.yml';
+        $this->__cacheinfofile = $configdir.'/cache_info.yaml';
         $this->__stopwatch = $stopwatch;
     }
 

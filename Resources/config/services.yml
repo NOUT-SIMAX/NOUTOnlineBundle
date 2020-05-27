@@ -67,7 +67,7 @@ services:
     #factory pour les caches
     nout_online.cache_factory:
         class:      NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory
-        arguments:  ['@router', "%kernel.cache_dir%", '%kernel.root_dir%/config', '@?debug.stopwatch']
+        arguments:  ['@router', "%kernel.cache_dir%", '%kernel.project_dir%/config', '@?debug.stopwatch']
 
     #les extension twigs
     nout_online.twig.nout_online_extension:
@@ -83,14 +83,3 @@ services:
         class:      NOUT\Bundle\NOUTOnlineBundle\Twig\ToolsExtension
         tags:
             - { name: twig.extension }
-
-    #pour les forms de test
-    nout_online.form.test_radio:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Form\Test\TestRadioType
-        tags:
-            - { name: form.type, alias: 'test_radio' }
-
-    nout_online.form.test_radio_container:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Form\Test\TestRadioContainerType
-        tags:
-            - { name: form.type, alias: 'test_radio_container' }
