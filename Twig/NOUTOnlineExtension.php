@@ -14,13 +14,16 @@ use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 /**
  * This class contains the needed functions
  * - in order to do the query highlighting
  * - get the version and state of noutonline
  */
-class NOUTOnlineExtension extends \Twig_Extension
+class NOUTOnlineExtension extends AbstractExtension
 {
 
 	/**
@@ -70,8 +73,8 @@ class NOUTOnlineExtension extends \Twig_Extension
 	public function getFilters()
 	{
 		return array(
-            new \Twig_SimpleFilter('noutonline_beautify_xml', array($this, 'beautifyXML')),
-            new \Twig_SimpleFilter('noutonline_beautify_json', array($this, 'beautifyJSON')),
+            new TwigFilter('noutonline_beautify_xml', array($this, 'beautifyXML')),
+            new TwigFilter('noutonline_beautify_json', array($this, 'beautifyJSON')),
 		);
 	}
 
@@ -138,11 +141,11 @@ class NOUTOnlineExtension extends \Twig_Extension
     public function getFunctions()
 	{
 		return array(
-			 new \Twig_SimpleFunction('noutonline_state', array($this, 'state')),
-			 new \Twig_SimpleFunction('noutonline_version', array($this, 'version')),
-			 new \Twig_SimpleFunction('noutonline_is_started', array($this, 'isStarted')),
-             new \Twig_SimpleFunction('noutonline_is_versionmin', array($this, 'isVersionMin')),
-             new \Twig_SimpleFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
+			 new TwigFunction('noutonline_state', array($this, 'state')),
+			 new TwigFunction('noutonline_version', array($this, 'version')),
+			 new TwigFunction('noutonline_is_started', array($this, 'isStarted')),
+             new TwigFunction('noutonline_is_versionmin', array($this, 'isVersionMin')),
+             new TwigFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
 		);
 	}
 

@@ -8,10 +8,14 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Twig;
 
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
+
 /**
  * This class contains tools functions
  */
-class ToolsExtension extends \Twig_Extension
+class ToolsExtension extends AbstractExtension
 {
 
 	/**
@@ -38,7 +42,7 @@ class ToolsExtension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			new \Twig_SimpleFunction('uniqueid', array($this, 'tools_uniqueid')),
+			new TwigFunction('uniqueid', array($this, 'tools_uniqueid')),
 		);
 	}
 
@@ -54,8 +58,8 @@ class ToolsExtension extends \Twig_Extension
 
     public function getFilters(){
         return array(
-            new \Twig_SimpleFilter('base64_encode', 'base64_encode'),
-            new \Twig_SimpleFilter('base64_decode', 'base64_decode')
+            new TwigFilter('base64_encode', 'base64_encode'),
+            new TwigFilter('base64_decode', 'base64_decode')
         );
     }
 
