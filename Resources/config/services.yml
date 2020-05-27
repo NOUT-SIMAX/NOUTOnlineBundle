@@ -8,19 +8,19 @@ services:
     nout_contexts.client:
         class:      NOUT\Bundle\ContextsBundle\Service\NOUTClient
         arguments:
-            - @security.token_storage
-            - @nout_online.service_factory
-            - @nout_online.configuration_dialogue
-            - @nout_online.cache_factory
-            - %nout_online.version_min%
-            - %nout_online.version_dialogue_pref%
-            - @?debug.stopwatch
+            - '@security.token_storage'
+            - '@nout_online.service_factory'
+            - '@nout_online.configuration_dialogue'
+            - '@nout_online.cache_factory'
+            - '%nout_online.version_min%'
+            - '%nout_online.version_dialogue_pref%'
+            - '@?debug.stopwatch'
 
     nout_contexts.record_serializer:
         class:  NOUT\Bundle\ContextsBundle\Service\RecordSerializer
         arguments:
-            - @security.token_storage
-            - @nout_online.cache_factory
+            - '@security.token_storage'
+            - '@nout_online.cache_factory'
     nout_online.connection_manager:
         class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager
         arguments:  ['%nout_online.auth%']

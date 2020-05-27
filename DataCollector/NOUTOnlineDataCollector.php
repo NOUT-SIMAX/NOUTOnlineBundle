@@ -31,7 +31,11 @@ class NOUTOnlineDataCollector  extends DataCollector
 		$this->m_clTokenStorage    = $tokenStorage;
 	}
 
-	public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function reset()
+    {
+
+    }
+	public function collect(Request $request, Response $response, \Throwable $exception = null)
 	{
 		$queries = array();
 		$queries = $this->m_clLogger->m_TabQueries;
