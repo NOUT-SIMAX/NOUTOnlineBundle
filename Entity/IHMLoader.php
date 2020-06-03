@@ -11,9 +11,9 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 
-use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\ContextsBundle\Entity\Menu\Menu;
-use NOUT\Bundle\ContextsBundle\Entity\Menu\OptionMenu;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\Menu;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\OptionMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;

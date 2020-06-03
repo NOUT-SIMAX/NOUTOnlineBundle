@@ -9,17 +9,17 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Yaml;
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 class NOUTCacheFactory
 {
 
     /**
-     * @var Router
+     * @var UrlGeneratorInterface
      */
     private $__router;
 
@@ -40,7 +40,7 @@ class NOUTCacheFactory
      */
     private $__stopwatch;
 
-    function __construct(Router $router, $cachedir, $configdir, Stopwatch $stopwatch=null)
+    function __construct(UrlGeneratorInterface $router, $cachedir, $configdir, Stopwatch $stopwatch=null)
     {
         $this->__router = $router;
         $this->__cachedir = $cachedir;

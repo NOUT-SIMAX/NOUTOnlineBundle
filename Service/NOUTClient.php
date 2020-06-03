@@ -8,12 +8,12 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
-use NOUT\Bundle\ContextsBundle\Entity\ActionResult;
-use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
-use NOUT\Bundle\ContextsBundle\Entity\ConnectionInfos;
-use NOUT\Bundle\ContextsBundle\Entity\IHMLoader;
-use NOUT\Bundle\ContextsBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\ContextsBundle\Entity\SelectorList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConnectionInfos;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\MessagingBundle\Entity\API\FolderList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
@@ -104,9 +104,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTWebException;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
@@ -129,7 +128,7 @@ class NOUTClient
 
 
     /**
-     * @var TokenStorage
+     * @var TokenStorageInterface
      */
     private $__tokenStorage;
 
@@ -159,13 +158,13 @@ class NOUTClient
     private $__stopwatch;
 
     /**
-     * @param TokenStorage $security
+     * @param TokenStorageInterface $security
      * @param OnlineServiceFactory $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage,
+    public function __construct(TokenStorageInterface $tokenStorage,
                                 OnlineServiceFactory $serviceFactory,
                                 ConfigurationDialogue $configurationDialogue,
                                 NOUTCacheFactory $cacheFactory,
