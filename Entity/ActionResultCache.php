@@ -6,7 +6,7 @@
  * Time: 10:29
  */
 
-namespace NOUT\Bundle\ContextsBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;

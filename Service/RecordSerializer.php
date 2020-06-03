@@ -6,7 +6,7 @@
  * Time: 16:55
  */
 
-namespace NOUT\Bundle\ContextsBundle\Service;
+namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;

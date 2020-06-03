@@ -6,7 +6,7 @@
  * Time: 11:25
  */
 
-namespace NOUT\Bundle\ContextsBundle\Service;
+namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\ContextsBundle\Entity\ActionResult;
 use NOUT\Bundle\ContextsBundle\Entity\ActionResultCache;
@@ -165,7 +165,14 @@ class NOUTClient
      * @param                       $sCacheDir
      * @throws \Exception
      */
-    public function __construct(TokenStorage $tokenStorage, OnlineServiceFactory $serviceFactory, ConfigurationDialogue $configurationDialogue, NOUTCacheFactory $cacheFactory, $sVersionMin, $nVersionDialPref, Stopwatch $stopwatch=null)
+    public function __construct(TokenStorage $tokenStorage,
+                                OnlineServiceFactory $serviceFactory,
+                                ConfigurationDialogue $configurationDialogue,
+                                NOUTCacheFactory $cacheFactory,
+                                $sVersionMin,
+                                $nVersionDialPref,
+                                Stopwatch $stopwatch=null
+    )
     {
         $this->__tokenStorage = $tokenStorage;
         $this->__stopwatch = $stopwatch;

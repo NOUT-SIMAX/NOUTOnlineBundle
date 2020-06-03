@@ -6,7 +6,7 @@
  * Time: 14:48
  */
 
-namespace NOUT\Bundle\ContextsBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;

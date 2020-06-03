@@ -6,7 +6,7 @@
  * Time: 14:31
  */
 
-namespace NOUT\Bundle\ContextsBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;

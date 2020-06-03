@@ -11,7 +11,7 @@
  * 3 - Libelle de l'option
  */
 
-namespace NOUT\Bundle\ContextsBundle\Entity\Menu;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Menu;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 

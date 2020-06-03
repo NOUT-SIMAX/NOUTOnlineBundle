@@ -8,6 +8,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DataCollector;
 
+use Monolog\Logger;
+
 /**
  * Class NOUTOnlineLogger
  * @package NOUT\Bundle\NOUTOnlineBundle\DataCollector
@@ -48,7 +50,7 @@ class NOUTOnlineLogger
 	 * @param $logger : l'instance monolog de symfony
 	 * @param $debug : si site en debug
 	 */
-	public function __construct($logger, $debug)
+	public function __construct(Logger $logger, $debug)
 	{
 		$this->m_clMonolog = $logger;
 		$this->m_bEnabled  = $debug;

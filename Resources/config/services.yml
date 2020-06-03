@@ -1,49 +1,37 @@
-parameters:
-#    noutnout_online.example.class: NOUT\Bundle\NOUTOnlineBundle\Example
-
 services:
-#    noutnout_online.example:
-#        class: %noutnout_online.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
-    nout_contexts.client:
-        class:      NOUT\Bundle\ContextsBundle\Service\NOUTClient
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    NOUT\Bundle\NOUTOnlineBundle\Service\:
+        resource: '../../Service/*'
+        #exclude: '../../{DependencyInjection,Entity,Migrations,Tests,NOUTOnlineBundle.php}'
+        
+    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClient:
         arguments:
-            - '@security.token_storage'
-            - '@nout_online.service_factory'
-            - '@nout_online.configuration_dialogue'
-            - '@nout_online.cache_factory'
-            - '%nout_online.version_min%'
-            - '%nout_online.version_dialogue_pref%'
-            - '@?debug.stopwatch'
+            $sVersionMin:       '%nout_online.version_min%'
+            $nVersionDialPref:  '%nout_online.version_dialogue_pref%'
+            
 
-    nout_contexts.record_serializer:
-        class:  NOUT\Bundle\ContextsBundle\Service\RecordSerializer
+    NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager:
         arguments:
-            - '@security.token_storage'
-            - '@nout_online.cache_factory'
-    nout_online.connection_manager:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager
-        arguments:  ['%nout_online.auth%']
+            $aAuth : '%nout_online.auth%'
 
     # pour la barre de debug
-    nout_online.logger:
-        class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger
-        arguments:  ['@logger', "%nout_online.log%"]
+    NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger:
+        arguments:
+            $debug: "%nout_online.log%"
         tags:
             - { name: monolog.logger, channel: noutonline }
 
-    nout_online.datacollector:
-        class:      NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector
-        arguments:  ['@nout_online.logger', '@security.token_storage']
+    NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector:
         tags:
             - { name: data_collector, template: "NOUTOnlineBundle:DataCollector:layout.html.twig", id: "NOUTOnline" }
 
-    nout_online.client_information:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation
-        arguments:  ["@request_stack"]
-
-    nout_online.configuration_dialogue:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
+    NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue:
         arguments:
             - '%nout_online.address%'
             - '%nout_online.port%'
@@ -55,31 +43,23 @@ services:
             - '%nout_online.version_dialogue_pref%'
 
     #factory pour les proxy
-    nout_online.service_factory:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory
+    NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory:
         arguments:
-            - '@nout_online.client_information'
-            - '@nout_online.logger'
-            - '@nout_online.cache_factory'
-            - '@?debug.stopwatch'
-            - '%nout_online.soap_socket_timeout%'
+            $soap_socket_timeout: '%nout_online.soap_socket_timeout%'
 
     #factory pour les caches
-    nout_online.cache_factory:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory
-        arguments:  ['@router', "%kernel.cache_dir%", '%kernel.project_dir%/config', '@?debug.stopwatch']
+    NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory:
+        arguments:
+            $cachedir: "%kernel.cache_dir%"
+            $configdir: '%kernel.project_dir%/config'
 
     #les extension twigs
-    nout_online.twig.nout_online_extension:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension
+    NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension:
         arguments:
-            - '@nout_online.service_factory'
-            - '@nout_online.configuration_dialogue'
-            - '%nout_online.version_min%'
+            $sVersionMin: '%nout_online.version_min%'
         tags:
             - { name: twig.extension }
 
-    nout_online.twig.tools_extension:
-        class:      NOUT\Bundle\NOUTOnlineBundle\Twig\ToolsExtension
+    NOUT\Bundle\NOUTOnlineBundle\Twig\ToolsExtension:
         tags:
             - { name: twig.extension }

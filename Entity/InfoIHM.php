@@ -6,7 +6,7 @@
  * Time: 11:36
  */
 
-namespace NOUT\Bundle\ContextsBundle\Entity;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 
 class InfoIHM
