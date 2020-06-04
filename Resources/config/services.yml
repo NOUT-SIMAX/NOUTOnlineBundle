@@ -12,8 +12,8 @@ services:
         
     NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClient:
         arguments:
-            $sVersionMin:       '%nout_online.version_min%'
-            $nVersionDialPref:  '%nout_online.version_dialogue_pref%'
+            $sVersionMin:       '%noutonline.version_min%'
+            $nVersionDialPref:  '%noutonline.version_dialogue_pref%'
             
 
     NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager:
@@ -38,9 +38,9 @@ services:
             - '%nout_online.protocole%'
             - '%nout_online.apiuuid%'
             - '%version_site%'
-            - '%nout.client%'
+            - '%nout.site.client%'
             - '%nout_online.auth%'
-            - '%nout_online.version_dialogue_pref%'
+            - '%noutonline.version_dialogue_pref%'
 
     #factory pour les proxy
     NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory:
@@ -56,7 +56,7 @@ services:
     #les extension twigs
     NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension:
         arguments:
-            $sVersionMin: '%nout_online.version_min%'
+            $sVersionMin: '%noutonline.version_min%'
         tags:
             - { name: twig.extension }
 
