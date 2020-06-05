@@ -29,7 +29,7 @@ services:
 
     NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector:
         tags:
-            - { name: data_collector, template: "NOUTOnlineBundle:DataCollector:layout.html.twig", id: "NOUTOnline" }
+            - { name: data_collector, template: "@NOUTOnline/DataCollector/layout.html.twig", id: "NOUTOnline" }
 
     NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue:
         arguments:
@@ -38,7 +38,7 @@ services:
             - '%nout_online.protocole%'
             - '%nout_online.apiuuid%'
             - '%version_site%'
-            - '%nout.site.client%'
+            - '%noutweb.http_client%'
             - '%nout_online.auth%'
             - '%noutonline.version_dialogue_pref%'
 

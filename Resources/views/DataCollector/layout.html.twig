@@ -1,4 +1,4 @@
-{% extends 'WebProfilerBundle:Profiler:layout.html.twig' %}
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
 {% macro request(soap, sens, i, headers, content) %}
 	{% if headers is not empty %}
@@ -94,7 +94,7 @@
 		</div>
 	{% endset %}
 
-	{% include 'WebProfilerBundle:Profiler:toolbar_item.html.twig' with { 'link': profiler_url } %}
+	{% include '@WebProfiler/Profiler/toolbar_item.html.twig' with { 'link': profiler_url } %}
 {% endblock %}
 
 {% block menu %}
