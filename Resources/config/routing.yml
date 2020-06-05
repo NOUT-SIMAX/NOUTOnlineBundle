@@ -1,8 +1,0 @@
-nout_session_manager:
-    resource:   "@NOUTSessionManagerBundle/Controller/"
-    prefix:     /
-    type:       annotation
-login_check:
-    path:    /check_login
-logout:
-    path:    /logout

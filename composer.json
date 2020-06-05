@@ -1,8 +1,0 @@
-{
-    "name": "NOUT/SessionManagerBundle",
-	"type": "symfony-bundle",
-    "require": {
-            "php": ">=5.3.0"
-    },
-	"target-dir": "NOUT/Bundle/SessionManagerBundle",
-} 
