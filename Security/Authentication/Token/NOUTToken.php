@@ -6,7 +6,7 @@
  * Time: 15:30
  */
 
-namespace NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider;
+namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;

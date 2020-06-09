@@ -101,7 +101,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
-use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTWebException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
