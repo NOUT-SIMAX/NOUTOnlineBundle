@@ -272,8 +272,8 @@ class NOUTToken extends UsernamePasswordToken
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize()
-	{
+    public function __serialize(): array
+    {
         if (is_null($this->m_clVersionNO)){
             $sVersion='';
         }
@@ -283,30 +283,25 @@ class NOUTToken extends UsernamePasswordToken
         else {
             $sVersion = $this->m_clVersionNO;
         }
-
-
-		return serialize(
-            array(
-                $this->m_sIP,
-                $this->m_sSessionToken,
-                $this->m_sTimeZone,
-                $this->m_sLocale,
-                $this->m_sPasswordSIMAX,
-                $this->m_bExtranet,
-                $this->m_sLoginExtranet,
-                $sVersion,
-                is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
-                , parent::serialize()
-            )
+        return array(
+            $this->m_sIP,
+            $this->m_sSessionToken,
+            $this->m_sTimeZone,
+            $this->m_sLocale,
+            $this->m_sPasswordSIMAX,
+            $this->m_bExtranet,
+            $this->m_sLoginExtranet,
+            $sVersion,
+            is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
+        , parent::__serialize()
         );
-	}
+    }
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function unserialize($serialized)
+	public function __unserialize(array $aUnserialised): void
 	{
-        $aUnserialised = unserialize($serialized);
         $nbElem = count($aUnserialised);
         if ($nbElem>=9)
         {
@@ -323,13 +318,12 @@ class NOUTToken extends UsernamePasswordToken
         else
         {
             list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $sLangage, $parentStr) = $aUnserialised;
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $sLangage, $parentStr) = $aUnserialised;
         }
 
         $this->m_clVersionNO = new NOUTOnlineVersion($versionNO);
 		$this->m_clLangage = new Langage('', '');
 		$this->m_clLangage->unserialize($sLangage);
-		parent::unserialize($parentStr);
+		parent::__unserialize($parentStr);
 	}
 
 
