@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class RecordSerializer
 {
@@ -24,7 +24,7 @@ class RecordSerializer
     private $m_clCache = null;
 
 
-    public function __construct(TokenStorage $tokenStorage, NOUTCacheFactory $cacheFactory)
+    public function __construct(TokenStorageInterface $tokenStorage, NOUTCacheFactory $cacheFactory)
     {
         $oSecurityToken = $tokenStorage->getToken();
         $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());

@@ -12,8 +12,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
-class NOUTToken extends UsernamePasswordToken
+class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 {
 
 	/**

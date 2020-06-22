@@ -59,8 +59,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			$this->data['authenticated'] = $token->isAuthenticated();
             $this->data['user']          = $token->getUsername();
 
-			$tabRole = array_map(function ($role)	{ return $role->getRole();}
-				, $token->getRoles());
+			$tabRole = $token->getRoleNames();
 			$this->data['superviseur'] = in_array('ROLE_SUPERVISEUR', $tabRole);
 
 			if ($token instanceof NOUTToken)
