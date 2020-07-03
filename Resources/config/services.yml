@@ -51,7 +51,6 @@ services:
     NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory:
         arguments:
             $cachedir: "%kernel.cache_dir%"
-            $configdir: '%kernel.project_dir%/config'
 
     #les extension twigs
     NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension:

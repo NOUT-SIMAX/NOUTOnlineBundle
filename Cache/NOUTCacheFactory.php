@@ -28,23 +28,15 @@ class NOUTCacheFactory
      */
     private $__cachedir;
 
-
-    /**
-     * @var string
-     */
-    private $__cacheinfofile;
-
-
     /**
      * @var Stopwatch
      */
     private $__stopwatch;
 
-    function __construct(UrlGeneratorInterface $router, $cachedir, $configdir, Stopwatch $stopwatch=null)
+    function __construct(UrlGeneratorInterface $router, $cachedir, Stopwatch $stopwatch=null)
     {
         $this->__router = $router;
         $this->__cachedir = $cachedir;
-        $this->__cacheinfofile = $configdir.'/cache_info.yaml';
         $this->__stopwatch = $stopwatch;
     }
 
@@ -60,22 +52,15 @@ class NOUTCacheFactory
     {
         if (isset($_SERVER) && isset($_SERVER['SERVER_NAME'])){
             $server_name = $_SERVER['SERVER_NAME'];
+            $server_path = substr(str_replace(dirname($_SERVER['PHP_SELF']), '\\', '/'),0,-1);
 
-            //dump de la config
-            $dumper = new Dumper();
-            $sYaml = $dumper->dump(array('server_name'=>$server_name), 5);
-            file_put_contents($this->__cacheinfofile, $sYaml);
         }
         else {
-            $aParseYaml = file_exists($this->__cacheinfofile) ? Yaml::parse($this->__cacheinfofile) : array();
-            if (isset($aParseYaml['server_name'])){
-                $server_name=$aParseYaml['server_name'];
-            }
-            else {
-                $server_name='';
-            }
+            $server_name='';
+            $server_path='';
         }
-        $baseurl = $server_name.$this->__router->generate('index');
+        $indexurl = $this->__router->generate('index');
+        $baseurl = $server_name.$server_path.$indexurl;
 
         if (extension_loaded('apc') || extension_loaded('apcu'))
         {
