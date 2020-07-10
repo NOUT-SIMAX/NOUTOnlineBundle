@@ -511,7 +511,7 @@ abstract class StructureColonne
 
                     if ($this->isOption(self::OPTION_Modele_Barcode))
                     {
-                        return 'simax_barcode_' . $this->getOption(self::OPTION_Modele_Barcode);
+                        return 'simax_barcode';
                     }
 
                     if ($this->isOption(self::OPTION_Modele_SocialSecurity))
