@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
-use NOUT\Bundle\MessagingBundle\Entity\API\FolderList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\FolderList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
