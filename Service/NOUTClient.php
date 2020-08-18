@@ -96,6 +96,7 @@ use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
 use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTWebException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
@@ -186,7 +187,7 @@ class NOUTClient
     }
 
     /**
-     * @return NOUTToken
+     * @return NOUTToken|TokenInterface
      */
     protected function _oGetToken()
     {
@@ -713,135 +714,6 @@ class NOUTClient
         return $this->_oGetIhmMenuPart('aToolbar', 'sGetToolbar', 'toolbar');
     }
 
-
-
-    // Pour l'écriture des fichiers en cache
-    /**
-     * @return string
-     */
-    protected function _sGetRepCacheUpload()
-    {
-        $oToken = $this->_oGetToken();
-        $clLangage = $oToken->getLangage();
-
-        $sRep = $this->m_sCacheDir . '/' . self::REPCACHE_UPLOAD . '/' . $clLangage->getVersionLangage();
-
-
-        if (!file_exists($sRep))
-        {
-            mkdir($sRep, 0777, true);
-        }
-
-        return $sRep;
-    }
-
-    /**
-     * retourne le nom de fichier pour le cache
-     * @param $sIDTab
-     * @param $sIDElement
-     * @param $aTabOption array
-     */
-    protected function _sGetNomFichierCacheIHM($sIDTab, $sIDElement, $aTabOption)
-    {
-        $sRep = $this->_sGetRepCacheIHM($sIDTab);
-
-        //on tri le tableau pour toujours l'avoir dans le même ordre
-        ksort($aTabOption);
-
-        $sListeOption = '';
-        foreach ($aTabOption as $sOption => $valeur)
-        {
-            if (!empty($sListeOption))
-            {
-                $sListeOption .= '_';
-            }
-
-            $sListeOption .= $valeur;
-        }
-
-        return $sRep . '/' . $this->_sSanitizeFilename($sIDElement . '_' . $sListeOption);
-    }
-
-    /**
-     * retourne le nom de fichier pour le cache
-     * @param $sIDTab
-     * @param $sIDElement
-     * @param $aTabOption array
-     */
-    protected function _sGetCacheFilePath($sIDElement, $aTabOption)
-    {
-        $sRep = $this->_sGetRepCacheUpload();
-
-        //on tri le tableau pour toujours l'avoir dans le même ordre
-        ksort($aTabOption);
-
-        $sListeOption = '';
-        foreach ($aTabOption as $sOption => $valeur)
-        {
-            if (!empty($sListeOption))
-            {
-                $sListeOption .= '_';
-            }
-
-            $sListeOption .= $valeur;
-        }
-
-        // return $sRep.'/'.$this->_sSanitizeFilename($sIDElement.'_'.$sListeOption); // Si on veut un nom avec options
-        return $sRep . '/' . $this->_sSanitizeFilename($sIDElement); // Nom sans les options
-    }
-
-
-    /**
-     * @param $filename
-     * @return string
-     */
-    protected function _sSanitizeFilename($filename)
-    {
-        // a combination of various methods
-        // we don't want to convert html entities, or do any url encoding
-        // we want to retain the "essence" of the original file name, if possible
-        // char replace table found at:
-        // http://www.php.net/manual/en/function.strtr.php#98669
-        $replace_chars = array(
-            'Š' => 'S', 'š' => 's', 'Ð' => 'Dj', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
-            'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I',
-            'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U',
-            'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
-            'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i',
-            'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
-            'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
-        );
-        $filename = strtr($filename, $replace_chars);
-        // convert & to "and", @ to "at", and # to "number"
-        $filename = preg_replace(array('/[\&]/', '/[\@]/', '/[\#]/'), array('-and-', '-at-', '-number-'), $filename);
-        $filename = preg_replace('/[^(\x20-\x7F)]*/', '', $filename); // removes any special chars we missed
-        $filename = str_replace(' ', '-', $filename); // convert space to hyphen
-        $filename = str_replace('/', '-', $filename); // convert / to hyphen
-        $filename = str_replace('\\', '-', $filename); // convert \ to hyphen
-        $filename = str_replace('\'', '', $filename); // removes apostrophes
-        $filename = preg_replace('/[^\w\-\.]+/', '', $filename); // remove non-word chars (leaving hyphens and periods)
-        $filename = preg_replace('/[\-]+/', '-', $filename); // converts groups of hyphens into one
-        return strtolower($filename);
-    }
-
-    /**
-     * Convertit un tableau de paramètres en string pour l'API
-     * @param array $aTabParam
-     */
-    protected function _sParamArray2ParamString(array $aTabParam = array())
-    {
-        $XMLString = '';
-
-        foreach ($aTabParam as $key => $value)
-        {
-            $XMLString .= '<id_' . $key . '>';
-            $XMLString .= $value;
-            $XMLString .= '</id_' . $key . '>';
-        }
-
-        return $XMLString;
-    }
-
     /**
      * initialise la struture de paramètre a partir du tableau des paramètres de la requête HTTP
      * @param $oParam
@@ -894,10 +766,6 @@ class NOUTClient
                         $this->$setFunctionName($optionProperty, $optionValue);
                     }
                 }
-                else
-                {
-                    // Erreur, fonction de parsage non existante
-                }
             }
             elseif(!is_object($value)) // Propriété de premier niveau (scalar)
             {
@@ -905,10 +773,6 @@ class NOUTClient
                 {
                     $aTabHeaderSuppl[$property] = $value;
                 }
-            }
-            else
-            {
-                // Erreur, mauvais format
             }
         }
 
@@ -924,7 +788,7 @@ class NOUTClient
      * @param       $final
      * @return ActionResult
      */
-    public function oExecIDAction(array $tabParamQuery, array $tabHeaderQuery = array(), $sIDAction, $final = 0)
+    public function oExecIDAction($sIDAction, array $tabParamQuery, array $tabHeaderQuery = array(), $final = 0)
     {
         // Les paramètres du header sont passés par array
 
@@ -1316,7 +1180,7 @@ class NOUTClient
      * @param string $idcolonne
      * @return ActionResult
      */
-    public function oGetSublistContent(array $tabParamQuery, array $tabHeaderQuery = array(), Record $clRecord, $idcolonne)
+    public function oGetSublistContent(Record $clRecord, $idcolonne, array $tabParamQuery, array $tabHeaderQuery = array())
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idcolonne, null);

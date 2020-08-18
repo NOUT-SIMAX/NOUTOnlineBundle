@@ -232,13 +232,13 @@ class NOUTClientCache
         );
         $filename = strtr($filename, $replace_chars);
         // convert & to "and", @ to "at", and # to "number"
-        $filename = preg_replace(array('/[\&]/', '/[\@]/', '/[\#]/'), array('-and-', '-at-', '-number-'), $filename);
+        $filename = preg_replace(array('/[&]/', '/[@]/', '/[#]/'), array('-and-', '-at-', '-number-'), $filename);
         $filename = preg_replace('/[^(\x20-\x7F)]*/', '', $filename); // removes any special chars we missed
         $filename = str_replace(' ', '-', $filename); // convert space to hyphen
         $filename = str_replace('/', '-', $filename); // convert / to hyphen
         $filename = str_replace('\\', '-', $filename); // convert \ to hyphen
         $filename = str_replace('\'', '', $filename); // removes apostrophes
-        $filename = preg_replace('/[^\w\-\.]+/', '', $filename); // remove non-word chars (leaving hyphens and periods)
+        $filename = preg_replace('/[^\w\-.]+/', '', $filename); // remove non-word chars (leaving hyphens and periods)
         $filename = preg_replace('/[\-]+/', '-', $filename); // converts groups of hyphens into one
         return strtolower($filename);
     }
