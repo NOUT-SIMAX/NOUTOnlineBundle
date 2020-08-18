@@ -39,7 +39,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\OperatorType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
@@ -99,6 +98,10 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
+/**
+ * Class NOUTClient
+ * @package NOUT\Bundle\NOUTOnlineBundle\Service
+ */
 class NOUTClient
 {
     /**
@@ -150,6 +153,11 @@ class NOUTClient
     /**
      * @param OnlineServiceFactory $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
+     * @param NOUTCacheFactory $cacheFactory
+     * @param $nVersionDialPref
+     * @param Stopwatch|null $stopwatch
+     * @param $sVersionMin
+     * @param TokenStorageInterface $tokenStorage
      * @throws \Exception
      */
     public function __construct(TokenStorageInterface $tokenStorage,
@@ -298,24 +306,13 @@ class NOUTClient
 
     /**
      * initialise les options de dialogue
+     * @param $nVersionPref
      */
     protected function _initOptionDialogue($nVersionPref)
     {
         $this->m_clOptionDialogue->InitDefault($nVersionPref);
         $this->m_clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
         $this->m_clOptionDialogue->LanguageCode = $this->m_clConfigurationDialogue->getLangCode();
-    }
-
-    /**
-     * @param $propertyName
-     * @param $value
-     */
-    public function setOptionDialogueProperty($propertyName, $value)
-    {
-        if(property_exists($this->m_clOptionDialogue, $propertyName) && (SOAPProxy::s_isValidDialogOption($propertyName)))
-        {
-            $this->m_clOptionDialogue->$propertyName = $value;
-        }
     }
 
     /**
@@ -348,14 +345,12 @@ class NOUTClient
      */
     protected function _oGetUsernameToken(NOUTToken $oToken)
     {
-        $oUsernameToken = new UsernameToken(
+        return new UsernameToken(
             $oToken->getLoginSIMAX(),
             $oToken->getPasswordSIMAX(), //le mot de passe n'est pas stocké dans le user
             $this->m_clConfigurationDialogue->getModeAuth(),
             $this->m_clConfigurationDialogue->getSecret()
         );
-
-        return $oUsernameToken;
     }
 
     /**
@@ -377,7 +372,7 @@ class NOUTClient
     {
         $clIdentification = new Identification();
 
-        // récupération de l'utilsateur connecté
+        // récupération de l'utilisateur connecté
         $oToken = $this->_oGetToken();
 
         $clIdentification->m_clUsernameToken = $this->_oGetUsernameToken($oToken);
@@ -390,12 +385,12 @@ class NOUTClient
 
 
     /**
-     * @param array $aHeaderSup
+     * @param array|null $aHeaderSup
      * @return array
      */
     protected function _aGetTabHeader(array $aHeaderSup = null)
     {
-        // récupération de l'utilsateur connecté
+        // récupération de l'utilisateur connecté
         $oToken = $this->_oGetToken();
 
         // Headers par défaut
@@ -416,10 +411,11 @@ class NOUTClient
 
     /**
      * @param string $sIDform identifiant du formulaire
-     * @param ConditionFileNPI $clFileNPI condition pour la requete
+     * @param ConditionFileNPI $clFileNPI condition pour la requête
      * @param array $TabColonneAff tableau des colonnes a afficher
      * @param array $TabHeaderSuppl tableau des headers
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * @throws \Exception
+     * @return XMLResponseWS
      */
     protected function _oRequest($sIDform, ConditionFileNPI $clFileNPI, array $TabColonneAff, array $TabHeaderSuppl)
     {
@@ -431,6 +427,13 @@ class NOUTClient
         return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($TabHeaderSuppl));
     }
 
+    /**
+     * @param $table
+     * @param CondListType $condList
+     * @param array $colList
+     * @param array $tabHeaderSuppl
+     * @return XMLResponseWS
+     */
     protected function _oNewRequest($table, CondListType $condList, array $colList, array $tabHeaderSuppl)
     {
         $clParamRequest = new Request();
@@ -443,8 +446,10 @@ class NOUTClient
 
 
     /**
-     * récupère la liste des icones avec une grosse image
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * récupère la liste des icônes avec une grosse image
+     * @param $idCol
+     * @throws \Exception
+     * @return XMLResponseWS
      */
     protected function _oGetTabIcon($idCol)
     {
@@ -464,7 +469,8 @@ class NOUTClient
 
     /**
      * récupère la liste des options de menu sur les actions accordées par les droits et les séparateurs
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * @throws \Exception
+     * @return XMLResponseWS
      */
     protected function _oGetTabMenu_OptionMenu()
     {
@@ -505,7 +511,8 @@ class NOUTClient
 
     /**
      * récupère la liste des menus
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS
+     * @throws \Exception
+     * @return XMLResponseWS
      */
     protected function _oGetTabMenu_Menu()
     {
@@ -518,7 +525,7 @@ class NOUTClient
 
         $aTabHeaderSuppl = array(
             SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel, //on ne garde pas le contexte ouvert
-            SOAPProxy::HEADER_APIUser => SOAPProxy::APIUSER_Active,           //on force l'utilisation de l'user d'application (max) car un utilisateur classique n'aura pas les droit d'executer cette requete
+            SOAPProxy::HEADER_APIUser => SOAPProxy::APIUSER_Active,           //on force l'utilisation de l'user d'application (max) car un utilisateur classique n'aura pas les droit d'exécuter cette requête
         );
 
         return $this->_oRequest(Langage::TABL_MenuPourTous, new ConditionFileNPI(), $aTabColonne, $aTabHeaderSuppl);
@@ -562,9 +569,13 @@ class NOUTClient
     }
 
     /**
-     * récupère les infos d'ihm lié au menu (menu, toolbar, et icone centraux)
+     * récupère les infos d'ihm lié au menu (menu, toolbar, et icône centraux)
      * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
      *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
+     *
+     * @param $method
+     * @param $prefix
+     * @return array|mixed|null
      */
     protected function __oGetIhmMenuPart($method, $prefix)
     {
@@ -583,7 +594,7 @@ class NOUTClient
         {
             foreach ($json as $objet)
             {
-                //TODO: Remove when annuler/refaire/globalsearch is implemented
+                //TODO: Remove when annuler/refaire/recherche globale is implemented
                 if(
                     $objet->idaction != Langage::ACTION_Annulation &&
                     $objet->idaction != Langage::ACTION_Refaire &&
@@ -712,9 +723,10 @@ class NOUTClient
     }
 
     /**
-     * initialise la struture de paramètre a partir du tableau des paramètres de la requête HTTP
-     * @param $oParam
+     * initialise la structure de paramètre a partir du tableau des paramètres de la requête HTTP
+     * @param $classname
      * @param $aTabParamRequest
+     * @return mixed
      */
     protected function _oGetParam($classname, $aTabParamRequest)
     {
@@ -741,9 +753,9 @@ class NOUTClient
     }
 
     /**
-     * initialise la struture du header a partir du tableau du header de la requête HTTP
+     * initialise la structure du header a partir du tableau du header de la requête HTTP
      * @param $aTabHeaderQuery
-     * @return $aTabHeaderSuppl
+     * @return array
      */
     protected function _aGetHeaderSuppl($aTabHeaderQuery)
     {
@@ -783,6 +795,7 @@ class NOUTClient
      * @param array $tabHeaderQuery
      * @param       $sIDAction
      * @param       $final
+     * @throws \Exception
      * @return ActionResult
      */
     public function oExecIDAction($sIDAction, array $tabParamQuery, array $tabHeaderQuery = array(), $final = 0)
@@ -816,6 +829,7 @@ class NOUTClient
      * @param array  $tabParamQuery
      * @param        $sPhrase
      * @param string $sIDContexte
+     * @throws \Exception
      * @return ActionResult
      */
     public function oExecSentence(array $tabParamQuery, $sPhrase, $sIDContexte = '')
@@ -841,6 +855,7 @@ class NOUTClient
      * @param array  $tabParamQuery
      * @param        $sIDTableau
      * @param string $sIDContexte
+     * @throws \Exception
      * @return ActionResult
      */
     public function oExecList(array $tabParamQuery, $sIDTableau, $sIDContexte = '')
@@ -860,6 +875,12 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    /**
+     * @param $tableID
+     * @param string $contextID
+     * @return ActionResult
+     * @throws \Exception
+     */
     public function oExecListRequest($tableID, $contextID = '')
     {
         $colList = array();
@@ -884,7 +905,7 @@ class NOUTClient
 
     /**
      * @param int $contextID
-     * @param int[] $colList
+     * @throws \Exception
      * @return ActionResult
      */
     public function oExecListCalculation($contextID)
@@ -899,6 +920,7 @@ class NOUTClient
 
     /**
      * @param string $contextID
+     * @throws \Exception
      * @return ActionResult
      */
     public function oGetDefaultExportAction($contextID)
@@ -936,6 +958,7 @@ class NOUTClient
     /**
      * @param string $tableID
      * @param string $contextID
+     * @throws \Exception
      * @return ActionResult
      */
     public function oGetExportsList($tableID, $contextID)
@@ -962,6 +985,7 @@ class NOUTClient
     /**
      * @param string $tableID
      * @param string $contextID
+     * @throws \Exception
      * @return ActionResult
      */
     public function oGetImportsList($tableID, $contextID) {
@@ -1047,6 +1071,7 @@ class NOUTClient
     /**
      * @param string $tableID
      * @param string $contextID
+     * @throws \Exception
      * @return ActionResult
      */
     public function oGetExportsActions($tableID, $contextID)
@@ -1090,6 +1115,7 @@ class NOUTClient
     /**
      * @param string $tableID
      * @param string $contextID
+     * @throws \Exception
      * @return ActionResult
      */
     public function oGetImportsActions($tableID, $contextID)
@@ -1158,6 +1184,7 @@ class NOUTClient
     /**
      * @param Execute $clParamExecute
      * @param array $aTabHeaderSuppl
+     * @throws \Exception
      * @return ActionResult
      */
     protected function _oExecute(Execute $clParamExecute, array $aTabHeaderSuppl)
@@ -1171,11 +1198,12 @@ class NOUTClient
 
     /**
      * Execute une action via son id
-     * @param string $tabParamQuery
-     * @param string $tabHeaderQuery
-     * @param Record $idenreg
+     * @param array $tabParamQuery
+     * @param array $tabHeaderQuery
      * @param string $idcolonne
+     * @param Record $clRecord
      * @return ActionResult
+     *@throws \Exception
      */
     public function oGetSublistContent(Record $clRecord, $idcolonne, array $tabParamQuery, array $tabHeaderQuery = array())
     {
@@ -1212,7 +1240,7 @@ class NOUTClient
         $clXMLResponse = $this->m_clSOAPProxy->setOrderSubList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
-            return \explode('|', trim($clXMLResponse->getValue(), '|'));
+            return explode('|', trim($clXMLResponse->getValue(), '|'));
         }
         else throw new NOUTValidationException("No valid ReturnType");
     }
@@ -1232,7 +1260,7 @@ class NOUTClient
         $clXMLResponse = $this->m_clSOAPProxy->setOrderList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
 
         if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
-            return \explode('|', trim($clXMLResponse->getValue(), '|'));
+            return explode('|', trim($clXMLResponse->getValue(), '|'));
         }
         else throw new NOUTValidationException("No valid ReturnType");
     }
@@ -1257,7 +1285,6 @@ class NOUTClient
     /**
      * @param XMLResponseWS $clReponseXML
      * @param $ReturnTypeForce
-     * @param $autreInfos - informations nécessaire pour le force return type
      * @return ActionResult
      * @throws \Exception
      */
@@ -1318,7 +1345,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_CHOICE:
             {
 
-                // Instance d'un parseur
+                // Instance d'un parser
                 $clResponseParser = new ReponseWSParser();
 
                 /** @var ParserList $clParser */
@@ -1356,7 +1383,7 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_RECORD:
             case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
             {
-                // Instance d'un parseur
+                // Instance d'un parser
                 $clResponseParser = new ReponseWSParser();
                 $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
@@ -1370,10 +1397,9 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_SCHEDULER:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
-                // OutOfMemoryException in ParserRecordList.php line 183:
+                // OutOfMemory\Exception in ParserRecordList.php line 183:
                 // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
 
-                /** @var Count $totalElements */
                 $totalElements = $clReponseXML->clGetCount();
 
                 // Par sécurité quand on affiche une liste
@@ -1384,7 +1410,7 @@ class NOUTClient
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
-                // Instance d'un parseur
+                // Instance d'un parser
                 $clResponseParser = new ReponseWSParser();
 
                 /** @var ParserScheduler $clParser */
@@ -1412,10 +1438,9 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_LIST:
             {
                 // Bug dans InitFromXmlXsd si trop volumineux
-                // OutOfMemoryException in ParserRecordList.php line 183:
+                // OutOfMemory\Exception in ParserRecordList.php line 183:
                 // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
 
-                /** @var Count $totalElements */
                 $totalElements = $clReponseXML->clGetCount();
 
                 // Par sécurité quand on affiche une liste
@@ -1426,7 +1451,7 @@ class NOUTClient
                     throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
                 }
 
-                // Instance d'un parseur
+                // Instance d'un parser
                 $clResponseParser = new ReponseWSParser();
 
                 /** @var ParserList $clParser */
@@ -1435,7 +1460,7 @@ class NOUTClient
                 // dump($clParser);
                 // clParser est bien du type ParserList mais n'a pas encore les données
 
-                // getList renvoit un RecordList
+                // getList renvoi un RecordList
                 $list = $clParser->getList($clReponseXML);
                 // dump($list);
 
@@ -1473,6 +1498,7 @@ class NOUTClient
      * @param Record $clRecord
      * @param int $autovalidate
      * @param boolean $bComplete
+     * @param $idihm
      * @return ActionResult
      * @throws \Exception
      */
@@ -1520,8 +1546,7 @@ class NOUTClient
     /**
      * @param $sIDContexte
      * @param Record $clRecord
-     * @param int $autovalidate
-     * @param boolean $bComplete
+     * @param $idihm
      * @return ActionResult
      * @throws \Exception
      */
@@ -1595,7 +1620,7 @@ class NOUTClient
      * @param string $sIDContexte
      * @param string $idButton
      * @param object $ColumnSelection
-     * @param int $nSaveBefore
+     * @param null $dataRecord
      * @return ActionResult
      * @throws \Exception
      */
@@ -1644,6 +1669,9 @@ class NOUTClient
     /**
      * Valide l'action courante du contexte
      * @param $sIDContexte
+     * @param $final
+     * @param $form
+     * @param $record
      * @return ActionResult
      * @throws \Exception
      */
@@ -1736,6 +1764,7 @@ class NOUTClient
      * @param $tabParamQuery
      * @param $sIDFormulaire
      * @param $sIDContexte
+     * @throws \Exception
      * @return ActionResult
      */
     public function oSelectElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte)
@@ -1761,6 +1790,7 @@ class NOUTClient
      * @param $tabParamQuery
      * @param $sIDFormulaire
      * @param $sIDContexte
+     * @throws \Exception
      * @return ActionResult
      */
     public function oCreateElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte)
@@ -1786,6 +1816,7 @@ class NOUTClient
      * @param $sIDFormulaire
      * @param $sIDEnreg
      * @param $sIDContexte
+     * @throws \Exception
      * @return ActionResult
      */
     public function oDeleteElem(array $tabParamQuery, $sIDFormulaire, $sIDEnreg, $sIDContexte)
@@ -1808,7 +1839,9 @@ class NOUTClient
     /**
      * @param $tabParamQuery
      * @param $sIDContexte
-     * @param \stdClass $updateData
+     * @param \stdClass|null $updateData
+     * @param $idenreg
+     * @param $idformulaire
      * @return ActionResult
      * @throws \Exception
      */
@@ -1847,6 +1880,9 @@ class NOUTClient
     /**
      * @param $tabParamQuery
      * @param $sIDContexte
+     * @param $idenreg
+     * @param $idformulaire
+     * @throws \Exception
      * @return ActionResult
      */
     public function oDisplayElem(array $tabParamQuery, $sIDContexte, $idformulaire, $idenreg)
@@ -1869,6 +1905,7 @@ class NOUTClient
     /**
      * @param $sIDFormulaire
      * @param $sIDContexte
+     * @throws \Exception
      * @return ActionResult
      */
     public function oSelectAmbiguous($sIDFormulaire, $sIDContexte)
@@ -1892,6 +1929,7 @@ class NOUTClient
     /**
      * @param $sIDTemplate
      * @param $sIDContexte
+     * @throws \Exception
      * @return ActionResult
      */
     public function oSelectTemplate($sIDTemplate, $sIDContexte)
@@ -1928,6 +1966,7 @@ class NOUTClient
     }
 
     /**
+     * @throws \Exception
      * @return ActionResult
      */
     public function oGetStartAutomatism()
@@ -1961,6 +2000,7 @@ class NOUTClient
      * @param $idContext
      * @param $startTime
      * @param $endTime
+     * @throws \Exception
      * @return ActionResult
      */
     public function getSchedulerInfo($idContext, $startTime, $endTime)
@@ -1987,6 +2027,7 @@ class NOUTClient
      * @param $idForm
      * @param $idEnreg
      * @param $idColumn
+     * @throws \Exception
      * @return ActionResult
      */
     public function getSchedulerCardInfo($idContext, $idForm, $idEnreg, $idColumn, $startTime, $endTime)
@@ -2011,6 +2052,7 @@ class NOUTClient
      * @param $idformulaire
      * @param $idcallingcolumn
      * @param $query
+     * @throws \Exception
      * @return ActionResult
      */
     public function getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query)
@@ -2030,6 +2072,7 @@ class NOUTClient
      * @param $idformulaire
      * @param $idcallingcolumn
      * @param $query
+     * @throws \Exception
      * @return HTTPResponse
      */
     private function _getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query)
@@ -2052,7 +2095,7 @@ class NOUTClient
     }
 
     /**
-     * @param HTTPResponse $oRet
+     * @param NOUTFileInfo $oRet
      * @return ActionResult
      */
     protected function _oMakeResultFromFile(NOUTFileInfo $oRet)
@@ -2070,12 +2113,13 @@ class NOUTClient
 
     // FICHIERS
     /**
-     * récupère une icone, écrit le fichier de l'icone dans le cache s'il n'existe pas déjà
+     * récupère une icône, écrit le fichier de l'icône dans le cache s'il n'existe pas déjà
      * @param $sIDIcon
      * @param array $aTabOptions
      * @param $sIDColonne
      * @param $sIDFormulaire
      * @param array $aTabPHPManipulation
+     * @throws \Exception
      * @return ActionResult
      */
     public function getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions, $aTabPHPManipulation=array())
@@ -2087,11 +2131,12 @@ class NOUTClient
 
     /**
      * récupère une image du langage
-     * @param $sIDIcon
      * @param array $aTabOptions
      * @param $sIDColonne
      * @param $sIDFormulaire
      * @param array $aTabPHPManipulation
+     * @param $sIDEnreg
+     * @throws \Exception
      * @return NOUTFileInfo
      */
     protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $aTabPHPManipulation=array())
@@ -2124,7 +2169,7 @@ class NOUTClient
 
         if (!isset($oNOUTFileInfo) || ($oNOUTFileInfo === false))
         {
-            //on a pas l'image en cache avec les options en question, il faut la récuperer
+            //on a pas l'image en cache avec les options en question, il faut la récupérer
             /** @var NOUTFileInfo $oFileInRecord */
             $oNOUTFileInfo  = $this->m_clRESTProxy->oGetFileInRecord(
                 $sIDFormulaire,
@@ -2177,6 +2222,7 @@ class NOUTClient
      * @param $idColumn
      * @param $idRecord
      * @param array $aTabOptions
+     * @throws \Exception
      * @return ActionResult
      */
     public function getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
@@ -2194,6 +2240,7 @@ class NOUTClient
      * @param $idColumn
      * @param $idRecord
      * @param array $aTabOptions
+     * @throws \Exception
      * @return false|NOUTFileInfo
      */
     private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
@@ -2212,7 +2259,7 @@ class NOUTClient
             }
         }
 
-        //on a pas l'image en cache avec les options en question, il faut la récuperer
+        //on a pas l'image en cache avec les options en question, il faut la récupérer
         /** @var NOUTFileInfo $oFileInRecord */
         $oNOUTFileInfo  = $this->m_clRESTProxy->oGetFileInRecord(
             $idForm,
@@ -2245,10 +2292,11 @@ class NOUTClient
     }
 
     /**
-     * @param UploadedFile $file
      * @param              $idcontexte
      * @param              $idihm
      * @param              $idcolonne
+     * @param $dataBase64
+     * @param $mimetype
      * @return ActionResult
      */
     public function saveBase64DataInCache($dataBase64, $mimetype, $idcontexte, $idihm, $idcolonne)
@@ -2308,6 +2356,7 @@ class NOUTClient
      * @param $requestParams
      * @param $requestHeaders
      * @throws \Exception
+     * @return mixed
      */
     public function oGetFolderList(array $requestHeaders, $requestParams)
     {
@@ -2323,6 +2372,7 @@ class NOUTClient
      * @param $requestHeaders
      * @param $folderID
      * @throws \Exception
+     * @return \stdClass
      */
     public function oGetFolderContent(array $requestHeaders, $requestParams, $folderID)
     {
@@ -2465,8 +2515,8 @@ class NOUTClient
         return $oRet->getNodeXML()->asXML();
     }
 
-    public function oReadMessage(array $requestHeaders, $requestParams, $messageID) {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+    public function oReadMessage($messageID, array $requestParams, array $requestHeaders) {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestParams);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
@@ -2484,7 +2534,7 @@ class NOUTClient
         $message->IDMessage = $messageID;
         $result = $this->m_clSOAPProxy->sendMessage($message, $aTabHeaderSuppl);
         if($result->sGetReturnType() !== XMLResponseWS::RETURNTYPE_EMPTY)
-            throw new \RuntimeException("Could not send message");
+            throw new \Exception("Could not send message");
         return true;
     }
 
