@@ -6,7 +6,7 @@
  * Time: 14:29
  */
 
-namespace NOUT\Bundle\WebSiteBundle\NOUTException;
+namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 
 
 use Symfony\Component\HttpFoundation\Response;

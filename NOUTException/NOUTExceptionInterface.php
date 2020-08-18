@@ -6,7 +6,7 @@
  * Time: 09:40
  */
 
-namespace NOUT\Bundle\WebSiteBundle\NOUTException;
+namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 
 interface NOUTExceptionInterface
 {

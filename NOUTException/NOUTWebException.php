@@ -6,7 +6,7 @@
  * Time: 10:07
  */
 
-namespace NOUT\Bundle\WebSiteBundle\NOUTException;
+namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Component\HttpFoundation\Response;

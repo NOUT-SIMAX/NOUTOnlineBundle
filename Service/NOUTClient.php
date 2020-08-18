@@ -92,8 +92,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
-use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTValidationException;
-use NOUT\Bundle\WebSiteBundle\NOUTException\NOUTWebException;
+use NOUT\Bundle\NOUTOnlineBundle\NOUTException\NOUTValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -136,7 +135,7 @@ class NOUTClient
     /**
      * @var OptionDialogue
      */
-    private $m_clOptionDialogue = null;
+    private $m_clOptionDialogue;
 
     /**
      * @var string
@@ -149,10 +148,8 @@ class NOUTClient
     private $__stopwatch;
 
     /**
-     * @param TokenStorageInterface $security
      * @param OnlineServiceFactory $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
-     * @param                       $sCacheDir
      * @throws \Exception
      */
     public function __construct(TokenStorageInterface $tokenStorage,
@@ -1205,7 +1202,7 @@ class NOUTClient
      * @return array
      * @throws NOUTValidationException
      */
-    public function oSetSublistOrder(array $tabHeaderQuery = array(), $column, $items) {
+    public function oSetSublistOrder($column, $items, array $tabHeaderQuery = array()) {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $setSublistOrder = new SetOrderSubList();
@@ -1226,7 +1223,7 @@ class NOUTClient
      * @return array
      * @throws NOUTValidationException
      */
-    public function oSetFullListOrder(array $tabHeaderQuery = array(), $items) {
+    public function oSetFullListOrder($items, array $tabHeaderQuery = array()) {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $setSublistOrder = new SetOrderList();
@@ -1264,7 +1261,7 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, $ReturnTypeForce = null, $autreInfos = null)
+    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, $ReturnTypeForce = null)
     {
         $clActionResult = new ActionResult($clReponseXML);
         if (!empty($ReturnTypeForce))
@@ -2310,7 +2307,6 @@ class NOUTClient
     /**
      * @param $requestParams
      * @param $requestHeaders
-     * @return ActionResult
      * @throws \Exception
      */
     public function oGetFolderList(array $requestHeaders, $requestParams)
@@ -2326,7 +2322,6 @@ class NOUTClient
      * @param $requestParams
      * @param $requestHeaders
      * @param $folderID
-     * @return ActionResult
      * @throws \Exception
      */
     public function oGetFolderContent(array $requestHeaders, $requestParams, $folderID)

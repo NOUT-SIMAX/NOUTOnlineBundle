@@ -6,7 +6,7 @@
  * Time: 09:59
  */
 
-namespace NOUT\Bundle\WebSiteBundle\NOUTException;
+namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 
 
 abstract class NOUTExceptionLevel

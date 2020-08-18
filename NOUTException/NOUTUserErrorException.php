@@ -6,7 +6,7 @@
  * Time: 16:45
  */
 
-namespace NOUT\Bundle\WebSiteBundle\NOUTException;
+namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 use Symfony\Component\HttpFoundation\Response;
 
 class NOUTUserErrorException extends NOUTWebException

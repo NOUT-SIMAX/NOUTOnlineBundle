@@ -6,7 +6,7 @@
  * Time: 09:34
  */
 
-namespace NOUT\Bundle\WebSiteBundle\NOUTException;
+namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 use Symfony\Component\HttpFoundation\Response;
 
 class NOUTValidationException extends NOUTWebException
