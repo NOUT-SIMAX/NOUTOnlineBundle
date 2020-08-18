@@ -12,6 +12,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\FolderList;
@@ -199,7 +200,13 @@ class NOUTClient
         return $this->__tokenStorage->getToken();
     }
 
-
+    /**
+     * @param $sTypeTest
+     * @param $sNomParametre
+     * @param $sValeurParametre
+     * @param $ValeurTest
+     * @throws \Exception
+     */
     protected function _TestParametre($sTypeTest, $sNomParametre, $sValeurParametre, $ValeurTest)
     {
         switch ($sTypeTest)
@@ -228,7 +235,11 @@ class NOUTClient
         }
     }
 
-
+    /**
+     * @param $sMessage
+     * @param int $nCode
+     * @throws \Exception
+     */
     protected function _ThrowError($sMessage, $nCode = 0)
     {
         throw new \Exception($sMessage, $nCode);
@@ -535,6 +546,9 @@ class NOUTClient
      * récupère les infos du menu,
      * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
      *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
+     *
+     * @return mixed|InfoIHM|null
+     * @throws \Exception
      */
     protected function _oGetInfoIhmMenu()
     {
@@ -672,6 +686,7 @@ class NOUTClient
      * @param $member_name
      * @param $method_name
      * @param $prefix
+     * @throws \Exception
      * @return ActionResult
      */
     protected function _oGetIhmMenuPart($member_name, $method_name, $prefix)
@@ -696,6 +711,7 @@ class NOUTClient
 
     /**
      * retourne un tableau d'option de menu
+     * @throws \Exception
      * @return ActionResult
      */
     public function getTabMenu()
@@ -706,6 +722,7 @@ class NOUTClient
 
     /**
      * retourne un tableau d'option de menu
+     * @throws \Exception
      * @return ActionResult
      */
     public function getCentralIcon()
@@ -715,6 +732,7 @@ class NOUTClient
 
     /**
      * retourne un tableau d'option de menu
+     * @throws \Exception
      * @return ActionResult
      */
     public function getToolbar()
@@ -817,6 +835,12 @@ class NOUTClient
         return $this->_oExecute($clParam, $aTabHeaderSuppl);
     }
 
+    /**
+     * @param array $tabParamQuery
+     * @param array $tabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
     public function oExecute(array $tabParamQuery, array $tabHeaderQuery) {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
         $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
@@ -883,9 +907,22 @@ class NOUTClient
      */
     public function oExecListRequest($tableID, $contextID = '')
     {
-        $colList = array();
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Requete, Langage::COL_REQUETE_IDTableau, []);
+    }
+
+    /**
+     * @param $tableID
+     * @param $contextID
+     * @param $requestTableId
+     * @param $requestColId
+     * @param $colList
+     * @return ActionResult
+     * @throws \Exception
+     */
+    protected function _oExecRequestOnIDTableau($tableID, $contextID, $requestTableId, $requestColId, $colList)
+    {
         $condition = new Condition(
-            new CondColumn(Langage::COL_REQUETE_IDTableau),
+            new CondColumn($requestColId),
             new CondType(CondType::COND_EQUAL),
             new CondValue($tableID));
         $condList = CondListTypeFactory::create($condition);
@@ -895,7 +932,7 @@ class NOUTClient
             $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
 
         $clReponseXML = $this->_oNewRequest(
-            Langage::TABL_Requete,
+            $requestTableId,
             $condList,
             $colList,
             $aTabHeaderSuppl);
@@ -963,23 +1000,7 @@ class NOUTClient
      */
     public function oGetExportsList($tableID, $contextID)
     {
-        $colList = array(Langage::COL_EXPORT_Libelle);
-        $condition = new Condition(
-            new CondColumn(Langage::COL_EXPORT_IDTableau),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue($tableID));
-        $condList = CondListTypeFactory::create($condition);
-
-        $aTabHeaderSuppl = array();
-        if(!empty($contextID))
-            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
-
-        $clReponseXML = $this->_oNewRequest(
-            Langage::TABL_Export, $condList,
-            $colList,
-            $aTabHeaderSuppl);
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Export, Langage::COL_EXPORT_IDTableau, [Langage::COL_EXPORT_Libelle]);
     }
 
     /**
@@ -989,23 +1010,7 @@ class NOUTClient
      * @return ActionResult
      */
     public function oGetImportsList($tableID, $contextID) {
-        $colList = array(Langage::COL_IMPORT_Libelle);
-        $condition = new Condition(
-            new CondColumn(Langage::COL_IMPORT_Formulaire),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue($tableID));
-        $condList = CondListTypeFactory::create($condition);
-
-        $aTabHeaderSuppl = array();
-        if(!empty($contextID))
-            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
-
-        $clReponseXML = $this->_oNewRequest(
-            Langage::TABL_Import, $condList,
-            $colList,
-            $aTabHeaderSuppl);
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Import, Langage::COL_IMPORT_Formulaire, [Langage::COL_IMPORT_Libelle]);
     }
 
     /**
@@ -1069,12 +1074,13 @@ class NOUTClient
     }
 
     /**
-     * @param string $tableID
-     * @param string $contextID
-     * @throws \Exception
+     * @param $tableID
+     * @param $contextID
+     * @param $eTypeAction
      * @return ActionResult
+     * @throws \Exception
      */
-    public function oGetExportsActions($tableID, $contextID)
+    protected function _oRequestImportExportActions($tableID, $contextID, $eTypeAction)
     {
         $colList = array(Langage::COL_ACTION_Libelle);
         $table_actions = new Condition(
@@ -1087,15 +1093,15 @@ class NOUTClient
             new CondType(CondType::COND_WITHRIGHT),
             new CondValue(1)
         );
-        $exports_type_actions = new Condition(
+        $type_actions = new Condition(
             new CondColumn(Langage::COL_ACTION_TypeAction),
             new CondType(CondType::COND_EQUAL),
-            new CondValue(Langage::eTYPEACTION_Exporter)
+            new CondValue($eTypeAction)
         );
         $operator = new Operator(OperatorType::OP_AND);
         $operator->addCondition($table_actions)
             ->addCondition($has_rights)
-            ->addCondition($exports_type_actions);
+            ->addCondition($type_actions);
 
         $condList = CondListTypeFactory::create($operator);
 
@@ -1118,42 +1124,20 @@ class NOUTClient
      * @throws \Exception
      * @return ActionResult
      */
+    public function oGetExportsActions($tableID, $contextID)
+    {
+        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Exporter);
+    }
+
+    /**
+     * @param string $tableID
+     * @param string $contextID
+     * @throws \Exception
+     * @return ActionResult
+     */
     public function oGetImportsActions($tableID, $contextID)
     {
-        $colList = array(Langage::COL_ACTION_Libelle);
-        $table_actions = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDTableau),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue($tableID)
-        );
-        $has_rights = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDAction),
-            new CondType(CondType::COND_WITHRIGHT),
-            new CondValue(1)
-        );
-        $imports_type_actions = new Condition(
-            new CondColumn(Langage::COL_ACTION_TypeAction),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue(Langage::eTYPEACTION_Importer)
-        );
-        $operator = new Operator(OperatorType::OP_AND);
-        $operator->addCondition($table_actions)
-            ->addCondition($has_rights)
-            ->addCondition($imports_type_actions);
-
-        $condList = CondListTypeFactory::create($operator);
-
-        $aTabHeaderSuppl = array();
-        if(!empty($contextID))
-            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
-
-        $clReponseXML = $this->_oNewRequest(
-            Langage::TABL_Action,
-            $condList,
-            $colList,
-            $aTabHeaderSuppl);
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Importer);
     }
 
     /**
@@ -1695,6 +1679,14 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    /**
+     * @param $sIDContexte
+     * @param $form
+     * @param $dstRecord
+     * @param $srcRecords
+     * @return ActionResult
+     * @throws \Exception
+     */
     public function oMerge($sIDContexte, $form, $dstRecord, $srcRecords) {
         //paramètre de l'action liste
         $clMerge = new  Merge();
@@ -1753,8 +1745,7 @@ class NOUTClient
 
         $clReponseXML = $this->m_clSOAPProxy->ConfirmResponse($oConfirmResponse, $this->_aGetTabHeader($aTabHeaderSuppl));
 
-        $oRet = $this->_oGetActionResultFromXMLResponse($clReponseXML);
-        return $oRet;
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
     // ------------------------------------------------------------------------------------
@@ -1949,6 +1940,12 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    /**
+     * @param $sIDChoice
+     * @param $sIDDContexte
+     * @return ActionResult
+     * @throws \Exception
+     */
     public function oSelectChoice($sIDChoice, $sIDDContexte)
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDChoice', $sIDChoice, null);
@@ -2083,15 +2080,13 @@ class NOUTClient
 
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
 
-        $sRet = $this->m_clRESTProxy->sGetSuggestFromQuery(
+        return $this->m_clRESTProxy->sGetSuggestFromQuery(
             $idformulaire,
             $query,
             $aTabParam,
             $aTabOption,
             $clIdentification
         );
-
-        return $sRet;
     }
 
     /**
@@ -2419,8 +2414,7 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
-        $res = $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
-        return $res;
+        return $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
     }
 
     public function oUpdateMessages(array $requestHeaders, $messages, $column, $value) {
@@ -2434,8 +2428,7 @@ class NOUTClient
         $updateMessages->Column = $column;
         $updateMessages->Value = $value;
         
-        $res = $this->m_clSOAPProxy->updateMessages($updateMessages, $aTabHeaderSuppl);
-        return $res;
+        return $this->m_clSOAPProxy->updateMessages($updateMessages, $aTabHeaderSuppl);
     }
 
     public function oCreateMessage(array $requestHeaders, $type, $originalMessage, $templateId)
@@ -2525,6 +2518,13 @@ class NOUTClient
         return $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl)->getNodeXML()->asXML();
     }
 
+    /**
+     * @param array $requestHeaders
+     * @param $requestParams
+     * @param $messageID
+     * @return bool
+     * @throws \Exception
+     */
     public function oSendMessage(array $requestHeaders, $requestParams, $messageID) {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
