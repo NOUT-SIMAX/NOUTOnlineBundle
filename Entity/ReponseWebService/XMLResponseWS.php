@@ -696,6 +696,7 @@ class XMLResponseWS
     const VIRTUALRETURNTYPE_FILE = "File";
     const VIRTUALRETURNTYPE_FILE_PREVIEW = "FilePreview";
     const VIRTUALRETURNTYPE_CASCADE = 'Cascade';
+    const VIRTUALRETURNTYPE_CASCADE_INPUT = 'CascadeInput';
 
     //les différent type d'affichage pour les listes
     const DISPLAYMODE_List = 'List';

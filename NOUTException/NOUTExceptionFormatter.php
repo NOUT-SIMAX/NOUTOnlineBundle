@@ -10,7 +10,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
-use Symfony\Component\Translation\Translator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NOUTExceptionFormatter
 {
@@ -27,9 +27,9 @@ class NOUTExceptionFormatter
      * NOUTExceptionFormatter constructor.
      * @param string $message
      * @param \Exception $e
-     * @param int $level
+     * @param int|null $level
      */
-    public function __construct($message, $e, $level = null)
+    public function __construct($message, \Exception $e, $level = null)
     {
         $level = (!is_null($level) ? $level : NOUTWebException::getDefaultLevel());
         try{
@@ -48,7 +48,7 @@ class NOUTExceptionFormatter
     }
 
     /**
-     * @param Translator $translator
+     * @param TranslatorInterface $translator
      */
     public function translate($translator)
     {
