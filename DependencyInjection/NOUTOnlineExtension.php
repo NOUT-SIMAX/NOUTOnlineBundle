@@ -30,44 +30,6 @@ class NOUTOnlineExtension extends Extension
         {
             $container->setParameter('nout_online.' . $key, $value);
         }
-
-        if (!$container->getParameter('kernel.debug') || ($container->getParameter('kernel.environment')!='dev'))
-        {
-
-            /**
-             * Symfony creates a big classes.php file in the cache directory to aggregate the contents of the PHP classes that are used in every request.
-             * This reduces the I/O operations and increases the application performance.
-             * Your bundles can also add their own classes into this file thanks to the addClassesToCompile() method.
-             * Define the classes to compile as an array of their fully qualified class names
-             *
-             * Beware that this technique can't be used in some cases:
-             * - When classes contain annotations, such as controllers with @Route annotations and entities with @ORM or @Assert annotations,
-             *      because the file location retrieved from PHP reflection changes;
-             * - When classes use the __DIR__ and __FILE__ constants, because their values will change when loading these classes from the classes.php file.
-             */
-
-            $finder = new Finder();
-            $finder->files()->in(array(
-                __DIR__.'/../Cache',
-                __DIR__.'/../DataCollector',
-                __DIR__.'/../Entity',
-                __DIR__.'/../REST',
-                __DIR__.'/../SOAP',
-                __DIR__.'/../Service',
-                __DIR__.'/../Twig',
-             ))->name('*.php');
-
-            $aClasses = array();
-
-            foreach ($finder as $file)
-            {
-                $filename = $file->getRealPath();
-                $aClasses[] = $this->_get_full_namespace($filename).'\\'.$this->_get_classname($filename);
-            }
-
-            $this->addClassesToCompile($aClasses);
-        }
-
     }
 
     private function _get_full_namespace($filename) {

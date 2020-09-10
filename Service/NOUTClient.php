@@ -1319,7 +1319,7 @@ class NOUTClient
                     $parentID = (string) $child->$idParent;
                     $list->add($id, $name, $parentID);
                 }
-                var_dump($list);
+                //var_dump($list);
                 break;
             }
 
