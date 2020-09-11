@@ -11,8 +11,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Cache;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
-use Symfony\Component\Yaml\Dumper;
-use Symfony\Component\Yaml\Yaml;
 
 
 class NOUTCacheFactory
@@ -43,12 +41,12 @@ class NOUTCacheFactory
 
     /**
      * renvoi le bon cache en fonction des extensions qui sont chargées
-     * @param $namespace
-     * @param $prefix
-     * @param $dirprefix
-     * @return NOUTApcuCache|NOUTFileCache|NOUTXCacheCache
+     * @param string $namespace
+     * @param string $prefix
+     * @param string $dirprefix
+     * @return NOUTApcuCache|NOUTFileCache
      */
-    public function getCache($namespace, $prefix, $dirprefix)
+    public function getCache(string $namespace, string $prefix, string $dirprefix) : NOUTCacheProvider
     {
         if (isset($_SERVER) && isset($_SERVER['SERVER_NAME'])){
             $server_name = $_SERVER['SERVER_NAME'];
@@ -65,11 +63,6 @@ class NOUTCacheFactory
         if (extension_loaded('apc') || extension_loaded('apcu'))
         {
             $cache = new NOUTApcuCache($this->__stopwatch);
-            $cache->setNamespace($namespace, $baseurl.$prefix);
-        }
-        elseif (extension_loaded('xcache'))
-        {
-            $cache = new NOUTXCacheCache($this->__stopwatch);
             $cache->setNamespace($namespace, $baseurl.$prefix);
         }
         else

@@ -42,7 +42,7 @@ class NOUTClientCache
     }
 
     /**
-     * @return NOUTCache
+     * @return NOUTCacheProvider
      */
     public function getCacheSession()
     {
@@ -58,6 +58,8 @@ class NOUTClientCache
     {
         switch($cache)
         {
+        default:
+            return null;
         case self::CACHE_Session:
             return $this->m_clCacheSession->fetch($name);
         case self::CACHE_IHM:
@@ -77,6 +79,8 @@ class NOUTClientCache
     {
         switch($cache)
         {
+        default:
+            return null;
         case self::CACHE_Session:
             return $this->m_clCacheSession->save($name, $data, self::TIMEOUT_1J);
         case self::CACHE_IHM:

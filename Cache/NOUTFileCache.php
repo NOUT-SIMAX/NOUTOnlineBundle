@@ -15,7 +15,12 @@ class NOUTFileCache extends NOUTCacheProvider
 {
     const FILE_EXTENSION = '.noutcache.data';
 
-    protected function _makeKey($id, $prefix)
+    /**
+     * @param string|string[] $id
+     * @param string          $prefix
+     * @return string
+     */
+    protected function _makeKey($id, string $prefix) : string
     {
         if (!is_array($id)){
             if (empty($id)){
@@ -31,7 +36,10 @@ class NOUTFileCache extends NOUTCacheProvider
         return $key;
     }
 
-    protected function _getNamespacedId($id)
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getNamespacedId($id) : string
     {
         $key = $this->_makeKey($id, $this->namespace);
         if (!empty($id))
@@ -44,7 +52,7 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function _doFetch($id)
+	protected function _doFetch(string $id)
 	{
 		if (!file_exists($id))
 		{
@@ -57,7 +65,7 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function _doContains($id)
+	protected function _doContains(string $id)
 	{
 		return file_exists($id);
 	}
@@ -65,7 +73,7 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function _doSave($id, $data, $lifeTime = 0)
+	protected function _doSave(string $id, $data, $lifeTime = 0)
 	{
         $dir = dirname($id);
 		if (!file_exists($dir))
@@ -82,22 +90,13 @@ class NOUTFileCache extends NOUTCacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function _doDelete($id)
+	protected function _doDelete(string $id)
 	{
         if (file_exists($id))
         {
             unlink($id);
         }
 
-		return true;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function doFlush()
-	{
-		array_map('unlink', glob($this->namespace.'/*'));
 		return true;
 	}
 
@@ -108,7 +107,7 @@ class NOUTFileCache extends NOUTCacheProvider
      *
      * @return array|false.
      */
-    protected function _doListEntry($id)
+    protected function _doListEntry(string $id)
     {
         if (!is_dir($id)) {
             return array();
@@ -128,9 +127,13 @@ class NOUTFileCache extends NOUTCacheProvider
         return $aRet;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function _doFlushAll()
     {
-        return false;
+        array_map('unlink', glob($this->namespace.'/*'));
+        return true;
     }
 
     /**
@@ -141,7 +144,7 @@ class NOUTFileCache extends NOUTCacheProvider
         $nbFile = parent::deletePrefix($prefix);
 
         $id = $this->_getNamespacedId($prefix);
-        $aDir = $this->getSubDir($id);
+        $aDir = $this->_getSubDir($id);
 
         usort($aDir, function ($a, $b)
         {
@@ -162,7 +165,11 @@ class NOUTFileCache extends NOUTCacheProvider
         return $nbFile;
     }
 
-    protected function getSubDir($id)
+    /**
+     * @param string $id
+     * @return array
+     */
+    protected function _getSubDir(string $id) : array
     {
         if (!is_dir($id)) {
             return array();

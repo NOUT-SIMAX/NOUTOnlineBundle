@@ -25,11 +25,18 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      */
     protected $__stopwatch;
 
+    /**
+     * NOUTCacheProvider constructor.
+     * @param Stopwatch|null $stopwatch
+     */
     public function __construct(Stopwatch $stopwatch=null)
     {
         $this->__stopwatch = $stopwatch;
     }
 
+    /**
+     * @param $function
+     */
     protected function __startStopwatch($function)
     {
         if($this->__stopwatch){
@@ -37,6 +44,9 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
         }
     }
 
+    /**
+     * @param $function
+     */
     protected function __stopStopwatch($function)
     {
         if($this->__stopwatch){
@@ -44,7 +54,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
         }
     }
 
-    protected function _makeKey($id, $prefix)
+    /**
+     * @param string|string[] $id
+     * @param string $prefix
+     * @return mixed|string
+     */
+    protected function _makeKey($id, string $prefix)
     {
         if (!is_array($id))
         {
@@ -76,11 +91,11 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
     /**
      * Prefixes the passed id with the configured namespace value.
      *
-     * @param string $id The id to namespace.
+     * @param string|string[] $id The id to namespace.
      *
      * @return string The namespaced id.
      */
-    protected function _getNamespacedId($id)
+    protected function _getNamespacedId($id) : string
     {
         return $this->_makeKey($id, $this->namespace);
     }
@@ -90,10 +105,12 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      * Sets the namespace to prefix all cache ids with.
      *
      * @param string $namespace
+     * @param string $prefix
+     *
      *
      * @return void
      */
-    public function setNamespace($namespace, $prefix)
+    public function setNamespace(string $namespace, string $prefix)
     {
         $this->namespace  = $this->_makeKey($namespace, $prefix);
     }
@@ -111,7 +128,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
     /**
      * Fetches an entry from the cache.
      *
-     * @param string $id The id of the cache entry to fetch.
+     * @param string|string[] $id The id of the cache entry to fetch.
      *
      * @return mixed The cached data or FALSE, if no cache entry exists for the given id.
      */
@@ -202,7 +219,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
     /**
      * Tests if an entry exists in the cache.
      *
-     * @param string $id The cache id of the entry to check for.
+     * @param string|string[] $id The cache id of the entry to check for.
      *
      * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
@@ -221,7 +238,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      *
      * If a cache entry with the given id already exists, its data will be replaced.
      *
-     * @param string $id       The cache id.
+     * @param string|string[] $id       The cache id.
      * @param mixed  $data     The cache entry/data.
      * @param int    $lifeTime The lifetime in number of seconds for this cache entry.
      *                         If zero (the default), the entry never expires (although it may be deleted from the cache
@@ -242,7 +259,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
     /**
      * Deletes a cache entry.
      *
-     * @param string $id The cache id.
+     * @param string|string[] $id The cache id.
      *
      * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
      *              Deleting a non-existing entry is considered successful.
@@ -260,7 +277,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
     /**
      * Deletes a cache entry.
      *
-     * @param string $prefix The prefix for the key.
+     * @param string|string[] $prefix The prefix for the key.
      *
      * @return bool[] TRUE if the cache entry was successfully deleted, FALSE otherwise.
      *              Deleting a non-existing entry is considered successful.
@@ -294,7 +311,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
     /**
      * Default implementation of doFetchMultiple. Each driver that supports multi-get should owerwrite it.
      *
-     * @param array $keys Array of keys to retrieve from cache
+     * @param string[] $keys Array of keys to retrieve from cache
      * @return array Array of values retrieved for the given keys.
      */
     protected function _doFetchMultiple(array $keys)
@@ -314,7 +331,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
     /**
      * Default implementation of doDeleteMultiple. Each driver that supports multi-get should owerwrite it.
      *
-     * @param array $keys Array of keys to retrieve from cache
+     * @param string[] $keys Array of keys to retrieve from cache
      * @return array Array of values retrieved for the given keys.
      */
     protected function _doDeleteMultiple(array $keys)
@@ -327,35 +344,6 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
 
         return $returnValues;
     }
-
-
-    /**
-     * Fetches an entry from the cache.
-     *
-     * @param string $id The id of the cache entry to fetch.
-     *
-     * @return mixed|false The cached data or FALSE, if no cache entry exists for the given id.
-     */
-    abstract protected function _doFetch($id);
-
-
-    /**
-     * Fetches an entry from the cache.
-     *
-     * @param string $id The beginning of the id of the cache entry to list.
-     *
-     * @return array|false.
-     */
-    abstract protected function _doListEntry($id);
-
-    /**
-     * Tests if an entry exists in the cache.
-     *
-     * @param string $id The cache id of the entry to check for.
-     *
-     * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
-     */
-    abstract protected function _doContains($id);
 
     /**
      * Default implementation of doSaveMultiple. Each driver that supports multi-put should override it.
@@ -379,17 +367,46 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
         return $success;
     }
 
+
+    /**
+     * Fetches an entry from the cache.
+     *
+     * @param string $id The id of the cache entry to fetch.
+     *
+     * @return mixed|false The cached data or FALSE, if no cache entry exists for the given id.
+     */
+    abstract protected function _doFetch(string $id);
+
+
+    /**
+     * Fetches an entry from the cache.
+     *
+     * @param string $id The beginning of the id of the cache entry to list.
+     *
+     * @return array|false.
+     */
+    abstract protected function _doListEntry(string $id);
+
+    /**
+     * Tests if an entry exists in the cache.
+     *
+     * @param string $id The cache id of the entry to check for.
+     *
+     * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
+     */
+    abstract protected function _doContains(string $id);
+
     /**
      * Puts data into the cache.
      *
      * @param string $id       The cache id.
-     * @param string $data     The cache entry/data.
+     * @param mixed  $data     The cache entry/data.
      * @param int    $lifeTime The lifetime. If != 0, sets a specific lifetime for this
      *                           cache entry (0 => infinite lifeTime).
      *
      * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    abstract protected function _doSave($id, $data, $lifeTime = 0);
+    abstract protected function _doSave(string $id, $data, $lifeTime = 0);
 
     /**
      * Deletes a cache entry.
@@ -398,7 +415,7 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
      *
      * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
-    abstract protected function _doDelete($id);
+    abstract protected function _doDelete(string $id);
 
 
     /**

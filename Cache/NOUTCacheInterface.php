@@ -15,10 +15,11 @@ interface NOUTCacheInterface
      * Sets the namespace to prefix all cache ids with.
      *
      * @param string $namespace
+     * @param string $prefix
      *
      * @return void
      */
-    public function setNamespace($namespace, $prefix);
+    public function setNamespace(string $namespace, string $prefix);
 
     /**
      * Retrieves the namespace that prefixes all cache ids.
@@ -31,7 +32,7 @@ interface NOUTCacheInterface
     /**
      * Fetches an entry from the cache.
      *
-     * @param string $id The id of the cache entry to fetch.
+     * @param string|string[] $id The id of the cache entry to fetch.
      *
      * @return mixed The cached data or FALSE, if no cache entry exists for the given id.
      */
@@ -69,7 +70,7 @@ interface NOUTCacheInterface
     /**
      * Tests if an entry exists in the cache.
      *
-     * @param string $id The cache id of the entry to check for.
+     * @param string|string[] $id The cache id of the entry to check for.
      *
      * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
@@ -103,7 +104,7 @@ interface NOUTCacheInterface
     /**
      * Deletes a cache entry.
      *
-     * @param string $prefix The prefix for the key.
+     * @param string|string[] $prefix The prefix for the key.
      *
      * @return bool[] TRUE if the cache entry was successfully deleted, FALSE otherwise.
      *              Deleting a non-existing entry is considered successful.
