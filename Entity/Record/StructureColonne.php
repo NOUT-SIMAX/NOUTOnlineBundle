@@ -456,13 +456,14 @@ abstract class StructureColonne
 
 
 	/**
+     * @param bool $bForParam
 	 * @return string
 	 *
 	 * Retourne le type de formulaire Symfony correspondant
 	 *
 	 * Gestion des cas particuliers avec options (par ex les Directory ou Couleurs ou Password)
 	 */
-	public function getFormType()
+	public function getFormType(bool $bForParam=false)
 	{
 		switch ($this->m_eTypeElement)
 		{
@@ -538,7 +539,7 @@ abstract class StructureColonne
 			}
             case self::TM_Combo :
             {
-                if (isset($this->m_clRestriction) && (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 3)) {
+                if (/*!$bForParam && */isset($this->m_clRestriction) && (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 3)) {
                     return 'simax_radio';
                 }
                 else {
