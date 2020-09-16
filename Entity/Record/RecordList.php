@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ListSort;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 
@@ -92,6 +93,9 @@ class RecordList
      * tableau des tris appliqués à la liste
      */
     protected $m_TabSort;
+
+    /** @var Count|null */
+    protected $m_clCount = null;
 
     /**
      * RecordList constructor.
@@ -226,7 +230,21 @@ class RecordList
         return $this->m_TabSort;
     }
 
+    /**
+     * @param Count|null $count
+     */
+    public function setCount(Count $count=null)
+    {
+        $this->m_clCount = $count;
+    }
 
+    /**
+     * @return Count|null
+     */
+    public function getCount()
+    {
+        return $this->m_clCount;
+    }
 
     /**
      * @param array $tabPossibleDisplayMode
