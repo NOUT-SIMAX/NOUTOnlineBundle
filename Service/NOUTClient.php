@@ -2470,7 +2470,7 @@ class NOUTClient
             // si on doit ajouter la signature
             $sSignature="";
             try{
-                if ($this->bGetSiAjouteSignature($nIDCompte, $type))
+                if ($this->bGetSiAjouteSignature($nIDCompte, $type, ($originalMessage !== 'undefined')))
                 {
                     $sSignature=$this->sGetSignature($nIDCompte);
                 }
@@ -2611,7 +2611,7 @@ class NOUTClient
         return $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
     }
 
-    public function bGetSiAjouteSignature($compteID, $sType)
+    public function bGetSiAjouteSignature($compteID, $sType, $withOriginalMessage)
     {
 //        const CREATE_TYPE_EMPTY = 'Empty';
 //        const CREATE_TYPE_FORWARD = 'Forward';
@@ -2619,7 +2619,7 @@ class NOUTClient
 //        const CREATE_TYPE_ANSWER_ALL = 'Answer All';
 //        const CREATE_TYPE_ANSWER_TYPE = 'Answer Type';
 
-        $nIDCol=($sType=='Empty') ? Langage::COL_COMPTEEMAIL_SignatureNouveau : Langage::COL_COMPTEEMAIL_SignatureRepondre;
+        $nIDCol=($sType=='Empty' || (($sType=='Answer Type') && !$withOriginalMessage)) ? Langage::COL_COMPTEEMAIL_SignatureNouveau : Langage::COL_COMPTEEMAIL_SignatureRepondre;
 
         $clIdentification = $this->_clGetIdentificationREST('', false);
 
