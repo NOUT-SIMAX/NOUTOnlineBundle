@@ -292,6 +292,31 @@ abstract class NOUTCacheProvider implements NOUTCacheInterface
         $this->__stopStopwatch(__FUNCTION__);
         return $oRet;
     }
+    /**
+     * Deletes a cache entry qui ne sont pas du prefix.
+     *
+     * @param string|string[] $prefix The prefix for the key.
+     *
+     * @return bool[] TRUE if the cache entry was successfully deleted, FALSE otherwise.
+     *              Deleting a non-existing entry is considered successful.
+     */
+    public function deleteNotPrefix($prefix)
+    {
+        $this->__startStopwatch(__FUNCTION__);
+
+        $namespace = $this->_getNamespacedId($prefix);
+        $keys = $this->_doListEntry($namespace);
+
+        //il faut faire une exclusion
+        $filtered_keys = array_filter($keys, function ($key) use ($namespace){
+            return strncmp($key, $namespace, strlen($namespace))!=0;
+        });
+
+        $oRet = $this->_doDeleteMultiple($filtered_keys);
+        $this->__stopStopwatch(__FUNCTION__);
+        return $oRet;
+    }
+
 
     /**
      * Flushes all cache entries, globally.
