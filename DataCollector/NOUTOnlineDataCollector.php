@@ -37,7 +37,6 @@ class NOUTOnlineDataCollector  extends DataCollector
     }
 	public function collect(Request $request, Response $response, \Throwable $exception = null)
 	{
-		$queries = array();
 		$queries = $this->m_clLogger->m_TabQueries;
 
 		$this->data = array(
