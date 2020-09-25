@@ -146,6 +146,8 @@ class NOUTOnlineExtension extends AbstractExtension
 			 new TwigFunction('noutonline_is_started', array($this, 'isStarted')),
              new TwigFunction('noutonline_is_versionmin', array($this, 'isVersionMin')),
              new TwigFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
+             new TwigFunction('noutonline_beautify_xml', array($this, 'beautifyXML')),
+             new TwigFunction('noutonline_beautify_json', array($this, 'beautifyJSON')),
 		);
 	}
 
