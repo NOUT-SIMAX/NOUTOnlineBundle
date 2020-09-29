@@ -158,7 +158,7 @@ class NOUTOnlineLogger
 				$sTo = str_replace('><', ">\r\n<", $sTo);
 			}
 
-			$this->m_clMonolog->debug(
+			$this->m_clMonolog->notice(
 				$sTo,
 				$this->_getContext(true, $sOperation, $bSOAP, $extra)
 			);
@@ -175,7 +175,7 @@ class NOUTOnlineLogger
                 $sFromPourLog = base64_encode($sFrom);
             }
 
-			$this->m_clMonolog->debug(
+			$this->m_clMonolog->notice(
                 $sFromPourLog,
 				$this->_getContext(false, $sOperation, $bSOAP, $extra)
 			);
