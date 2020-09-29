@@ -53,7 +53,7 @@ class Configuration implements ConfigurationInterface
 
                 ->integerNode('soap_socket_timeout')
                     ->info('Timeout de socket pour SOAP')
-                    ->defaultValue(-1)
+                    ->defaultValue(-1) //SOAPProxy::SOCKET_TIMEOUT
                 ->end()//integerNode('soap_socket_timeout')
 
                 ->scalarNode('apiuuid')

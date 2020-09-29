@@ -46,10 +46,10 @@ class OnlineServiceFactory
 	public function __construct(ClientInformation $clientInfo,
                                 NOUTOnlineLogger $logger,
                                 NOUTCacheFactory $cacheFactory,
-                                Stopwatch $stopwatch=null,
-                                $soap_socket_timeout=SOAPProxy::SOCKET_TIMEOUT)
+                                DynamicConfigurationLoader $configLoader,
+                                Stopwatch $stopwatch=null)
 	{
-	    $this->__soap_socket_timeout = $soap_socket_timeout;
+	    $this->__soap_socket_timeout = $configLoader->getParameter('soap_socket_timeout');
 		$this->m_clLogger = $logger;
 		$this->__stopwatch = $stopwatch;
 

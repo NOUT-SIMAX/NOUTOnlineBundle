@@ -12,18 +12,19 @@ services:
         
     NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClient:
         arguments:
-            $sVersionMin:       '%noutonline.version_min%'
-            $nVersionDialPref:  '%noutonline.version_dialogue_pref%'
+            $sVersionMin:       '%noutonline.version.min%'
+            $nVersionDialPref:  '%noutonline.version.dialogue_pref%'
             
-
-    NOUT\Bundle\NOUTOnlineBundle\Service\ConnectionManager:
+    NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader:
         arguments:
-            $aAuth : '%nout_online.auth%'
+            $bMultitenant: '%site.multitenant%'
+            $sConfigDir: '%kernel.project_dir%/config/byhost'
+            $defaultConfig: '%noutonline.config%'
+            $sHostname: '%router.request_context.host%'
+
 
     # pour la barre de debug
     NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger:
-        arguments:
-            $debug: "%nout_online.log%"
         tags:
             - { name: monolog.logger, channel: noutonline }
 
@@ -33,19 +34,9 @@ services:
 
     NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue:
         arguments:
-            - '%nout_online.address%'
-            - '%nout_online.port%'
-            - '%nout_online.protocole%'
-            - '%nout_online.apiuuid%'
-            - '%version_site%'
-            - '%noutweb.http_client%'
-            - '%nout_online.auth%'
-            - '%noutonline.version_dialogue_pref%'
-
-    #factory pour les proxy
-    NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory:
-        arguments:
-            $soap_socket_timeout: '%nout_online.soap_socket_timeout%'
+            $sVersion: '%version_site%'
+            $sSociete: '%noutweb.http_client%'
+            $nVersionDialPref: '%noutonline.version.dialogue_pref%'
 
     #factory pour les caches
     NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory:
@@ -55,7 +46,7 @@ services:
     #les extension twigs
     NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension:
         arguments:
-            $sVersionMin: '%noutonline.version_min%'
+            $sVersionMin: '%noutonline.version.min%'
         tags:
             - { name: twig.extension }
 

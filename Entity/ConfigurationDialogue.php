@@ -8,6 +8,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
+use NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader;
+
 /**
  * Class ConfigurationDialogue permet de transporter les informations configurée pour le dialogue avec NOUTOnline
  * @package NOUT\Bundle\NOUTOnlineBundle\Entity
@@ -77,17 +79,22 @@ class ConfigurationDialogue
     protected $m_sSecret;
 
 	public function __construct(
-        $sHost = '',
-        $sPort = 0,
-        $sProtocolPrefix = 'http://',
-        $sAPIUUID = '',
-        $sVersion='',
-        $sSociete='',
-        array $aAuth=array(),
-        $nVersionDialPref=1
+        string $sVersion='',
+        string $sSociete='',
+        DynamicConfigurationLoader $loader,
+        int $nVersionDialPref=1
     )
 	{
         $this->m_nVersionDialoguePref=$nVersionDialPref;
+        $this->m_sVersion=$sVersion;
+        $this->m_sSociete=$sSociete;
+
+        $sAPIUUID = $loader->getParameter('apiuuid');
+        $sHost = $loader->getParameter('address');
+        $sPort = $loader->getParameter('port');
+        $sProtocolPrefix = $loader->getParameter('protocole');
+        $aAuth = $loader->getParameter('auth');
+        
         $this->m_sAPIUUID     = trim($sAPIUUID);
 		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
@@ -102,8 +109,6 @@ class ConfigurationDialogue
 		$this->m_nLangCode    = 0;
 		$this->m_nDureeSession = 3600;
 
-		$this->m_sVersion=$sVersion;
-		$this->m_sSociete=$sSociete;
 
         $this->m_sModeAuth = isset($aAuth['mode']) ? $aAuth['mode'] : '';
         $this->m_sSecret = isset($aAuth['secret']) ? $aAuth['secret'] : '';

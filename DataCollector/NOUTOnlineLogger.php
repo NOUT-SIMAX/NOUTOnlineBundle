@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DataCollector;
 
+use NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -50,10 +51,10 @@ class NOUTOnlineLogger
 	 * @param $logger : l'instance monolog de symfony
 	 * @param $debug : si site en debug
 	 */
-	public function __construct(LoggerInterface $logger, $debug)
+	public function __construct(LoggerInterface $logger, DynamicConfigurationLoader $loader)
 	{
 		$this->m_clMonolog = $logger;
-		$this->m_bEnabled  = $debug;
+		$this->m_bEnabled  = $loader->getParameter('log');
 	}
 
 	public function getEnabled()
