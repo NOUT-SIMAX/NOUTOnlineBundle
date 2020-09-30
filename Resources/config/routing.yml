@@ -1,4 +1,0 @@
-nout_online_test:
-    resource:   "@NOUTOnlineBundle/Controller/"
-    prefix:     /
-    type:       annotation
