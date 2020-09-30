@@ -26,7 +26,7 @@ class DynamicConfigurationLoader
         }
         else {
             //il faut faire en fonction du hostname
-            if ($sHostname=='localhost'){
+            if (($sHostname=='localhost') && in_array('SERVER_NAME', $_SERVER)){
                 $sHostname=str_replace('www.', '', $_SERVER['SERVER_NAME']);
             }
 
