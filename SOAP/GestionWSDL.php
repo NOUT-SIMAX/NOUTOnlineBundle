@@ -12,6 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GestionWSDL
 {
@@ -21,33 +22,117 @@ class GestionWSDL
     protected $__cache;
 
     /**
-     * @var string
+     * @var TranslatorInterface
      */
-    protected $m_sUri;
+    protected $__translator;
 
     /**
      * @var string
      */
-    protected $m_sHash;
+    protected $m_sUri = '';
+
+    /**
+     * @var string
+     */
+    protected $m_sHash = '';
 
     /**
      * @var float
      */
-    protected $m_dVersion;
+    protected $m_dVersion = 0;
 
-    public function __construct(NOUTCacheProvider $cache, $sUri)
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->__translator = $translator;
+
+    }
+
+    public function initCache(NOUTCacheProvider $cache)
     {
         $this->__cache = $cache;
-        $this->m_sUri = $sUri;
-        $this->m_dVersion = 0;
+    }
 
+    /**
+     * @param $sUri
+     * @throws SOAPException
+     */
+    public function initUri($sUri)
+    {
+        if (extension_loaded('curl'))
+        {
+            $this->_init_curl($sUri);   // on utilise l'extension curl
+        }
+        else
+        {
+            $this->_init_natif($sUri);  // curl n'est pas disponible
+        }
+    }
+
+    /**
+     * @param $sUri
+     * @throws SOAPException
+     */
+    protected function _init_curl($sUri)
+    {
+        try {
+
+            //initialisation de curl
+            $curl = curl_init($sUri);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , 2);
+
+            //autres options
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); //Demande du contenu du fichier
+            curl_setopt($curl, CURLOPT_HEADER, 0); // Demande des headers
+
+            //---------------------------
+            //execution
+            $output = curl_exec($curl);
+            $curl_errno = curl_errno($curl);
+            if($curl_errno){
+
+                switch ($curl_errno)
+                {
+                    case CURLE_OPERATION_TIMEDOUT:
+                    {
+                        $localip = curl_getinfo(CURLINFO_LOCAL_IP);
+                        $primaryip = curl_getinfo(CURLINFO_PRIMARY_IP);
+                        curl_close($curl);
+                        throw new SOAPException($this->__translator->trans('noutonline.wsdl.timeout_message', ['message'=>$localip]), OnlineError::ERR_NOUTONLINE_OFF);
+                    }
+
+                    default:
+                    {
+                        $mess = curl_error($curl);
+                        curl_close($curl);
+                        throw new SOAPException($mess);
+                    }
+                }
+            }
+            curl_close($curl);
+
+            $sDebutWSDL=substr($output, 0, 1000);
+            $this->m_sHash = md5($sDebutWSDL, false);
+            $this->m_dVersion = $this->_getVersion($sDebutWSDL);
+        }
+        catch (\Exception $e){
+            //TODO trad
+            throw new SOAPException($this->__translator->trans('noutonline.wsdl.timeout_message', ['message'=>$e->getMessage()]), OnlineError::ERR_NOUTONLINE_OFF);
+        }
+    }
+
+    /**
+     * @param $sUri
+     * @throws SOAPException
+     */
+    protected function _init_natif($sUri)
+    {
         try {
 
             $context = stream_context_create(
                 array(
-                  'http'=>array(
-                      'timeout' => 2.0
-                  )
+                    'http'=>array(
+                        'timeout' => 2.0
+                    )
                 )
             );
 
@@ -66,12 +151,12 @@ class GestionWSDL
             }
             else
             {
-                throw new SOAPException('NOUTOnline ne répond pas', OnlineError::ERR_NOUTONLINE_OFF);
+                throw new SOAPException($this->__translator->trans('noutonline.wsdl.timeout'), OnlineError::ERR_NOUTONLINE_OFF);
             }
         }
         catch (\Exception $e){
             //TODO trad
-            throw new SOAPException('NOUTOnline ne répond pas', OnlineError::ERR_NOUTONLINE_OFF);
+            throw new SOAPException($this->__translator->trans('noutonline.wsdl.timeout_message', ['message'=>$e->getMessage()]), OnlineError::ERR_NOUTONLINE_OFF);
         }
     }
 
@@ -95,6 +180,8 @@ class GestionWSDL
 
     /**
      * sauve la wsdl en cache pour usage futur
+     * @param $dureeVie
+     * @param $wsdl
      */
     public function save($wsdl, $dureeVie)
     {
@@ -155,14 +242,14 @@ class GestionWSDL
             if ($Username->bCrypted())
             {
                 $aParamTokenSession['Encryption']['!']=$Username->getMode();
-                $aParamTokenSession['Encryption']['md5']=$Username->CryptMd5;
-                if (isset($Username->CryptIV))
+                $aParamTokenSession['Encryption']['md5']=$Username->cryptMd5;
+                if (isset($Username->cryptIV))
                 {
-                    $aParamTokenSession['Encryption']['iv']=$Username->CryptIV;
+                    $aParamTokenSession['Encryption']['iv']=$Username->cryptIV;
                 }
-                if (isset($Username->CryptKS))
+                if (isset($Username->cryptKS))
                 {
-                    $aParamTokenSession['Encryption']['ks']=$Username->CryptKS;
+                    $aParamTokenSession['Encryption']['ks']=$Username->cryptKS;
                 }
             }
             return $aParamTokenSession;

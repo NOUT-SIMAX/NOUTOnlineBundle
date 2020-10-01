@@ -53,3 +53,5 @@ services:
     NOUT\Bundle\NOUTOnlineBundle\Twig\ToolsExtension:
         tags:
             - { name: twig.extension }
+    
+    NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL:

@@ -1,1 +1,5 @@
 should be an IPv4 or IPv6 address: should be an IPV4 or IPV6 address
+noutonline:
+    wsdl:
+        timeout_message: NOUTOnline timeout (%message%)
+        timeout: NOUTOnline timeout

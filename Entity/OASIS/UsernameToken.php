@@ -6,6 +6,10 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UsernameToken as WSDLUsernameTo
 /**
  * Classe UserNameToken
  * permetant de générer les info de connection pour la norme OASIS (username, password, nonce, et created)
+ * @property string cryptMd5
+ * @property string cryptIV
+ * @property string cryptKS
+ * @property string $cryptMode
  */
 class UsernameToken extends WSDLUsernameToken
 {
@@ -24,9 +28,7 @@ class UsernameToken extends WSDLUsernameToken
      */
     protected $m_sSecret;
 
-
-
-	public function __construct($sUsername, $sPassword, $sMode, $sSecret)
+    public function __construct($sUsername, $sPassword, $sMode, $sSecret)
 	{
 		$this->Username         = $sUsername;
 		$this->m_sClearPassword = $sPassword;
@@ -47,7 +49,7 @@ class UsernameToken extends WSDLUsernameToken
     {
         //utf8_decode => il nous faut du latin1 pour NOUTOnline
         $this->m_sSecret        = utf8_decode(trim(str_replace("\r", "", $sSecret)));
-        $this->CryptMd5         = base64_encode(md5($this->m_sSecret.$this->Nonce.$this->Created, true));
+        $this->cryptMd5         = base64_encode(md5($this->m_sSecret.$this->Nonce.$this->Created, true));
     }
 
 	/**
@@ -155,21 +157,49 @@ class UsernameToken extends WSDLUsernameToken
 
     protected function _Blowfish()
     {
+        if (extension_loaded('openssl')){
+            $this->__Blowfish_openssl();
+        }
+        else {
+            $this->__Blowfish_mcrypt();
+        }
+    }
+
+    protected function __Blowfish_openssl()
+    {
+        $securePassword = base64_encode($this->Nonce.$this->Created.$this->m_sSecret);
+
+        $ivlen = openssl_cipher_iv_length('bf-cbc');
+        $iv = openssl_random_pseudo_bytes($ivlen);
+
+        /* Create key */
+        $key = substr($securePassword, 0, 16);
+        $this->cryptKS = 16;
+
+        $ciphertext = openssl_encrypt($this->m_sClearPassword, 'bf-cbc', $key, $options=0, $this->cryptIV, $tag);
+
+        $this->cryptIV = base64_encode($iv);
+        $this->Password = base64_encode($ciphertext);
+
+    }
+
+    protected function __Blowfish_mcrypt()
+    {
         $securePassword = base64_encode($this->Nonce.$this->Created.$this->m_sSecret);
 
         /* Open the cipher */
         $aMode = array('blowfish'=>MCRYPT_BLOWFISH);
 
-        $td = mcrypt_module_open($aMode[$this->CryptMode], '', 'cbc', '');
+        $td = mcrypt_module_open($aMode[$this->cryptMode], '', 'cbc', '');
 
         /* Create the IV and determine the keysize length, use MCRYPT_RAND
          * on Windows instead */
         $iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
-        $this->CryptIV = base64_encode($iv);
-        $this->CryptKS = mcrypt_enc_get_key_size($td);
+        $this->cryptIV = base64_encode($iv);
+        $this->cryptKS = mcrypt_enc_get_key_size($td);
 
         /* Create key */
-        $key = substr(securePassword, 0, $this->CryptKS);
+        $key = substr($securePassword, 0, $this->cryptKS);
 
         /* Intialize encryption */
         mcrypt_generic_init($td, $key, $iv);

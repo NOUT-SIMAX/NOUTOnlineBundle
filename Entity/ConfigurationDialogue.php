@@ -79,9 +79,9 @@ class ConfigurationDialogue
     protected $m_sSecret;
 
 	public function __construct(
+        DynamicConfigurationLoader $loader,
         string $sVersion='',
         string $sSociete='',
-        DynamicConfigurationLoader $loader,
         int $nVersionDialPref=1
     )
 	{
@@ -158,8 +158,9 @@ class ConfigurationDialogue
 
 	/**
 	 * @param int $nDureeSession
+     * @return $this
 	 */
-	public function setDureeSession($nDureeSession)
+	public function setDureeSession(int $nDureeSession)
 	{
 		$this->m_nDureeSession = $nDureeSession;
 
@@ -176,8 +177,9 @@ class ConfigurationDialogue
 
 	/**
 	 * @param int $nLangCode
+     * @return $this
 	 */
-	public function setLangCode($nLangCode)
+	public function setLangCode(int $nLangCode)
 	{
 		$this->m_nLangCode = $nLangCode;
 
@@ -202,8 +204,9 @@ class ConfigurationDialogue
 
 	/**
 	 * @param string $sAPIUUID
+     * @return $this
 	 */
-	public function setAPIUUID($sAPIUUID)
+	public function setAPIUUID(string $sAPIUUID)
 	{
 		$this->m_sAPIUUID = $sAPIUUID;
 

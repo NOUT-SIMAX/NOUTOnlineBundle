@@ -134,14 +134,14 @@ class OnlineServiceProxy
         if ($usernameToken->bCrypted())
         {
             $sBottom .= '&encryption=' . urlencode($usernameToken->getMode());
-            $sBottom .= '&md5=' . urlencode($usernameToken->CryptMd5);
-            if (isset($usernameToken->CryptIV))
+            $sBottom .= '&md5=' . urlencode($usernameToken->cryptMd5);
+            if (isset($usernameToken->cryptIV))
             {
-                $sBottom .= '&iv=' . urlencode($usernameToken->CryptIV);
+                $sBottom .= '&iv=' . urlencode($usernameToken->cryptIV);
             }
-            if (isset($usernameToken->CryptKS))
+            if (isset($usernameToken->cryptKS))
             {
-                $sBottom .= '&ks=' . urlencode($usernameToken->CryptKS);
+                $sBottom .= '&ks=' . urlencode($usernameToken->cryptKS);
             }
         }
 
