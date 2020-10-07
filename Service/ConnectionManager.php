@@ -23,8 +23,10 @@ class ConnectionManager
      */
     protected $m_sSecret;
 
-	public function __construct(array $aAuth)
+	public function __construct(DynamicConfigurationLoader $loader)
 	{
+        $aAuth = $loader->getParameter('auth');
+        
         $this->m_sModeAuth = $aAuth['mode'];
         $this->m_sSecret = $aAuth['secret'];
 	}

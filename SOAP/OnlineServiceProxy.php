@@ -128,16 +128,18 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
-	 * @param ClientInformation		$clientInfo
+	 * @param ClientInformation     $clientInfo
 	 * @param ConfigurationDialogue $clConfig
 	 * @param NOUTOnlineLogger      $_clLogger
-	 * @param NOUTCache             $cache
+     * @param Stopwatch|null        $stopwatch
+     * @param GestionWSDL           $clGestionWSDL
+     * @param int                   $soap_socket_timeout
      */
     public function __construct(ClientInformation $clientInfo,
                                 ConfigurationDialogue $clConfig,
                                 NOUTOnlineLogger $_clLogger,
+                                GestionWSDL $clGestionWSDL,
                                 Stopwatch $stopwatch=null,
-                                NOUTCacheProvider $cache=null,
                                 $soap_socket_timeout=self::SOCKET_TIMEOUT)
     {
         parent::__construct($clConfig->getWSDLUri(), $clConfig->getWsdl(), $clConfig->getHost(),$clConfig->getPort());
@@ -153,7 +155,8 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    $this->__stopwatch = $stopwatch;
 
 	    //il faut lire le début de endpoint pour avoir la version de la wsdl
-        $this->__clGestionWSDL = new GestionWSDL($cache, $clConfig->getWSDLUri());
+        $this->__clGestionWSDL = $clGestionWSDL;
+        $this->__clGestionWSDL->initUri($clConfig->getWSDLUri());
     }
 
 

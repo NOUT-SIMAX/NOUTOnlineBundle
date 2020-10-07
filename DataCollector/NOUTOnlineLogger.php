@@ -8,6 +8,9 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DataCollector;
 
+use NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader;
+use Psr\Log\LoggerInterface;
+
 /**
  * Class NOUTOnlineLogger
  * @package NOUT\Bundle\NOUTOnlineBundle\DataCollector
@@ -40,7 +43,7 @@ class NOUTOnlineLogger
 	public $m_fSend = null;
 
 	/**
-	 * @var $m_clMonolog : monolog pour voir les traces
+	 * @var LoggerInterface $m_clMonolog : monolog pour voir les traces
 	 */
 	protected $m_clMonolog;
 
@@ -48,10 +51,10 @@ class NOUTOnlineLogger
 	 * @param $logger : l'instance monolog de symfony
 	 * @param $debug : si site en debug
 	 */
-	public function __construct($logger, $debug)
+	public function __construct(LoggerInterface $logger, DynamicConfigurationLoader $loader)
 	{
 		$this->m_clMonolog = $logger;
-		$this->m_bEnabled  = $debug;
+		$this->m_bEnabled  = $loader->getParameter('log');
 	}
 
 	public function getEnabled()
@@ -156,7 +159,7 @@ class NOUTOnlineLogger
 				$sTo = str_replace('><', ">\r\n<", $sTo);
 			}
 
-			$this->m_clMonolog->debug(
+			$this->m_clMonolog->notice(
 				$sTo,
 				$this->_getContext(true, $sOperation, $bSOAP, $extra)
 			);
@@ -173,7 +176,7 @@ class NOUTOnlineLogger
                 $sFromPourLog = base64_encode($sFrom);
             }
 
-			$this->m_clMonolog->debug(
+			$this->m_clMonolog->notice(
                 $sFromPourLog,
 				$this->_getContext(false, $sOperation, $bSOAP, $extra)
 			);

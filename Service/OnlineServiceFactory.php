@@ -8,11 +8,12 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -23,12 +24,12 @@ class OnlineServiceFactory
      */
     protected $__soap_socket_timeout = -1;
 	/**
-	 * @var \NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger
+	 * @var NOUTOnlineLogger
 	 */
 	protected $m_clLogger;
 
 	/**
-	 * @var \NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider
+	 * @var NOUTCacheProvider
 	 */
 	protected $m_clCache;
 
@@ -42,19 +43,26 @@ class OnlineServiceFactory
      */
 	protected $__stopwatch;
 
+	/** @var  */
+	protected $__clGestionWSDL;
+
 
 	public function __construct(ClientInformation $clientInfo,
                                 NOUTOnlineLogger $logger,
+                                GestionWSDL $clGestionWSDL,
                                 NOUTCacheFactory $cacheFactory,
-                                Stopwatch $stopwatch=null,
-                                $soap_socket_timeout=SOAPProxy::SOCKET_TIMEOUT)
+                                DynamicConfigurationLoader $configLoader,
+                                Stopwatch $stopwatch=null)
 	{
-	    $this->__soap_socket_timeout = $soap_socket_timeout;
+	    $this->__soap_socket_timeout = $configLoader->getParameter('soap_socket_timeout');
 		$this->m_clLogger = $logger;
 		$this->__stopwatch = $stopwatch;
 
 		$this->m_clClientInformation=$clientInfo;
         $this->m_clCache = $cacheFactory->getCache('noutonline', '', '');
+
+        $this->__clGestionWSDL = $clGestionWSDL;
+        $this->__clGestionWSDL->initCache($this->m_clCache);
 	}
 
 	/**
@@ -63,15 +71,15 @@ class OnlineServiceFactory
 	 */
 	public function clGetSOAPProxy(ConfigurationDialogue $clConfiguration)
 	{
-
-		$OnlineService = new SOAPProxy($this->m_clClientInformation,
-                                       $clConfiguration,
-                                       $this->m_clLogger,
-                                       $this->__stopwatch,
-                                       $this->m_clCache,
-                                       $this->__soap_socket_timeout);
-		return $OnlineService; // Peut renvoyer une exception si pb de connexion
-
+        // Peut renvoyer une exception si pb de connexion
+        return new SOAPProxy(
+            $this->m_clClientInformation,
+            $clConfiguration,
+            $this->m_clLogger,
+            $this->__clGestionWSDL,
+            $this->__stopwatch,
+            $this->__soap_socket_timeout
+        );
 	}
 
 	/**
@@ -80,7 +88,6 @@ class OnlineServiceFactory
 	 */
 	public function clGetRESTProxy(ConfigurationDialogue $clConfiguration)
 	{
-		$OnlineService = new RESTProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->__stopwatch);
-		return $OnlineService;
+		return new RESTProxy($this->m_clClientInformation, $clConfiguration, $this->m_clLogger, $this->__stopwatch);
 	}
 }

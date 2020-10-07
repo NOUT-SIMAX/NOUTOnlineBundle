@@ -9,7 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\DataCollector;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
-use NOUT\Bundle\SessionManagerBundle\Security\Authentication\Provider\NOUTToken;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -31,9 +31,12 @@ class NOUTOnlineDataCollector  extends DataCollector
 		$this->m_clTokenStorage    = $tokenStorage;
 	}
 
-	public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function reset()
+    {
+
+    }
+	public function collect(Request $request, Response $response, \Throwable $exception = null)
 	{
-		$queries = array();
 		$queries = $this->m_clLogger->m_TabQueries;
 
 		$this->data = array(
@@ -55,8 +58,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 			$this->data['authenticated'] = $token->isAuthenticated();
             $this->data['user']          = $token->getUsername();
 
-			$tabRole = array_map(function ($role)	{ return $role->getRole();}
-				, $token->getRoles());
+			$tabRole = $token->getRoleNames();
 			$this->data['superviseur'] = in_array('ROLE_SUPERVISEUR', $tabRole);
 
 			if ($token instanceof NOUTToken)

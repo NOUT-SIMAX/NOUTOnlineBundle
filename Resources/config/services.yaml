@@ -1,0 +1,57 @@
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    NOUT\Bundle\NOUTOnlineBundle\Service\:
+        resource: '../../Service/*'
+        #exclude: '../../{DependencyInjection,Entity,Migrations,Tests,NOUTOnlineBundle.php}'
+        
+    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClient:
+        arguments:
+            $sVersionMin:       '%noutonline.version.min%'
+            $nVersionDialPref:  '%noutonline.version.dialogue_pref%'
+            
+    NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader:
+        arguments:
+            $bMultitenant: '%site.multitenant%'
+            $sConfigDir: '%kernel.project_dir%/config/byhost'
+            $defaultConfig: '%noutonline.config%'
+            $sHostname: '%router.request_context.host%'
+
+
+    # pour la barre de debug
+    NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger:
+        tags:
+            - { name: monolog.logger, channel: noutonline }
+
+    NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector:
+        tags:
+            - { name: data_collector, template: "@NOUTOnline/DataCollector/layout.html.twig", id: "NOUTOnline" }
+
+    NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue:
+        arguments:
+            $sVersion: '%version_site%'
+            $sSociete: '%noutweb.http_client%'
+            $nVersionDialPref: '%noutonline.version.dialogue_pref%'
+
+    #factory pour les caches
+    NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory:
+        arguments:
+            $cachedir: "%kernel.cache_dir%"
+
+    #les extension twigs
+    NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension:
+        arguments:
+            $sVersionMin: '%noutonline.version.min%'
+        tags:
+            - { name: twig.extension }
+
+    NOUT\Bundle\NOUTOnlineBundle\Twig\ToolsExtension:
+        tags:
+            - { name: twig.extension }
+    
+    NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL:

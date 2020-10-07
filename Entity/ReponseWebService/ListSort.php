@@ -14,16 +14,16 @@ class ListSort
 	 * @var string
 	 * identifiant de la colonne de tri
 	 */
-	public $m_nIDColonnne;
+	public $idcolumn;
 	/**
 	 * @var bool
 	 * si le tri est ascendant ou descendant
 	 */
-	public $m_bAsc;
+	public $asc;
 
 	public function __construct($sID, $bAsc)
 	{
-		$this->m_nIDColonnne = (string) $sID;
-		$this->m_bAsc        = ((int) $bAsc == 1) ? true : false;
+		$this->idcolumn = (string) $sID;
+		$this->asc      = ((int) $bAsc == 1) ? true : false;
 	}
 }

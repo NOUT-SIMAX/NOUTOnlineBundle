@@ -24,8 +24,8 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
 
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root(0);
+        $treeBuilder = new TreeBuilder('nout_online');
+        $rootNode = $treeBuilder->getRootNode();
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
@@ -53,7 +53,7 @@ class Configuration implements ConfigurationInterface
 
                 ->integerNode('soap_socket_timeout')
                     ->info('Timeout de socket pour SOAP')
-                    ->defaultValue(-1)
+                    ->defaultValue(-1) //SOAPProxy::SOCKET_TIMEOUT
                 ->end()//integerNode('soap_socket_timeout')
 
                 ->scalarNode('apiuuid')
@@ -73,8 +73,8 @@ class Configuration implements ConfigurationInterface
 
     public function addAuthNode()
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('auth');
+        $builder = new TreeBuilder('auth');
+        $node = $builder->getRootNode();
 
         $node
             ->addDefaultsIfNotSet()
@@ -95,8 +95,8 @@ class Configuration implements ConfigurationInterface
 
     public function addExtranetNode()
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('extranet');
+        $builder = new TreeBuilder('extranet');
+        $node = $builder->getRootNode();
 
         $node
             ->addDefaultsIfNotSet()

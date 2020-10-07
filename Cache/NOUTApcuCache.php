@@ -15,7 +15,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function _doFetch($id)
+    protected function _doFetch(string $id)
     {
         return apcu_fetch($id);
     }
@@ -23,7 +23,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function _doContains($id)
+    protected function _doContains(string $id)
     {
         return apcu_exists($id);
     }
@@ -31,7 +31,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function _doSave($id, $data, $lifeTime = 0)
+    protected function _doSave(string $id, $data, $lifeTime = 0)
     {
         return apcu_store($id, $data, $lifeTime);
     }
@@ -39,7 +39,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function _doDelete($id)
+    protected function _doDelete(string $id)
     {
         // apcu_delete returns false if the id does not exist
         return apcu_delete($id) || ! apcu_exists($id);
@@ -57,7 +57,7 @@ class NOUTApcuCache extends NOUTCacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function _doListEntry($id)
+    protected function _doListEntry(string $id)
     {
         $aRet = array();
         $regex = '/^'.str_replace(array('[', ']', '/'), array('\\[','\\]', '\\/'), $id).'.*/';

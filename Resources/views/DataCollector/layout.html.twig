@@ -1,28 +1,23 @@
-{% extends 'WebProfilerBundle:Profiler:layout.html.twig' %}
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
-{% macro request(soap, sens, i, headers, content) %}
+{%- macro request(soap, sens, i, headers, content) -%}
 	{% if headers is not empty %}
 		<pre class="code-{{ sens }}-{{ i }} line-numbers">
-			<code class="language-http">{{ headers }}</code>
+			<code class="language-http">{{ headers | trim }}</code>
 		</pre>
 	{% endif %}
     {% if soap %}
-		<pre class="code-{{ sens }}-{{ i }} line-numbers ">
+		<pre class="code-{{ sens }}-{{ i }} line-numbers"> {# style="white-space: pre-line;" ou white-space: pre-wrap; ne marche pas #}
 			<code class="language-markup">{{ content | noutonline_beautify_xml  }}</code>
 		</pre>
     {% else %}
 	    {% set language = noutonline_get_language_query(content) %}
+		{% set content = language == 'markup' ? noutonline_beautify_xml(content) : ( language == 'json' ? noutonline_beautify_json(content) : content ) %}
 		<pre class="code-{{ sens }}-{{ i }} line-numbers">
-			{% if language == 'markup' %}
-				<code class="language-{{ language }}">{{ content | noutonline_beautify_xml }}</code>
-			{% elseif language == 'json' %}
-			    <code class="language-{{ language }}">{{ content | noutonline_beautify_json }}</code>
-			{% else %}
-				<code class="language-{{ language }}">{{ content }}</code>
-			{% endif %}
+			<code class="language-{{ language }}">{{ content }}</code>
 		</pre>
     {% endif %}
-{% endmacro %}
+{%- endmacro -%}
 
 {% import _self as macros %}
 
@@ -94,7 +89,7 @@
 		</div>
 	{% endset %}
 
-	{% include 'WebProfilerBundle:Profiler:toolbar_item.html.twig' with { 'link': profiler_url } %}
+	{% include '@WebProfiler/Profiler/toolbar_item.html.twig' with { 'link': profiler_url } %}
 {% endblock %}
 
 {% block menu %}
@@ -111,7 +106,9 @@
 {% block head %}
 	{{ parent() }}
 
-	<link href="{{ asset('vendors/other_components/prism/prism.css')}}" rel="stylesheet" />
+	<link href="{{ asset('vendors/prismjs/themes/prism-tomorrow.css')}}" rel="stylesheet" />
+	<link href="{{ asset('vendors/prismjs/plugins/line-numbers/prism-line-numbers.css')}}" data-noprefix rel="stylesheet" />
+
 
 	<style>
 		h3 {
@@ -191,16 +188,16 @@
 					#}
 					<div>
 						<div>
-							<img title="Expand query" alt="+" id="expand-request-{{ i }}" class="expand" src="{{ asset('img/debug/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
-							<img title="Hide query" alt="-" id="hide-request-{{ i }}" class="hide" src="{{ asset('img/debug/blue_picto_less.gif') }}" style="display:none ; cursor: pointer;" />
+							<img title="Expand query" alt="+" id="expand-request-{{ i }}" class="expand" src="{{ asset('images/debug/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
+							<img title="Hide query" alt="-" id="hide-request-{{ i }}" class="hide" src="{{ asset('images/debug/blue_picto_less.gif') }}" style="display:none ; cursor: pointer;" />
 							<span>Request {{ query.operation | nl2br }} {{ '%0.2f'|format(query.executionMS * 1000) }} ms ({{ '%0.2f'|format(query.sendMS * 1000) }} ms)</span>
 						</div>
 						{{ macros.request(query.soap, 'request', i, query.request_header, query.request) }}
 					</div>
 					<div>
 						<div>
-							<img title="Expand query" alt="+" id="expand-response-{{ i }}" class="expand" src="{{ asset('img/debug/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
-							<img title="Hide query" alt="-" id="hide-response-{{ i }}" class="hide" src="{{ asset('img/debug/blue_picto_less.gif') }}" style="display: none; cursor: pointer;" />
+							<img title="Expand query" alt="+" id="expand-response-{{ i }}" class="expand" src="{{ asset('images/debug/blue_picto_more.gif') }}" style="display: inline; cursor: pointer;" />
+							<img title="Hide query" alt="-" id="hide-response-{{ i }}" class="hide" src="{{ asset('images/debug/blue_picto_less.gif') }}" style="display: none; cursor: pointer;" />
 							<span>Response</span>
 						</div>
                         {{ macros.request(query.soap, 'response', i, query.response_header, query.response) }}
@@ -211,8 +208,13 @@
 		</ul>
 
 
-		<script src="{{ asset('vendors/other_components/clipboard-js/dist/clipboard.js')}}"></script>
-		<script src="{{ asset('vendors/other_components/prism/prism.js')}}"></script>
+{#		<script src="{{ asset('vendors/clipboard/clipboard.js')}}"></script>#}
+		<script src="{{ asset('vendors/prismjs/prism.js')}}"></script>
+		<script src="{{ asset('vendors/prismjs/components/prism-http.js')}}"></script>
+		<script src="{{ asset('vendors/prismjs/components/prism-json.js')}}"></script>
+{#		<script src="{{ asset('vendors/prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard.js')}}"></script>#}
+		<script src="{{ asset('vendors/prismjs/plugins/line-numbers/prism-line-numbers.js')}}"></script>
+		<script src="{{ asset('vendors/prismjs/plugins/normalize-whitespace/prism-normalize-whitespace.js')}}"></script>
 		<script src="{{ asset('vendors/jquery/jquery.min.js') }}"></script>
 
 		<script type="text/javascript">//<![CDATA[
