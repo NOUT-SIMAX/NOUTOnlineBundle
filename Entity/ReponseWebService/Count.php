@@ -18,7 +18,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 */
 class Count
 {
-	public $m_nNbCaculation;
+	public $m_nNbCalculation;
 	public $m_nNbLine;
 	public $m_nNbFiltered;
 	public $m_nNbTotal;
@@ -26,7 +26,7 @@ class Count
 
 	public function __construct()
 	{
-		$this->m_nNbCaculation = 0;
+		$this->m_nNbCalculation = 0;
 		$this->m_nNbLine       = 0;
 		$this->m_nNbFiltered   = 0;
 		$this->m_nNbTotal      = 0;
