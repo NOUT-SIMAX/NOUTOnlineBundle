@@ -10,12 +10,23 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
 class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 {
+    /**
+     * @var Langage
+     */
+    protected $m_clLangage;
+
+    /**
+     * version du noutonline
+     * @var NOUTOnlineVersion m_clVersionNO
+     */
+    protected $m_clVersionNO;
 
 	/**
 	 * @var string
@@ -33,37 +44,15 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 	protected $m_sSessionToken;
 
 	/**
-	 * @var Langage
-	 */
-	protected $m_clLangage;
-
-	/**
 	 * @var string m_sIP
 	 */
 	protected $m_sIP;
 
-    /**
-     * le mot de passe en clair de l'utilisateur intranet
-     * @var string m_sLoginPasswordSIMAX
-     */
-    protected $m_sPasswordSIMAX;
+	/** @var UsernameToken|null */
+	protected $m_oUsernameToken;
 
-    /**
-     * @var bool m_bExtranet
-     */
-    protected $m_bExtranet = false;
-
-    /**
-     * le login de l'utilisateur extranet
-     * @var string m_sLoginExtranet
-     */
-    protected $m_sLoginExtranet;
-
-    /**
-     * version du noutonline
-     * @var NOUTOnlineVersion m_clVersionNO
-     */
-    protected $m_clVersionNO;
+	/** @var UsernameToken|null */
+	protected $m_oExtranetUsernameToken=null;
 
 	/**
 	 * {@inheritdoc}
@@ -73,20 +62,22 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 		parent::__construct($user, $credentials, $providerKey, $roles);
 	}
 
+
     /**
-     * @return string
+     * @return UsernameToken|null
      */
-    public function getLoginExtranet()
+    public function getExtranetUsernameToken() : ?UsernameToken
     {
-        return $this->m_sLoginExtranet;
+        return $this->m_oExtranetUsernameToken;
     }
 
     /**
-     * @param string $sLoginExtranet
+     * @param UsernameToken $oUsernameToken
+     * @return $this
      */
-    public function setLoginExtranet($sLoginExtranet)
+    public function setExtranetUsernameToken(UsernameToken $oUsernameToken)
     {
-        $this->m_sLoginExtranet = $sLoginExtranet;
+        $this->m_oExtranetUsernameToken = $oUsernameToken;
         return $this;
     }
 
@@ -95,51 +86,33 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
      */
     public function isExtranet()
     {
-        return $this->m_bExtranet;
+        return !is_null($this->m_oExtranetUsernameToken);
     }
 
     /**
-     * @param boolean $bExtranet
+     * @return UsernameToken
      */
-    public function setExtranet($bExtranet)
+    public function getUsernameToken() : ?UsernameToken
     {
-        $this->m_bExtranet = $bExtranet;
-    }
-
-
-
-    /**
-     * @return string
-     */
-    public function getPasswordSIMAX()
-    {
-        return $this->m_sPasswordSIMAX;
+        return $this->m_oUsernameToken;
     }
 
     /**
      * un alias de getUsername
-     * @return string
+     * @param UsernameToken $oUsernameToken
+     * @return $this
      */
-    public function getLoginSIMAX()
+    public function setUsernameToken(UsernameToken $oUsernameToken)
     {
-        return $this->getUsername();
-    }
-
-
-
-    /**
-     * @param string $sLoginPassword
-     */
-    public function setPasswordSIMAX($sLoginPassword)
-    {
-        $this->m_sPasswordSIMAX = $sLoginPassword;
+        $this->m_oUsernameToken = $oUsernameToken;
         return $this;
     }
 
 	/**
 	 * @param string $sSessionToken
+     * @return $this
 	 */
-	public function setSessionToken($sSessionToken)
+	public function setSessionToken(string $sSessionToken)
 	{
 		$this->m_sSessionToken = $sSessionToken;
 		return $this;
@@ -175,7 +148,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 	 * @param string $sTimeZone
 	 * @return $this
 	 */
-	public function setTimeZone($sTimeZone)
+	public function setTimeZone(string $sTimeZone)
 	{
 		$this->m_sTimeZone = $sTimeZone;
 		return $this;
@@ -185,7 +158,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
      * @param string $sLocale
      * @return $this$locale
      */
-    public function setLocale($sLocale) {
+    public function setLocale(string $sLocale) {
         $this->m_sLocale = $sLocale;
         return $this;
     }
@@ -217,7 +190,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 	 * @param string $sIP
 	 * @return $this
 	 */
-	public function setIP($sIP)
+	public function setIP(string $sIP)
 	{
 		$this->m_sIP = $sIP;
 		return $this;
@@ -250,10 +223,11 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 
     /**
      * vrai si la version courante est supérieur (ou égal suivant $bInclu)
-     * @param      $sVersionMin
+     * @param string $sVersionMin
      * @param bool $bInclu
+     * @return bool
      */
-    public function isVersionSup($sVersionMin, $bInclu)
+    public function isVersionSup(string $sVersionMin, bool $bInclu) : bool
     {
         if (is_null($this->m_clVersionNO)){
             return false;
@@ -284,49 +258,54 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
         else {
             $sVersion = $this->m_clVersionNO;
         }
-        return array(
-            $this->m_sIP,
-            $this->m_sSessionToken,
-            $this->m_sTimeZone,
-            $this->m_sLocale,
-            $this->m_sPasswordSIMAX,
-            $this->m_bExtranet,
-            $this->m_sLoginExtranet,
-            $sVersion,
-            is_null($this->m_clLangage) ? '' : $this->m_clLangage->serialize()
-        , parent::__serialize()
-        );
+        return [
+            'ip' => $this->m_sIP,
+            'token' => $this->m_sSessionToken,
+            'timezone' => $this->m_sTimeZone,
+            'locale' => $this->m_sLocale,
+            'user' => [
+                'class' => get_class($this->m_oUsernameToken),
+                'data' => $this->m_oUsernameToken->forSerialization()
+            ],
+            'extranet' => !$this->m_oExtranetUsernameToken ? null : [
+                'class' => get_class($this->m_oExtranetUsernameToken),
+                'data' => $this->m_oExtranetUsernameToken->forSerialization()
+            ],
+            'version' => $sVersion,
+            'language' => is_null($this->m_clLangage) ? null : $this->m_clLangage->forSerialization(),
+            'parent_data' => parent::__serialize()
+        ];
     }
 
 	/**
 	 * {@inheritdoc}
+     * @throw \Exception
 	 */
 	public function __unserialize(array $aUnserialised): void
 	{
-        $nbElem = count($aUnserialised);
-        if ($nbElem>=9)
-        {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $versionNO, $sLangage, $parentStr) = $aUnserialised;
-        }
-        elseif ($nbElem>=8)
-        {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $this->m_sPasswordSIMAX, $this->m_bExtranet, $this->m_sLoginExtranet, $sLangage, $parentStr) = $aUnserialised;
-        }
-        elseif ($nbElem>=6)
-        {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $this->m_sPasswordSIMAX, $sLangage, $parentStr) = $aUnserialised;
-        }
-        else
-        {
-            list($this->m_sIP, $this->m_sSessionToken, $this->m_sTimeZone, $this->m_sLocale, $sLangage, $parentStr) = $aUnserialised;
+	    if (!array_key_exists('ip', $aUnserialised)){
+            throw new \Exception('Invalid Token, clear your cookies');
         }
 
-        $this->m_clVersionNO = new NOUTOnlineVersion($versionNO);
-		$this->m_clLangage = new Langage('', '');
-		$this->m_clLangage->unserialize($sLangage);
-		parent::__unserialize($parentStr);
+        $this->m_sIP = $aUnserialised['ip'];
+        $this->m_sSessionToken = $aUnserialised['token'];
+        $this->m_sTimeZone = $aUnserialised['timezone'];
+        $this->m_sLocale = $aUnserialised['locale'];
+
+        $this->m_clLangage = new Langage();
+        $this->m_clLangage->fromSerialization($aUnserialised['language']);
+        $this->m_clVersionNO = new NOUTOnlineVersion($aUnserialised['version']);
+
+        $this->m_oUsernameToken = new $aUnserialised['user']['class']();
+        $this->m_oUsernameToken->fromSerialization($aUnserialised['user']['data']);
+
+        if (!is_null($aUnserialised['extranet'])){
+            $this->m_oExtranetUsernameToken = new $aUnserialised['extranet']['class']();
+            $this->m_oExtranetUsernameToken->fromSerialization($aUnserialised['extranet']['data']);
+        }
+
+        parent::__unserialize($aUnserialised['parent_data']);
 	}
-
 
 	const SESSION_LastTimeZone='LastTimeZone';
 } 

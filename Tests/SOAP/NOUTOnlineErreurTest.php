@@ -8,7 +8,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\OASISUsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 
 /**
  * classe qui teste les cas d'erreur
@@ -27,7 +28,7 @@ class NOUTOnlineErreurTest extends NOUTOnlineTest {
 		$nErreur=0;
 		$nCategorie=0;
 		try{
-			$XMLResponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new UsernameToken('superviseureeeeeee', '')));
+			$XMLResponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new OASISUsernameToken('superviseureeeeeee', '')));
 		}
 		catch(\Exception $e)
 		{
@@ -50,7 +51,7 @@ class NOUTOnlineErreurTest extends NOUTOnlineTest {
 		$nErreur=0;
 		$nCategorie=0;
 		try{
-			$XMLResponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new UserNameToken('superviseur', 'ttttt')));
+			$XMLResponseWS = $this->m_clNOUTOnline->GetTokenSession($this->_getGetTokenSession(new OASISUsernameToken('superviseur', 'ttttt')));
 		}
 		catch(\Exception $e)
 		{

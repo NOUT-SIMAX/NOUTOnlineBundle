@@ -19,7 +19,7 @@ class NOUTOnlineVersion
      *
      * @param string $sVersion
      */
-    public function __construct($sVersion)
+    public function __construct(string $sVersion)
     {
         $this->m_sVersion=$sVersion;
     }
@@ -33,11 +33,11 @@ class NOUTOnlineVersion
     }
 
     /**
-     * @param      $sVersionMin
+     * @param string $sVersionMin
      * @param bool $bInclu
      * @return bool
      */
-    public function isVersionSup($sVersionMin, $bInclu = true)
+    public function isVersionSup(string $sVersionMin, bool $bInclu = true) : bool
     {
         if (empty($this->m_sVersion)){
             return false;

@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
@@ -131,17 +131,15 @@ class OnlineServiceProxy
         $sBottom .= '&nonce='.urlencode(utf8_decode($usernameToken->Nonce));
         $sBottom .= '&created='.urlencode(utf8_decode($usernameToken->Created));
 
-        if ($usernameToken->bCrypted())
+        if (!empty($usernameToken->Encryption))
         {
-            $sBottom .= '&encryption=' . urlencode($usernameToken->getMode());
-            $sBottom .= '&md5=' . urlencode($usernameToken->cryptMd5);
-            if (isset($usernameToken->cryptIV))
-            {
-                $sBottom .= '&iv=' . urlencode($usernameToken->cryptIV);
+            $sBottom .= '&encryption=' . urlencode($usernameToken->Encryption->_);
+            $sBottom .= '&md5=' . urlencode($usernameToken->Encryption->md5);
+            if (!empty($usernameToken->Encryption->iv)){
+                $sBottom .= '&iv=' . urlencode($usernameToken->Encryption->iv);
             }
-            if (isset($usernameToken->cryptKS))
-            {
-                $sBottom .= '&ks=' . urlencode($usernameToken->cryptKS);
+            if (!empty($usernameToken->Encryption->ks)){
+                $sBottom .= '&ks=' . urlencode($usernameToken->Encryption->ks);
             }
         }
 
@@ -208,12 +206,16 @@ class OnlineServiceProxy
     }
 
     /**
+     * @param $sAction
      * @param $sURI
      * @return HTTPResponse
      * @throws \Exception
      */
-    protected function _sExecute_cURL($sURI, $timeout)
-    {
+	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null)
+	{
+	    //demarre le log si necessaire
+		$this->__startLogQuery($function);
+
         //initialisation de curl
         $curl = curl_init($sURI);
 
@@ -231,131 +233,49 @@ class OnlineServiceProxy
         //autres options
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); //Demande du contenu du fichier
         curl_setopt($curl, CURLOPT_HEADER, 1); // Demande des headers
+        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
 
         //---------------------------
         //execution
         $output = curl_exec($curl);
 
         // Vérifie si une erreur survient
-        $this->_sExecute_cURL_TestError($curl);
 
+        $curl_errno = curl_errno($curl);
+        if($curl_errno){
+            switch ($curl_errno)
+            {
+                case CURLE_OPERATION_TIMEDOUT:
+                {
+                    $curl_errmess = 'Failed to connect to '.$this->__ConfigurationDialogue->getHost().' port '.$this->__ConfigurationDialogue->getPort().': Connection timed out';
+                    break;
+                }
+
+                default:
+                {
+                    $curl_errmess = curl_error($curl);
+                    break;
+                }
+            }
+            curl_close($curl);
+            $this->__stopLogQuery($sURI, $curl_errmess, $sAction, null, $function, $clIdentification);
+
+            throw new \Exception($curl_errmess);
+        }
+
+        $header_request = curl_getinfo($curl, CURLINFO_HEADER_OUT);
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        curl_close($curl);
         $headers = substr($output, 0, $header_size);
         $output = substr($output, $header_size);
 
         $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
         // ------------------------------------------------
 
-        curl_close($curl);
-        return $this->_oMakeResponse($output, $parsedHeaders);
-    }
+        $ret = $this->_oMakeResponse($output, $parsedHeaders);
 
-    /**
-     * @param $curl
-     * @throws \Exception
-     */
-    protected function _sExecute_cURL_TestError($curl)
-    {
-        $curl_errno = curl_errno($curl);
-        if(!$curl_errno){
-            return ;
-        }
-
-        switch ($curl_errno)
-        {
-            case CURLE_OPERATION_TIMEDOUT:
-            {
-                $curl_errmess = 'Failed to connect to '.$this->__ConfigurationDialogue->getHost().' port '.$this->__ConfigurationDialogue->getPort().': Connection timed out';
-                break;
-            }
-
-            default:
-            {
-                $curl_errmess = curl_error($curl);
-                break;
-            }
-
-        }
-
-        $e = new \Exception($curl_errmess);
-        curl_close($curl);
-        throw $e;
-    }
-
-    /**
-     * @param $sURI
-     * @return \stdClass
-     * @throws \Exception
-     */
-	protected function _sExecute_natif($sURI, $timeout)
-	{
-        //obligé de rajouter l'ip ici car j'ai pas accès au entête http
-        $sIP = $this->__clInfoClient->getIP();
-        if (!empty($sIP))
-        {
-            $sURI .= '&ip=' . urlencode($sIP);
-        }
-
-        $context=null;
-        if (!is_null($timeout))
-        {
-            $context = stream_context_create(
-                array(
-                    'http'=>array(
-                        'timeout' => floatval($timeout)
-                    )
-                )
-            );
-        }
-
-		if (($sResp = @file_get_contents($sURI, false, $context)) === false)
-		{
-			$aError = error_get_last();
-			if (empty($aError))
-            {
-                $aError['message'] = 'Le serveur '.$this->__ConfigurationDialogue->getServiceAddress().' ne répond pas';
-            }
-
-			$e = new \Exception($aError['message']);
-			throw $e;
-		}
-
-        return $this->_oMakeResponse($sResp, $http_response_header);
-	}
-
-    /**
-     * @param $sAction
-     * @param $sURI
-     * @return HTTPResponse
-     * @throws \Exception
-     */
-	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null)
-	{
-	    //demarre le log si necessaire
-		$this->__startLogQuery($function);
-
-		try
-		{
-            // content = le fichier
-            // headers = contenu de $http_response_header
-
-			if (extension_loaded('curl'))
-			{
-                $ret = $this->_sExecute_cURL($sURI, $timeout);   // on utilise l'extension curl
-			}
-			else
-			{
-                $ret = $this->_sExecute_natif($sURI, $timeout);  // curl n'est pas disponible
-			}
-		}
-		catch(\Exception $e)
-		{
-		    $this->__stopLogQuery($sURI, $e->getMessage(), $sAction, null, $function, $clIdentification);
-			throw $e;
-		}
-
-        $this->__stopLogQuery($sURI, $ret->content, $sAction, $ret->headers, $function, $clIdentification);
-		return $ret;
+        $this->__stopLogQuery($sURI, $header_request, $ret->content, $sAction, $ret->headers, $function, $clIdentification);
+        return $ret;
 	}
 
 	private function __startLogQuery($function)
@@ -370,7 +290,7 @@ class OnlineServiceProxy
             $this->__stopwatch->start(get_class($this).'::'.$function);
         }
     }
-    private function __stopLogQuery($uri, $reponse, $action, $header, $function, Identification $clIdentification=null)
+    private function __stopLogQuery($uri, $request, $reponse, $action, $header, $function, Identification $clIdentification=null)
     {
         if (isset($this->__stopwatch)){
             $this->__stopwatch->stop(get_class($this).'::'.$function);
@@ -389,7 +309,7 @@ class OnlineServiceProxy
                 $extra[NOUTOnlineLogger::EXTRA_ActionContext]=$clIdentification->m_sIDContexteAction;
             }
 
-            $this->__clLogger->stopQuery($uri, $reponse, (empty($action) ? substr($uri, 0, 50) : $action), false, $extra);
+            $this->__clLogger->stopQuery($request, $reponse, (empty($action) ? substr($uri, 0, 50) : $action), false, $extra);
         }
     }
 
@@ -409,6 +329,11 @@ class OnlineServiceProxy
 		return (int) $this->_oExecute('GetUserExists', $sURI, __FUNCTION__)->content;
 	}
 
+	public function nGetUserSSOExists($email, $id)
+    {
+        $sURI = $this->_sCreateRequest('GetUserSSOExists', array('login' => $email, 'id' => $id), array());
+        return (int) $this->_oExecute('GetUserSSOExists', $sURI, __FUNCTION__)->content;
+    }
 
 	/**
 	 * récupère la version de NOUTOnline
