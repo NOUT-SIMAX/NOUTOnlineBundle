@@ -283,9 +283,10 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 	 */
 	public function __unserialize(array $aUnserialised): void
 	{
-	    if (!array_key_exists('ip', $aUnserialised)){
-            throw new \Exception('Invalid Token, clear your cookies');
+        if (!array_key_exists('ip', $aUnserialised)){
+            throw new UnserializeTokenException('Invalid Token');
         }
+
 
         $this->m_sIP = $aUnserialised['ip'];
         $this->m_sSessionToken = $aUnserialised['token'];
