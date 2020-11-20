@@ -23,7 +23,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondColumn;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
@@ -342,10 +342,15 @@ class NOUTClient
      */
     public function getConnectionInfos()
     {
+        /** @var NOUTToken $oToken */
         $oToken = $this->_oGetToken();
-        return new ConnectionInfos($oToken->getLoginSIMAX(),
+
+        $oExtranetUsernameToken =$oToken->getExtranetUsernameToken();
+
+
+        return new ConnectionInfos($oToken->getUsername(),
             $oToken->isExtranet(),
-            $oToken->getLoginExtranet(),
+            $oExtranetUsernameToken ? $oExtranetUsernameToken->Username : '',
             $oToken->getSessionToken());
     }
 
@@ -356,22 +361,7 @@ class NOUTClient
      */
     protected function _oGetUsernameToken(NOUTToken $oToken)
     {
-        return new UsernameToken(
-            $oToken->getLoginSIMAX(),
-            $oToken->getPasswordSIMAX(), //le mot de passe n'est pas stocké dans le user
-            $this->m_clConfigurationDialogue->getModeAuth(),
-            $this->m_clConfigurationDialogue->getSecret()
-        );
-    }
-
-    /**
-     * @param NOUTToken $oToken
-     * @return array|UsernameToken
-     */
-    protected function _oGetUsernameTokenSOAP($oToken)
-    {
-        $oUsernameToken = $this->_oGetUsernameToken($oToken);
-        return $this->m_clSOAPProxy->getUsernameTokenForWdsl($oUsernameToken);
+        return $oToken->getUsernameToken();
     }
 
     /**
@@ -406,7 +396,7 @@ class NOUTClient
 
         // Headers par défaut
         $aTabHeader = array(
-            SOAPProxy::HEADER_UsernameToken => $this->_oGetUsernameTokenSOAP($oToken),
+            SOAPProxy::HEADER_UsernameToken => $this->_oGetUsernameToken($oToken),
             SOAPProxy::HEADER_SessionToken => $oToken->getSessionToken(),
             SOAPProxy::HEADER_OptionDialogue => $this->_clGetOptionDialogue(),
         );
@@ -428,7 +418,7 @@ class NOUTClient
      * @throws \Exception
      * @return XMLResponseWS
      */
-    protected function _oRequest($sIDform, ConditionFileNPI $clFileNPI, array $TabColonneAff, array $TabHeaderSuppl)
+    protected function _oRequest(string $sIDform, ConditionFileNPI $clFileNPI, array $TabColonneAff, array $TabHeaderSuppl)
     {
         $clParamRequest = new Request();
         $clParamRequest->Table = $sIDform;
@@ -552,7 +542,7 @@ class NOUTClient
      */
     protected function _oGetInfoIhmMenu()
     {
-        $sUsername = $this->_oGetToken()->getLoginSIMAX();
+        $sUsername = $this->_oGetToken()->getUsername();
         $oInfoIHM = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_$sUsername");
         if (isset($oInfoIHM) && ($oInfoIHM !== false)){
             return $oInfoIHM; //on a déjà les infos du menu
@@ -593,7 +583,7 @@ class NOUTClient
      */
     protected function __oGetIhmMenuPart($method, $prefix)
     {
-        $sUsername = $this->_oGetToken()->getLoginSIMAX();
+        $sUsername = $this->_oGetToken()->getUsername();
         $aTabMenu = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_{$sUsername}");
         if (isset($aTabMenu) && ($aTabMenu !== false)){
             return $aTabMenu; //on a déjà les infos du menu
@@ -647,7 +637,7 @@ class NOUTClient
      * @param \stdClass $objSrc
      * @return ItemMenu
      */
-    protected function __oGetItemMenu($objSrc)
+    protected function __oGetItemMenu(\stdClass $objSrc)
     {
         $itemMenu = new ItemMenu($objSrc->id, $objSrc->title, $objSrc->is_menu_option);
         $itemMenu
@@ -941,11 +931,11 @@ class NOUTClient
     }
 
     /**
-     * @param int $contextID
+     * @param string $contextID
      * @throws \Exception
      * @return ActionResult
      */
-    public function oExecListCalculation($contextID)
+    public function oExecListCalculation(string $contextID)
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl(array());
         $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $contextID;
@@ -960,7 +950,7 @@ class NOUTClient
      * @throws \Exception
      * @return ActionResult
      */
-    public function oGetDefaultExportAction($contextID)
+    public function oGetDefaultExportAction(string $contextID)
     {
         $aTabColonne = array();
         $default_export_action = new Condition(
@@ -998,7 +988,7 @@ class NOUTClient
      * @throws \Exception
      * @return ActionResult
      */
-    public function oGetExportsList($tableID, $contextID)
+    public function oGetExportsList(string $tableID, string $contextID)
     {
         return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Export, Langage::COL_EXPORT_IDTableau, [Langage::COL_EXPORT_Libelle]);
     }
@@ -1009,7 +999,7 @@ class NOUTClient
      * @throws \Exception
      * @return ActionResult
      */
-    public function oGetImportsList($tableID, $contextID) {
+    public function oGetImportsList(string $tableID, string $contextID) {
         return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Import, Langage::COL_IMPORT_Formulaire, [Langage::COL_IMPORT_Libelle]);
     }
 
@@ -1124,7 +1114,7 @@ class NOUTClient
      * @throws \Exception
      * @return ActionResult
      */
-    public function oGetExportsActions($tableID, $contextID)
+    public function oGetExportsActions(string $tableID, string $contextID)
     {
         return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Exporter);
     }
@@ -1135,7 +1125,7 @@ class NOUTClient
      * @throws \Exception
      * @return ActionResult
      */
-    public function oGetImportsActions($tableID, $contextID)
+    public function oGetImportsActions(string $tableID, string $contextID)
     {
         return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Importer);
     }
@@ -1189,7 +1179,7 @@ class NOUTClient
      * @return ActionResult
      *@throws \Exception
      */
-    public function oGetSublistContent(Record $clRecord, $idcolonne, array $tabParamQuery, array $tabHeaderQuery = array())
+    public function oGetSublistContent(Record $clRecord, string $idcolonne, array $tabParamQuery, array $tabHeaderQuery = array())
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idcolonne, null);
@@ -1567,14 +1557,14 @@ class NOUTClient
 
 
     /**
-     * @param $idContext
-     * @param $items
-     * @param $CallingColumn
+     * @param string $idContext
+     * @param string $items
+     * @param string $CallingColumn
      * @param Record $clRecord
      * @return ActionResult
      * @throws \Exception
      */
-    public function oSelectItems($idContext, $items, $CallingColumn, $clRecord)
+    public function oSelectItems(string $idContext, string $items, string $CallingColumn, Record $clRecord)
     {
         $clParamSelectItems                 = new SelectItems();
         $clParamSelectItems->items          = $items;
@@ -1603,12 +1593,12 @@ class NOUTClient
     /**
      * @param string $sIDContexte
      * @param string $idButton
-     * @param object $ColumnSelection
+     * @param $ColumnSelection
      * @param null $dataRecord
      * @return ActionResult
      * @throws \Exception
      */
-    public function oButtonAction($sIDContexte, $idButton, $ColumnSelection, $dataRecord = null)
+    public function oButtonAction(string $sIDContexte, string $idButton, $ColumnSelection, $dataRecord = null)
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
@@ -2110,7 +2100,7 @@ class NOUTClient
     /**
      * récupère une icône, écrit le fichier de l'icône dans le cache s'il n'existe pas déjà
      * @param $sIDIcon
-     * @param array $aTabOptions
+     * @param $aTabOptions
      * @param $sIDColonne
      * @param $sIDFormulaire
      * @param array $aTabPHPManipulation
@@ -2134,7 +2124,7 @@ class NOUTClient
      * @throws \Exception
      * @return NOUTFileInfo
      */
-    protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions, $aTabPHPManipulation=array())
+    protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, array $aTabOptions, array $aTabPHPManipulation=array())
     {
         //on veut le contenu
         $aTabOptions[RESTProxy::OPTION_WantContent] = 1;

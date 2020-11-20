@@ -63,7 +63,9 @@ class NOUTOnlineDataCollector  extends DataCollector
 
 			if ($token instanceof NOUTToken)
 			{
-                $this->data['extranet']      = $token->getLoginExtranet();
+			    $oExtranetUsernameToken = $token->getExtranetUsernameToken();
+
+                $this->data['extranet']      = $oExtranetUsernameToken ? $oExtranetUsernameToken->Username : '';
 				$this->data['session_token'] = $token->getSessionToken();
 				$this->data['time_zone']     = $token->getTimeZone();
 				$this->data['ip']            = $token->getIP();

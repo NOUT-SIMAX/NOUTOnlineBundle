@@ -15,9 +15,15 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 //-------------------------------------------------------------------------------------------------------------------
 class UsernameToken
 {
-	public $Username; // string
-	public $Password; // string
-	public $Nonce; // string
-	public $Created; // string
+    /** @var string */
+	public $Username;
+	/** @var string */
+	public $Password;
+	/** @var string */
+	public $Nonce;
+	/** @var string */
+	public $Created;
+	/** @var Encryption */
+	public $Encryption;
 }
 //***

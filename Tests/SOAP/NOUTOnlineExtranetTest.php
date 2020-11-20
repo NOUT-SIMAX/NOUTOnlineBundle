@@ -7,7 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UserNameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UserNameToken;
 
 /**
  * Class NOUTOnlineExtranetTest

@@ -20,12 +20,20 @@ class Langage
 
 
 	/**
-	 * @return string
+	 * @return array
 	 */
-	public function serialize()
+	public function forSerialization() : array
 	{
-		return serialize(array($this->m_sVersion_Langage, $this->m_sVersion_Icone));
+		return [$this->m_sVersion_Langage, $this->m_sVersion_Icone];
 	}
+
+    /**
+     * @param array $data
+     */
+	public function fromSerialization(array $data)
+    {
+        list($this->m_sVersion_Langage, $this->m_sVersion_Icone) = $data;
+    }
 
 	/**
 	 * @param $serialized
@@ -39,7 +47,7 @@ class Langage
 	 * @param $sVLangage string
 	 * @param $sVIcone string
 	 */
-	public function __construct($sVLangage, $sVIcone)
+	public function __construct($sVLangage='', $sVIcone='')
 	{
 		$this->m_sVersion_Langage = $sVLangage;
 		$this->m_sVersion_Icone   = $sVIcone;

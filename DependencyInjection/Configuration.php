@@ -85,7 +85,7 @@ class Configuration implements ConfigurationInterface
             ->defaultValue('OASIS')
             ->end()
             ->scalarNode('secret')
-            ->defaultValue('')
+            ->defaultValue("// ManipDonnees.h : classe abstraite pour la manipulation des données\n///////////////////////////////////////////////////////////////////////////////////////\n\n#pragma once\n\n#include InterfaceMAXEx.h\n#include IPasserelle.h\n#include IMaxBDDPasserelle.h\n\n#define  OR_IDENTIQUE\t 0x00080000\t\t// HLitRechercheXXX... à l'ident\n#define  OR_COMMENCEPAR\t 0x00001000\t\t// HLitRechercheXXX... générique")
             ->end()
             ->end()
         ;

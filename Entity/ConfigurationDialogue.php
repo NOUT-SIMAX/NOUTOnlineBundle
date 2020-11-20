@@ -67,7 +67,6 @@ class ConfigurationDialogue
 	 */
 	protected $m_sSociete;
 
-
     /**
      * @var string
      */
@@ -131,22 +130,6 @@ class ConfigurationDialogue
 		$this->m_sServiceAddress = $this->m_sProtocolPrefix.$sAddress.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
 	}
-
-    /**
-     * @return string
-     */
-    public function getSecret()
-    {
-        return $this->m_sSecret;
-    }
-
-    /**
-     * @return string
-     */
-    public function getModeAuth()
-    {
-        return $this->m_sModeAuth;
-    }
 
 	/**
 	 * @return boolean
@@ -274,6 +257,22 @@ class ConfigurationDialogue
 	public function getVersionDialoguePref()
     {
         return $this->m_nVersionDialoguePref;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->m_sSecret;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModeAuth()
+    {
+        return $this->m_sModeAuth;
     }
 
 	const HTTP_SIMAX_CLIENT           = 'x-SIMAXService-Client';

@@ -334,7 +334,7 @@ class XMLResponseWS
 	}
 
 	/**
-	 * @return Element
+	 * @return Element|null
 	 */
 	public function clGetElement()
 	{
@@ -344,7 +344,7 @@ class XMLResponseWS
 			return new Element($clElem, $clElem['title']);
 		}
 
-		return;
+		return null;
 	}
 
 	/**
@@ -390,7 +390,7 @@ class XMLResponseWS
 		$ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
 		if (!isset($ndPossibleDM))
 		{
-			return;
+			return null;
 		}
 
 		return explode('|', (string) $ndPossibleDM);
@@ -404,7 +404,7 @@ class XMLResponseWS
 		$ndDefaultDM = $this->m_ndHeader->children()->DefaultDisplayMode;
 		if (!isset($ndDefaultDM))
 		{
-			return;
+			return null;
 		}
 
 		return (string) $ndDefaultDM;
@@ -413,7 +413,6 @@ class XMLResponseWS
 
 	/**
 	 * retourne le noeud reponse de l'operation
-	 * @param $sOperation
 	 * @return \SimpleXMLElement
 	 */
 	protected function _clGetNodeResponse()
@@ -427,7 +426,7 @@ class XMLResponseWS
 
     /**
      * récupère le noeud xml des filtres
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|null
      */
     public function getNodeXMLParam()
     {
@@ -437,13 +436,13 @@ class XMLResponseWS
             return $clNodeFilter->xml;
         }
 
-        return;
+        return null;
     }
 
 
     /**
      * récupère le noeud xml des ressources du planning de tous
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|null
      */
     public function getNodeXMLRessource()
     {
@@ -453,14 +452,13 @@ class XMLResponseWS
             return $clNodeSchedulerResource->xml;
         }
 
-        return;
+        return null;
     }
 
 
     /**
 	 * récupère le noeud xml dans la réponse
-	 * @param string $sOperation : operation lancée
-	 * @return \SimpleXMLElement
+	 * @return \SimpleXMLElement|null
 	 */
 	public function getNodeXML()
 	{
@@ -471,9 +469,12 @@ class XMLResponseWS
 			return $clNodeResponse->xml;
 		}
 
-		return;
+		return null;
 	}
 
+    /**
+     * @return string|null
+     */
 	public function getValue()
 	{
 		$clNodeResponse = $this->_clGetNodeResponse();
@@ -482,18 +483,18 @@ class XMLResponseWS
 			return (string) $clNodeResponse->Value;
 		}
 
-		return;
+		return null;
 	}
 
 	/**
-	 * @return \SimpleXMLElement
+	 * @return \SimpleXMLElement|null
 	 */
 	public function getNodeSchema()
 	{
 		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
 		if (empty($clXSDSchema))
 		{
-			return;
+			return null;
 		}
 
 		//le noeud XSDSchema n'a qu'un fils
@@ -516,6 +517,7 @@ class XMLResponseWS
 			// Données mal parsées ?
             return $clNodeFilter->children('http://www.w3.org/2001/XMLSchema', false)->schema;
         }
+        return null;
     }
 
 
@@ -534,6 +536,7 @@ class XMLResponseWS
             // Données mal parsées ?
             return $clNodeSchedulerResource->children('http://www.w3.org/2001/XMLSchema', false)->schema;
         }
+        return null;
     }
 
 	/**
@@ -547,6 +550,7 @@ class XMLResponseWS
             return new ValidateError($clValidateError);
 		}
 
+		return null;
 	}
 
 
@@ -556,7 +560,7 @@ class XMLResponseWS
 	 */
 	public function sGetTokenSession()
 	{
-		$clNodeResponse = $this->_clGetNodeResponse('GetTokenSession');
+		$clNodeResponse = $this->_clGetNodeResponse();
 		if (isset($clNodeResponse))
 		{
 			return (string) $clNodeResponse->SessionToken;

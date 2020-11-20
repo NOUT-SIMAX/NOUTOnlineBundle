@@ -8,12 +8,12 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\REST;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 
 class Identification
 {
 	/**
-	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\OASIS\UsernameToken
+	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken
 	 */
 	public $m_clUsernameToken;
 	/**
