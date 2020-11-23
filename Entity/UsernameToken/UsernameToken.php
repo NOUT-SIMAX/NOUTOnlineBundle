@@ -24,12 +24,22 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
     /**
      * @param string $password
      */
-	public function setClearPassword(string $password) {}
+	abstract protected function _setClearPassword(string $password) : void;
+
+    /**
+     * @param string $password
+     * @return $this
+     */
+	final public function setClearPassword(string $password) {
+        $this->_setClearPassword($password);
+	    $this->Compute();
+	    return $this;
+    }
 
     /**
      * Init Created and Nonce puis crypte
      */
-    public function Compute() : void
+    final public function Compute() : void
     {
         $this->Created = date('r');
         $this->Nonce   = bin2hex(random_bytes(20));

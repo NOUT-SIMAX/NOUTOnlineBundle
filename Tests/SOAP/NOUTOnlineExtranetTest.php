@@ -7,7 +7,7 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UserNameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\OASISUsernameToken;
 
 /**
  * Class NOUTOnlineExtranetTest
@@ -32,7 +32,7 @@ class NOUTOnlineExtranetTest //extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _clGetUsernameTokenSIMAX()
 	{
-		return new UserNameToken('extranet authentifié', '');
+		return new OASISUsernameToken('extranet authentifié', '');
 	}
 
 	/**
@@ -41,7 +41,7 @@ class NOUTOnlineExtranetTest //extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _clGetUsernameTokenExtranet()
 	{
-		return new UserNameToken('conan', 'conan');
+		return new OASISUsernameToken('conan', 'conan');
 	}
 
 	/**
