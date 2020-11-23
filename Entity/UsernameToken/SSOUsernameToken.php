@@ -25,6 +25,8 @@ class SSOUsernameToken extends UsernameToken
         parent::__construct('');
     }
 
+    protected function _setClearPassword(string $password): void { /*pas de password à stocker*/ }
+
     /**
      * @inheritDoc
      */

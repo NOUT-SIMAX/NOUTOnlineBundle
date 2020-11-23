@@ -34,9 +34,8 @@ abstract class LoginPasswordUsernameToken extends UsernameToken
     /**
      * @param string $password
      */
-    public function setClearPassword(string $password)
+    protected function _setClearPassword(string $password) : void
     {
         $this->m_sClearPassword = $password;
-        return $this;
     }
 }
