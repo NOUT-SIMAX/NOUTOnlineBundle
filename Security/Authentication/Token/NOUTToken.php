@@ -48,6 +48,9 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 	 */
 	protected $m_sIP;
 
+	/** @var string */
+	protected $m_sNameToDisplay='';
+
 	/** @var UsernameToken|null */
 	protected $m_oUsernameToken;
 
@@ -88,6 +91,25 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
     {
         return !is_null($this->m_oExtranetUsernameToken);
     }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setNameToDisplay(string $name)
+    {
+        $this->m_sNameToDisplay = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameToDisplay() : string
+    {
+        return $this->m_sNameToDisplay;
+    }
+
 
     /**
      * @param bool $bCompute recalcule le created, nonce, password
@@ -265,6 +287,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
             'token' => $this->m_sSessionToken,
             'timezone' => $this->m_sTimeZone,
             'locale' => $this->m_sLocale,
+            'name' => $this->m_sNameToDisplay,
             'user' => [
                 'class' => get_class($this->m_oUsernameToken),
                 'data' => $this->m_oUsernameToken->forSerialization()
@@ -307,6 +330,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
             $this->m_oExtranetUsernameToken->fromSerialization($aUnserialised['extranet']['data']);
         }
 
+        $this->m_sNameToDisplay=$aUnserialised['name'];
         parent::__unserialize($aUnserialised['parent_data']);
 	}
 

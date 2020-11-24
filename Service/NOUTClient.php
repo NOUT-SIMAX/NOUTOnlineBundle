@@ -10,7 +10,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ConnectionInfos;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
@@ -334,26 +333,6 @@ class NOUTClient
     {
         return $this->m_clOptionDialogue;
     }
-
-    /**
-     * retourne une classe qui contient les informations de connexions
-     *
-     * @return ConnectionInfos
-     */
-    public function getConnectionInfos()
-    {
-        /** @var NOUTToken $oToken */
-        $oToken = $this->_oGetToken();
-
-        $oExtranetUsernameToken =$oToken->getExtranetUsernameToken();
-
-
-        return new ConnectionInfos($oToken->getUsername(),
-            $oToken->isExtranet(),
-            $oExtranetUsernameToken ? $oExtranetUsernameToken->Username : '',
-            $oToken->getSessionToken());
-    }
-
 
     /**
      * @param NOUTToken $oToken

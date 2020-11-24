@@ -299,7 +299,8 @@ class XMLResponseWS
     }
 
 	/**
-	 * @return ConnectedUser : utilisateur actuellement connecté
+     * utilisateur actuellement connecté
+	 * @return ConnectedUser
 	 */
 	public function clGetConnectedUser()
 	{
@@ -313,6 +314,23 @@ class XMLResponseWS
 			$clConnectedUser->children()->Form['title']
 		);
 	}
+
+    /**
+     * utilisateur extranet actuellement connecté
+     * @return ConnectedUser
+     */
+	public function clGetConnectedExtranet()
+    {
+        /* @var $clConnectedUser \SimpleXMLElement */
+        $clConnectedUser = $this->m_ndHeader->children()->ConnectedExtranet;
+
+        return new ConnectedUser(
+            $clConnectedUser->children()->Element,
+            $clConnectedUser->children()->Element['title'],
+            $clConnectedUser->children()->Form,
+            $clConnectedUser->children()->Form['title']
+        );
+    }
 
 	/**
 	 * @return Form
