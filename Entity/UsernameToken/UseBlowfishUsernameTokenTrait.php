@@ -16,13 +16,24 @@ trait UseBlowfishUsernameTokenTrait
         $encryption->md5 = base64_encode(md5($secret.$nonce.$created, true));
 
         /* Create key */
-        $securePassword = base64_encode($nonce.$created.$secret);
+        $securePassword = base64_encode(md5($nonce.$created.$secret, true));
         $key = substr($securePassword, 0, 16);
         $encryption->ks = 16;
 
-        $ciphertext = openssl_encrypt($txt, 'bf-cbc', $key, $options=0, $iv, $tag);
+        #PKCS #7 padding scheme by default
+        $ciphertext = openssl_encrypt($txt, 'bf-cbc', $key, $options=0, $iv);
 
         $encryption->iv = base64_encode($iv);
-        return base64_encode($ciphertext);
+
+        file_put_contents('D:\\Temp\\blowfish.json', json_encode([
+            'txt' => $txt,
+            'md5' => $encryption->md5,
+            'iv' => bin2hex($iv),
+            'key'=>$key,
+            'cipher'=>$ciphertext
+        ], JSON_PRETTY_PRINT));
+
+
+        return $ciphertext;
     }
 }

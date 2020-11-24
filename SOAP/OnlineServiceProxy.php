@@ -496,6 +496,12 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         //on ajoute l'id application
         $this->__aListHeaders[self::HEADER_APIUUID] = $this->__ConfigurationDialogue->getAPIUUID();
 
+
+        if (array_key_exists(self::HEADER_UsernameToken, $this->__aListHeaders)){
+            $this->__aListHeaders[self::HEADER_UsernameToken]->transformForSOAP();
+        }
+
+
         //ajoute au log s'il faut
 	    $this->__startLogQuery();
 

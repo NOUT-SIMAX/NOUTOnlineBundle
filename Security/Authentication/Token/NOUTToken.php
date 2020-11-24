@@ -93,11 +93,9 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
      * @param bool $bCompute recalcule le created, nonce, password
      * @return UsernameToken
      */
-    public function getUsernameToken(bool $bCompute=true) : ?UsernameToken
+    public function getUsernameToken() : ?UsernameToken
     {
-        if ($bCompute){
-            $this->m_oUsernameToken->Compute();
-        }
+        $this->m_oUsernameToken->Compute();
         return $this->m_oUsernameToken;
     }
 
