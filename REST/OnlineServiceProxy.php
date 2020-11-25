@@ -13,13 +13,13 @@ namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineState;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 class OnlineServiceProxy
@@ -58,23 +58,6 @@ class OnlineServiceProxy
 		$this->__clLogger              	= $_clLogger;
 		$this->__clInfoClient 			= $clientInfo;
 		$this->__stopwatch              = $stopwatch;
-	}
-
-	/**
-	 * Test si le service est démarré
-	 * @return bool
-	 */
-	public function bIsStarted()
-	{
-		try
-		{
-			$this->clGetVersion();
-			return true;
-		}
-		catch(\Exception $e)
-		{
-			return false;
-		}
 	}
 
 	/**
@@ -345,6 +328,25 @@ class OnlineServiceProxy
 
 		return $clVersion = new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
 	}
+
+    /**
+     * @param string $versionMin
+     * @return NOUTOnlineState
+     */
+	public function clGetNOUTOnlineState(string $versionMin) :NOUTOnlineState
+    {
+        $sURI = $this->_sCreateRequest('GetVersion', array(), array());
+
+        $ret = new NOUTOnlineState();
+        try {
+            $clVersion = new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
+            $ret->setVersionNO($clVersion, $versionMin);
+        }
+        catch(\Exception $e)
+        {
+        }
+        return $ret;
+    }
 
     /**
      * récupère le menu
