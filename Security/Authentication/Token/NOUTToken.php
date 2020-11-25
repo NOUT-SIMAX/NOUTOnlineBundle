@@ -15,18 +15,14 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
-class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
+class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, TokenWithNOUTOnlineVersionInterface
 {
+    use TokenWithNOUTOnlineVersionTrait;
+
     /**
      * @var Langage
      */
     protected $m_clLangage;
-
-    /**
-     * version du noutonline
-     * @var NOUTOnlineVersion m_clVersionNO
-     */
-    protected $m_clVersionNO;
 
 	/**
 	 * @var string
@@ -47,6 +43,9 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 	 * @var string m_sIP
 	 */
 	protected $m_sIP;
+
+	/** @var string */
+	protected $m_sNameToDisplay='';
 
 	/** @var UsernameToken|null */
 	protected $m_oUsernameToken;
@@ -90,14 +89,31 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setNameToDisplay(string $name)
+    {
+        $this->m_sNameToDisplay = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameToDisplay() : string
+    {
+        return $this->m_sNameToDisplay;
+    }
+
+
+    /**
      * @param bool $bCompute recalcule le created, nonce, password
      * @return UsernameToken
      */
-    public function getUsernameToken(bool $bCompute=true) : ?UsernameToken
+    public function getUsernameToken() : ?UsernameToken
     {
-        if ($bCompute){
-            $this->m_oUsernameToken->Compute();
-        }
+        $this->m_oUsernameToken->Compute();
         return $this->m_oUsernameToken;
     }
 
@@ -200,73 +216,17 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
 		return $this;
 	}
 
-    /**
-     * @return NOUTOnlineVersion
-     */
-    public function getVersionNO()
-    {
-        return $this->m_clVersionNO;
-    }
-
-    /**
-     * @param string|NOUTOnlineVersion $versionNO
-     * @return $this
-     */
-    public function setVersionNO($versionNO)
-    {
-        if ($versionNO instanceof NOUTOnlineVersion)
-        {
-            $this->m_clVersionNO = $versionNO;
-        }
-        else
-        {
-            $this->m_clVersionNO = new NOUTOnlineVersion($versionNO);
-        }
-        return $this;
-    }
-
-    /**
-     * vrai si la version courante est supérieur (ou égal suivant $bInclu)
-     * @param string $sVersionMin
-     * @param bool $bInclu
-     * @return bool
-     */
-    public function isVersionSup(string $sVersionMin, bool $bInclu) : bool
-    {
-        if (is_null($this->m_clVersionNO)){
-            return false;
-        }
-
-        if ($this->m_clVersionNO instanceof  NOUTOnlineVersion)
-        {
-            return $this->m_clVersionNO->isVersionSup($sVersionMin, $bInclu);
-        }
-
-        $clVersion = new NOUTOnlineVersion($this->m_clVersionNO);
-        return $clVersion->isVersionSup($sVersionMin, $bInclu);
-    }
-
-
-
 	/**
 	 * {@inheritdoc}
 	 */
     public function __serialize(): array
     {
-        if (is_null($this->m_clVersionNO)){
-            $sVersion='';
-        }
-        elseif ($this->m_clVersionNO instanceof NOUTOnlineVersion) {
-            $sVersion = $this->m_clVersionNO->get();
-        }
-        else {
-            $sVersion = $this->m_clVersionNO;
-        }
         return [
             'ip' => $this->m_sIP,
             'token' => $this->m_sSessionToken,
             'timezone' => $this->m_sTimeZone,
             'locale' => $this->m_sLocale,
+            'name' => $this->m_sNameToDisplay,
             'user' => [
                 'class' => get_class($this->m_oUsernameToken),
                 'data' => $this->m_oUsernameToken->forSerialization()
@@ -275,7 +235,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
                 'class' => get_class($this->m_oExtranetUsernameToken),
                 'data' => $this->m_oExtranetUsernameToken->forSerialization()
             ],
-            'version' => $sVersion,
+            'version' => $this->getVersionNO(),
             'language' => is_null($this->m_clLangage) ? null : $this->m_clLangage->forSerialization(),
             'parent_data' => parent::__serialize()
         ];
@@ -290,7 +250,6 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
         if (!array_key_exists('ip', $aUnserialised)){
             throw new UnserializeTokenException('Invalid Token');
         }
-
 
         $this->m_sIP = $aUnserialised['ip'];
         $this->m_sSessionToken = $aUnserialised['token'];
@@ -309,6 +268,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface
             $this->m_oExtranetUsernameToken->fromSerialization($aUnserialised['extranet']['data']);
         }
 
+        $this->m_sNameToDisplay=$aUnserialised['name'];
         parent::__unserialize($aUnserialised['parent_data']);
 	}
 

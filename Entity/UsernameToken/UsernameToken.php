@@ -1,6 +1,7 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Encryption;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UsernameToken as WSDLUsernameToken;
 
 /**
@@ -13,7 +14,6 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
     public function __construct(string $sUsername='')
 	{
         $this->Username = $sUsername;
-		$this->Compute();
 	}
 
     /**
@@ -32,7 +32,6 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
      */
 	final public function setClearPassword(string $password) {
         $this->_setClearPassword($password);
-	    $this->Compute();
 	    return $this;
     }
 
@@ -46,4 +45,19 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
 
         $this->_Compute();
     }
+
+    final public function transformForSOAP()
+    {
+        if (!is_null($this->Encryption) && ($this->Encryption instanceof Encryption))
+        {
+            $encryption = $this->Encryption;
+            $this->Encryption = [
+                '!' => $encryption->_,
+                'md5' => $encryption->md5,
+                'ks' => $encryption->ks,
+                'iv' => $encryption->iv
+            ];
+        }
+    }
+
 }

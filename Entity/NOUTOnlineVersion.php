@@ -66,4 +66,5 @@ class NOUTOnlineVersion
         return $bInclu;
     }
 
+    const SUPPORT_SSO_OPENID = '2048.01';
 }

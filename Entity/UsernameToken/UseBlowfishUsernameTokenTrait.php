@@ -12,17 +12,15 @@ trait UseBlowfishUsernameTokenTrait
     {
         $ivlen = openssl_cipher_iv_length('bf-cbc');
         $iv = openssl_random_pseudo_bytes($ivlen);
-
+        $encryption->iv = base64_encode($iv);
+        $encryption->ks = 16;
         $encryption->md5 = base64_encode(md5($secret.$nonce.$created, true));
 
         /* Create key */
-        $securePassword = base64_encode($nonce.$created.$secret);
-        $key = substr($securePassword, 0, 16);
-        $encryption->ks = 16;
+        $securePassword = base64_encode(md5($nonce.$created.$secret, true));
+        $key = substr($securePassword, 0, $encryption->ks);
 
-        $ciphertext = openssl_encrypt($txt, 'bf-cbc', $key, $options=0, $iv, $tag);
-
-        $encryption->iv = base64_encode($iv);
-        return base64_encode($ciphertext);
+        #PKCS #7 padding scheme by default
+        return openssl_encrypt($txt, 'bf-cbc', $key, $options=0, $iv);
     }
 }

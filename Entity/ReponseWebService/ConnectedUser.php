@@ -15,7 +15,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class ConnectedUser
 {
-	protected $m_nUser;
+	protected $m_nUserID;
 	protected $m_sUserTitle;
 	protected $m_nFormID;
 	protected $m_sFormTitle;

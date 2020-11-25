@@ -9,11 +9,12 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Twig;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineState;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\TokenWithNOUTOnlineVersionInterface;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -41,17 +42,22 @@ class NOUTOnlineExtension extends AbstractExtension
      */
 	protected $m_sVersionMin;
 
+    /**
+     * @var TokenInterface|null
+     */
+	protected $m_oToken;
+
 	/**
 	 * @param OnlineServiceFactory  $factory
 	 * @param ConfigurationDialogue $configuration
      * @param string $sVersionMin
 	 */
-	public function __construct(OnlineServiceFactory $factory, ConfigurationDialogue $configuration, $sVersionMin)
+	public function __construct(TokenStorageInterface $tokenStorage, OnlineServiceFactory $factory, ConfigurationDialogue $configuration, $sVersionMin)
 	{
-
 		$this->m_clServiceFactory = $factory;
 		$this->m_clConfiguration = $configuration;
 		$this->m_sVersionMin = $sVersionMin;
+		$this->m_oToken = $tokenStorage->getToken();
 	}
 
 
@@ -126,7 +132,7 @@ class NOUTOnlineExtension extends AbstractExtension
             return 'http';
         }
 
-        $oTemp = json_decode($query);
+        json_decode($query);
         if (json_last_error()==JSON_ERROR_NONE)
         {
             return 'json';
@@ -153,34 +159,18 @@ class NOUTOnlineExtension extends AbstractExtension
 
     /**
      * Get NOUTOnline State
-     * @return \stdClass
+     * @return NOUTOnlineState
      */
-	public function state()
+	public function state() : NOUTOnlineState
     {
-        /** @var OnlineServiceProxy $clRest */
 
-        $ret = new  \stdClass();
-        $ret->isStarted = false;
-        $ret->error = '';
-        $ret->version = '';
-        $ret->isVersionMin = false;
-
-        try
-        {
-            $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
-            $ret->isStarted = $clRest->bIsStarted();
-
-            $clVersion = $clRest->clGetVersion();
-
-            $ret->version = $clVersion->get();
-            $ret->isVersionMin = $clVersion->isVersionSup($this->m_sVersionMin, true);
+        if (!is_null($this->m_oToken) && ($this->m_oToken instanceof TokenWithNOUTOnlineVersionInterface)){
+            $ret = $this->m_oToken->clGetNOUTOnlineState($this->m_sVersionMin);
         }
-        catch (\Exception $e)
-        {
-            if ($e instanceof SOAPException){
-                $ret->isStarted = true;
-            }
-            $ret->error = $e->getMessage();
+        else{
+            /** @var OnlineServiceProxy $clRest */
+            $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
+            $ret = $clRest->clGetNOUTOnlineState($this->m_sVersionMin);
         }
 
         return $ret;
@@ -193,16 +183,8 @@ class NOUTOnlineExtension extends AbstractExtension
 	 */
 	public function version()
 	{
-        /** @var OnlineServiceProxy $clRest */
-		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
-		try
-		{
-			return $clRest->clGetVersion()->get();
-		}
-		catch(\Exception $e)
-		{
-			return $e->getMessage();
-		}
+	    $state = $this->state();
+	    return $state->version;
 	}
 
     /**
@@ -210,19 +192,8 @@ class NOUTOnlineExtension extends AbstractExtension
      */
 	public function isVersionMin()
     {
-        /** @var OnlineServiceProxy $clRest */
-        $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
-        try
-        {
-            /** @var NOUTOnlineVersion $clVersion */
-            $clVersion = $clRest->clGetVersion();
-        }
-        catch(\Exception $e)
-        {
-            return false;
-        }
-
-        return $clVersion->isVersionSup($this->m_sVersionMin, true);
+        $state = $this->state();
+        return $state->isRecent;
     }
 
 	/**
@@ -231,9 +202,8 @@ class NOUTOnlineExtension extends AbstractExtension
 	 */
 	public function isStarted()
 	{
-        /** @var OnlineServiceProxy $clRest */
-		$clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
-        return $clRest->bIsStarted();
+        $state = $this->state();
+        return $state->isStarted;
 	}
 
 } 
