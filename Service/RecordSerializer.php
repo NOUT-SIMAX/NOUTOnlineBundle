@@ -107,7 +107,7 @@ class RecordSerializer
 
             $bModeleFichier = ($typeElement == StructureColonne::TM_Fichier);
             $bModeleCheminDeFichier = $colonne->isOption(StructureColonne::OPTION_Modele_Directory);
-            $bColModified = $clRecord->isModified($idColonne);
+            $bColModified = $clRecord->isModified($idColonne, true);
 
             if ( ($bModeleFichier || ($bModeleCheminDeFichier && $bIsParam)) && $bColModified)
             {
