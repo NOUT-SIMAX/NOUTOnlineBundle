@@ -25,6 +25,8 @@ services:
 
     # pour la barre de debug
     NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger:
+        arguments:
+            $debug: '%kernel.debug%'
         tags:
             - { name: monolog.logger, channel: noutonline }
 

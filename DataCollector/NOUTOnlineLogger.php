@@ -47,14 +47,15 @@ class NOUTOnlineLogger
 	 */
 	protected $m_clMonolog;
 
+
 	/**
 	 * @param $logger : l'instance monolog de symfony
 	 * @param $debug : si site en debug
 	 */
-	public function __construct(LoggerInterface $logger, DynamicConfigurationLoader $loader)
+	public function __construct(LoggerInterface $logger, DynamicConfigurationLoader $loader, bool $debug)
 	{
 		$this->m_clMonolog = $logger;
-		$this->m_bEnabled  = $loader->getParameter('log');
+		$this->m_bEnabled  = $loader->getParameter('log') || $debug;
 	}
 
 	public function getEnabled()

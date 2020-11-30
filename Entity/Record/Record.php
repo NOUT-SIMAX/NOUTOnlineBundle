@@ -9,7 +9,6 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 
 /**
  * Class Record, Description d'un enregistrement
@@ -19,22 +18,22 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 class Record
 {
 	/**
-	 * @var string $m_sTitle : contient la mini desc de l'enregistrement
+	 * @var string : contient la mini desc de l'enregistrement
 	 */
 	protected $m_sTitle;
 
     /**
-     * @var string $m_sTitle : contient le sous-titre quand il y en a un
+     * @var string : contient le sous-titre quand il y en a un
      */
     protected $m_sSubTitle;
 
 	/**
-	 * @var string $m_nID : identitifant de l'enregistrement
+	 * @var string : identitifant de l'enregistrement
 	 */
 	protected $m_nIDEnreg;
 
 	/**
-	 * @var string $m_nIDTableau : identifiant du formulaire
+	 * @var string : identifiant du formulaire
 	 */
 	protected $m_nIDTableau;
 
@@ -49,16 +48,17 @@ class Record
     protected $m_TabOptionsLayout;
 
 	/**
-	 * @var InfoColonne[] $m_TabColumns : tableau avec les informations variables des colonnes (mise en forme ...)
+	 * @var InfoColonne[] : tableau avec les informations variables des colonnes (mise en forme ...)
 	 */
 	protected $m_TabColumnsInfo;
 
 	/**
-	 * @var array $m_TabColumnsValues : tableau avec les valeurs des colonnes
+	 * @var array : tableau avec les valeurs des colonnes
 	 */
 	protected $m_TabColumnsValues;
+
 	/**
-	 * @var array $m_TabColumnsModified : tableau de booleen pour indiquer que la valeur à changée
+	 * @var array : tableau de booleen pour indiquer que la valeur à changée
 	 */
 	protected $m_TabColumnsModified;
 
@@ -77,32 +77,34 @@ class Record
 	 */
 	protected $m_nXSDNiv;
 
-
-    protected $sFilesXML;
-
     /** @var  string */
-    protected $linkedTableID;
+    protected $m_sLinkedTableID;
 
     /**
      * @return string
      */
     public function getLinkedTableID()
     {
-        return $this->linkedTableID;
+        return $this->m_sLinkedTableID;
     }
 
     /**
      * @param string $linkedTableID
      */
-    public function setLinkedTableID($linkedTableID)
+    public function setLinkedTableID(string $linkedTableID)
     {
-        $this->linkedTableID = $linkedTableID;
+        $this->m_sLinkedTableID = $linkedTableID;
     }
 
-	/**
-	 * @param Form $clForm : information sur le formulaire
-	 */
-	public function __construct($sIDTableau, $sIDEnreg, $sLibelle, $nNiv, StructureElement $clStruct = null)
+    /**
+     * Record constructor.
+     * @param string                $sIDTableau
+     * @param string                $sIDEnreg
+     * @param string                $sLibelle
+     * @param int                   $nNiv
+     * @param StructureElement|null $clStruct
+     */
+	public function __construct(string $sIDTableau, string $sIDEnreg, string $sLibelle, $nNiv, StructureElement $clStruct = null)
 	{
 		$this->m_nIDTableau   = $sIDTableau;
 		$this->m_nIDEnreg     = $sIDEnreg;
@@ -117,8 +119,6 @@ class Record
 
 		//tableau des éléments liés
 		$this->m_TabRecordLie = new RecordCache();
-
-        $this->sFilesXML = '';
 	}
 
 	/**
@@ -130,14 +130,6 @@ class Record
 		return $this->m_nXSDNiv <= $clRecord->m_nXSDNiv;
 	}
 
-    /**
-	 * @param $sFilesXml
-	 */
-	public function setFilesXml($sFilesXml)
-	{
-        $this->sFilesXML = $sFilesXml;
-        return $this;
-	}
 
 
     /**
@@ -151,8 +143,7 @@ class Record
         return $this;
     }
     /**
-     * @param $option
-     * @param $valeur
+     * @param \SimpleXMLElement $tabAttribut
      * @return $this
      */
     public function addOptions(\SimpleXMLElement $tabAttribut)
@@ -184,6 +175,7 @@ class Record
         {
             return $this->m_TabOptionsRecord[$option];
         }
+        return null;
     }
 
 
@@ -198,8 +190,7 @@ class Record
         return $this;
     }
     /**
-     * @param $option
-     * @param $valeur
+     * @param \SimpleXMLElement $tabAttribut
      * @return $this
      */
     public function addOptionsLayout(\SimpleXMLElement $tabAttribut)
@@ -221,6 +212,7 @@ class Record
         {
             return $this->m_TabOptionsLayout[$option];
         }
+        return null;
     }
 
     /**
@@ -269,7 +261,7 @@ class Record
      * @param string $sSubTitle
      * @return $this
      */
-    public function setSubTitle($sSubTitle)
+    public function setSubTitle(string $sSubTitle)
     {
         $this->m_sSubTitle = $sSubTitle;
         return $this;
@@ -277,6 +269,7 @@ class Record
 
 
     /**
+     * @param $idColonne
      * @return StructureColonne
      */
     public function clGetStructColonne($idColonne)
@@ -351,7 +344,7 @@ class Record
 	{
 		if (!isset($this->m_TabColumnsValues[$idColonne]))
 		{
-			return;
+			return null;
 		}
 
 		return $this->m_TabColumnsValues[$idColonne];
@@ -377,11 +370,7 @@ class Record
             return '';
         }
 
-        if(isset($record))
-        {
-            return $record->getTitle();
-        }
-        return "";
+        return $record->getTitle();
     }
 
 
@@ -394,7 +383,7 @@ class Record
     public function getDisplayValCol($idColonne)
     {
         if (!isset($this->m_TabColumnsValues[$idColonne])){
-            return;
+            return null;
         }
 
         $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
@@ -429,26 +418,30 @@ class Record
 
     /**
      * @param $idColonne
+     * @param bool $byUser
      * @return bool
      */
-    public function isModified($idColonne)
+    public function isModified($idColonne, bool $byUser)
     {
         if (!isset($this->m_TabColumnsModified[$idColonne])){
             return false;
         }
-        return $this->m_TabColumnsModified[$idColonne];
+
+        return $byUser
+            ? $this->m_TabColumnsModified[$idColonne] > 0
+            : $this->m_TabColumnsModified[$idColonne] < 0;
     }
 
 	/**
-	 * @param $idcolonne
+	 * @param string $idcolonne
 	 * @param $value
-	 * @param bool $modified
+	 * @param bool $modifiedByUser
 	 * @return $this
 	 */
-	public function setValCol($idcolonne, $value, $modifiedByUser = true)
+	public function setValCol(string $idcolonne, $value, $modifiedByUser = true)
 	{
 		$this->m_TabColumnsValues[$idcolonne]   = $value;
-		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser;
+		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
 
 		return $this;
 	}
@@ -466,10 +459,10 @@ class Record
 
 	/**
      * @param $nNiv
-	 * @param array $clRecordLie
+	 * @param array $aRecordsLies
 	 * @return $this
 	 */
-	public function addTabRecordLie($nNiv, $aRecordsLies)
+	public function addTabRecordLie($nNiv, array $aRecordsLies)
 	{
 		foreach($aRecordsLies as $clRecord)
 		{
@@ -479,11 +472,12 @@ class Record
 	}
 
 
-	/**
-	 * méthode magique pour les formulaires
-	 * @param $idColonne
-	 * @return null
-	 */
+    /**
+     * méthode magique pour les formulaires
+     * @param $idColonne
+     * @return null
+     * @throws \Exception
+     */
 	public function __get($idColonne)
 	{
 		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
@@ -494,12 +488,13 @@ class Record
 		return $this->getValCol($idColonne);
 	}
 
-	/**
-	 * méthode magique pour les formulaires - Met à jour les valeurs des colonnes depuis les formulaires Symfony
-	 * @param $name
-	 * @param $args
-	 * @return $this
-	 */
+    /**
+     * méthode magique pour les formulaires - Met à jour les valeurs des colonnes depuis les formulaires Symfony
+     * @param $idColonne
+     * @param $value
+     * @return $this
+     * @throws \Exception
+     */
 	public function __set($idColonne, $value)
 	{
 		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
@@ -521,6 +516,7 @@ class Record
 
     /**
      * retourne la liste des colonnes qui correspondent à une option
+     * @param $option
      * @return array
      */
     public function getTabColonneAvecOption($option)
@@ -545,8 +541,8 @@ class Record
      */
     public function resetLastModified()
     {
-        array_walk($this->m_TabColumnsModified, function(&$item, $key){
-            $item=false;
+        array_walk($this->m_TabColumnsModified, function(&$item){
+            $item=0;
         });
         return $this;
     }
@@ -573,7 +569,7 @@ class Record
         //mise à jour des valeurs
         foreach($clRecordSrc->m_TabColumnsValues as $idcolonne=>$value)
         {
-            $this->setValCol($idcolonne, $value);
+            $this->setValCol($idcolonne, $value, false);
         }
 
         //il faut mettre à jour l'etat des champs
@@ -603,6 +599,7 @@ class Record
         {
             return $SIMAXStyleToCSS[$option];
         }
+        return '';
     }
 
     public function transformOptionValue2CSSValue($option, $value=null)
@@ -655,15 +652,15 @@ class Record
         {
             if(!is_null($aFilesToSend) && array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier et a été modifiée
             {
-                $sXML.= $this->_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne]);
+                $sXML.= $this->_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne])."\n";
             }
-            else if (!$onlyModified || $this->isModified($sIDColonne)) // La colonne n'est pas un fichier et a été modifie
+            else if (!$onlyModified || $this->isModified($sIDColonne, true)) // La colonne n'est pas un fichier et a été modifie
             {
                 if(is_array($sValue))
                 {
                     $sValue=implode('|', array_values($sValue));
                 }
-                $sXML.='<id_'.$sIDColonne.'>'.htmlspecialchars($sValue).'</id_'.$sIDColonne.'>';
+                $sXML.="<id_$sIDColonne>".htmlspecialchars($sValue)."</id_$sIDColonne>\n";
             }
         }
 
@@ -674,10 +671,9 @@ class Record
     {
         $sIDForm                    = $this->m_clStructElem->getID();
 
-        $sUpdateData = "<xml><id_$sIDForm>";
+        $sUpdateData = "<xml><id_$sIDForm>\n";
         $sUpdateData.= $this->getXMLColonne($aFilesToSend, true);
-        $sUpdateData.= $this->sFilesXML;
-        $sUpdateData.= '</id_'.$sIDForm.'></xml>';
+        $sUpdateData.= "\n</id_$sIDForm></xml>";
 
         return $sUpdateData;
     }
@@ -711,9 +707,9 @@ class Record
             $fileUniqueId  = uniqid();
 
             // Headers
-            $sFileXml = '<id_' . $sIDColonne . ' simax:ref="' . $fileUniqueId . '">';
+            $sFileXml = "<id_$sIDColonne simax:ref=\"$fileUniqueId\">";
             $sFileXml .= $oFile->filename;
-            $sFileXml .= '</id_' . $sIDColonne . '>';
+            $sFileXml .= "</id_$sIDColonne>\n";
 
             // Paramètres
             $sFileXml .= '<simax:Data ';
@@ -728,11 +724,11 @@ class Record
             $sFileXml .= base64_encode($oFile->content);
 
             // Fin Paramètres
-            $sFileXml .= '</simax:Data>';
+            $sFileXml .= "</simax:Data>\n";
         }
         else // Champ vide
         {
-            $sFileXml = '<id_'.$sIDColonne.'>'. "" .'</id_'.$sIDColonne.'>';
+            $sFileXml = "<id_$sIDColonne></id_$sIDColonne>\n";
         }
 
         return $sFileXml;
