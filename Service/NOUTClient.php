@@ -66,6 +66,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Export;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\FilterType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetChart;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
@@ -1147,8 +1148,6 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
-
-
     /**
      * Execute une action via son id
      * @param array $tabParamQuery
@@ -1173,6 +1172,24 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+
+    public function oGetChart(string $tableID, int $index, string $contextID)
+    {
+        $getChart = new GetChart();
+        $getChart->Index = $index;
+        $getChart->Table = $tableID;
+
+        //header
+        $aTabHeaderSuppl = array();
+        if (!empty($sIDContexte))
+        {
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->getChart($getChart, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
@@ -1257,8 +1274,6 @@ class NOUTClient
                 break; //on ne fait rien de plus
 
             case XMLResponseWS::RETURNTYPE_VALUE:
-            case XMLResponseWS::RETURNTYPE_CHART:
-            case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
 
             case XMLResponseWS::RETURNTYPE_XSD:
             case XMLResponseWS::RETURNTYPE_IDENTIFICATION:
@@ -1437,6 +1452,19 @@ class NOUTClient
                 // On fabrique la messageBox avec les données XML
                 $clActionResult->setData($clReponseXML->clGetMessageBox());
                 break;
+            }
+
+            //pour la gestion des graphes
+            case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
+            {
+                $clActionResult->setData($clReponseXML->nGetNumberOfChart());
+                break;
+            }
+
+            case XMLResponseWS::RETURNTYPE_CHART:
+            {
+                $this->__stopStopwatch($stopWatchEvent);
+                throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
             }
 
         }
