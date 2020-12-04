@@ -228,6 +228,9 @@ class XMLResponseWS
 		return new MessageBox($this->getNodeXML());
 	}
 
+    /**
+     * @return string
+     */
     public function getData()
     {
         $ndXML = $this->getNodeXML();
@@ -722,11 +725,11 @@ class XMLResponseWS
 
     //les différent type d'affichage pour les listes
     const DISPLAYMODE_List = 'List';
-    const DISPLAYMODE_Chart = 'Chart';
     const DISPLAYMODE_Planning = 'Planning';
-    const DISPLAYMODE_Flowchart = 'Flowchart';
     const DISPLAYMODE_DataTree = 'DataTree';
+    const DISPLAYMODE_Thumbnail = 'Thumbnail';
+    const DISPLAYMODE_Chart = 'Chart';
+    const DISPLAYMODE_Flowchart = 'Flowchart';
     const DISPLAYMODE_Gantt = 'Gantt';
     const DISPLAYMODE_Map = 'Map';
-    const DISPLAYMODE_Thumbnail = 'Thumbnail';
 }
