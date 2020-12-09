@@ -8,16 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
-
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureBouton;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 
 /**
  * Class RecordManager
@@ -26,13 +17,14 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 class ReponseWSParser
 {
 
-	/**
+    /**
      * @param XMLResponseWS $clXMLReponseWS
-	 * @param $returnTypeForce
-	 * @param $autreInfos
-	 * @return Parser
-	 */
-	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS, $returnTypeForce=null, $autreInfos=null)
+     * @param null          $returnTypeForce
+     * @param null          $autreInfos
+     * @return Parser
+     * @throws \Exception
+     */
+	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS, $returnTypeForce=null, $autreInfos=null) : ?Parser
 	{
         // Tableau de pointeur de méthodes
 		$aPtrFct = array(
@@ -79,7 +71,7 @@ class ReponseWSParser
 	 * @param XMLResponseWS $clXMLReponseWS
      * @return ParserRecordList
 	 */
-	protected function _ParseRecord(XMLResponseWS $clXMLReponseWS)
+	protected function _ParseRecord(XMLResponseWS $clXMLReponseWS) : ParserRecordList
 	{
         $clParser = new ParserRecordList();
 
@@ -99,7 +91,7 @@ class ReponseWSParser
 	 * @param XMLResponseWS $clXMLReponseWS
      * @return ParserList
 	 */
-	protected function _ParseList(XMLResponseWS $clXMLReponseWS)
+	protected function _ParseList(XMLResponseWS $clXMLReponseWS) : ParserList
 	{
 		// Cette méthode est appelée par InitFromXmlXsd
 
@@ -125,9 +117,9 @@ class ReponseWSParser
 
 	/**
 	 * @param XMLResponseWS $clXMLReponseWS
-	 * @return ParserList
+	 * @return ParserScheduler
 	 */
-	protected function _ParseScheduler(XMLResponseWS $clXMLReponseWS)
+	protected function _ParseScheduler(XMLResponseWS $clXMLReponseWS) : ParserScheduler
 	{
 		// Cette méthode est appelée par InitFromXmlXsd
 
@@ -153,7 +145,7 @@ class ReponseWSParser
 	 * @param XMLResponseWS $clXMLReponseWS
 	 * @return ParserPlanning
 	 */
-	protected function _ParsePlanning(XMLResponseWS $clXMLReponseWS)
+	protected function _ParsePlanning(XMLResponseWS $clXMLReponseWS) : ParserPlanning
 	{
 		$clParser = new ParserPlanning();
 
@@ -170,7 +162,7 @@ class ReponseWSParser
 	 * @param XMLResponseWS $clXMLReponseWS
 	 * @return ParserChart
 	 */
-	protected function _ParseChart(XMLResponseWS $clXMLReponseWS)
+	protected function _ParseChart(XMLResponseWS $clXMLReponseWS) : ParserChart
 	{
 		$clParser = new ParserChart();
 
@@ -183,10 +175,10 @@ class ReponseWSParser
 
 	/**
 	 * Parse les calculs de fin de liste
-	 * @param \XMLResponseWS $clXMLReponseWS
+	 * @param XMLResponseWS $clXMLReponseWS
 	 * @return ParserListCalculation
 	 */
-	protected function _ParseListCaculation(XMLResponseWS $clXMLReponseWS)
+	protected function _ParseListCaculation(XMLResponseWS $clXMLReponseWS) : ParserListCalculation
 	{
 		$clParser = new ParserListCalculation();
 

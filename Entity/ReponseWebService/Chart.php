@@ -20,30 +20,73 @@ class Chart
 	/**
 	 * @var string
 	 */
-	public $m_sTitre;
+	protected $m_sTitre;
 
 	/**
 	 * @var string
 	 */
-	public $m_sType;
+    protected $m_sType;
 
 	/**
-	 * @var array
+	 * @var ChartAxis[]
 	 * tableau des axes
 	 */
-	public $m_TabAxes;
+    protected $m_TabAxes;
 
 	/**
-	 * @var array
+	 * @var ChartTuple[]
 	 * tableau des series
 	 */
-	public $m_TabSeries;
+    protected $m_TabSeries;
 
-	public function __construct()
+	public function __construct(string $sTitre, string $sType)
 	{
-		$this->m_sTitre   = '';
-		$this->m_sType    = '';
-		$this->m_TabAxes  = array();
-		$this->m_TabSeries = array();
+		$this->m_sTitre   = $sTitre;
+		$this->m_sType    = $sType;
+		$this->m_TabAxes  = [];
+		$this->m_TabSeries = [];
 	}
+
+	public function getType()
+    {
+        return $this->m_sType;
+    }
+
+    public function getTitle()
+    {
+        return $this->m_sTitre;
+    }
+
+    /**
+     * @param ChartAxis $clAxis
+     */
+	public function addAxe(ChartAxis $clAxis)
+    {
+        $this->m_TabAxes[$clAxis->getID()]=$clAxis;
+    }
+
+    /**
+     * @return ChartAxis[]
+     */
+	public function getAxes()
+    {
+        return $this->m_TabAxes;
+    }
+
+    /**
+     * @param ChartTuple $clSerie
+     */
+    public function addSerie(ChartTuple $clSerie)
+    {
+        $this->m_TabSeries[]=$clSerie;
+    }
+
+    /**
+     * @return ChartTuple[]
+     */
+    public function getSeries()
+    {
+        return $this->m_TabSeries;
+    }
+
 }

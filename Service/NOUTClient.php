@@ -13,6 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\FolderList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
@@ -1176,18 +1177,18 @@ class NOUTClient
     }
 
 
-    public function oGetChart(string $tableID, int $index, string $contextID)
+    public function oGetChart(string $tableID, int $index, array $tabHeaderQuery = array())
     {
         $getChart = new GetChart();
-        $getChart->Index = $index;
+        $getChart->Index = intval($index);
         $getChart->Table = $tableID;
+        $getChart->Width = 100;
+        $getChart->Height = 100;
+        $getChart->DPI = 72;
 
-        //header
-        $aTabHeaderSuppl = array();
-        if (!empty($sIDContexte))
-        {
-            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
-        }
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $clReponseXML = $this->m_clSOAPProxy->getChart($getChart, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
@@ -1463,8 +1464,14 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_CHART:
             {
-                $this->__stopStopwatch($stopWatchEvent);
-                throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
+                // Instance d'un parser
+                $clResponseParser = new ReponseWSParser();
+
+                /** @var ParserChart $clParser */
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+                $clActionResult->setData($clParser->getChart());
+                break;
             }
 
         }
