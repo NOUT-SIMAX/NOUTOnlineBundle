@@ -64,6 +64,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Export;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\FilterType;
@@ -1176,6 +1177,27 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    /**
+     * @param string $idenreg
+     * @param int    $idcolonne
+     * @param array  $tabParamQuery
+     * @param array  $tabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oDrillthrough(string $idenreg, int $idcolonne, array $tabParamQuery, array $tabHeaderQuery = array())
+    {
+        $clParam = $this->_oGetParam(DrillThrough::class, $tabParamQuery);
+        $clParam->Record = $idenreg;
+        $clParam->Column = $idcolonne;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
+
+        $clReponseXML = $this->m_clSOAPProxy->drillThrough($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
 
     public function oGetChart(string $tableID, int $index, array $tabHeaderQuery = array())
     {
