@@ -1182,8 +1182,8 @@ class NOUTClient
         $getChart = new GetChart();
         $getChart->Index = intval($index);
         $getChart->Table = $tableID;
-        $getChart->Width = 100;
-        $getChart->Height = 100;
+        $getChart->Width = 5000;
+        $getChart->Height = 5000;
         $getChart->DPI = 72;
 
         //--------------------------------------------------------------------------------------------
