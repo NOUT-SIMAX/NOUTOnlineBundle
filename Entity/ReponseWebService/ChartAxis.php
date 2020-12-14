@@ -32,7 +32,7 @@ class ChartAxis
      * @param string $sLabel
      * @param false  $bCalcultion
      */
-	public function __construct(string $sID = '', string $sLabel = '', $bCalcultion = false)
+	public function __construct(string $sID = '', string $sLabel = '', bool $bCalcultion = false)
 	{
 		$this->m_sID           = $sID;
 		$this->m_sLabel        = $sLabel;
@@ -45,5 +45,21 @@ class ChartAxis
 	public function getID()
     {
         return $this->m_sID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->m_sLabel;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCalculation()
+    {
+        return $this->m_bIsCalculation;
     }
 }

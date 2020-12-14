@@ -66,9 +66,38 @@ class Chart
     }
 
     /**
+     * @return ChartAxis|null
+     */
+    public function getXAxis() : ?ChartAxis
+    {
+        foreach($this->m_TabAxes as $clAxis)
+        {
+            if (!$clAxis->isCalculation()){
+                return $clAxis;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getYAxis(): array
+    {
+        $ret = array();
+        foreach($this->m_TabAxes as $clAxis)
+        {
+            if ($clAxis->isCalculation()){
+                $ret[]=$clAxis;
+            }
+        }
+        return $ret;
+    }
+
+    /**
      * @return ChartAxis[]
      */
-	public function getAxes()
+    public function getAxes(): array
     {
         return $this->m_TabAxes;
     }
