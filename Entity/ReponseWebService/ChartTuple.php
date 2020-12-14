@@ -10,7 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class ChartTuple
 {
-	public $m_TabID2DataLabel;
+	protected $m_TabID2DataLabel;
 
 	public function __construct()
 	{
@@ -26,4 +26,14 @@ class ChartTuple
 
 		$this->m_TabID2DataLabel[$sID] = $clElement;
 	}
+
+	public function getData($sID)
+    {
+        return $this->m_TabID2DataLabel[$sID]->m_Data;
+    }
+
+    public function getDisplay($sID)
+    {
+        return $this->m_TabID2DataLabel[$sID]->m_sDisplayValue;
+    }
 }

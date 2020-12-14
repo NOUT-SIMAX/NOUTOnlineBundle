@@ -13,6 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\FolderList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
@@ -63,6 +64,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Export;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\FilterType;
@@ -1175,19 +1177,40 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
+    /**
+     * @param string $idenreg
+     * @param int    $idcolonne
+     * @param array  $tabParamQuery
+     * @param array  $tabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oDrillthrough(string $idenreg, int $idcolonne, array $tabParamQuery, array $tabHeaderQuery = array())
+    {
+        $clParam = $this->_oGetParam(DrillThrough::class, $tabParamQuery);
+        $clParam->Record = $idenreg;
+        $clParam->Column = $idcolonne;
 
-    public function oGetChart(string $tableID, int $index, string $contextID)
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
+
+        $clReponseXML = $this->m_clSOAPProxy->drillThrough($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    public function oGetChart(string $tableID, int $index, array $tabHeaderQuery = array())
     {
         $getChart = new GetChart();
-        $getChart->Index = $index;
+        $getChart->Index = intval($index);
         $getChart->Table = $tableID;
+        $getChart->Width = 5000;
+        $getChart->Height = 5000;
+        $getChart->DPI = 72;
 
-        //header
-        $aTabHeaderSuppl = array();
-        if (!empty($sIDContexte))
-        {
-            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $sIDContexte;
-        }
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
 
         $clReponseXML = $this->m_clSOAPProxy->getChart($getChart, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
@@ -1463,8 +1486,14 @@ class NOUTClient
 
             case XMLResponseWS::RETURNTYPE_CHART:
             {
-                $this->__stopStopwatch($stopWatchEvent);
-                throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
+                // Instance d'un parser
+                $clResponseParser = new ReponseWSParser();
+
+                /** @var ParserChart $clParser */
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+                $clActionResult->setData($clParser->getChart());
+                break;
             }
 
         }

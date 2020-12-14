@@ -14,22 +14,52 @@ class ChartAxis
 	 * @var string
 	 * identifiant de l'axe
 	 */
-	public $m_sID;
+	protected $m_sID;
 	/**
 	 * @var string
 	 * libelle de l'axe
 	 */
-	public $m_sLabel;
+    protected $m_sLabel;
 	/**
 	 * @var bool
 	 * axe de calcul
 	 */
-	public $m_bIsCalculation;
+    protected $m_bIsCalculation;
 
-	public function __construct($sID = '', $sLabel = '', $bCalcultion = false)
+    /**
+     * ChartAxis constructor.
+     * @param string $sID
+     * @param string $sLabel
+     * @param false  $bCalcultion
+     */
+	public function __construct(string $sID = '', string $sLabel = '', bool $bCalcultion = false)
 	{
 		$this->m_sID           = $sID;
 		$this->m_sLabel        = $sLabel;
 		$this->m_bIsCalculation = $bCalcultion;
 	}
+
+    /**
+     * @return string
+     */
+	public function getID()
+    {
+        return $this->m_sID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->m_sLabel;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCalculation()
+    {
+        return $this->m_bIsCalculation;
+    }
 }
