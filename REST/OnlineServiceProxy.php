@@ -241,7 +241,13 @@ class OnlineServiceProxy
                 }
             }
             curl_close($curl);
-            $this->__stopLogQuery($sURI, $curl_errmess, $sAction, null, $function, $clIdentification);
+            try {
+                $this->__stopLogQuery($sURI, $curl_errmess, $sAction, null, $function, $clIdentification);
+            }
+            catch (\Exception $e)
+            {
+
+            }
 
             throw new \Exception($curl_errmess);
         }
