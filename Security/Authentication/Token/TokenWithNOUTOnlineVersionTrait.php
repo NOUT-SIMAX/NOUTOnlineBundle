@@ -13,14 +13,14 @@ trait TokenWithNOUTOnlineVersionTrait
      * version du noutonline
      * @var NOUTOnlineVersion m_clVersionNO
      */
-    protected $m_clVersionNO;
+    protected $m_clVersionNO = null;
 
     /**
      * @return bool
      */
     public function isStarted(): bool
     {
-        return !is_null($this->m_clVersionNO);
+        return !empty($this->m_clVersionNO) && (!$this->m_clVersionNO instanceof NOUTOnlineVersion) && (strcmp($this->m_clVersionNO, "N/A")!=0);
     }
 
     /**
@@ -55,7 +55,7 @@ trait TokenWithNOUTOnlineVersionTrait
      */
     public function setVersionNO($versionNO)
     {
-        if ($versionNO instanceof NOUTOnlineVersion)
+        if (is_null($versionNO) || $versionNO instanceof NOUTOnlineVersion)
         {
             $this->m_clVersionNO = $versionNO;
         }
