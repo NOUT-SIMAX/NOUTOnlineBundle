@@ -13,7 +13,6 @@ class Chart
 	const TYPE_Histogramme       = 'column';
 	const TYPE_HistogrammeEmpile = 'stackedColumn';
 	const TYPE_Courbe            = 'line';
-	const TYPE_CourbeLissee      = 'line';
 	const TYPE_Camembert         = 'pie';
 	const TYPE_Bulle             = 'bubble';
 
