@@ -8,7 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-// C'est la classe mère abstraite
+// C'est la classe mÃ¨re abstraite
 abstract class Parser
 {
 	const NAMESPACE_XSD = 'http://www.w3.org/2001/XMLSchema';

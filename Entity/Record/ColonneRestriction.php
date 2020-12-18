@@ -28,7 +28,7 @@ class ColonneRestriction
 
 	/**
 	 * @param string $Type
-     * @param string $Valeur
+     * @param mixed $Valeur
 	 * @return $this
 	 */
 	public function addRestrictionSimple($Type, $Valeur)
@@ -102,7 +102,7 @@ class ColonneRestriction
     const R_LENGTH      = 'length';
 
     const R_NumericDisplay              = 'numericDisplay';
-    const ROPTION_Shape                 = 'form';
+    const ROPTION_Shape                 = 'shape';
     const ROPTION_Size                  = 'size';
     const ROPTION_DisplayValue          = 'displayValue';
 
