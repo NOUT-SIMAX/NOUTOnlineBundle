@@ -25,5 +25,8 @@ class GetChart
 	public $Axes; // string
 	public $Calculation; // CalculationTypeEnum
 	public $OnlyData; // integer
+    public $Record;
+    public $Column;
+    public $ChartType;
 }
 //***

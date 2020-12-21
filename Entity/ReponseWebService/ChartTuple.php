@@ -17,7 +17,12 @@ class ChartTuple
 		$this->m_TabID2DataLabel = array();
 	}
 
-	public function Add($sID, $Data, $sDisplay)
+    /**
+     * @param string $sID
+     * @param        $Data
+     * @param string $sDisplay
+     */
+	public function Add(string $sID, $Data, string $sDisplay)
 	{
 		$clElement                  = new \stdClass();
 		$clElement->m_Data          = $Data;
@@ -27,13 +32,27 @@ class ChartTuple
 		$this->m_TabID2DataLabel[$sID] = $clElement;
 	}
 
-	public function getData($sID)
+    /**
+     * @param string $sID
+     * @return null
+     */
+	public function getData(string $sID)
     {
-        return $this->m_TabID2DataLabel[$sID]->m_Data;
+        if (array_key_exists($sID, $this->m_TabID2DataLabel)){
+            return $this->m_TabID2DataLabel[$sID]->m_Data;
+        }
+        return null;
     }
 
-    public function getDisplay($sID)
+    /**
+     * @param string $sID
+     * @return string|null
+     */
+    public function getDisplay(string $sID) : ?string
     {
-        return $this->m_TabID2DataLabel[$sID]->m_sDisplayValue;
+        if (array_key_exists($sID, $this->m_TabID2DataLabel)) {
+            return $this->m_TabID2DataLabel[$sID]->m_sDisplayValue;
+        }
+        return null;
     }
 }
