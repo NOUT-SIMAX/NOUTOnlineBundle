@@ -1199,14 +1199,18 @@ class NOUTClient
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
-    public function oGetChart(string $tableID, int $index, array $tabHeaderQuery = array())
+    /**
+     * @param array $tabParamQuery
+     * @param array $tabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetChart(array $tabParamQuery, array $tabHeaderQuery = array())
     {
-        $getChart = new GetChart();
-        $getChart->Index = intval($index);
-        $getChart->Table = $tableID;
+        $getChart = $this->_oGetParam(GetChart::class, $tabParamQuery);
         $getChart->Width = 5000;
         $getChart->Height = 5000;
-        $getChart->DPI = 72;
+        $getChart->DPI = 92;
 
         //--------------------------------------------------------------------------------------------
         // Headers

@@ -37,22 +37,51 @@ class ParserChart extends Parser
 			$sID                              = (string) $TabAttributes['id'];
 			$bCalculation                     = isset($TabAttributes['isCalculation']) ? ((int) $TabAttributes['isCalculation'] != 0) : false;
 			$clAxis = new ChartAxis($sID, (string) $TabAttributes['label'], $bCalculation);
-			$this->m_clChart->addAxe($clAxis);
+
+			if ($bCalculation){
+                $this->m_clChart->addCalculus($clAxis);
+            }
+			else {
+                $this->m_clChart->addAxe($clAxis);
+            }
 		}
 
-		foreach ($ndChart->serie->tuple as $ndTuple)
-		{
-			$clTuple = new ChartTuple();
-			foreach ($ndTuple->children() as $ndFils)
-			{
-				$sTagName = $ndFils->getName();
-				if (strncmp($sTagName, 'id_', strlen('id_')) == 0)
-				{
-					$sID = str_replace('id_', '', $sTagName);
-					$clTuple->Add($sID, (string) $ndFils->data, (string) $ndFils->displayValue);
-				}
-			}
-			$this->m_clChart->addSerie($clTuple);
-		}
+		if (count($ndChart->series))
+        {
+            //plusieurs series
+            foreach($ndChart->series->serie as $ndSerie)
+            {
+                $TabAttributes = $ndSerie->attributes(self::NAMESPACE_NOUT_XML);
+                $clSerie = new ChartSerie( (string) $TabAttributes['label']);
+
+                $this->_parseTuple($clSerie, $ndSerie);
+            }
+
+        }
+		else
+        {
+            $clSerie = new ChartSerie();
+            $this->_parseTuple($clSerie, $ndChart->serie);
+        }
+
 	}
+
+	protected function _parseTuple(ChartSerie $clSerie, \SimpleXMLElement $ndSerie)
+    {
+        foreach ($ndSerie->tuple as $ndTuple)
+        {
+            $clTuple = new ChartTuple();
+            foreach ($ndTuple->children() as $ndFils)
+            {
+                $sTagName = $ndFils->getName();
+                if (strncmp($sTagName, 'id_', strlen('id_')) == 0)
+                {
+                    $sID = str_replace('id_', '', $sTagName);
+                    $clTuple->Add($sID, (string) $ndFils->data, (string) $ndFils->displayValue);
+                }
+            }
+            $clSerie->addTuple($clTuple);
+        }
+        $this->m_clChart->addSerie($clSerie);
+    }
 }
