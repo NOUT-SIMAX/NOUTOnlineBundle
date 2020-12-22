@@ -105,26 +105,32 @@ class NOUTFileCache extends NOUTCacheProvider
      *
      * @param string $id The beginning of the id of the cache entry to list.
      *
-     * @return array|false.
+     * @return array.
      */
-    protected function _doListEntry(string $id)
+    protected function _doListEntry(string $id) : array
     {
         if (!is_dir($id)) {
             return array();
         }
-        $finder = new Finder();
-        $finder
-            ->files()
-            ->in($id.'/*')
-            ->name('*'.self::FILE_EXTENSION);
+        try{
+            $aRet = array();
+            $finder = new Finder();
+            $finder
+                ->files()
+                ->in($id.'/*')
+                ->name('*'.self::FILE_EXTENSION);
 
-        $aRet = array();
-        foreach ($finder as $file) {
-            /** @var SplFileInfo $file */
-            $aRet[]=$file->getRealPath();
+            foreach ($finder as $file) {
+                /** @var SplFileInfo $file */
+                $aRet[]=$file->getRealPath();
+            }
+            return $aRet;
+        }
+        catch (\Exception $e)
+        {
+            return array();
         }
 
-        return $aRet;
     }
 
     /**
@@ -175,28 +181,33 @@ class NOUTFileCache extends NOUTCacheProvider
             return array();
         }
 
-
-        $finder = new Finder();
-        $finder->directories()->in($id.'/*');
-        $finder->sort(function (\SplFileInfo $a, \SplFileInfo $b)
-        {
-            return -strcmp($a->getRealPath(), $b->getRealPath());
-        });
-
-        $id = str_replace(array('\\', '/'), array('_', '_'), $id);
-
-        $aRet = array();
-        foreach ($finder as $dir) {
-            /** @var SplFileInfo $dir */
-            $path_dir = $dir->getRealPath();
-            do
+        try{
+            $finder = new Finder();
+            $finder->directories()->in($id.'/*');
+            $finder->sort(function (\SplFileInfo $a, \SplFileInfo $b)
             {
-                $aRet[]=$path_dir;
-                $path_dir=dirname($path_dir);
+                return -strcmp($a->getRealPath(), $b->getRealPath());
+            });
+
+            $id = str_replace(array('\\', '/'), array('_', '_'), $id);
+
+            $aRet = array();
+            foreach ($finder as $dir) {
+                /** @var SplFileInfo $dir */
+                $path_dir = $dir->getRealPath();
+                do
+                {
+                    $aRet[]=$path_dir;
+                    $path_dir=dirname($path_dir);
+                }
+                while(str_replace(array('\\', '/'), array('_', '_'), $path_dir) != $id);
             }
-            while(str_replace(array('\\', '/'), array('_', '_'), $path_dir) != $id);
+            return $aRet;
         }
-        return $aRet;
+        catch (\Exception $e)
+        {
+            return array();
+        }
     }
 
 
