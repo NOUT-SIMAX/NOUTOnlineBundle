@@ -20,7 +20,15 @@ trait TokenWithNOUTOnlineVersionTrait
      */
     public function isStarted(): bool
     {
-        return !empty($this->m_clVersionNO) && (!$this->m_clVersionNO instanceof NOUTOnlineVersion) && (strcmp($this->m_clVersionNO, "N/A")!=0);
+        if (empty($this->m_clVersionNO)){
+            return false;
+        }
+
+        if ((!$this->m_clVersionNO instanceof NOUTOnlineVersion) && (strcmp($this->m_clVersionNO, "N/A")==0)){
+            return false;
+        }
+
+        return true;
     }
 
     /**
