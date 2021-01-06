@@ -329,6 +329,18 @@ class NOUTClient
     }
 
     /**
+     * Ne pas renommer ou supprimer, la méthode est utilisé par _aGetHeaderSuppl
+     * @param $property
+     * @param $value
+     */
+    protected function setOptionDialogueProperty($property, $value)
+    {
+        if (property_exists($this->m_clOptionDialogue, $property)){
+            $this->m_clOptionDialogue->$property = $value;
+        }
+    }
+
+    /**
      * retourne les options de dialogue
      * @return OptionDialogue
      */
