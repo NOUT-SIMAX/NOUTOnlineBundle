@@ -31,6 +31,9 @@ class DynamicConfigurationLoader
             }
 
             $filepath = $sConfigDir.'/'.$sHostname.'.yaml';
+            if (!file_exists($filepath)){
+                $filepath = $sConfigDir.'/'.$sHostname.'.yml';
+            }
             if (file_exists($filepath)){
                 $config_readed = Yaml::parseFile($filepath);
 
