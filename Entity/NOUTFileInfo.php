@@ -74,7 +74,7 @@ class NOUTFileInfo
         $this->filename     = $file->getClientOriginalName();
         $this->extension    = $file->getClientOriginalExtension();
         $this->mimetype     = $file->getClientMimeType();
-        $this->size         = $file->getClientSize();
+        $this->size         = filesize($file->getRealPath());
         $this->content      = file_get_contents($file->getRealPath());
     }
 
