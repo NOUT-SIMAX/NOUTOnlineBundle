@@ -24,6 +24,6 @@ class ListSort
 	public function __construct($sID, $bAsc)
 	{
 		$this->idcolumn = (string) $sID;
-		$this->asc      = ((int) $bAsc == 1) ? true : false;
+		$this->asc      = ((int) $bAsc == 1);
 	}
 }

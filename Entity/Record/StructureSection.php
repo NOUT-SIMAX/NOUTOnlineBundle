@@ -40,15 +40,15 @@ class StructureSection extends StructureColonne
 	/**
 	 * @return StructureColonne[]
 	 */
-	public function getTabStructureColonne()
-	{
+	public function getTabStructureColonne(): array
+    {
 		return $this->m_TabStructureColonne;
 	}
 
     /**
      * @return StructureColonne[]
      */
-	public function getMapStructureColonneAplat()
+	public function getMapStructureColonneAplat(): array
     {
         return $this->m_MapIDColonne2Colonne;
     }
@@ -57,8 +57,8 @@ class StructureSection extends StructureColonne
 	 * @param StructureColonne $clColonne
 	 * @return $this
 	 */
-	public function addColonne(StructureColonne $clColonne)
-	{
+	public function addColonne(StructureColonne $clColonne): StructureSection
+    {
 		$this->m_TabStructureColonne[]=$clColonne;
 		$this->m_MapIDColonne2Colonne[$clColonne->getIDColonne()]=$clColonne;
 		return $this;
@@ -67,7 +67,7 @@ class StructureSection extends StructureColonne
     /**
      * @return StructureSection[]
      */
-    public function getSubSections()
+    public function getSubSections(): array
     {
         $sections = array();
         foreach($this->m_TabStructureColonne as $column)
@@ -81,7 +81,7 @@ class StructureSection extends StructureColonne
     /**
      * @return StructureBouton[]
      */
-    public function getButtons()
+    public function getButtons(): array
     {
         $buttons = array();
         foreach($this->m_TabStructureColonne as $column)
@@ -95,7 +95,7 @@ class StructureSection extends StructureColonne
     /**
      * @return StructureElement[]
      */
-    public function getElements()
+    public function getElements(): array
     {
         $elements = array();
         foreach($this->m_TabStructureColonne as $column)
@@ -109,7 +109,7 @@ class StructureSection extends StructureColonne
     /**
      * @return StructureBouton[]
      */
-    public function getData()
+    public function getData(): array
     {
         $data = array();
         foreach($this->m_TabStructureColonne as $column)

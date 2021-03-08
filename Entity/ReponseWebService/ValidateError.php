@@ -48,16 +48,16 @@ class ValidateError implements \JsonSerializable
 	/**
 	 * @return string
 	 */
-	public function getMessage()
-	{
+	public function getMessage(): string
+    {
 		return $this->m_sMessage;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getTabIDColonne()
-	{
+	public function getTabIDColonne(): array
+    {
 		return $this->m_TabIDColonne;
 	}
 
@@ -70,7 +70,8 @@ class ValidateError implements \JsonSerializable
 		return $this->m_TabIDColonne[$indice];
 	}
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): array
+    {
         return array(
             'message' => $this->m_sMessage,
             'columns' => $this->m_TabIDColonne,

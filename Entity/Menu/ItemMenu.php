@@ -21,49 +21,49 @@ class ItemMenu
      * identifiant du menu conteneur
      * @var string
      */
-    protected $idMenuParent;
+    protected $idMenuParent='';
 
     /**
      * identifiant de l'option de menu
      * @var string $idOptionMenu
      */
-	protected $idOptionMenu;
+	protected $idOptionMenu='';
 
     /**
      * vrai si menu principal
      * @var bool
      */
-    public $rootMenu;
+    public $rootMenu=false;
 
     /**
      * vrai si c'est un menu, faux si c'est une option de menu
      * @var bool
      */
-    public $optionMenu;
+    public $optionMenu=false;
 
     /**
      * vrai si c'est un separateur
      * @var bool
      */
-    public $separator;
+    public $separator=false;
 
 	/**
 	 * libellé de l'option de menu
 	 * @var string
 	 */
-	public $title;
+	public $title='';
 
 	/**
 	 * identifiant de l'action à lancer
 	 * @var string
 	 */
-	public $idAction = null;
+	public $idAction = '';
 
 	/**
 	 * commande de l'action
 	 * @var string
 	 */
-    public $command = null;
+    public $command = '';
 
     /**
      * id de l'icone
@@ -89,17 +89,17 @@ class ItemMenu
     /**
      * @var int
      */
-    public $homeTypeDisplay = null;
+    public $homeTypeDisplay = 0;
 
     /**
      * @var string
      */
-    public $homeTitle;
+    public $homeTitle='';
 
     /**
      * @var string
      */
-    public $homeDesc;
+    public $homeDesc='';
 
     /**
      * @var bool
@@ -120,10 +120,10 @@ class ItemMenu
 
 	/**
 	 * @param $idOptionMenu
-	 * @param $sLibelle
-	 * @param $bEstOptionMenu
+	 * @param string $sLibelle
+	 * @param bool $bEstOptionMenu
 	 */
-	public function __construct($idOptionMenu, $sLibelle, $bEstOptionMenu)
+	public function __construct($idOptionMenu, string $sLibelle, bool $bEstOptionMenu)
 	{
 		$this->idOptionMenu = is_string($idOptionMenu) ? $idOptionMenu : sprintf ( "%u", $idOptionMenu );
 		$this->title = str_replace('&&', '&', $sLibelle);
@@ -133,16 +133,16 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getIdMenuParent()
+    public function getIdMenuParent(): string
     {
         return $this->idMenuParent;
     }
 
     /**
-     * @param string $idMenuParent
+     * @param mixed $idMenuParent
      * @return $this
      */
-    public function setIdMenuParent($idMenuParent)
+    public function setIdMenuParent($idMenuParent): ItemMenu
     {
         $this->idMenuParent = is_string($idMenuParent) ? $idMenuParent : sprintf("%.0f", $idMenuParent);
         return $this;
@@ -151,34 +151,34 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getIdOptionMenu()
+    public function getIdOptionMenu(): string
     {
         return $this->idOptionMenu;
     }
 
     /**
-     * @param string $idOptionMenu
+     * @param mixed $idOptionMenu
      * @return $this
      */
-    public function setIdOptionMenu($idOptionMenu)
+    public function setIdOptionMenu($idOptionMenu): ItemMenu
     {
         $this->idOptionMenu = is_string($idOptionMenu) ? $idOptionMenu : sprintf("%.0f", $idOptionMenu);
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function isRootMenu()
+    public function isRootMenu(): bool
     {
         return $this->rootMenu;
     }
 
     /**
-     * @param boolean $rootMenu
+     * @param bool $rootMenu
      * @return $this
      */
-    public function setRootMenu($rootMenu)
+    public function setRootMenu(bool $rootMenu): ItemMenu
     {
         $this->rootMenu = $rootMenu;
         return $this;
@@ -187,16 +187,16 @@ class ItemMenu
     /**
      * @return boolean
      */
-    public function isOptionMenu()
+    public function isOptionMenu(): bool
     {
         return $this->optionMenu;
     }
 
     /**
-     * @param boolean $optionMenu
+     * @param bool $optionMenu
      * @return $this
      */
-    public function setOptionMenu($optionMenu)
+    public function setOptionMenu(bool $optionMenu): ItemMenu
     {
         $this->optionMenu = $optionMenu;
         return $this;
@@ -205,16 +205,16 @@ class ItemMenu
     /**
      * @return boolean
      */
-    public function isSeparator()
+    public function isSeparator(): bool
     {
         return $this->separator;
     }
 
     /**
-     * @param boolean $separator
+     * @param bool $separator
      * @return $this
      */
-    public function setSeparator($separator)
+    public function setSeparator(bool $separator): ItemMenu
     {
         $this->separator = $separator;
         return $this;
@@ -223,7 +223,7 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -232,7 +232,7 @@ class ItemMenu
      * @param string $title
      * @return $this
      */
-    public function setTitle($title)
+    public function setTitle(string $title): ItemMenu
     {
         $this->title = $title;
         return $this;
@@ -241,7 +241,7 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getIdAction()
+    public function getIdAction(): string
     {
         return $this->idAction;
     }
@@ -250,7 +250,7 @@ class ItemMenu
      * @param string $idAction
      * @return $this
      */
-    public function setIdAction($idAction)
+    public function setIdAction(string $idAction): ItemMenu
     {
         $this->idAction = is_string($idAction) ? $idAction : sprintf("%u", $idAction);
         return $this;
@@ -259,7 +259,7 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getCommand()
+    public function getCommand(): string
     {
         return $this->command;
     }
@@ -268,7 +268,7 @@ class ItemMenu
      * @param string $command
      * @return $this
      */
-    public function setCommand($command)
+    public function setCommand(string $command): ItemMenu
     {
         $this->command = $command;
         return $this;
@@ -277,7 +277,7 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getIconSmall()
+    public function getIconSmall(): string
     {
         return $this->iconSmall;
     }
@@ -286,7 +286,7 @@ class ItemMenu
      * @param string $iconSmall
      * @return $this
      */
-    public function setIconSmall($iconSmall)
+    public function setIconSmall(string $iconSmall): ItemMenu
     {
         $this->iconSmall = $iconSmall;
         return $this;
@@ -295,7 +295,7 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getIconBig()
+    public function getIconBig(): string
     {
         return $this->iconBig;
     }
@@ -304,7 +304,7 @@ class ItemMenu
      * @param string $iconBig
      * @return $this
      */
-    public function setIconBig($iconBig)
+    public function setIconBig(string $iconBig): ItemMenu
     {
         $this->iconBig = $iconBig;
         return $this;
@@ -313,7 +313,7 @@ class ItemMenu
     /**
      * @return array
      */
-    public function getTabOptions()
+    public function getTabOptions(): array
     {
         return $this->tabOptions;
     }
@@ -322,7 +322,7 @@ class ItemMenu
      * @param array $tabOptions
      * @return $this
      */
-    public function setTabOptions($tabOptions)
+    public function setTabOptions(array $tabOptions): ItemMenu
     {
         $this->tabOptions = $tabOptions;
         return $this;
@@ -331,7 +331,7 @@ class ItemMenu
     /**
      * @return int
      */
-    public function getHomeTypeDisplay()
+    public function getHomeTypeDisplay(): int
     {
         return $this->homeTypeDisplay;
     }
@@ -340,7 +340,7 @@ class ItemMenu
      * @param int $homeTypeDisplay
      * @return $this
      */
-    public function setHomeTypeDisplay($homeTypeDisplay)
+    public function setHomeTypeDisplay(int $homeTypeDisplay): ItemMenu
     {
         $this->homeTypeDisplay = $homeTypeDisplay;
         return $this;
@@ -349,7 +349,7 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getHomeTitle()
+    public function getHomeTitle(): string
     {
         return $this->homeTitle;
     }
@@ -358,7 +358,7 @@ class ItemMenu
      * @param string $homeTitle
      * @return $this
      */
-    public function setHomeTitle($homeTitle)
+    public function setHomeTitle(string $homeTitle): ItemMenu
     {
         $this->homeTitle = $homeTitle;
         return $this;
@@ -367,7 +367,7 @@ class ItemMenu
     /**
      * @return string
      */
-    public function getHomeDesc()
+    public function getHomeDesc(): string
     {
         return $this->homeDesc;
     }
@@ -376,7 +376,7 @@ class ItemMenu
      * @param string $homeDesc
      * @return $this
      */
-    public function setHomeDesc($homeDesc)
+    public function setHomeDesc(string $homeDesc): ItemMenu
     {
         $this->homeDesc = $homeDesc;
         return $this;
@@ -385,16 +385,16 @@ class ItemMenu
     /**
      * @return boolean
      */
-    public function isHomeWithImg()
+    public function isHomeWithImg(): bool
     {
         return $this->homeWithImg;
     }
 
     /**
-     * @param boolean $homeWithImg
+     * @param bool $homeWithImg
      * @return $this
      */
-    public function setHomeWithImg($homeWithImg)
+    public function setHomeWithImg(bool $homeWithImg): ItemMenu
     {
         $this->homeWithImg = $homeWithImg;
         return $this;
@@ -403,7 +403,7 @@ class ItemMenu
     /**
      * @return int
      */
-    public function getHomeWidth()
+    public function getHomeWidth(): int
     {
         return $this->homeWidth;
     }
@@ -412,7 +412,7 @@ class ItemMenu
      * @param int $homeWidth
      * @return $this
      */
-    public function setHomeWidth($homeWidth)
+    public function setHomeWidth(int $homeWidth): ItemMenu
     {
         $this->homeWidth = $homeWidth;
         return $this;
@@ -421,7 +421,7 @@ class ItemMenu
     /**
      * @return int
      */
-    public function getHomeHeight()
+    public function getHomeHeight(): int
     {
         return $this->homeHeight;
     }
@@ -430,7 +430,7 @@ class ItemMenu
      * @param int $homeHeight
      * @return $this
      */
-    public function setHomeHeight($homeHeight)
+    public function setHomeHeight(int $homeHeight): ItemMenu
     {
         $this->homeHeight = $homeHeight;
         return $this;
@@ -450,8 +450,8 @@ class ItemMenu
 	 * 3 - Libelle de l'option
 	 * @return bool
 	 */
-	public function isExecByAction()
-	{
+	public function isExecByAction(): bool
+    {
 		if (!empty($this->command))
 			return false;
 
@@ -469,8 +469,8 @@ class ItemMenu
 	 * retourne la phrase a executer
 	 * @return string
 	 */
-	public function getCommandToExec()
-	{
+	public function getCommandToExec(): string
+    {
 		if (!empty($this->command))
 			return $this->command;
 
@@ -484,7 +484,7 @@ class ItemMenu
     /**
      * @return bool
      */
-    public function isWithSmallIcon()
+    public function isWithSmallIcon(): bool
     {
         if (empty($this->iconSmall)){
             return false;
@@ -495,11 +495,9 @@ class ItemMenu
         }
 
         return true;
-
-        return !empty($this->iconSmall) && ($this->iconSmall != '0');
     }
 
-    public function isWithBigIcon()
+    public function isWithBigIcon(): bool
     {
         return !empty($this->iconBig) && ($this->iconBig != '0');
     }
@@ -507,7 +505,7 @@ class ItemMenu
      * @param ItemMenu $oOption
      * @return $this
      */
-    public function AddOptionMenu(ItemMenu $oOption)
+    public function AddOptionMenu(ItemMenu $oOption): ItemMenu
     {
         $this->tabOptions[]=$oOption;
         return $this;
@@ -518,7 +516,7 @@ class ItemMenu
      * @param $index
      * @return $this
      */
-    public function SetOptionMenuAt(ItemMenu $oOption, $index)
+    public function SetOptionMenuAt(ItemMenu $oOption, $index): ItemMenu
     {
         $this->tabOptions[$index]=$oOption;
         return $this;
@@ -528,7 +526,7 @@ class ItemMenu
      * @param $index
      * @return $this
      */
-    public function RemoveOptionMenuAt($index)
+    public function RemoveOptionMenuAt($index): ItemMenu
     {
         unset($this->tabOptions[$index]);
         return $this;
@@ -537,7 +535,7 @@ class ItemMenu
     /**
      * @return $this
      */
-    public function RemoveAll()
+    public function RemoveAll(): ItemMenu
     {
         $this->tabOptions=array();
         return $this;
@@ -547,7 +545,7 @@ class ItemMenu
      * true si contient au moins une option de menu qui n'est pas un séparateur
      * @return bool
      */
-    public function bIsEmpty()
+    public function bIsEmpty(): bool
     {
         foreach($this->tabOptions as $clOption)
         {
@@ -562,7 +560,7 @@ class ItemMenu
     /**
      * @return bool
      */
-    public function bFirstOptionIsSeparateur()
+    public function bFirstOptionIsSeparateur(): bool
     {
         if (empty($this->tabOptions))
         {
@@ -576,7 +574,7 @@ class ItemMenu
     /**
      * @return bool
      */
-    public function bLastOptionIsSeparateur()
+    public function bLastOptionIsSeparateur(): bool
     {
         if (empty($this->tabOptions))
         {
@@ -590,7 +588,7 @@ class ItemMenu
      * supprime la dernière option de menu
      * @return $this
      */
-    public function RemoveLastOption()
+    public function RemoveLastOption(): ItemMenu
     {
         array_pop($this->tabOptions);
         return $this;
@@ -600,14 +598,14 @@ class ItemMenu
      * supprime la première option de menu
      * @return $this
      */
-    public function RemoveFirstOption()
+    public function RemoveFirstOption(): ItemMenu
     {
         array_shift($this->tabOptions);
         return $this;
     }
 
 
-    public function TrimSeparateur()
+    public function TrimSeparateur(): ItemMenu
     {
         if ($this->bFirstOptionIsSeparateur())
             $this->RemoveFirstOption();
@@ -618,25 +616,25 @@ class ItemMenu
     }
 
 
-    public function isOverlay()
+    public function isOverlay(): bool
     {
         return  ($this->homeTypeDisplay==Langage::ICONCENTRAL_OverlayBottom)
             ||  ($this->homeTypeDisplay==Langage::ICONCENTRAL_OverlayTop)
             ||  ($this->homeTypeDisplay==Langage::ICONCENTRAL_OverlayMiddle);
     }
 
-    public function isTop()
+    public function isTop(): bool
     {
         return  ($this->homeTypeDisplay==Langage::ICONCENTRAL_TitreImgHelp)
                 ||  ($this->homeTypeDisplay==Langage::ICONCENTRAL_OverlayTop);
     }
 
-    public function isMiddle()
+    public function isMiddle(): bool
     {
         return  ($this->homeTypeDisplay==Langage::ICONCENTRAL_OverlayMiddle);
     }
 
-    public function isBottom()
+    public function isBottom(): bool
     {
         return  ($this->homeTypeDisplay==Langage::ICONCENTRAL_OverlayBottom);
     }

@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 class InfoButton
 {
     /**
-     * @var array
+     * @var string[]
      */
     private $m_TabOptions;
 
@@ -40,8 +40,9 @@ class InfoButton
 
     /**
      * @param string $option
+     * @return string|null
      */
-    public function getOption($option)
+    public function getOption(string $option): ?string
     {
         if (isset($this->m_TabOptions[$option]))
         {
@@ -53,7 +54,7 @@ class InfoButton
     /**
      * @return array
      */
-    public function getTabOption()
+    public function getTabOption(): array
     {
         return $this->m_TabOptions;
     }

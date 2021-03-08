@@ -22,16 +22,16 @@ class Element
 	/**
 	 * @return mixed
 	 */
-	public function getTitle()
-	{
+	public function getTitle(): string
+    {
 		return $this->m_sTitle;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	public function getID()
-	{
+	public function getID(): string
+    {
 		return $this->m_nID;
 	}
 }

@@ -10,7 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserXSDSchema;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXSDSchema;
 
 class StructureBouton extends StructureColonne
 {
@@ -20,16 +20,16 @@ class StructureBouton extends StructureColonne
 	 */
 	protected $m_clInfoBouton;
 
-	/** @var  string $m_ButtonID */
+	/** @var  string */
 	protected $m_ID;
 
-	/** @var StructureBouton[] $subButtons */
+	/** @var StructureBouton[] */
     protected $subButtons;
 
 	/**
 	 * @param \SimpleXMLElement $clAttribNOUT
 	 * @param \SimpleXMLElement $clAttribXS
-     * @param \SimpleXMLElement $subButtons
+     * @param \SimpleXMLElement|null $subButtons
 	 */
 	public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS, \SimpleXMLElement $subButtons = null)
 	{
@@ -69,26 +69,31 @@ class StructureBouton extends StructureColonne
     /**
      * @return StructureBouton[]
      */
-	public function getSubButtons() {
+	public function getSubButtons(): array
+    {
 	    return $this->subButtons;
     }
 
     /**
      * @return string
      */
-	public function getID(){
+	public function getID(): string
+    {
 	    return $this->m_ID;
     }
 
 	/**
 	 * @return InfoButton
 	 */
-	public function getInfoBouton()
-	{
+	public function getInfoBouton(): InfoButton
+    {
 		return $this->m_clInfoBouton;
 	}
 
-	public function isReadOnly()
+    /**
+     * @return bool
+     */
+	public function isReadOnly() : bool
 	{
         // Renvoit un booléen qui indique si le bouton est dispo en readOnly
         return Langage::s_isActionReadOnly($this->m_clInfoBouton->getOption(self::OPTION_IDTypeAction));

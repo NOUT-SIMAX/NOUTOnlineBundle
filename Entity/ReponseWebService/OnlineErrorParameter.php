@@ -21,7 +21,8 @@ class OnlineErrorParameter implements \JsonSerializable
 		$this->m_sValue = (string) $sValue;
 	}
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): array
+    {
         return array(
             'id'    => $this->m_nID,
             'title' => $this->m_sTitle,
@@ -40,15 +41,15 @@ class OnlineErrorParameter implements \JsonSerializable
 	/**
 	 * @return mixed
 	 */
-	public function getID()
-	{
+	public function getID(): string
+    {
 		return $this->m_nID;
 	}
 
-	/**
-	 * @param string $m_sTitle
-	 */
-	public function setTitle($m_sTitle)
+    /**
+     * @param string $m_sTitle
+     */
+	public function setTitle(string $m_sTitle)
 	{
 		$this->m_sTitle = $m_sTitle;
 	}
@@ -56,15 +57,15 @@ class OnlineErrorParameter implements \JsonSerializable
 	/**
 	 * @return string
 	 */
-	public function getTitle()
-	{
+	public function getTitle(): string
+    {
 		return $this->m_sTitle;
 	}
 
-	/**
-	 * @param string $m_sValue
-	 */
-	public function setValue($m_sValue)
+    /**
+     * @param string $m_sValue
+     */
+	public function setValue(string $m_sValue)
 	{
 		$this->m_sValue = $m_sValue;
 	}
@@ -72,8 +73,8 @@ class OnlineErrorParameter implements \JsonSerializable
 	/**
 	 * @return string
 	 */
-	public function getValue()
-	{
+	public function getValue(): string
+    {
 		return $this->m_sValue;
 	}
 }

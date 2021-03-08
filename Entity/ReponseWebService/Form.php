@@ -51,31 +51,33 @@ class Form
 	/**
 	 * @return string
 	 */
-	public function getTitle()
-	{
+	public function getTitle(): string
+    {
 		return $this->m_sTitle;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getID()
-	{
+	public function getID(): string
+    {
 		return $this->m_nID;
 	}
 
-    public function hasOrderBtn() {
+    public function hasOrderBtn(): bool
+    {
         return $this->m_bWithBtnOrderPossible;
     }
 
-    public function hasOrderActive() {
+    public function hasOrderActive(): bool
+    {
 	    return $this->m_bWithBtnOrderActive;
     }
 
     /**
      * @return ListSort[]
      */
-    public function getTabSort()
+    public function getTabSort(): array
     {
         return $this->m_TabSort;
     }

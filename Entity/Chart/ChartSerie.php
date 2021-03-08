@@ -1,7 +1,7 @@
 <?php
 
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Chart;
 
 
 class ChartSerie

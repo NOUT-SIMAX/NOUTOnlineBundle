@@ -50,11 +50,17 @@ abstract class StructureColonne
 	 * @param \SimpleXMLElement $clAttribNOUT
 	 * @return string
 	 */
-	static function s_getTypeColonne(\SimpleXMLElement $clAttribNOUT)
-	{
+	static function s_getTypeColonne(\SimpleXMLElement $clAttribNOUT): string
+    {
 		return (string) $clAttribNOUT[self::OPTION_TypeElement];
 	}
 
+    /**
+     * StructureColonne constructor.
+     * @param                   $sID
+     * @param \SimpleXMLElement $clAttribNOUT
+     * @param \SimpleXMLElement $clAttribXS
+     */
 	public function __construct($sID, \SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
 		$this->m_nIDColonne   = $sID;
@@ -68,6 +74,10 @@ abstract class StructureColonne
 		$this->_InitInfoColonne($clAttribNOUT, $clAttribXS);
 	}
 
+    /**
+     * @param \SimpleXMLElement $clAttribNOUT
+     * @param \SimpleXMLElement $clAttribXS
+     */
 	protected function _InitInfoColonne(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS)
 	{
 		$this->m_sLibelle     = (string) $clAttribNOUT[self::OPTION_Name];
@@ -83,8 +93,8 @@ abstract class StructureColonne
 	 * @param StructureElement $clStructElem
 	 * @return $this
 	 */
-	public function setStructureElementLie(StructureElement $clStructElem)
-	{
+	public function setStructureElementLie(StructureElement $clStructElem): StructureColonne
+    {
 		$this->m_clStructureElemLie = $clStructElem;
 		return $this;
 	}
@@ -92,15 +102,15 @@ abstract class StructureColonne
     /**
      * @return StructureElement|null
      */
-    public function getStructureElementLie()
+    public function getStructureElementLie(): ?StructureElement
     {
         return $this->m_clStructureElemLie;
     }
 
 	/**
-     * @return StructureElement|null
+     * @return array
      */
-    public function getTabOptions()
+    public function getTabOptions(): array
     {
         return $this->m_TabOptions;
     }
@@ -108,10 +118,10 @@ abstract class StructureColonne
 
     /**
      * pour savoir si fusion de colonne pour le multi-colonne
+     * @param $isParamcard
      * @return integer
-	 * Ajouter le paramètre pour ModeFiche ou ModeParametre
      */
-    public function eGetFusionTypeMulticolonne($isParamcard)
+    public function eGetFusionTypeMulticolonne($isParamcard): int
     {
 		// Règles fusion fiche et règles paramètres sont différentes
 		// à séparer avec if .. else
@@ -152,9 +162,10 @@ abstract class StructureColonne
 
     /**
      * pour savoir si cote a cote en multicolonne
+     * @param $isParamcard
      * @return integer
      */
-    public function eGetBuddyTypeMulticolonne($isParamcard)
+    public function eGetBuddyTypeMulticolonne($isParamcard): int
     {
         // Règles fusion fiche et règles paramètres sont différentes
 		// à séparer avec if .. else
@@ -180,6 +191,7 @@ abstract class StructureColonne
 
     /**
      * pour savoir si prend toute la place quand tout seul
+     * @param $isParamcard
      * @return integer
      */
     public function isWholeIfAlone($isParamcard)
@@ -205,8 +217,8 @@ abstract class StructureColonne
     }
 
 
-	public function bEstTypeSimple()
-	{
+	public function bEstTypeSimple(): bool
+    {
 		$aTypeSimple = array(
 			self::TM_Booleen,
 			self::TM_Entier,
@@ -221,7 +233,7 @@ abstract class StructureColonne
 		return in_array($this->m_eTypeElement, $aTypeSimple);
 	}
 
-    public function bAvecValeur()
+    public function bAvecValeur(): bool
     {
         $aTypeSimple = array(
             self::TM_Booleen,
@@ -247,16 +259,16 @@ abstract class StructureColonne
 	/**
 	 * @return mixed
 	 */
-	public function getIDColonne()
-	{
+	public function getIDColonne(): string
+    {
 		return $this->m_nIDColonne;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getLibelle()
-	{
+	public function getLibelle(): string
+    {
 		return $this->m_sLibelle;
 	}
 
@@ -264,8 +276,8 @@ abstract class StructureColonne
 	 * @param ColonneRestriction $clRestriction
 	 * @return $this
 	 */
-	public function setRestriction(ColonneRestriction $clRestriction)
-	{
+	public function setRestriction(ColonneRestriction $clRestriction): StructureColonne
+    {
 		$this->m_clRestriction = $clRestriction;
 
 		return $this;
@@ -274,14 +286,16 @@ abstract class StructureColonne
     /**
      * @return ColonneRestriction|null
      */
-    public function clGetRestriction() {
+    public function clGetRestriction(): ?ColonneRestriction
+    {
         return $this->m_clRestriction;
     }
 
     /**
      * @param $type
+     * @return array
      */
-    public function getRestriction($type)
+    public function getRestriction($type) :array
     {
         if ($this->m_clRestriction){
             return $this->m_clRestriction->getRestriction($type);
@@ -289,6 +303,10 @@ abstract class StructureColonne
         return array();
     }
 
+    /**
+     * @param $type
+     * @return array|string
+     */
     public function getIconRestriction($type)
     {
         if ($this->m_clRestriction){
@@ -300,17 +318,17 @@ abstract class StructureColonne
 	/**
 	 * @return string
 	 */
-	public function getTypeElement()
-	{
+	public function getTypeElement(): string
+    {
 		return $this->m_eTypeElement;
 	}
 
-	/**
-	 * @param $eTypeElement string
-	 * @return $this
-	 */
-	public function setTypeElement($eTypeElement)
-	{
+    /**
+     * @param $eTypeElement string
+     * @return $this
+     */
+	public function setTypeElement(string $eTypeElement): StructureColonne
+    {
 		$this->m_eTypeElement = $eTypeElement;
 
 		return $this;
@@ -321,8 +339,8 @@ abstract class StructureColonne
      * @param $sOption
      * @return bool
      */
-	public function isOption($sOption)
-	{
+	public function isOption($sOption): bool
+    {
 		if (!isset($this->m_TabOptions[$sOption]))
 		{
 			return false;
@@ -357,8 +375,8 @@ abstract class StructureColonne
      * @param $default
 	 * @return string|null
 	 */
-	public function getOption($sOption, $default=null)
-	{
+	public function getOption($sOption, $default=null): ?string
+    {
 		if (!isset($this->m_TabOptions[$sOption]))
 		{
 			return $default;
@@ -371,7 +389,7 @@ abstract class StructureColonne
      * vrai si le champ est un texte multiligne
      * @return bool
      */
-    public function isMultilineText()
+    public function isMultilineText(): bool
     {
         if (!$this->_isText()) {
             return false;
@@ -389,10 +407,13 @@ abstract class StructureColonne
         return !$this->_isLongTextMonoline();
     }
 
+    /**
+     * @return array|mixed|string|null
+     */
     public function getMaxLength()
     {
         if (!$this->_isText()) {
-            return ;
+            return null;
         }
 
         if (!is_null($this->m_clRestriction) && $this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_MAXLENGTH)){
@@ -400,6 +421,7 @@ abstract class StructureColonne
             return $this->m_clRestriction->getRestriction(ColonneRestriction::R_MAXLENGTH);
         }
 
+        return null;
     }
 
 
@@ -407,7 +429,7 @@ abstract class StructureColonne
      * vrai si le champ est un texte monoligne
      * @return bool
      */
-    protected function _isMonolineText()
+    protected function _isMonolineText(): bool
     {
         if (!$this->_isText() || ($this->m_eTypeElement == self::TM_HTML)){
             return false;
@@ -425,7 +447,8 @@ abstract class StructureColonne
      * vrai si c'est un texte qui est monoligne, même si pas restriction sur la longueur du champ
      * @return bool
      */
-    protected function _isLongTextMonoline(){
+    protected function _isLongTextMonoline(): bool
+    {
 
         // Texte multi-ligne (car pas de restriction de nombre de caractères)
         //certain modèle sont transformé en monoligne :
@@ -444,7 +467,7 @@ abstract class StructureColonne
         return false;
     }
 
-    protected function _isText()
+    protected function _isText(): bool
     {
         return ($this->m_eTypeElement == self::TM_Texte) || ($this->m_eTypeElement == self::TM_HTML);
     }
@@ -463,8 +486,8 @@ abstract class StructureColonne
 	 *
 	 * Gestion des cas particuliers avec options (par ex les Directory ou Couleurs ou Password)
 	 */
-	public function getFormType(bool $bForParam=false)
-	{
+	public function getFormType(bool $bForParam=false): string
+    {
 		switch ($this->m_eTypeElement)
 		{
 			case self::TM_Entier :
@@ -567,7 +590,7 @@ abstract class StructureColonne
      *
      * Retourne une liste de classe en fonction des options du modèle
      */
-    public function getFormClass()
+    public function getFormClass(): string
     {
         if ($this->isOption(self::OPTION_Modele_PostalCode)){
             return 'codepostal ';
@@ -691,8 +714,8 @@ abstract class StructureColonne
 	const OPTION_WatermarkAngle         = "watermarkAngle";
 
 
-	static public function s_GetModeleOption()
-	{
+	static public function s_GetModeleOption(): array
+    {
 		return array(
             self::OPTION_Modele_Barcode         ,
             self::OPTION_Modele_CreditCard      ,

@@ -6,7 +6,7 @@
  * Time: 14:13
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Chart;
 
 class ChartAxis
 {
@@ -42,7 +42,7 @@ class ChartAxis
     /**
      * @return string
      */
-	public function getID()
+	public function getID(): string
     {
         return $this->m_sID;
     }
@@ -50,7 +50,7 @@ class ChartAxis
     /**
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->m_sLabel;
     }
@@ -58,7 +58,7 @@ class ChartAxis
     /**
      * @return bool
      */
-    public function isCalculation()
+    public function isCalculation(): bool
     {
         return $this->m_bIsCalculation;
     }

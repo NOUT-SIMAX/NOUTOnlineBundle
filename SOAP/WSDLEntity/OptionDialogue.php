@@ -27,5 +27,7 @@ class OptionDialogue
 	public $LanguageCode; 			// integer
 	public $WithFieldStateControl; 	// integer
 	public $ListContentAsync; 		// integer
+	public $VersionMin; 		    // integer
+	public $VersionPref; 		    // integer
 }
 //***

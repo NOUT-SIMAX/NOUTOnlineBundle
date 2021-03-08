@@ -9,9 +9,9 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 
 class ConditionFileNPITest extends \PHPUnit_Framework_TestCase
 {
@@ -112,33 +112,33 @@ RESULTAT;
 
 		//=> A, B, ET, C, NOT, OU, NOT, D, E, F, OU, G, H, ET, ET, OU, OU, I, J, ET, K, L, ET, ET, M, ET, ET
 
-		$clFileNPI->EmpileCondition('A', ConditionColonne::COND_EQUAL, '1');
-		$clFileNPI->EmpileCondition('B', ConditionColonne::COND_DIFFERENT, '1');
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-		$clFileNPI->EmpileCondition('C', ConditionColonne::COND_LESS, '1');
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_NOT);
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_OR);
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_NOT);
-		$clFileNPI->EmpileCondition('D', ConditionColonne::COND_LESSOREQUAL, '1');
-		$clFileNPI->EmpileCondition('E', ConditionColonne::COND_BETTER, '1');
-		$clFileNPI->EmpileCondition('F', ConditionColonne::COND_BETTEROREQUAL, '1');
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_OR);
-		$clFileNPI->EmpileCondition('G', ConditionColonne::COND_WITHRIGHT, '1');
-		$clFileNPI->EmpileCondition('H', ConditionColonne::COND_BEGINWITHWORDBYWORD, 'a');
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_OR);
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_OR);
-		$clFileNPI->EmpileCondition('I', ConditionColonne::COND_BEGINWITH, 'a');
-		$clFileNPI->EmpileCondition('J', ConditionColonne::COND_CONTAIN, 'a');
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-		$clFileNPI->EmpileCondition('K', ConditionColonne::COND_DONOTBEGINWITH, 'a');
-		$clFileNPI->EmpileCondition('L', ConditionColonne::COND_DONOTENDWITH, 'a');
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-		$clFileNPI->EmpileCondition('M', ConditionColonne::COND_DONOTCONTAIN, 'a');
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-		$clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
+		$clFileNPI->EmpileCondition('A', CondType::COND_EQUAL, '1');
+		$clFileNPI->EmpileCondition('B', CondType::COND_DIFFERENT, '1');
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
+		$clFileNPI->EmpileCondition('C', CondType::COND_LESS, '1');
+		$clFileNPI->EmpileOperateur(Operator::OP_NOT);
+		$clFileNPI->EmpileOperateur(Operator::OP_OR);
+		$clFileNPI->EmpileOperateur(Operator::OP_NOT);
+		$clFileNPI->EmpileCondition('D', CondType::COND_LESSOREQUAL, '1');
+		$clFileNPI->EmpileCondition('E', CondType::COND_BETTER, '1');
+		$clFileNPI->EmpileCondition('F', CondType::COND_BETTEROREQUAL, '1');
+		$clFileNPI->EmpileOperateur(Operator::OP_OR);
+		$clFileNPI->EmpileCondition('G', CondType::COND_WITHRIGHT, '1');
+		$clFileNPI->EmpileCondition('H', CondType::COND_BEGINWITHWORDBYWORD, 'a');
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
+		$clFileNPI->EmpileOperateur(Operator::OP_OR);
+		$clFileNPI->EmpileOperateur(Operator::OP_OR);
+		$clFileNPI->EmpileCondition('I', CondType::COND_BEGINWITH, 'a');
+		$clFileNPI->EmpileCondition('J', CondType::COND_CONTAIN, 'a');
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
+		$clFileNPI->EmpileCondition('K', CondType::COND_DONOTBEGINWITH, 'a');
+		$clFileNPI->EmpileCondition('L', CondType::COND_DONOTENDWITH, 'a');
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
+		$clFileNPI->EmpileCondition('M', CondType::COND_DONOTCONTAIN, 'a');
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
+		$clFileNPI->EmpileOperateur(Operator::OP_AND);
 
 		$sSoap = $clFileNPI->sToSoap();
 

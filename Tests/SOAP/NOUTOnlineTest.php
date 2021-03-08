@@ -16,7 +16,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CalculationListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ReorderSubList;
@@ -58,6 +57,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 /**
  * Class NOUTOnlineTest
@@ -117,7 +117,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _clGetUsernameToken()
 	{
-		return new UsernameToken('superviseur', '');
+		return new UsernamePasswordToken('superviseur', '');
 	}
 
 	/**
@@ -832,7 +832,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$clFileNPI = new ConditionFileNPI();
-		$clFileNPI->EmpileCondition('Invalide', ConditionColonne::COND_EQUAL, 1);
+		$clFileNPI->EmpileCondition('Invalide', CondType::COND_EQUAL, 1);
 		$CondList = $clFileNPI->sToSoap();
 
 		$table = 'utilisateur';
@@ -864,7 +864,7 @@ class NOUTOnlineTest extends \PHPUnit_Framework_TestCase
 		$sTokenSession = $this->testGetTokenSession_OK();
 
 		$clFileNPI = new ConditionFileNPI();
-		$clFileNPI->EmpileCondition('8521', ConditionColonne::COND_EQUAL, 8267);
+		$clFileNPI->EmpileCondition('8521', CondType::COND_EQUAL, 8267);
 		$CondList = $clFileNPI->sToSoap();
 		$table = '8267';
 

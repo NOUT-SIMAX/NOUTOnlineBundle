@@ -13,7 +13,8 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\FolderList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
@@ -29,24 +30,21 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondColumn;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondValue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionOperateur;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\CondListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Factory\CondListTypeFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\OperatorType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserRecordList;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserScheduler;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXmlXsd;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserScheduler;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserXSDSchema;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXSDSchema;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
@@ -451,7 +449,7 @@ class NOUTClient
         $aTabColonne = array();
 
         $clFileNPI = new ConditionFileNPI();
-        $clFileNPI->EmpileCondition($idCol, ConditionColonne::COND_DIFFERENT, '');
+        $clFileNPI->EmpileCondition($idCol, CondType::COND_DIFFERENT, '');
 
 
         $aTabHeaderSuppl = array(
@@ -481,21 +479,21 @@ class NOUTClient
         $clFileNPI = new ConditionFileNPI();
 
         //les options de menu qui servent de séparateur
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, ConditionColonne::COND_EQUAL, '');
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Libelle, ConditionColonne::COND_EQUAL, '-');
-        $clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Commande, ConditionColonne::COND_EQUAL, '');
-        $clFileNPI->EmpileOperateur(ConditionOperateur::OP_AND);
+        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_EQUAL, '');
+        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Libelle, CondType::COND_EQUAL, '-');
+        $clFileNPI->EmpileOperateur(Operator::OP_AND);
+        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Commande, CondType::COND_EQUAL, '');
+        $clFileNPI->EmpileOperateur(Operator::OP_AND);
 
         //les options de menu sur lesquelles les droits sont accordés
         if ($this->m_clSOAPProxy->getGestionWSDL()->bGere(GestionWSDL::OPT_MenuVisible))
         {
-            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, ConditionColonne::COND_MENUVISIBLE, 1);
+            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, CondType::COND_MENUVISIBLE, 1);
         } else
         {
-            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, ConditionColonne::COND_WITHRIGHT, 1);
+            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_WITHRIGHT, 1);
         }
-        $clFileNPI->EmpileOperateur(ConditionOperateur::OP_OR);
+        $clFileNPI->EmpileOperateur(Operator::OP_OR);
         $aTabHeaderSuppl = array(
             SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
         );
@@ -633,19 +631,19 @@ class NOUTClient
      */
     protected function __oGetItemMenu(\stdClass $objSrc)
     {
-        $itemMenu = new ItemMenu($objSrc->id, $objSrc->title, $objSrc->is_menu_option);
+        $itemMenu = new ItemMenu($objSrc->id, $objSrc->title, boolval($objSrc->is_menu_option));
         $itemMenu
-            ->setSeparator($objSrc->is_separator)
-            ->setRootMenu($objSrc->is_root)
+            ->setSeparator(boolval($objSrc->is_separator))
+            ->setRootMenu(boolval($objSrc->is_root))
             ->setIdAction($objSrc->idaction)
             ->setCommand($objSrc->command)
             ->setIconBig($objSrc->icon_big)
             ->setIconSmall($objSrc->icon_small)
-            ->setHomeWithImg($objSrc->home_withimg)
+            ->setHomeWithImg(boolval($objSrc->home_withimg))
             ->setHomeDesc($objSrc->home_desc)
             ->setHomeTitle($objSrc->home_title)
-            ->setHomeWidth($objSrc->home_width)
-            ->setHomeHeight($objSrc->home_height);
+            ->setHomeWidth(intval($objSrc->home_width))
+            ->setHomeHeight(intval($objSrc->home_height));
 
         if (count($objSrc->tab_options) > 0)
         {
@@ -958,7 +956,7 @@ class NOUTClient
             new CondValue('1')
         );
 
-        $operator = new Operator(OperatorType::OP_AND);
+        $operator = new Operator(Operator::OP_AND);
         $operator->addCondition($default_export_action)
             ->addCondition($has_rights);
 
@@ -1082,7 +1080,7 @@ class NOUTClient
             new CondType(CondType::COND_EQUAL),
             new CondValue($eTypeAction)
         );
-        $operator = new Operator(OperatorType::OP_AND);
+        $operator = new Operator(Operator::OP_AND);
         $operator->addCondition($table_actions)
             ->addCondition($has_rights)
             ->addCondition($type_actions);
@@ -1394,7 +1392,7 @@ class NOUTClient
                 $clResponseParser = new ReponseWSParser();
                 $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
-                /** @var ParserRecordList $clParser */
+                /** @var ParserXmlXsd $clParser */
                 $clActionResult->setData($clParser->getRecord($clReponseXML));
                 $clActionResult->setValidateError($clReponseXML->getValidateError());
 
@@ -1496,6 +1494,14 @@ class NOUTClient
             //pour la gestion des graphes
             case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
             {
+                // Instance d'un parser
+                $clResponseParser = new ReponseWSParser();
+
+                /** @var ParserNumberOfChart $clParser */
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+
+
                 $clActionResult->setData($clReponseXML->nGetNumberOfChart());
                 break;
             }

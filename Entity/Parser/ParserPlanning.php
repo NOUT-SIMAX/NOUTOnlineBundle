@@ -6,12 +6,15 @@
  * Time: 16:22
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 
 
 /*
  * Parser pour le VIEUX planning (ancien site)
  */
+
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Event;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 class ParserPlanning extends Parser
 {
@@ -28,7 +31,7 @@ class ParserPlanning extends Parser
 	 */
 	public $m_TabEventPlanning;
 
-	public function TypeEvent2Color(\SimpleXMLElement $clSchema)
+	protected function _TypeEvent2Color(\SimpleXMLElement $clSchema)
 	{
 		$ndLayout = $clSchema->element->children(self::NAMESPACE_NOUT_XSD)->layout;
 
@@ -48,9 +51,17 @@ class ParserPlanning extends Parser
 		}
 	}
 
-
-	public function Parse(\SimpleXMLElement $clXML)
+    /**
+     * @param XMLResponseWS $clXMLReponseWS
+     */
+	public function Parse(XMLResponseWS $clXMLReponseWS)
 	{
+        $ndSchema    = $clXMLReponseWS->getNodeSchema();
+        $this->_TypeEvent2Color($ndSchema);
+
+        //\SimpleXMLElement $clXML
+        $clXML = $clXMLReponseWS->getNodeXML();
+
 		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
 		if (count($clXML->children())>0)
 		{

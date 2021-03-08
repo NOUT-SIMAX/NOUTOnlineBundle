@@ -9,7 +9,6 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 
 class ActionResultCache
 {
@@ -57,8 +56,8 @@ class ActionResultCache
 	 * @param Response $response
 	 * @return Response
 	 */
-	public function InitResponseCache(Response $response)
-	{
+	public function InitResponseCache(Response $response): Response
+    {
 		if ($this->m_eTypeCache == self::TYPECACHE_Public)
 			$response->setPublic();
 		else if ($this->m_eTypeCache == self::TYPECACHE_Private)
@@ -82,12 +81,12 @@ class ActionResultCache
 		return $response;
 	}
 
-	/**
-	 * @param $eTypeCache string
-	 * @return $this;
-	 */
-	public function setTypeCache($eTypeCache)
-	{
+    /**
+     * @param $eTypeCache string
+     * @return $this;
+     */
+	public function setTypeCache(string $eTypeCache): ActionResultCache
+    {
 		if (in_array($eTypeCache, array(self::TYPECACHE_None, self::TYPECACHE_Private, self::TYPECACHE_Public)))
 			$this->m_eTypeCache = $eTypeCache;
 
@@ -98,48 +97,48 @@ class ActionResultCache
 	 * @param \DateTime $clExpires
 	 * @return $this
 	 */
-	public function setExpires(\DateTime $clExpires)
-	{
+	public function setExpires(\DateTime $clExpires): ActionResultCache
+    {
 		$this->m_clExpires = $clExpires;
 		return $this;
 	}
 
-	/**
-	 * @param int $nMaxAge
-	 * @return $this
-	 */
-	public function setMaxAge($nMaxAge)
-	{
+    /**
+     * @param int $nMaxAge
+     * @return $this
+     */
+	public function setMaxAge(int $nMaxAge): ActionResultCache
+    {
 		$this->m_nMaxAge = $nMaxAge;
 		return $this;
 	}
 
-	/**
-	 * @param int $nSharedMaxAge
-	 * @return $this
-	 */
-	public function setSharedMaxAge($nSharedMaxAge)
-	{
+    /**
+     * @param int $nSharedMaxAge
+     * @return $this
+     */
+	public function setSharedMaxAge(int $nSharedMaxAge): ActionResultCache
+    {
 		$this->m_nSharedMaxAge = $nSharedMaxAge;
 		return $this;
 	}
 
-	/**
-	 * @param string $sETAG
-	 * @return $this
-	 */
-	public function setETAG($sETAG)
-	{
+    /**
+     * @param string $sETAG
+     * @return $this
+     */
+	public function setETAG(string $sETAG): ActionResultCache
+    {
 		$this->m_sETAG = $sETAG;
 		return $this;
 	}
 
 	/**
-	 * @param \DateTime $sLastModified
+	 * @param \DateTime $lastModified
 	 * @return $this
 	 */
-	public function setLastModified(\DateTime $lastModified)
-	{
+	public function setLastModified(\DateTime $lastModified): ActionResultCache
+    {
 		$this->m_lastModified = $lastModified;
 		return $this;
 	}

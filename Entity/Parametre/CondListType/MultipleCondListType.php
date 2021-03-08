@@ -16,12 +16,19 @@ class MultipleCondListType extends CondListType
     /** @var  Operator $operator */
     public $Operator;
 
-    public function __construct($operator)
+    /**
+     * MultipleCondListType constructor.
+     * @param Operator $operator
+     */
+    public function __construct(Operator $operator)
     {
         $this->Operator = $operator;
     }
 
-    public function getContent()
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         return $this->Operator->sToSoap();
     }

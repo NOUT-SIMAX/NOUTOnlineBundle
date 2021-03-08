@@ -19,63 +19,63 @@ class ConfigurationDialogue
 	/**
 	 * @var string
 	 */
-	protected $m_sWSDLUri;
+	protected $m_sWSDLUri='';
 	/**
 	 * @var bool
 	 */
-	protected $m_bWsdl;
+	protected $m_bWsdl=true;
 	/**
 	 * @var string
 	 */
-	protected $m_sHost;
+	protected $m_sHost='';
 	/**
 	 * @var int
 	 */
-	protected $m_nPort;
+	protected $m_nPort=0;
 	/**
 	 * @var string
 	 */
-	protected $m_sProtocolPrefix;
+	protected $m_sProtocolPrefix='';
 	/**
 	 * @var int
 	 */
-	protected $m_nLangCode;
+	protected $m_nLangCode=0;
 	/**
 	 * @var string
 	 */
-	protected $m_sAPIUUID;
+	protected $m_sAPIUUID='';
 	/**
 	 * @var int
 	 */
-	protected $m_nDureeSession;
+	protected $m_nDureeSession=3600;
 
     /**
      * @var int
      */
-    protected $m_nVersionDialoguePref;
+    protected $m_nVersionDialoguePref=1;
 	/**
 	 * @var string
 	 */
-	protected $m_sServiceAddress;
+	protected $m_sServiceAddress='';
 
 	/**
 	 * @var string
 	 */
-	protected $m_sVersion;
+	protected $m_sVersion='';
 	/**
 	 * @var string
 	 */
-	protected $m_sSociete;
-
-    /**
-     * @var string
-     */
-    protected $m_sModeAuth;
+	protected $m_sSociete='';
 
     /**
      * @var string
      */
-    protected $m_sSecret;
+    protected $m_sModeAuth='';
+
+    /**
+     * @var string
+     */
+    protected $m_sSecret='';
 
 	public function __construct(
         DynamicConfigurationLoader $loader,
@@ -100,14 +100,9 @@ class ConfigurationDialogue
         if (!empty($this->m_sAPIUUID)){
             $this->m_sWSDLUri.='!&APIUUID='.urlencode($this->m_sAPIUUID);
         }
-		$this->m_bWsdl          = true;
 		$this->m_sHost          = $sHost;
 		$this->m_nPort          = $sPort;
 		$this->m_sProtocolPrefix = $sProtocolPrefix;
-
-		$this->m_nLangCode    = 0;
-		$this->m_nDureeSession = 3600;
-
 
         $this->m_sModeAuth = isset($aAuth['mode']) ? $aAuth['mode'] : '';
         $this->m_sSecret = isset($aAuth['secret']) ? $aAuth['secret'] : '';
@@ -134,8 +129,8 @@ class ConfigurationDialogue
 	/**
 	 * @return boolean
 	 */
-	public function getWsdl()
-	{
+	public function getWsdl(): bool
+    {
 		return $this->m_bWsdl;
 	}
 
@@ -143,8 +138,8 @@ class ConfigurationDialogue
 	 * @param int $nDureeSession
      * @return $this
 	 */
-	public function setDureeSession(int $nDureeSession)
-	{
+	public function setDureeSession(int $nDureeSession): ConfigurationDialogue
+    {
 		$this->m_nDureeSession = $nDureeSession;
 
 		return $this;
@@ -153,8 +148,8 @@ class ConfigurationDialogue
 	/**
 	 * @return int
 	 */
-	public function getDureeSession()
-	{
+	public function getDureeSession(): int
+    {
 		return $this->m_nDureeSession;
 	}
 
@@ -162,8 +157,8 @@ class ConfigurationDialogue
 	 * @param int $nLangCode
      * @return $this
 	 */
-	public function setLangCode(int $nLangCode)
-	{
+	public function setLangCode(int $nLangCode): ConfigurationDialogue
+    {
 		$this->m_nLangCode = $nLangCode;
 
 		return $this;
@@ -172,16 +167,16 @@ class ConfigurationDialogue
 	/**
 	 * @return int
 	 */
-	public function getLangCode()
-	{
+	public function getLangCode(): int
+    {
 		return $this->m_nLangCode;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getPort()
-	{
+	public function getPort(): int
+    {
 		return $this->m_nPort;
 	}
 
@@ -189,8 +184,8 @@ class ConfigurationDialogue
 	 * @param string $sAPIUUID
      * @return $this
 	 */
-	public function setAPIUUID(string $sAPIUUID)
-	{
+	public function setAPIUUID(string $sAPIUUID): ConfigurationDialogue
+    {
 		$this->m_sAPIUUID = $sAPIUUID;
 
 		return $this;
@@ -199,62 +194,62 @@ class ConfigurationDialogue
 	/**
 	 * @return string
 	 */
-	public function getAPIUUID()
-	{
+	public function getAPIUUID(): string
+    {
 		return $this->m_sAPIUUID;
 	}
 	/**
 	 * @return string
 	 */
-	public function getHost()
-	{
+	public function getHost(): string
+    {
 		return $this->m_sHost;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getProtocolPrefix()
-	{
+	public function getProtocolPrefix(): string
+    {
 		return $this->m_sProtocolPrefix;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getServiceAddress()
-	{
+	public function getServiceAddress(): string
+    {
 		return $this->m_sServiceAddress;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getWSDLUri()
-	{
+	public function getWSDLUri(): string
+    {
 		return $this->m_sWSDLUri;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getVersion()
-	{
+	public function getVersion(): string
+    {
 		return $this->m_sVersion;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getSociete()
-	{
+	public function getSociete(): string
+    {
 		return $this->m_sSociete;
 	}
 
     /**
      * @return int
      */
-	public function getVersionDialoguePref()
+	public function getVersionDialoguePref(): int
     {
         return $this->m_nVersionDialoguePref;
     }
@@ -262,7 +257,7 @@ class ConfigurationDialogue
     /**
      * @return string
      */
-    public function getSecret()
+    public function getSecret(): string
     {
         return $this->m_sSecret;
     }
@@ -270,7 +265,7 @@ class ConfigurationDialogue
     /**
      * @return string
      */
-    public function getModeAuth()
+    public function getModeAuth(): string
     {
         return $this->m_sModeAuth;
     }

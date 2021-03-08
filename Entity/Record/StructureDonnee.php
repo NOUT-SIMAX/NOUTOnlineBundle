@@ -12,7 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 class StructureDonnee extends StructureColonne
 {
 	/**
-	 * @var colonne obligatoire
+	 * @var bool colonne obligatoire
 	 */
 	protected $m_bRequired;
 
@@ -28,10 +28,11 @@ class StructureDonnee extends StructureColonne
 		$this->m_bRequired = (isset($clAttribXS['use']) && ((string) $clAttribXS['use'] === 'required')); //xs:use="required"
 	}
 
-
-
-
-	public function isOption($sOption)
+    /**
+     * @param $sOption
+     * @return bool
+     */
+	public function isOption($sOption): bool
 	{
 		//les options qui viennent de membres
 		switch ($sOption)

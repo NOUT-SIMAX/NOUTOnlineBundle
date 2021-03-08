@@ -10,7 +10,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ListSort;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 
 /**
  * Class RecordList, Description d'une liste d'enregistrement
@@ -22,38 +21,38 @@ class RecordList
     /**
      * @var string $m_sTitle : contient la mini desc de l'action qui a retournée une liste
      */
-    protected $m_sTitle;
+    protected $m_sTitle='';
 
     /**
      * @var string $m_sIDAction : identifiant de l'action
      */
-    protected $m_sIDAction;
+    protected $m_sIDAction='';
 
     /**
      * @var Record $m_clRecordParam : contient l'enregistrement qui correspond à la fiche
      */
-    protected $m_clRecordParam;
+    protected $m_clRecordParam=null;
 
     /**
      * @var RecordCache $m_clRecordCache : Contient les données de la fiche
      */
-    protected $m_clRecordCache;
+    protected $m_clRecordCache=null;
 
     /**
      * @var string $m_nIDTableau : identifiant du formulaire
      */
-    protected $m_nIDTableau;
+    protected $m_nIDTableau='';
 
     /**
      * @var StructureElement
      */
-    protected $m_clStructElem;
+    protected $m_clStructElem=null;
 
     /**
      * @var EnregTableauArray;
      * tableau qui contient les identifiants des enregistrements avec conservation de l'ordre de la réponse
      */
-    protected $m_TabEnregTableau;
+    protected $m_TabEnregTableau=null;
 
     /**
      * @var array
@@ -65,25 +64,25 @@ class RecordList
      * @var string
      * tableau qui contient les types d'affichage possible
      */
-    protected $m_eDefaultDisplayMode;
+    protected $m_eDefaultDisplayMode='';
 
     /**
      * @var boolean $m_bPossibleReorder - Indicates wether the user should be able to reorder the recordlist
      */
-    protected $m_bPossibleReorder;
+    protected $m_bPossibleReorder=false;
 
     /**
      * @var bool
      */
-    protected $m_bActiveReorder;
+    protected $m_bActiveReorder=false;
 
     /**
-     * @var
+     * @var array
      */
     protected $m_TabExports;
 
     /**
-     * @var
+     * @var array
      */
     protected $m_TabImports;
 
@@ -102,15 +101,15 @@ class RecordList
      * @param $sTitle
      * @param $sIDAction
      * @param $sIDForm
-     * @param $TabIDEnreg
-     * @param $clStructElem
+     * @param EnregTableauArray $TabIDEnreg
+     * @param StructureElement $clStructElem
      * @param $possibleReorder
      * @param $activeReorder
      * @param $exports
      * @param $imports
      * @param $tabSort
      */
-    public function __construct($sTitle, $sIDAction, $sIDForm, $TabIDEnreg, $clStructElem, $possibleReorder, $activeReorder, $exports, $imports, $tabSort=array())
+    public function __construct($sTitle, $sIDAction, $sIDForm, EnregTableauArray $TabIDEnreg, StructureElement $clStructElem, $possibleReorder, $activeReorder, array $exports, array $imports, $tabSort=array())
     {
         $this->m_sTitle = $sTitle;
         $this->m_sIDAction = $sIDAction;
@@ -125,10 +124,10 @@ class RecordList
     }
 
     /**
-     * @param Record $clRecordParam
+     * @param Record|null $clRecordParam
      * @return $this
      */
-    public function setParam(Record $clRecordParam=null)
+    public function setParam(Record $clRecordParam=null): RecordList
     {
         $this->m_clRecordParam = $clRecordParam;
         return $this;
@@ -138,7 +137,7 @@ class RecordList
      * @param $clRecordCache
      * @return $this
      */
-    public function setRecordCache($clRecordCache=null)
+    public function setRecordCache($clRecordCache=null): RecordList
     {
         $this->m_clRecordCache = $clRecordCache;
         return $this;
@@ -147,7 +146,7 @@ class RecordList
     /**
      * @return Record
      */
-    public function getParameters()
+    public function getParameters(): ?Record
     {
         return $this->m_clRecordParam;
     }
@@ -155,7 +154,7 @@ class RecordList
     /**
      * @return string
      */
-    public function getIDAction()
+    public function getIDAction(): string
     {
         return $this->m_sIDAction;
     }
@@ -163,7 +162,7 @@ class RecordList
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->m_sTitle;
     }
@@ -171,7 +170,7 @@ class RecordList
     /**
      * @return StructureElement
      */
-    public function getStructElem()
+    public function getStructElem(): StructureElement
     {
         return $this->m_clStructElem;
     }
@@ -179,7 +178,7 @@ class RecordList
     /**
      * @return RecordCache
      */
-    public function getRecordCache()
+    public function getRecordCache(): RecordCache
     {
         return $this->m_clRecordCache;
     }
@@ -187,7 +186,7 @@ class RecordList
     /**
      * @return EnregTableauArray
      */
-    public function getTabIDEnreg()
+    public function getTabIDEnreg(): EnregTableauArray
     {
         return $this->m_TabEnregTableau;
     }
@@ -195,7 +194,7 @@ class RecordList
     /**
      * @return string
      */
-    public function getIDTableau()
+    public function getIDTableau(): string
     {
         return $this->m_nIDTableau;
     }
@@ -203,7 +202,7 @@ class RecordList
     /**
      * @return array
      */
-    public function getTabPossibleDisplayMode()
+    public function getTabPossibleDisplayMode(): array
     {
         return $this->m_TabPossibleDisplayMode;
     }
@@ -211,21 +210,23 @@ class RecordList
     /**
      * @return array
      */
-    public function getExports() {
+    public function getExports(): array
+    {
         return $this->m_TabExports;
     }
 
     /**
      * @return array
      */
-    public function getImports() {
+    public function getImports(): array
+    {
         return $this->m_TabImports;
     }
 
     /**
      * @return ListSort[]
      */
-    public function getTabSort()
+    public function getTabSort(): array
     {
         return $this->m_TabSort;
     }
@@ -241,16 +242,16 @@ class RecordList
     /**
      * @return Count|null
      */
-    public function getCount()
+    public function getCount(): ?Count
     {
         return $this->m_clCount;
     }
 
     /**
-     * @param array $tabPossibleDisplayMode
+     * @param array|null $tabPossibleDisplayMode
      * @return $this
      */
-    public function setTabPossibleDisplayMode($tabPossibleDisplayMode)
+    public function setTabPossibleDisplayMode(array $tabPossibleDisplayMode=null): RecordList
     {
         $this->m_TabPossibleDisplayMode = $tabPossibleDisplayMode;
         return $this;
@@ -260,24 +261,26 @@ class RecordList
      * @param $eDisplayMode
      * @return $this
      */
-    public function addPossibleDisplayMode($eDisplayMode)
+    public function addPossibleDisplayMode($eDisplayMode): RecordList
     {
         $this->m_TabPossibleDisplayMode[]=$eDisplayMode;
         return $this;
     }
 
-    public function hasPossibleReorder() {
+    public function hasPossibleReorder(): bool
+    {
         return $this->m_bPossibleReorder;
     }
 
-    public function hasActiveReorder() {
+    public function hasActiveReorder(): bool
+    {
         return $this->m_bActiveReorder;
     }
 
     /**
      * @return string
      */
-    public function getDefaultDisplayMode()
+    public function getDefaultDisplayMode(): string
     {
         return $this->m_eDefaultDisplayMode;
     }
@@ -286,7 +289,7 @@ class RecordList
      * @param string $eDefaultDisplayMode
      * @return $this
      */
-    public function setDefaultDisplayMode($eDefaultDisplayMode)
+    public function setDefaultDisplayMode(string $eDefaultDisplayMode): RecordList
     {
         $this->m_eDefaultDisplayMode = $eDefaultDisplayMode;
         return $this;

@@ -23,22 +23,28 @@ class Condition extends SOAPParameter
     /**
      * Condition constructor.
      * @param CondColumn $condColumn
-     * @param CondType $condType
-     * @param CondValue $condValue
+     * @param CondType   $condType
+     * @param CondValue  $condValue
      */
-    public function __construct($condColumn, $condType, $condValue)
+    public function __construct(CondColumn $condColumn, CondType $condType, CondValue $condValue)
     {
         $this->CondType = $condType;
         $this->CondCol = $condColumn;
         $this->CondValue = $condValue;
     }
 
-    public function getClosingTag()
+    /**
+     * @return string
+     */
+    public function getClosingTag(): string
     {
         return '</Condition>';
     }
 
-    public function getContent()
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         $content = $this->CondCol->sToSoap();
         $content .= $this->CondType->sToSoap();
@@ -46,7 +52,10 @@ class Condition extends SOAPParameter
         return $content;
     }
 
-    public function getOpeningTag()
+    /**
+     * @return string
+     */
+    public function getOpeningTag(): string
     {
         return '<Condition>';
     }

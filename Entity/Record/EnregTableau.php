@@ -13,12 +13,12 @@ class EnregTableau
 	/**
 	 * @var string
 	 */
-	public $m_nIDEnreg;
+	public $m_nIDEnreg='';
 
 	/**
 	 * @var string
 	 */
-	public $m_nIDTableau;
+	public $m_nIDTableau='';
 
 	public function __construct($nIDTableau = '', $nIDEnreg = '')
 	{
@@ -27,10 +27,11 @@ class EnregTableau
 	}
 
 	/**
-	 * @param string $m_nIDEnreg
+	 * @param $nIDEnreg
+     * @return $this
 	 */
-	public function setIDEnreg($nIDEnreg)
-	{
+	public function setIDEnreg($nIDEnreg): EnregTableau
+    {
 		$this->m_nIDEnreg = (string) $nIDEnreg;
 
 		return $this;
@@ -39,16 +40,17 @@ class EnregTableau
 	/**
 	 * @return string
 	 */
-	public function getIDEnreg()
-	{
+	public function getIDEnreg(): string
+    {
 		return $this->m_nIDEnreg;
 	}
 
 	/**
-	 * @param string $m_nIDTableau
+	 * @param $nIDTableau
+     * @return $this
 	 */
-	public function setIDTableau($nIDTableau)
-	{
+	public function setIDTableau($nIDTableau): EnregTableau
+    {
 		$this->m_nIDTableau = (string) $nIDTableau;
 
 		return $this;
@@ -57,8 +59,8 @@ class EnregTableau
 	/**
 	 * @return string
 	 */
-	public function getIDTableau()
-	{
+	public function getIDTableau(): string
+    {
 		return $this->m_nIDTableau;
 	}
 }

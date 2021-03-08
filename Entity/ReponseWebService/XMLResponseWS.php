@@ -112,16 +112,16 @@ class XMLResponseWS
 	/**
 	 * @return string
 	 */
-	public function sGetXML()
-	{
+	public function sGetXML(): string
+    {
 		return $this->m_sXML;
 	}
 
 	/**
 	 * retourne vrai si le retour est une erreur
 	 */
-	public function bIsFault()
-	{
+	public function bIsFault(): bool
+    {
 		return isset($this->m_TabError);
 	}
 
@@ -141,8 +141,8 @@ class XMLResponseWS
 	/**
 	 * @return int
 	 */
-	public function getNumError()
-	{
+	public function getNumError(): int
+    {
 		if (!isset($this->m_TabError))
 		{
 			return 0;
@@ -154,8 +154,8 @@ class XMLResponseWS
 	/**
 	 * @return int
 	 */
-	public function getCatError()
-	{
+	public function getCatError(): int
+    {
 		if (!isset($this->m_TabError))
 		{
 			return 0;
@@ -167,8 +167,8 @@ class XMLResponseWS
 	/**
 	 * @return string
 	 */
-	public function getMessError()
-	{
+	public function getMessError(): string
+    {
 		if (!isset($this->m_TabError))
 		{
 			return '';
@@ -181,8 +181,8 @@ class XMLResponseWS
 	 * renvoi le type de retour
 	 * @return string
 	 */
-	public function sGetReturnType()
-	{
+	public function sGetReturnType(): string
+    {
 		return (string) $this->m_ndHeader->children()->ReturnType;
 	}
 
@@ -190,8 +190,8 @@ class XMLResponseWS
 	 * renvoi l'identifiant du contexte d'action
 	 * @return string
 	 */
-	public function sGetActionContext()
-	{
+	public function sGetActionContext(): string
+    {
 		return (string) $this->m_ndHeader->children()->ActionContext;
 	}
 
@@ -199,7 +199,7 @@ class XMLResponseWS
      * renvoi l'identifiant du contexte d'action
      * @return string
      */
-    public function sGetContextToValidateOnClose()
+    public function sGetContextToValidateOnClose(): string
     {
         return (string) $this->m_ndHeader->children()->ContextToValidateOnClose;
     }
@@ -208,7 +208,7 @@ class XMLResponseWS
      * renvoi les id des contextes qu'on doit fermer
      * @return array
      */
-    public function aGetActionContextToClose()
+    public function aGetActionContextToClose(): array
     {
         $val = (string) $this->m_ndHeader->children()->ActionContextToClose;
         if (empty($val))
@@ -223,15 +223,15 @@ class XMLResponseWS
 	/**
 	 * @return MessageBox
 	 */
-	public function clGetMessageBox()
-	{
+	public function clGetMessageBox(): MessageBox
+    {
 		return new MessageBox($this->getNodeXML());
 	}
 
     /**
      * @return string
      */
-    public function getData()
+    public function getData(): string
     {
         $ndXML = $this->getNodeXML();
         return (string)$ndXML->Data;
@@ -240,8 +240,8 @@ class XMLResponseWS
     /**
      * @return NOUTFileInfo
      */
-	public function getFile()
-	{
+	public function getFile(): ?NOUTFileInfo
+    {
         $ndXML = $this->getNodeXML(); // Récupération du noeud xml
 
         if ($ndXML->count()>0)
@@ -268,8 +268,8 @@ class XMLResponseWS
 	/**
 	 * @return CurrentAction : action en cours
 	 */
-	public function clGetAction()
-	{
+	public function clGetAction(): CurrentAction
+    {
 		$clAction = $this->m_ndHeader->children()->Action;
 
 		return new CurrentAction($clAction);
@@ -278,7 +278,7 @@ class XMLResponseWS
     /**
      * @return String title of the document
      */
-    public function clGetTitle()
+    public function clGetTitle(): string
     {
         try{
             return (string) $this->m_ndHeader->children()->Title;
@@ -291,7 +291,7 @@ class XMLResponseWS
     /**
      * @return String title of the document
      */
-    public function sGetIDIHM()
+    public function sGetIDIHM(): ?string
     {
         try{
             return (string) $this->m_ndHeader->children()->IDIHM;
@@ -305,8 +305,8 @@ class XMLResponseWS
      * utilisateur actuellement connecté
 	 * @return ConnectedUser
 	 */
-	public function clGetConnectedUser()
-	{
+	public function clGetConnectedUser(): ConnectedUser
+    {
 		/* @var $clConnectedUser \SimpleXMLElement */
 		$clConnectedUser = $this->m_ndHeader->children()->ConnectedUser;
 
@@ -322,7 +322,7 @@ class XMLResponseWS
      * utilisateur extranet actuellement connecté
      * @return ConnectedUser
      */
-	public function clGetConnectedExtranet()
+	public function clGetConnectedExtranet(): ConnectedUser
     {
         /* @var $clConnectedUser \SimpleXMLElement */
         $clConnectedUser = $this->m_ndHeader->children()->ConnectedExtranet;
@@ -338,8 +338,8 @@ class XMLResponseWS
 	/**
 	 * @return Form
 	 */
-	public function clGetForm()
-	{
+	public function clGetForm(): Form
+    {
 		$ndForm = $this->m_ndHeader->children()->Form;
         $clForm = new Form($ndForm, $ndForm['title'], $ndForm['withBtnOrderPossible'], $ndForm['withBtnOrderActive']);
 
@@ -357,8 +357,8 @@ class XMLResponseWS
 	/**
 	 * @return Element|null
 	 */
-	public function clGetElement()
-	{
+	public function clGetElement(): ?Element
+    {
 		$clElem = $this->m_ndHeader->children()->Element;
 		if (isset($clElem))
 		{
@@ -371,8 +371,8 @@ class XMLResponseWS
 	/**
 	 * @return Count
 	 */
-	public function clGetCount()
-	{
+	public function clGetCount(): Count
+    {
 		$ndCount = $this->m_ndHeader->children()->Count;
 		if (!isset($ndCount) || empty($ndCount))
 		{
@@ -389,7 +389,7 @@ class XMLResponseWS
 		return $clCount;
 	}
 
-	public function clGetFolderCount()
+	public function clGetFolderCount(): Foldercount
     {
         $ndFolderCount = $this->m_ndHeader->children()->FolderCount;
         if (!isset($ndFolderCount) || empty($ndFolderCount)) {
@@ -406,8 +406,8 @@ class XMLResponseWS
 	/**
 	 * @return null|array
 	 */
-	public function GetTabPossibleDisplayMode()
-	{
+	public function GetTabPossibleDisplayMode(): ?array
+    {
 		$ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
 		if (!isset($ndPossibleDM))
 		{
@@ -420,8 +420,8 @@ class XMLResponseWS
 	/**
 	 * @return null|string
 	 */
-	public function sGetDefaultDisplayMode()
-	{
+	public function sGetDefaultDisplayMode(): ?string
+    {
 		$ndDefaultDM = $this->m_ndHeader->children()->DefaultDisplayMode;
 		if (!isset($ndDefaultDM))
 		{
@@ -436,8 +436,8 @@ class XMLResponseWS
 	 * retourne le noeud reponse de l'operation
 	 * @return \SimpleXMLElement
 	 */
-	protected function _clGetNodeResponse()
-	{
+	protected function _clGetNodeResponse(): \SimpleXMLElement
+    {
         // Récupère les enfants de Body
         $children = $this->m_ndBody->children();
 
@@ -449,7 +449,7 @@ class XMLResponseWS
      * récupère le noeud xml des filtres
      * @return \SimpleXMLElement|null
      */
-    public function getNodeXMLParam()
+    public function getNodeXMLParam(): ?\SimpleXMLElement
     {
         $clNodeFilter = $this->m_ndHeader->children()->Filter;
         if (isset($clNodeFilter))
@@ -465,7 +465,7 @@ class XMLResponseWS
      * récupère le noeud xml des ressources du planning de tous
      * @return \SimpleXMLElement|null
      */
-    public function getNodeXMLRessource()
+    public function getNodeXMLRessource(): ?\SimpleXMLElement
     {
         $clNodeSchedulerResource = $this->m_ndHeader->children()->SchedulerResource;
         if (isset($clNodeSchedulerResource))
@@ -481,8 +481,8 @@ class XMLResponseWS
 	 * récupère le noeud xml dans la réponse
 	 * @return \SimpleXMLElement|null
 	 */
-	public function getNodeXML()
-	{
+	public function getNodeXML(): ?\SimpleXMLElement
+    {
 		$clNodeResponse = $this->_clGetNodeResponse();
 
 		if (isset($clNodeResponse))
@@ -496,8 +496,8 @@ class XMLResponseWS
     /**
      * @return string|null
      */
-	public function getValue()
-	{
+	public function getValue(): ?string
+    {
 		$clNodeResponse = $this->_clGetNodeResponse();
 		if (isset($clNodeResponse))
 		{
@@ -510,8 +510,8 @@ class XMLResponseWS
 	/**
 	 * @return \SimpleXMLElement|null
 	 */
-	public function getNodeSchema()
-	{
+	public function getNodeSchema(): ?\SimpleXMLElement
+    {
 		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
 		if (empty($clXSDSchema))
 		{
@@ -526,7 +526,7 @@ class XMLResponseWS
      * récupère le noeud schema des filtres
      * @return \SimpleXMLElement|null
      */
-    public function getNodeXSDParam()
+    public function getNodeXSDParam(): ?\SimpleXMLElement
     {
 		// Provoque l'erreur "Node no longer exists" avec ajax_ville
         /** @var \SimpleXMLElement $clNodeSchedulerResource */
@@ -546,7 +546,7 @@ class XMLResponseWS
      * récupère le noeud schema des ressources du planning de tous
      * @return \SimpleXMLElement|null
      */
-    public function getNodeXSDRessource()
+    public function getNodeXSDRessource(): ?\SimpleXMLElement
     {
         /** @var \SimpleXMLElement $clNodeSchedulerResource */
         $clNodeSchedulerResource = $this->m_ndHeader->children()->SchedulerResource;
@@ -563,8 +563,8 @@ class XMLResponseWS
 	/**
 	 * @return ValidateError|null
 	 */
-	public function getValidateError()
-	{
+	public function getValidateError(): ?ValidateError
+    {
 		$clValidateError = $this->m_ndHeader->children()->ValidateError;
 		if ($clValidateError->count()>0)
 		{
@@ -579,8 +579,8 @@ class XMLResponseWS
 	 * récupère le token session dans la réponse XML
 	 * @return string
 	 */
-	public function sGetTokenSession()
-	{
+	public function sGetTokenSession(): string
+    {
 		$clNodeResponse = $this->_clGetNodeResponse();
 		if (isset($clNodeResponse))
 		{
@@ -593,8 +593,8 @@ class XMLResponseWS
 	/**
 	 * @return int
 	 */
-	public function nGetNumberOfChart()
-	{
+	public function nGetNumberOfChart(): int
+    {
 		$ndXML = $this->getNodeXML();
 		if (!isset($ndXML))
 		{
@@ -608,8 +608,8 @@ class XMLResponseWS
 	/**
 	 * @return string
 	 */
-	public function sGetReport()
-	{
+	public function sGetReport(): string
+    {
 		$ndXML = $this->getNodeXML();
 
 		if (!isset($ndXML))
@@ -625,8 +625,8 @@ class XMLResponseWS
 	 * returne le tableau des codes langues disponibles
 	 * @return array
 	 */
-	public function GetTabLanguages()
-	{
+	public function GetTabLanguages(): array
+    {
 		$ndXML = $this->getNodeXML();
 		if (!isset($ndXML))
 		{
@@ -651,7 +651,7 @@ class XMLResponseWS
     /**
      * @return \SimpleXMLElement
      */
-    public function getExportsNode()
+    public function getExportsNode(): ?\SimpleXMLElement
     {
         $exports = $this->m_ndHeader->children()->Exports;
         if (empty($exports))
@@ -666,7 +666,7 @@ class XMLResponseWS
     /**
      * @return \SimpleXMLElement
      */
-    public function getImportsNode()
+    public function getImportsNode(): ?\SimpleXMLElement
     {
         $imports = $this->m_ndHeader->children()->Imports;
         if (empty($imports))

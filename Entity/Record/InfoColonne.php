@@ -10,32 +10,40 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 class InfoColonne
 {
+    /** @var string  */
 	protected $m_nIDColonne;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $m_TabOptions;
 
-	public function __construct($sIDColonne, $TabAttrib, $tabAttribLayout)
+    /**
+     * InfoColonne constructor.
+     * @param string $sIDColonne
+     * @param $TabAttrib
+     * @param $tabAttribLayout
+     */
+	public function __construct(string $sIDColonne, $TabAttrib, $tabAttribLayout)
 	{
 		$this->m_nIDColonne = $sIDColonne;
 
-        $this->m_TabOptions          = array();
+        $this->m_TabOptions = array();
 
 		$this->_InitInfoColonne($TabAttrib);
 		$this->_InitInfoColonne($tabAttribLayout);
 	}
 
     /**
-     * @return int
+     * @return string
      */
-    public function getIDColonne()
+    public function getIDColonne(): string
     {
         return $this->m_nIDColonne;
     }
 
-	protected function _InitInfoColonne($TabAttrib)
+    /**
+     * @param \Traversable $TabAttrib
+     */
+	protected function _InitInfoColonne(\Traversable $TabAttrib)
 	{
 
         foreach ($TabAttrib as $sAttribName => $ndAttrib)
@@ -63,7 +71,7 @@ class InfoColonne
      * @param $dwOption
      * @return bool
      */
-	public function hasOption($dwOption)
+	public function hasOption($dwOption): bool
     {
         return isset($this->m_TabOptions[$dwOption]);
     }
@@ -72,7 +80,7 @@ class InfoColonne
      * @param $dwOption
      * @return bool
      */
-    public function isOption($dwOption)
+    public function isOption($dwOption): bool
     {
         if (!isset($this->m_TabOptions[$dwOption]))
             return false;
@@ -82,7 +90,7 @@ class InfoColonne
 
     /**
      * @param $dwOption
-     * @return bool
+     * @return mixed
      */
     public function getOption($dwOption)
     {
@@ -96,12 +104,15 @@ class InfoColonne
     /**
      * @return array
      */
-    public function getTabOptions()
+    public function getTabOptions(): array
     {
         return $this->m_TabOptions;
     }
 
-    public function isWritable()
+    /**
+     * @return bool
+     */
+    public function isWritable(): bool
     {
         $forbidden_states = array(
             StructureColonne::OPTION_Hidden,

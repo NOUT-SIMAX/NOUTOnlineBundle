@@ -7,8 +7,8 @@
  */
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
+
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
 
 /**
  * Class Record, Description d'un enregistrement
@@ -17,73 +17,49 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\RecordCache;
  */
 class Record
 {
-	/**
-	 * @var string : contient la mini desc de l'enregistrement
-	 */
-	protected $m_sTitle;
+	/** @var string : contient la mini desc de l'enregistrement */
+	protected $m_sTitle='';
 
-    /**
-     * @var string : contient le sous-titre quand il y en a un
-     */
-    protected $m_sSubTitle;
+    /** @var string : contient le sous-titre quand il y en a un */
+    protected $m_sSubTitle='';
 
-	/**
-	 * @var string : identitifant de l'enregistrement
-	 */
-	protected $m_nIDEnreg;
+	/** @var string : identitifant de l'enregistrement */
+	protected $m_nIDEnreg='';
 
-	/**
-	 * @var string : identifiant du formulaire
-	 */
-	protected $m_nIDTableau;
+	/** @var string : identifiant du formulaire */
+	protected $m_nIDTableau='';
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $m_TabOptionsRecord;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $m_TabOptionsLayout;
 
-	/**
-	 * @var InfoColonne[] : tableau avec les informations variables des colonnes (mise en forme ...)
-	 */
+	/** @var InfoColonne[] : tableau avec les informations variables des colonnes (mise en forme ...) */
 	protected $m_TabColumnsInfo;
 
-	/**
-	 * @var array : tableau avec les valeurs des colonnes
-	 */
+	/** @var array : tableau avec les valeurs des colonnes */
 	protected $m_TabColumnsValues;
 
-	/**
-	 * @var array : tableau de booleen pour indiquer que la valeur à changée
-	 */
+	/** @var array : tableau de booleen pour indiquer que la valeur à changée */
 	protected $m_TabColumnsModified;
 
-	/**
-	 * @var StructureElement
-	 */
+	/** @var StructureElement */
 	protected $m_clStructElem;
 
-	/**
-	 * @var RecordCache
-	 */
+	/** @var RecordCache */
 	protected $m_TabRecordLie;
 
-	/**
-	 * @var int
-	 */
-	protected $m_nXSDNiv;
+	/** @var int */
+	protected $m_nXSDNiv=0;
 
     /** @var  string */
-    protected $m_sLinkedTableID;
+    protected $m_sLinkedTableID='';
 
     /**
      * @return string
      */
-    public function getLinkedTableID()
+    public function getLinkedTableID(): string
     {
         return $this->m_sLinkedTableID;
     }
@@ -104,7 +80,7 @@ class Record
      * @param int                   $nNiv
      * @param StructureElement|null $clStruct
      */
-	public function __construct(string $sIDTableau, string $sIDEnreg, string $sLibelle, $nNiv, StructureElement $clStruct = null)
+	public function __construct(string $sIDTableau, string $sIDEnreg, string $sLibelle, int $nNiv, StructureElement $clStruct = null)
 	{
 		$this->m_nIDTableau   = $sIDTableau;
 		$this->m_nIDEnreg     = $sIDEnreg;
@@ -116,6 +92,7 @@ class Record
 		$this->m_TabColumnsModified = array();
 		$this->m_TabColumnsValues   = array();
         $this->m_TabOptionsRecord   = array();
+        $this->m_TabOptionsLayout   = array();
 
 		//tableau des éléments liés
 		$this->m_TabRecordLie = new RecordCache();
@@ -125,19 +102,17 @@ class Record
 	 * @param Record $clRecord
 	 * @return bool
 	 */
-	public function isBetterLevel(Record $clRecord)
-	{
+	public function isBetterLevel(Record $clRecord): bool
+    {
 		return $this->m_nXSDNiv <= $clRecord->m_nXSDNiv;
 	}
-
-
 
     /**
      * @param $option
      * @param $valeur
      * @return $this
      */
-    public function addOption($option, $valeur)
+    public function addOption($option, $valeur): Record
     {
         $this->m_TabOptionsRecord[$option]=$valeur;
         return $this;
@@ -146,7 +121,7 @@ class Record
      * @param \SimpleXMLElement $tabAttribut
      * @return $this
      */
-    public function addOptions(\SimpleXMLElement $tabAttribut)
+    public function addOptions(\SimpleXMLElement $tabAttribut): Record
     {
         foreach($tabAttribut as $name=>$attr) {
             $nCmp = strncasecmp($name, 'record', strlen('record'));
@@ -160,7 +135,7 @@ class Record
     /**
      * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->m_TabOptionsRecord;
     }
@@ -184,7 +159,7 @@ class Record
      * @param $valeur
      * @return $this
      */
-    public function addOptionLayout($option, $valeur)
+    public function addOptionLayout($option, $valeur): Record
     {
         $this->m_TabOptionsLayout[$option]=$valeur;
         return $this;
@@ -193,7 +168,7 @@ class Record
      * @param \SimpleXMLElement $tabAttribut
      * @return $this
      */
-    public function addOptionsLayout(\SimpleXMLElement $tabAttribut)
+    public function addOptionsLayout(\SimpleXMLElement $tabAttribut): Record
     {
         foreach($tabAttribut as $name=>$attr)
         {
@@ -219,15 +194,15 @@ class Record
      * renvoi l'identifiant de l'enregistrement
      * @return string
      */
-	public function getIDEnreg()
-	{
+	public function getIDEnreg(): string
+    {
 		return $this->m_nIDEnreg;
 	}
 
     /**
      * @return RecordCache
      */
-    public function getRecordLie()
+    public function getRecordLie(): RecordCache
     {
         return $this->m_TabRecordLie;
     }
@@ -235,8 +210,8 @@ class Record
 	/**
 	 * @return string
 	 */
-	public function getIDTableau()
-	{
+	public function getIDTableau(): string
+    {
 		return $this->m_nIDTableau;
 	}
 
@@ -244,7 +219,7 @@ class Record
      * renvoi la minidesc de l'enregistrement
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->m_sTitle;
     }
@@ -252,7 +227,7 @@ class Record
     /**
      * @return string
      */
-    public function getSubTitle()
+    public function getSubTitle(): ?string
     {
         return $this->m_sSubTitle;
     }
@@ -261,7 +236,7 @@ class Record
      * @param string $sSubTitle
      * @return $this
      */
-    public function setSubTitle(string $sSubTitle)
+    public function setSubTitle(string $sSubTitle): Record
     {
         $this->m_sSubTitle = $sSubTitle;
         return $this;
@@ -270,26 +245,29 @@ class Record
 
     /**
      * @param $idColonne
-     * @return StructureColonne
+     * @return StructureColonne|null
      */
-    public function clGetStructColonne($idColonne)
+    public function clGetStructColonne($idColonne): ?StructureColonne
     {
-        return $this->m_clStructElem->getStructureColonne($idColonne);
+        if ($this->m_clStructElem instanceof StructureElement){
+            return $this->m_clStructElem->getStructureColonne($idColonne);
+        }
+        return null;
     }
 
 
     /**
 	 * @return StructureElement
 	 */
-	public function clGetStructElem()
-	{
+	public function clGetStructElem(): ?StructureElement
+    {
 		return $this->m_clStructElem;
 	}
 
     /**
      * @return array
      */
-    public function aGetTabOptionsLayout()
+    public function aGetTabOptionsLayout(): array
     {
         return $this->m_TabOptionsLayout;
     }
@@ -297,7 +275,7 @@ class Record
     /**
      * @return array|InfoColonne[]
      */
-    public function aGetTabColumnsInfo()
+    public function aGetTabColumnsInfo(): array
     {
         return $this->m_TabColumnsInfo;
     }
@@ -306,8 +284,8 @@ class Record
 	 * @param InfoColonne $clInfoColonne
 	 * @return $this
 	 */
-	public function setInfoColonne(InfoColonne $clInfoColonne)
-	{
+	public function setInfoColonne(InfoColonne $clInfoColonne): Record
+    {
 		$this->m_TabColumnsInfo[$clInfoColonne->getIDColonne()] = $clInfoColonne;
 
 		return $this;
@@ -317,7 +295,7 @@ class Record
      * @param $idColonne
      * @return InfoColonne|null
      */
-    public function getInfoColonne($idColonne)
+    public function getInfoColonne($idColonne): ?InfoColonne
     {
         if (!isset($this->m_TabColumnsInfo[$idColonne]))
         {
@@ -330,8 +308,8 @@ class Record
 	/**
 	 * @return bool
 	 */
-	public function bRef()
-	{
+	public function bRef(): bool
+    {
 		return !empty($this->m_TabColumnsInfo);
 	}
 
@@ -357,7 +335,7 @@ class Record
      * @param $idColonne
      * @return string
      */
-    public function getTitleFromIDRecordLie($idRecordLie, $idColonne)
+    public function getTitleFromIDRecordLie($idRecordLie, $idColonne): string
     {
         if (!isset($this->m_TabRecordLie) || !isset($this->m_clStructElem))
         {
@@ -421,7 +399,7 @@ class Record
      * @param bool $byUser
      * @return bool
      */
-    public function isModified($idColonne, bool $byUser)
+    public function isModified($idColonne, bool $byUser): bool
     {
         if (!isset($this->m_TabColumnsModified[$idColonne])){
             return false;
@@ -438,8 +416,8 @@ class Record
 	 * @param bool $modifiedByUser
 	 * @return $this
 	 */
-	public function setValCol(string $idcolonne, $value, $modifiedByUser = true)
-	{
+	public function setValCol(string $idcolonne, $value, $modifiedByUser = true): Record
+    {
 		$this->m_TabColumnsValues[$idcolonne]   = $value;
 		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
 
@@ -451,8 +429,8 @@ class Record
 	 * @param Record $clRecordLie
 	 * @return $this
 	 */
-	public function addRecordLie($nNiv, Record $clRecordLie)
-	{
+	public function addRecordLie($nNiv, Record $clRecordLie): Record
+    {
         $this->m_TabRecordLie->SetRecord($nNiv, $clRecordLie);
 		return $this;
 	}
@@ -462,8 +440,8 @@ class Record
 	 * @param array $aRecordsLies
 	 * @return $this
 	 */
-	public function addTabRecordLie($nNiv, array $aRecordsLies)
-	{
+	public function addTabRecordLie($nNiv, array $aRecordsLies): Record
+    {
 		foreach($aRecordsLies as $clRecord)
 		{
             $this->addRecordLie($nNiv, $clRecord);
@@ -475,7 +453,6 @@ class Record
     /**
      * méthode magique pour les formulaires
      * @param $idColonne
-     * @return null
      * @throws \Exception
      */
 	public function __get($idColonne)
@@ -495,23 +472,26 @@ class Record
      * @return $this
      * @throws \Exception
      */
-	public function __set($idColonne, $value)
-	{
+	public function __set($idColonne, $value): Record
+    {
 		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
 		{
 			throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __call() n\'est pas autorisé');
 		}
 
-		return $this->setValCol($idColonne, $value, true);
+		return $this->setValCol($idColonne, $value);
 	}
 
     /**
      * retourne la liste des colonnes qui déclenchent un update partiel
      * @return array
      */
-    public function getLinkedColumns()
+    public function getLinkedColumns(): array
     {
-        return $this->m_clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link) ;
+        if ($this->m_clStructElem instanceof StructureElement){
+            return $this->m_clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link) ;
+        }
+        return array();
     }
 
     /**
@@ -519,9 +499,12 @@ class Record
      * @param $option
      * @return array
      */
-    public function getTabColonneAvecOption($option)
+    public function getTabColonneAvecOption($option): array
     {
-        return $this->m_clStructElem->getTabColonneAvecOption($option) ;
+        if ($this->m_clStructElem instanceof StructureElement) {
+            return $this->m_clStructElem->getTabColonneAvecOption($option);
+        }
+        return array();
     }
 
     /**
@@ -529,17 +512,20 @@ class Record
      * Appelé dans transformViewRecord2JSON
      * @return array
      */
-    public function getLinkedElems()
+    public function getLinkedElems(): array
     {
         // Récupère un tableau associatif [Id Colonne] -> [Id TmTab] pour tout le formulaire
-        return $this->m_clStructElem->getTabColonneTmTab();
+        if ($this->m_clStructElem instanceof StructureElement) {
+            return $this->m_clStructElem->getTabColonneTmTab();
+        }
+        return array();
     }
 
     /**
      * enlève toutes les colonnes modifiées
      * @return $this
      */
-    public function resetLastModified()
+    public function resetLastModified(): Record
     {
         array_walk($this->m_TabColumnsModified, function(&$item){
             $item=0;
@@ -547,7 +533,7 @@ class Record
         return $this;
     }
 
-    public function updateRecordLie(RecordCache $src)
+    public function updateRecordLie(RecordCache $src): Record
     {
         $this->m_TabRecordLie->update($src);
         return $this;
@@ -558,7 +544,7 @@ class Record
      * @param Record $clRecordSrc
      * @return $this
      */
-    public function updateFromRecord(Record $clRecordSrc)
+    public function updateFromRecord(Record $clRecordSrc): Record
     {
         $this->resetLastModified();
 
@@ -582,9 +568,9 @@ class Record
 
     /**
      * @param $option
-     * @return mixed|null
+     * @return string
      */
-    public function transformOption2CSSProperty($option)
+    public function transformOption2CSSProperty($option): string
     {
 
         $SIMAXStyleToCSS = array(
@@ -602,7 +588,12 @@ class Record
         return '';
     }
 
-    public function transformOptionValue2CSSValue($option, $value=null)
+    /**
+     * @param      $option
+     * @param null $value
+     * @return string|null
+     */
+    public function transformOptionValue2CSSValue($option, $value=null): ?string
     {
         if (is_null($value))
         {
@@ -644,7 +635,12 @@ class Record
         return null;
     }
 
-    public function getXMLColonne($aFilesToSend = null, $onlyModified=false)
+    /**
+     * @param null|array  $aFilesToSend
+     * @param false $onlyModified
+     * @return string
+     */
+    public function getXMLColonne(array $aFilesToSend = null, $onlyModified=false): string
     {
         $sXML = '';
 
@@ -667,7 +663,11 @@ class Record
         return $sXML;
     }
 
-    public function getUpdateData($aFilesToSend)
+    /**
+     * @param array $aFilesToSend
+     * @return string
+     */
+    public function getUpdateData(array $aFilesToSend): string
     {
         $sIDForm                    = $this->m_clStructElem->getID();
 
@@ -683,7 +683,7 @@ class Record
      * @param $oFile
      * @return string
      */
-    public function _sGetFileXML($sIDColonne, NOUTFileInfo $oFile=null)
+    public function _sGetFileXML($sIDColonne, NOUTFileInfo $oFile=null): string
     {
         // Structure attendue des données XML d'un fichier
         /*
