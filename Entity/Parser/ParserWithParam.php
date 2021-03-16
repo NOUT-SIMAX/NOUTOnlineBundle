@@ -57,7 +57,7 @@ class ParserWithParam extends Parser
                     $obj->$name = (string) $value;
                 }
                 $obj->value = (string) $ndChild;
-                array_push($exports, $obj);
+                array_push($ret, $obj);
             }
         }
         return $ret;
