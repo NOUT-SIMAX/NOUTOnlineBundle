@@ -40,11 +40,10 @@ class CurrentAction
      */
     protected $m_userConfirmation;
 
-	/**
-	 * @param $sID : identifiant de l'action
-	 * @param $sTitle ; libellé de l'action
-	 * @param int $nTypeAction : type de l'action, voir constante ci-dessus
-	 */
+    /**
+     * CurrentAction constructor.
+     * @param \SimpleXMLElement $clAction
+     */
 	public function __construct(\SimpleXMLElement $clAction)
 	{
 		$this->m_sID                = (string) $clAction;
@@ -57,16 +56,16 @@ class CurrentAction
 	/**
 	 * @return int
 	 */
-	public function getTypeAction()
-	{
+	public function getTypeAction(): int
+    {
 		return $this->m_nTypeAction;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getID()
-	{
+	public function getID(): string
+    {
 		return $this->m_sID;
 	}
 
@@ -74,7 +73,7 @@ class CurrentAction
     /**
      * @return string
      */
-    public function getIDForm()
+    public function getIDForm(): string
     {
         return $this->m_nIDForm;
     }
@@ -82,15 +81,15 @@ class CurrentAction
     /**
 	 * @return string
 	 */
-	public function getTitle()
-	{
+	public function getTitle(): string
+    {
 		return $this->m_sTitle;
 	}
 
     /**
      * @return string
      */
-	public function getUserConfirmation()
+	public function getUserConfirmation(): string
     {
         return $this->m_userConfirmation;
     }

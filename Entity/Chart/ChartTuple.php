@@ -6,7 +6,7 @@
  * Time: 14:22
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Chart;
 
 class ChartTuple
 {

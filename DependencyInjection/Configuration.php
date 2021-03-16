@@ -66,6 +66,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->append($this->addAuthNode())
                 ->append($this->addExtranetNode())
+                ->append($this->addAnonymeNode())
             ->end()//children
         ;
         return $treeBuilder;
@@ -105,6 +106,23 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('user')->defaultValue('')->end()
             ->scalarNode('password')->defaultValue('')->end()
             ->scalarNode('form')->defaultValue('')->end()
+            ->end()
+        ;
+        return $node;
+    }
+
+
+    public function addAnonymeNode()
+    {
+        $builder = new TreeBuilder('anonyme');
+        $node = $builder->getRootNode();
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('actif')->defaultValue(false)->end()
+            ->scalarNode('user')->defaultValue('')->end()
+            ->scalarNode('password')->defaultValue('')->end()
             ->end()
         ;
         return $node;

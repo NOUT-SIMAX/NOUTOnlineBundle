@@ -13,7 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 class Identification
 {
 	/**
-	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken
+	 * @var UsernameToken
 	 */
 	public $m_clUsernameToken;
 	/**
@@ -29,9 +29,6 @@ class Identification
 	 */
 	public $m_bAPIUser;
 
-	/**
-	 * @param UsernameToken $clUsernameToken
-	 */
 	public function __construct()
 	{
 		$this->m_clUsernameToken   = null;

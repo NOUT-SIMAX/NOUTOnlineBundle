@@ -12,7 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre;
 abstract class SOAPParameter implements SOAPParemeterInterface
 {
     /** @inheritdoc */
-    public function sToSoap()
+    public function sToSoap(): string
     {
         $xml = $this->getOpeningTag();
         $xml .= $this->getContent();
@@ -24,7 +24,7 @@ abstract class SOAPParameter implements SOAPParemeterInterface
      * NUSOAP client will try to get the parameter content by converting it to string
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getContent();
     }

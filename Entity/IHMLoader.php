@@ -12,10 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\Menu;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\OptionMenu;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ParserList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
@@ -56,6 +53,7 @@ class IHMLoader
      * @param XMLResponseWS $clReponseMenu
      * @param XMLResponseWS $clReponseSmallIcon
      * @param XMLResponseWS $clReponseBigIcon
+     * @throws \Exception
      */
     public function __construct(XMLResponseWS $clReponseOptionMenu, XMLResponseWS $clReponseMenu, XMLResponseWS $clReponseSmallIcon, XMLResponseWS $clReponseBigIcon)
     {
@@ -71,11 +69,13 @@ class IHMLoader
 
 
         $clResponseParserBigIcon = new ReponseWSParser();
+        /** @var ParserList $clParserBigIcon */
         $clParserBigIcon = $clResponseParserBigIcon->InitFromXmlXsd($clReponseBigIcon);
         $this->m_aTabIDEnregBigIcon = $clParserBigIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
 
 
         $clResponseParserSmallIcon = new ReponseWSParser();
+        /** @var ParserList $clParserSmallIcon */
         $clParserSmallIcon = $clResponseParserSmallIcon->InitFromXmlXsd($clReponseSmallIcon);
         $this->m_aTabIDEnregSmallIcon = $clParserSmallIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
     }
@@ -83,7 +83,7 @@ class IHMLoader
     /**
      * @return InfoIHM
      */
-    public function oGetInfoIHM()
+    public function oGetInfoIHM(): InfoIHM
     {
         $oInfoIHM = new InfoIHM();
 
@@ -120,7 +120,7 @@ class IHMLoader
      * @param         $bUniquementRacine
      * @return ItemMenu
      */
-    protected function _aGetMenu(InfoIHM $oInfoIHM, $sIDMenu, $bUniquementRacine)
+    protected function _aGetMenu(InfoIHM $oInfoIHM, $sIDMenu, $bUniquementRacine): ?ItemMenu
     {
         $clRecordMenu = $this->m_clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
 

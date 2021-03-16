@@ -23,7 +23,7 @@ abstract class CondListTypeFactory
      * @param SOAPParameter $param
      * @return CondListType
      */
-    public static function create($param){
+    public static function create(SOAPParameter $param){
         if($param instanceof Condition)
             return new UniqueCondListType($param);
         if($param instanceof Operator)

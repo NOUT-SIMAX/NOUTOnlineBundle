@@ -6,8 +6,11 @@
  * Time: 16:34
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 
+
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Calculation;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 class ParserListCalculation extends Parser
 {
@@ -17,8 +20,13 @@ class ParserListCalculation extends Parser
 	 */
 	public $m_MapColonne2Calcul;
 
-	public function Parse(\SimpleXMLElement $ndXML)
+    /**
+     * @param XMLResponseWS $clXMLReponseWS
+     */
+	public function Parse(XMLResponseWS $clXMLReponseWS)
 	{
+        $ndXML = $clXMLReponseWS->getNodeXML();
+
 		/*
 			<col simax:id="1171">
 				<sum/>

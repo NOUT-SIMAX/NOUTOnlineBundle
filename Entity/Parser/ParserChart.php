@@ -6,8 +6,14 @@
  * Time: 16:30
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 
+
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Chart\Chart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Chart\ChartAxis;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Chart\ChartSerie;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Chart\ChartTuple;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 class ParserChart extends Parser
 {
@@ -23,10 +29,12 @@ class ParserChart extends Parser
     }
 
     /**
-     * @param \SimpleXMLElement $ndXML
+     * @param XMLResponseWS $clXMLReponseWS
      */
-	public function Parse(\SimpleXMLElement $ndXML)
+	public function Parse(XMLResponseWS $clXMLReponseWS)
 	{
+        $ndXML = $clXMLReponseWS->getNodeXML();
+
 		$ndChart = $ndXML->chart;
 
 		$this->m_clChart = new Chart((string) $ndChart->title, (string) $ndChart->chartType);
@@ -66,6 +74,10 @@ class ParserChart extends Parser
 
 	}
 
+    /**
+     * @param ChartSerie        $clSerie
+     * @param \SimpleXMLElement $ndSerie
+     */
 	protected function _parseTuple(ChartSerie $clSerie, \SimpleXMLElement $ndSerie)
     {
         foreach ($ndSerie->tuple as $ndTuple)

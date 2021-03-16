@@ -22,7 +22,7 @@ class SSOUsernameToken extends UsernameToken
         $this->m_sEmail = $email;
         $this->m_sId = $id;
         $this->_setEncryptionInfo('sso', $sSecret);
-        parent::__construct('');
+        parent::__construct();
     }
 
     protected function _setClearPassword(string $password): void { /*pas de password à stocker*/ }

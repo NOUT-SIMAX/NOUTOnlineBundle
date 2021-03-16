@@ -21,7 +21,7 @@ class MessageBox
     /**
      * @var array
      */
-    protected $m_TabButton;
+    protected $m_TabButton=array();
 
     /**
      * @var int
@@ -76,7 +76,7 @@ class MessageBox
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->m_sTitle;
     }
@@ -84,7 +84,7 @@ class MessageBox
     /**
      * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->m_sMessage;
     }
@@ -92,7 +92,7 @@ class MessageBox
     /**
      * @return array
      */
-    public function getTabButton()
+    public function getTabButton(): array
     {
         return $this->m_TabButton;
     }
@@ -100,7 +100,7 @@ class MessageBox
     /**
      * @return int
      */
-    public function getDefaultBtn()
+    public function getDefaultBtn(): int
     {
         return $this->m_nDefaultBtn;
     }

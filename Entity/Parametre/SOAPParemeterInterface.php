@@ -12,14 +12,14 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre;
 interface SOAPParemeterInterface
 {
     /** @return string */
-    public function sToSoap();
+    public function sToSoap(): string;
 
     /** @return string */
-    public function getOpeningTag();
+    public function getOpeningTag(): string;
 
     /** @return string */
-    public function getClosingTag();
+    public function getClosingTag(): string;
 
     /** @return string */
-    public function getContent();
+    public function getContent(): string;
 }

@@ -6,7 +6,7 @@
  * Time: 16:05
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\ColonneRestriction;
@@ -16,7 +16,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 
-class ParserXSDSchema extends Parser
+class ParserXSDSchema extends AbstractParser
 {
 	/**
 	 * @var array
@@ -29,8 +29,8 @@ class ParserXSDSchema extends Parser
      * @param $nNiv
 	 * @return StructureElement
 	 */
-	public function clGetStructureElement($sIDTableau, $nNiv=null)
-	{
+	public function clGetStructureElement($sIDTableau, $nNiv=null): ?StructureElement
+    {
         if (!is_null($nNiv))
         {
             if (isset($this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]))
@@ -53,23 +53,31 @@ class ParserXSDSchema extends Parser
 		return null;
 	}
 
-
+    /**
+     * @param                   $nNiv
+     * @param \SimpleXMLElement $clSchema
+     * @throws \Exception
+     */
 	public function Parse($nNiv, \SimpleXMLElement $clSchema)
 	{
 		$this->m_MapIDTableauNiv2StructureElement=array();
 
 		//récupération du noeud element fils de schema
-		$ndElement = $clSchema->children(self::NAMESPACE_XSD)->element;
-		$this->_clParseXSDElementComplex($nNiv, $ndElement);
+        if (!$clSchema->count()==0)
+        {
+            $ndElement = $clSchema->children(self::NAMESPACE_XSD)->element;
+            $this->_clParseXSDElementComplex($nNiv, $ndElement);
+        }
 	}
 
 	/**
      * @param $nNiv
 	 * @param \SimpleXMLElement $ndElement
 	 * @return StructureElement|null
+     * @throws \Exception
 	 */
-	protected function _clParseXSDElementComplex($nNiv, \SimpleXMLElement $ndElement)
-	{
+	protected function _clParseXSDElementComplex($nNiv, \SimpleXMLElement $ndElement): ?StructureElement
+    {
 		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
 		if ($ndElement->children(self::NAMESPACE_XSD)->count()==0)
 		{
@@ -82,7 +90,7 @@ class ParserXSDSchema extends Parser
 		$sIDTableau = str_replace('id_', '', $TabAttribXS['name']);
 
 		$TabAttribSIMAX = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
-		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name'], ((int) $TabAttribSIMAX[StructureColonne::OPTION_WithGhost])==1);
+		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name']);
 
 		if (isset($TabAttribSIMAX[StructureSection::OPTION_ModeMultiC]) && isset($TabAttribSIMAX[StructureSection::OPTION_SensMultiC])){
             $clStructureElement->setMultiColonneInfo((int)$TabAttribSIMAX[StructureSection::OPTION_ModeMultiC], (int)$TabAttribSIMAX[StructureSection::OPTION_SensMultiC], (string)$TabAttribSIMAX[StructureSection::OPTION_BackgroundColor]);
@@ -108,6 +116,7 @@ class ParserXSDSchema extends Parser
      * @param StructureElement $clStructElem
 	 * @param StructureSection $clStructSection
 	 * @param \SimpleXMLElement $clSequence
+     * @throws \Exception
 	 */
 	protected function __ParseXSDSequence($nNiv, StructureElement $clStructElem, StructureSection $clStructSection, \SimpleXMLElement $clSequence)
 	{
@@ -211,6 +220,7 @@ class ParserXSDSchema extends Parser
      * @param $nNiv
 	 * @param StructureColonne  $clStructColonne
 	 * @param \SimpleXMLElement $ndElement
+     * @throws \Exception
 	 */
 	protected function _ParseXSDListeElem($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndElement)
 	{
@@ -273,6 +283,7 @@ class ParserXSDSchema extends Parser
 	/**
      * @param StructureColonne $clStructColonne
 	 * @param \SimpleXMLElement $ndNoeud
+     * @param $replaceTypeElement
 	 */
 	protected function _ParseXSDRestriction(StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud, $replaceTypeElement)
 	{

@@ -39,46 +39,59 @@ class Form
 	 */
 	public $m_TabSort;
 
-	public function __construct($nID, $sTitle, $withBtnOrderPossible, $withBtnOrderActive)
+	/** @var bool */
+	public $m_bWithGhost=false;
+
+	public function __construct($nID, $sTitle, $withBtnOrderPossible, $withBtnOrderActive, $withGhost)
 	{
 		$this->m_nID                    = (string) $nID;
 		$this->m_sTitle                 = (string) $sTitle;
 		$this->m_bWithBtnOrderPossible  = !!$withBtnOrderPossible;
 		$this->m_bWithBtnOrderActive    = !!$withBtnOrderActive;
+		$this->m_bWithGhost             = !!$withGhost;
 		$this->m_TabSort                = array();
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getTitle()
-	{
+	public function getTitle(): string
+    {
 		return $this->m_sTitle;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getID()
-	{
+	public function getID(): string
+    {
 		return $this->m_nID;
 	}
 
-    public function hasOrderBtn() {
+    public function hasOrderBtn(): bool
+    {
         return $this->m_bWithBtnOrderPossible;
     }
 
-    public function hasOrderActive() {
+    public function hasOrderActive(): bool
+    {
 	    return $this->m_bWithBtnOrderActive;
     }
 
     /**
      * @return ListSort[]
      */
-    public function getTabSort()
+    public function getTabSort(): array
     {
         return $this->m_TabSort;
     }
 
+    /**
+     * @return bool
+     */
+    public function getWithGhost() : bool
+    {
+        return $this->m_bWithGhost;
+    }
 
 }

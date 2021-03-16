@@ -15,13 +15,13 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParemeterInterface;
 abstract class CondListType extends SOAPParameter implements SOAPParemeterInterface
 {
     /** @inheritdoc */
-    public function getOpeningTag()
+    public function getOpeningTag(): string
     {
         return '<CondList>';
     }
 
     /** @inheritdoc */
-    public function getClosingTag()
+    public function getClosingTag(): string
     {
         return '</CondList>';
     }

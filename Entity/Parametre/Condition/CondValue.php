@@ -16,22 +16,35 @@ class CondValue extends SOAPParameter
     /** @var  string $value */
     public $value;
 
+    /**
+     * CondValue constructor.
+     * @param $value
+     */
     public function __construct($value)
     {
-        $this->value = $value;
+        $this->value = (string)$value;
     }
 
-    public function getOpeningTag()
+    /**
+     * @return string
+     */
+    public function getOpeningTag(): string
     {
         return '<CondValue>';
     }
 
-    public function getClosingTag()
+    /**
+     * @return string
+     */
+    public function getClosingTag(): string
     {
         return '</CondValue>';
     }
 
-    public function getContent()
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         return $this->value;
     }

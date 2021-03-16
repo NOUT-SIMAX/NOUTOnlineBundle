@@ -20,12 +20,15 @@ class UniqueCondListType extends CondListType
      * UniqueCondListType constructor.
      * @param Condition $condition
      */
-    public function __construct($condition)
+    public function __construct(Condition $condition)
     {
         $this->Condition = $condition;
     }
 
-    public function getContent()
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         return $this->Condition->sToSOAP();
     }

@@ -15,8 +15,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
  */
 class Langage
 {
-	protected $m_sVersion_Langage;
-	protected $m_sVersion_Icone;
+	protected $m_sVersion_Langage='';
+	protected $m_sVersion_Icone='';
 
 
 	/**
@@ -56,8 +56,8 @@ class Langage
 	/**
 	 * @return string
 	 */
-	public function getVersionLangage()
-	{
+	public function getVersionLangage(): string
+    {
 		return $this->m_sVersion_Langage;
 	}
 
@@ -65,8 +65,8 @@ class Langage
 	 * @param $sVersion string
 	 * @return $this
 	 */
-	public function setVersionLangage($sVersion)
-	{
+	public function setVersionLangage(string $sVersion): Langage
+    {
 		$this->m_sVersion_Langage = $sVersion;
 
 		return $this;
@@ -75,17 +75,17 @@ class Langage
 	/**
 	 * @return string
 	 */
-	public function getVersionIcone()
-	{
+	public function getVersionIcone(): string
+    {
 		return $this->m_sVersion_Icone;
 	}
 
 	/**
-	 * @param $sVersion sring
+	 * @param $sVersion string
 	 * @return $this
 	 */
-	public function setVersionIcone($sVersion)
-	{
+	public function setVersionIcone(string $sVersion): Langage
+    {
 		$this->m_sVersion_Icone = $sVersion;
 
 		return $this;

@@ -12,7 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 class NOUTOnlineVersion
 {
     /** @var string */
-    protected $m_sVersion;
+    protected $m_sVersion='';
 
     /**
      * NOUTOnlineVersion constructor.
@@ -27,7 +27,7 @@ class NOUTOnlineVersion
     /**
      * @return string
      */
-    public function get()
+    public function get(): string
     {
         return $this->m_sVersion;
     }

@@ -27,7 +27,7 @@ class SelectorList
      * SelectorList constructor.
      * @param RecordList $list
      */
-    public function __construct($list)
+    public function __construct(RecordList $list)
     {
         $this->m_clList = $list;
         $this->m_sTitle = $list->getTitle();
@@ -36,7 +36,7 @@ class SelectorList
     /**
      * @return RecordList
      */
-    public function getList()
+    public function getList(): RecordList
     {
         return $this->m_clList;
     }
@@ -44,7 +44,7 @@ class SelectorList
     /**
      * @param RecordList $clList
      */
-    public function setList($clList)
+    public function setList(RecordList $clList)
     {
         $this->m_clList = $clList;
     }
@@ -52,7 +52,7 @@ class SelectorList
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->m_sTitle;
     }
@@ -60,7 +60,7 @@ class SelectorList
     /**
      * @param string $sTitle
      */
-    public function setTitle($sTitle)
+    public function setTitle(string $sTitle)
     {
         $this->m_sTitle = $sTitle;
     }

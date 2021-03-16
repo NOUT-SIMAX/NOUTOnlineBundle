@@ -10,15 +10,18 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParameter;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\SOAPParemeterInterface;
 
 class Operator extends SOAPParameter implements SOAPParemeterInterface
 {
+    const OP_AND = 'AND';
+    const OP_OR  = 'OR';
+    const OP_NOT = 'NOT';
+
     /** @var  string */
     public $type;
-    /** @var  ConditionColonne[] */
+    /** @var  Condition[] */
     public $Conditions = array();
     /** @var Operator[] */
     protected $Operators = array();
@@ -27,22 +30,31 @@ class Operator extends SOAPParameter implements SOAPParemeterInterface
      * Operator constructor.
      * @param string $type
      */
-    public function __construct($type)
+    public function __construct(string $type)
     {
         $this->type = $type;
     }
 
-    public function getOpeningTag()
+    /**
+     * @return string
+     */
+    public function getOpeningTag(): string
     {
         return '<Operator type="' . $this->type . '">';
     }
 
-    public function getClosingTag()
+    /**
+     * @return string
+     */
+    public function getClosingTag(): string
     {
         return '</Operator>';
     }
 
-    public function getContent()
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         $content = '';
         foreach($this->Conditions as $condition){
@@ -58,7 +70,8 @@ class Operator extends SOAPParameter implements SOAPParemeterInterface
      * @param Condition $condition
      * @return $this
      */
-    public function addCondition($condition){
+    public function addCondition(Condition $condition): Operator
+    {
         array_push($this->Conditions, $condition);
         return $this;
     }
@@ -67,7 +80,8 @@ class Operator extends SOAPParameter implements SOAPParemeterInterface
      * @param Operator $operator
      * @return $this
      */
-    public function addOperator($operator){
+    public function addOperator(Operator $operator): Operator
+    {
         array_push($this->Operators, $operator);
         return $this;
     }

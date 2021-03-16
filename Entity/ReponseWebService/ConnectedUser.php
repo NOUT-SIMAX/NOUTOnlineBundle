@@ -37,32 +37,32 @@ class ConnectedUser
 	/**
 	 * @return string
 	 */
-	public function getFormID()
-	{
+	public function getFormID(): string
+    {
 		return $this->m_nFormID;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getUserID()
-	{
+	public function getUserID(): string
+    {
 		return $this->m_nUserID;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getFormTitle()
-	{
+	public function getFormTitle(): string
+    {
 		return $this->m_sFormTitle;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getUserTitle()
-	{
+	public function getUserTitle(): string
+    {
 		return $this->m_sUserTitle;
 	}
 }

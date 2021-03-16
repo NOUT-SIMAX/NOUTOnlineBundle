@@ -16,22 +16,35 @@ class CondColumn extends SOAPParameter
     /** @var  string $column */
     public $Column;
 
+    /**
+     * CondColumn constructor.
+     * @param $column
+     */
     public function __construct($column)
     {
-        $this->Column = $column;
+        $this->Column = (string)$column;
     }
 
-    public function getOpeningTag()
+    /**
+     * @return string
+     */
+    public function getOpeningTag(): string
     {
         return '<CondCol>';
     }
 
-    public function getClosingTag()
+    /**
+     * @return string
+     */
+    public function getClosingTag(): string
     {
         return '</CondCol>';
     }
 
-    public function getContent()
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         return $this->Column;
     }

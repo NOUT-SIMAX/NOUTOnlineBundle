@@ -8,7 +8,14 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\Parser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserListCalculation;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserPlanning;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserScheduler;
 
 /**
  * Class RecordManager
@@ -20,33 +27,33 @@ class ReponseWSParser
     /**
      * @param XMLResponseWS $clXMLReponseWS
      * @param null          $returnTypeForce
-     * @param null          $autreInfos
      * @return Parser
      * @throws \Exception
      */
-	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS, $returnTypeForce=null, $autreInfos=null) : ?Parser
+	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS, $returnTypeForce=null) : ?Parser
 	{
         // Tableau de pointeur de méthodes
 		$aPtrFct = array(
-			XMLResponseWS::RETURNTYPE_RECORD          	=> '_ParseRecord',
-			XMLResponseWS::RETURNTYPE_VALIDATERECORD  	=> '_ParseRecord',
-			XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> '_ParseRecord',
+            XMLResponseWS::RETURNTYPE_RECORD          	=> ParserRecord::class,
+            XMLResponseWS::RETURNTYPE_VALIDATERECORD  	=> ParserRecord::class,
+            XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> ParserRecord::class,
 
-			XMLResponseWS::RETURNTYPE_SCHEDULER 		=> '_ParseScheduler',
-            XMLResponseWS::RETURNTYPE_THUMBNAIL         => '_ParseList',
-            XMLResponseWS::RETURNTYPE_DATATREE          => '_ParseList',
-			XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => '_ParseList',
-			XMLResponseWS::RETURNTYPE_LIST            	=> '_ParseList',
-            XMLResponseWS::RETURNTYPE_GLOBALSEARCH      => '_ParseList',
-            XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> '_ParseList',
-            XMLResponseWS::RETURNTYPE_CHOICE           	=> '_ParseList',
-            XMLResponseWS::RETURNTYPE_REQUESTFILTER     => '_ParseList',
-            XMLResponseWS::RETURNTYPE_MAILSERVICELIST   => '_ParseMailServiceList',
+            XMLResponseWS::RETURNTYPE_SCHEDULER 		=> ParserScheduler::class,
+            XMLResponseWS::RETURNTYPE_THUMBNAIL         => ParserList::class,
+            XMLResponseWS::RETURNTYPE_DATATREE          => ParserList::class,
+            XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => ParserList::class,
+            XMLResponseWS::RETURNTYPE_LIST            	=> ParserList::class,
+            XMLResponseWS::RETURNTYPE_GLOBALSEARCH      => ParserList::class,
+            XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> ParserList::class,
+            XMLResponseWS::RETURNTYPE_CHOICE           	=> ParserList::class,
+            XMLResponseWS::RETURNTYPE_REQUESTFILTER     => ParserList::class,
+            //XMLResponseWS::RETURNTYPE_MAILSERVICELIST   => '_ParseMailServiceList',
+            XMLResponseWS::RETURNTYPE_NUMBEROFCHART     => ParserNumberOfChart::class,
 
-			XMLResponseWS::RETURNTYPE_LISTCALCULATION 	=> '_ParseListCaculation',
-			XMLResponseWS::RETURNTYPE_REPORT          	=> null,
-			XMLResponseWS::RETURNTYPE_PLANNING        	=> '_ParsePlanning',
-			XMLResponseWS::RETURNTYPE_CHART           	=> '_ParseChart',
+            XMLResponseWS::RETURNTYPE_LISTCALCULATION 	=> ParserListCalculation::class,
+            XMLResponseWS::RETURNTYPE_REPORT          	=> null,
+            XMLResponseWS::RETURNTYPE_PLANNING        	=> ParserPlanning::class,
+            XMLResponseWS::RETURNTYPE_CHART           	=> ParserChart::class,
 		);
 
 
@@ -61,131 +68,14 @@ class ReponseWSParser
 			return null;
 		}
 
+        $parserClass = $aPtrFct[$sReturnType];
+
+		/** @var Parser $clParser */
+		$clParser = new $parserClass();
+		$clParser->Parse($clXMLReponseWS);
+
 		// Appel des fonctions à la volée grâce au tableau de méthodes
-        $method = $aPtrFct[$sReturnType];
-		return $this->$method($clXMLReponseWS, $autreInfos);
-
-	}
-
-	/**
-	 * @param XMLResponseWS $clXMLReponseWS
-     * @return ParserRecordList
-	 */
-	protected function _ParseRecord(XMLResponseWS $clXMLReponseWS) : ParserRecordList
-	{
-        $clParser = new ParserRecordList();
-
-        $ndSchema    = $clXMLReponseWS->getNodeSchema();
-        if (isset($ndSchema))
-        {
-            $clParser->ParseXSD($ndSchema, StructureElement::NV_XSD_Enreg);
-        }
-
-        $ndXML = $clXMLReponseWS->getNodeXML();
-        $clParser->ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID(), StructureElement::NV_XSD_Enreg);
-
-        return $clParser;
-	}
-
-	/**
-	 * @param XMLResponseWS $clXMLReponseWS
-     * @return ParserList
-	 */
-	protected function _ParseList(XMLResponseWS $clXMLReponseWS) : ParserList
-	{
-		// Cette méthode est appelée par InitFromXmlXsd
-
-		// Création d'un Parser de liste
-        $clParser = new ParserList();
-
-        // Parser les paramètres
-        // Permet de savoir combien on a d'éléments avant de traiter les données ?
-        $clParser->ParseParam($clXMLReponseWS);
-
-		// Parser la liste
-        $clParser->ParseList($clXMLReponseWS);
-
-
-        return $clParser;
-	}
-
-    protected function _ParseMailServiceList(XMLResponseWS $clXMLResponseWS) {
-	    $clParser = new MailServiceListParser();//TODO
-	    $clParser->parse($clXMLResponseWS);
-	    return $clParser;
-    }
-
-	/**
-	 * @param XMLResponseWS $clXMLReponseWS
-	 * @return ParserScheduler
-	 */
-	protected function _ParseScheduler(XMLResponseWS $clXMLReponseWS) : ParserScheduler
-	{
-		// Cette méthode est appelée par InitFromXmlXsd
-
-		// Création d'un Parser de liste
-		$clParser = new ParserScheduler();
-
-		// Parser les paramètres
-		// Permet de savoir combien on a d'éléments avant de traiter les données ?
-		$clParser->ParseParam($clXMLReponseWS);
-
-		// Parser la liste
-		$clParser->ParseList($clXMLReponseWS);
-
-		// Parser les utilisateurs
-		$clParser->ParseScheduler($clXMLReponseWS);
-
-
 		return $clParser;
+
 	}
-
-
-	/**
-	 * @param XMLResponseWS $clXMLReponseWS
-	 * @return ParserPlanning
-	 */
-	protected function _ParsePlanning(XMLResponseWS $clXMLReponseWS) : ParserPlanning
-	{
-		$clParser = new ParserPlanning();
-
-		$ndSchema    = $clXMLReponseWS->getNodeSchema();
-		$clParser->TypeEvent2Color($ndSchema);
-
-		$ndXML       = $clXMLReponseWS->getNodeXML();
-		$clParser->Parse($ndXML);
-
-		return $clParser;
-	}
-
-	/**
-	 * @param XMLResponseWS $clXMLReponseWS
-	 * @return ParserChart
-	 */
-	protected function _ParseChart(XMLResponseWS $clXMLReponseWS) : ParserChart
-	{
-		$clParser = new ParserChart();
-
-		$ndXML = $clXMLReponseWS->getNodeXML();
-		$clParser->Parse($ndXML);
-
-		return $clParser;
-	}
-
-
-	/**
-	 * Parse les calculs de fin de liste
-	 * @param XMLResponseWS $clXMLReponseWS
-	 * @return ParserListCalculation
-	 */
-	protected function _ParseListCaculation(XMLResponseWS $clXMLReponseWS) : ParserListCalculation
-	{
-		$clParser = new ParserListCalculation();
-
-		$ndXML = $clXMLReponseWS->getNodeXML();
-		$clParser->Parse($ndXML);
-
-		return $clParser;
-	}
-
 }

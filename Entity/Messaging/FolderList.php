@@ -9,7 +9,6 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging;
 
 
-use Ratchet\Wamp\Exception;
 
 class FolderList
 {
@@ -20,7 +19,14 @@ class FolderList
         $this->root = new Folder(-1, "");
     }
 
-    public function add($id, $name, $parentID) {
+    /**
+     * @param $id
+     * @param $name
+     * @param string $parentID
+     * @return bool
+     */
+    public function add($id, string $name, $parentID): bool
+    {
         if(empty($parentID)) {
             $folder = new Folder($id, $name);
             $this->root->addChild($folder);
@@ -30,7 +36,7 @@ class FolderList
                 $parent = $this->root->find($parentID);
                 $parent->addChild(new Folder($id, $name));
             }
-            catch(Exception $e) {
+            catch(\Exception $e) {
                 return false;
             }
         }

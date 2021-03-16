@@ -69,8 +69,8 @@ class OptionDialogue extends WSDLOptionDialogue
      * @param int $nVersionPref
      * @return $this
      */
-	public function InitDefault($nVersionPref=1)
-	{
+	public function InitDefault($nVersionPref=1): OptionDialogue
+    {
 		$this->ReturnValue           = 1; 	// integer
 		$this->ReturnXSD             = 1; 	// integer
 		$this->Ghost                 = OptionDialogue::GHOST_VALID;

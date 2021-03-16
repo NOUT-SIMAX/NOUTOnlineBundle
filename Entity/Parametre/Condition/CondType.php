@@ -34,24 +34,37 @@ class CondType extends SOAPParameter
     /** @var  string $type*/
     public $type;
 
-    public function __construct($type)
+    /**
+     * CondType constructor.
+     * @param string $type
+     */
+    public function __construct(string $type)
     {
-        if(!$this->isValid($type))
+        if(!$this->_isValid($type))
             throw new \InvalidArgumentException('Condition type' . $type . ' doesn\'t exist');
         $this->type = $type;
     }
 
-    public function getOpeningTag()
+    /**
+     * @return string
+     */
+    public function getOpeningTag(): string
     {
         return '<CondType>';
     }
 
-    public function getClosingTag()
+    /**
+     * @return string
+     */
+    public function getClosingTag(): string
     {
         return '</CondType>';
     }
 
-    public function getContent()
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         return $this->type;
     }
@@ -60,7 +73,8 @@ class CondType extends SOAPParameter
      * @param string $type
      * @return bool
      */
-    protected function isValid($type){
+    protected function _isValid(string $type): bool
+    {
         $ops = array(
             self::COND_EQUAL,
             self::COND_DIFFERENT,

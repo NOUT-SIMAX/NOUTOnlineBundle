@@ -17,53 +17,45 @@ class NOUTFileInfo
     /**
      * @var string
      */
-    public $filename;
+    public $filename=null;
 
     /**
      * @var string
      */
-    public $extension;
+    public $extension=null;
 
 
     /**
      * @var string
      */
-    public $mimetype;
+    public $mimetype=null;
 
     /**
      * @var string
      */
-    public $content;
+    public $content=null;
 
 
     /**
      * @var integer
      */
-    public $size;
+    public $size=null;
 
     /**
      * @var boolean
      */
-    protected $no_cache;
+    protected $no_cache=false;
 
     /**
      * @var
      */
-    public $last_modified;
+    public $last_modified=null;
 
     /**
      *
      */
     public function __construct()
     {
-        $this->filename = null;
-        $this->mimetype = null;
-        $this->size     = null;
-        $this->content  = null;
-
-        $this->no_cache = false;
-        $this->last_modified = null;
-
     }
 
     /**
@@ -79,7 +71,9 @@ class NOUTFileInfo
     }
 
     /**
-     * @param UploadedFile $file
+     * @param $dataBase64
+     * @param $mimetype
+     * @param $idcolonne
      */
     public function initImgFromUploadedBase64Data($dataBase64, $mimetype, $idcolonne)
     {
@@ -178,7 +172,7 @@ class NOUTFileInfo
 
     }
 
-    protected function _getMetaTags($str)
+    protected function _getMetaTags($str): array
     {
         $pattern = '
   ~<\s*meta\s
@@ -207,7 +201,7 @@ class NOUTFileInfo
     /**
      * @return boolean
      */
-    public function isNoCache()
+    public function isNoCache(): bool
     {
         return $this->no_cache;
     }
@@ -215,23 +209,23 @@ class NOUTFileInfo
     /**
      * @param boolean $no_cache
      */
-    public function setNoCache($no_cache)
+    public function setNoCache(bool $no_cache)
     {
         $this->no_cache = $no_cache;
     }
 
 
-    public function getFilename()
+    public function getFilename(): ?string
     {
         return $this->filename;
     }
 
-    public function getContentType()
+    public function getContentType(): ?string
     {
         return $this->mimetype;
     }
 
-    public function getContentLength()
+    public function getContentLength(): ?int
     {
         return $this->size;
     }
@@ -250,7 +244,11 @@ class NOUTFileInfo
         $this->last_modified = gmdate('D, d M Y H:i:s T');
     }
 
-    public function getDTLastModified()
+    /**
+     * @return \DateTime
+     * @throws \Exception
+     */
+    public function getDTLastModified() : \DateTime
     {
         if (!empty($this->last_modified))
         {

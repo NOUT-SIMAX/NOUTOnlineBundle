@@ -25,7 +25,8 @@ class OnlineError implements \JsonSerializable
 	}
 
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): array
+    {
         return array(
             'code'       => $this->m_nCode,
             'error'      => $this->m_nErreur,
@@ -41,7 +42,7 @@ class OnlineError implements \JsonSerializable
 	}
 
 	/**
-	 * @param mixed $m_TabParametres
+	 * @param mixed $TabParametres
 	 */
 	public function setTabParametres($TabParametres)
 	{
@@ -56,10 +57,10 @@ class OnlineError implements \JsonSerializable
 		return $this->m_TabParametres;
 	}
 
-	/**
-	 * @param int $m_nCategorie
-	 */
-	public function setCategorie($nCategorie)
+    /**
+     * @param int $nCategorie
+     */
+	public function setCategorie(int $nCategorie)
 	{
 		$this->m_nCategorie = $nCategorie;
 	}
@@ -67,15 +68,15 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return int
 	 */
-	public function getCategorie()
-	{
+	public function getCategorie(): int
+    {
 		return $this->m_nCategorie;
 	}
 
-	/**
-	 * @param string $m_nCode
-	 */
-	public function setCode($nCode)
+    /**
+     * @param string $nCode
+     */
+	public function setCode(string $nCode)
 	{
 		$this->m_nCode = $nCode;
 	}
@@ -83,15 +84,15 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return string
 	 */
-	public function getCode()
-	{
+	public function getCode(): string
+    {
 		return $this->m_nCode;
 	}
 
-	/**
-	 * @param int $m_nErreur
-	 */
-	public function setErreur($nErreur)
+    /**
+     * @param int $nErreur
+     */
+	public function setErreur(int $nErreur)
 	{
 		$this->m_nErreur = $nErreur;
 	}
@@ -99,15 +100,15 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return int
 	 */
-	public function getErreur()
-	{
+	public function getErreur(): int
+    {
 		return $this->m_nErreur;
 	}
 
-	/**
-	 * @param string $m_sMessage
-	 */
-	public function setMessage($sMessage)
+    /**
+     * @param string $sMessage
+     */
+	public function setMessage(string $sMessage)
 	{
 		$this->m_sMessage = $sMessage;
 	}
@@ -115,8 +116,8 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return string
 	 */
-	public function getMessage()
-	{
+	public function getMessage(): string
+    {
 		return $this->m_sMessage;
 	}
 

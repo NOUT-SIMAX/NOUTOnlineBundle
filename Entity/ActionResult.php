@@ -8,67 +8,65 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Element;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
 
 class ActionResult
 {
 	/**
-	 * @var string
+	 * @var string|null
 	 */
-	public $ReturnType;
-
+	public $ReturnType=null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $IDIHM;
+    public $IDIHM=null;
 
 	/**
 	 * @var mixed
 	 */
-	private $m_Data;
+	private $m_Data=null;
 
 	/**
      * Les données en plus (par exemple liste utilisateurs)
 	 * @var mixed
 	 */
-	private $m_ExtraData;
+	private $m_ExtraData=null;
 
 	/**
 	 * @var string
 	 */
-	private $m_sIDContexte;
+	private $m_sIDContexte='';
 
 
     /**
      * @var string
      */
-    private $m_sIDContexteToValidateOnClose;
+    private $m_sIDContexteToValidateOnClose='';
 
     /**
      * @var array
      */
-    private $m_aContexteToClose;
+    private $m_aContexteToClose=array();
 
     /**
-     * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction
+     * @var CurrentAction
      */
-	private $m_clAction;
+	private $m_clAction=null;
 
 	/**
-	 * @var \NOUT\Bundle\ContextsBundle\Entity\ActionResultCache
+	 * @var ActionResultCache
 	 */
 	private $m_clCache;
 
 	/**
 	 * @var ValidateError
 	 */
-	private $m_clValidateError;
+	private $m_clValidateError=null;
 
     /**
      * @var Count
@@ -80,11 +78,10 @@ class ActionResult
      */
     private $m_oElement;
 
-
-
-	/**
-	 * @param string $sReturnType
-	 */
+    /**
+     * ActionResult constructor.
+     * @param XMLResponseWS|null $clReponseXML
+     */
 	public function __construct(XMLResponseWS $clReponseXML = null)
 	{
 		if (isset($clReponseXML))
@@ -96,33 +93,17 @@ class ActionResult
             $this->m_sIDContexteToValidateOnClose = $clReponseXML->sGetContextToValidateOnClose();
             $this->m_aContexteToClose = $clReponseXML->aGetActionContextToClose();
 		}
-		else
-		{
-			$this->ReturnType    = null;
-			$this->IDIHM         = null;
-			$this->m_sIDContexte = '';
-            $this->m_clAction    = null;
-            $this->m_sIDContexteToValidateOnClose = '';
-            $this->m_aContexteToClose = array();
-		}
 
-		$this->m_Data               = null;
-		$this->m_clCache            = new ActionResultCache();
-		$this->m_clValidateError    = null;
-        $this->m_sTypeAction        = Langage::eTYPEACTION_Unknown;
-        $this->m_oElement           = new \stdClass();
-
-        $this->m_oElement->id = '';
-        $this->m_oElement->title = '';
-
+		$this->m_clCache  = new ActionResultCache();
+        $this->m_oElement = new Element('', '');
 	}
 
 	/**
 	 * @param string $sReturnType
 	 * @return $this
 	 */
-	public function setReturnType($sReturnType)
-	{
+	public function setReturnType(string $sReturnType): ActionResult
+    {
 		$this->ReturnType = $sReturnType;
 
 		return $this;
@@ -131,8 +112,8 @@ class ActionResult
 	/**
 	 * @return string
 	 */
-	public function getReturnType()
-	{
+	public function getReturnType(): ?string
+    {
 		return $this->ReturnType;
 	}
 
@@ -140,8 +121,8 @@ class ActionResult
 	 * @param $data
 	 * @return $this
 	 */
-	public function setData($data)
-	{
+	public function setData($data): ActionResult
+    {
 		$this->m_Data = $data;
 
 		return $this;
@@ -159,7 +140,7 @@ class ActionResult
      * @param $extraData
      * @return $this
      */
-    public function setExtraData($extraData)
+    public function setExtraData($extraData): ActionResult
     {
         $this->m_ExtraData = $extraData;
 
@@ -179,27 +160,27 @@ class ActionResult
 	 * @param $element
 	 * @return $this
 	 */
-	public function setElement($element)
-	{
+	public function setElement(Element $element): ActionResult
+    {
 		$this->m_oElement = $element;
 		return $this;
 	}
 
 	/**
-	 * @return mixed
+	 * @return Element
 	 */
-	public function getElement()
+	public function getElement() : Element
 	{
 		return $this->m_oElement;
 	}
 
 
 	/**
-	 * @param ValidateError $clValidateError
+	 * @param ValidateError|null $clValidateError
 	 * @return $this
 	 */
-	public function setValidateError(ValidateError $clValidateError=null)
-	{
+	public function setValidateError(ValidateError $clValidateError=null): ActionResult
+    {
 		$this->m_clValidateError = $clValidateError;
 		return $this;
 	}
@@ -207,23 +188,23 @@ class ActionResult
 	/**
 	 * @return null|ValidateError
 	 */
-	public function getValidateError()
-	{
+	public function getValidateError(): ?ValidateError
+    {
 		return $this->m_clValidateError;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getIDContexte()
-	{
+	public function getIDContexte(): string
+    {
 		return $this->m_sIDContexte;
 	}
 
     /**
      * @return string
      */
-    public function getIDContexteToValidateOnClose()
+    public function getIDContexteToValidateOnClose(): string
     {
         return $this->m_sIDContexteToValidateOnClose;
     }
@@ -231,17 +212,17 @@ class ActionResult
     /**
      * @return array
      */
-    public function getContexteToClose()
+    public function getContexteToClose(): array
     {
         return $this->m_aContexteToClose;
     }
 
 
     /**
-     * @return \NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction|null
+     * @return CurrentAction|null
      */
-	public function getAction()
-	{
+	public function getAction(): ?CurrentAction
+    {
 		return $this->m_clAction;
 	}
 
@@ -250,8 +231,8 @@ class ActionResult
 	 * @param $eTypeCache
 	 * @return $this
 	 */
-	public function setTypeCache($eTypeCache)
-	{
+	public function setTypeCache($eTypeCache): ActionResult
+    {
 		$this->m_clCache->setTypeCache($eTypeCache);
 
 		return $this;
@@ -261,8 +242,8 @@ class ActionResult
 	 * @param \DateTime $clExpires
 	 * @return $this
 	 */
-	public function setExpires(\DateTime $clExpires)
-	{
+	public function setExpires(\DateTime $clExpires): ActionResult
+    {
 		$this->m_clCache->setExpires($clExpires);
 
 		return $this;
@@ -272,8 +253,8 @@ class ActionResult
 	 * @param int $nMaxAge
 	 * @return $this
 	 */
-	public function setMaxAge($nMaxAge)
-	{
+	public function setMaxAge(int $nMaxAge): ActionResult
+    {
 		$this->m_clCache->setMaxAge($nMaxAge);
 
 		return $this;
@@ -283,8 +264,8 @@ class ActionResult
 	 * @param int $nSharedMaxAge
 	 * @return $this
 	 */
-	public function setSharedMaxAge($nSharedMaxAge)
-	{
+	public function setSharedMaxAge(int $nSharedMaxAge): ActionResult
+    {
 		$this->m_clCache->setSharedMaxAge($nSharedMaxAge);
 
 		return $this;
@@ -294,8 +275,8 @@ class ActionResult
 	 * @param string $sETAG
 	 * @return $this
 	 */
-	public function setETAG($sETAG)
-	{
+	public function setETAG(string $sETAG): ActionResult
+    {
 		$this->m_clCache->setETAG($sETAG);
 
 		return $this;
@@ -305,8 +286,8 @@ class ActionResult
 	 * @param \DateTime $lastModified
 	 * @return $this
 	 */
-	public function setLastModified(\DateTime $lastModified)
-	{
+	public function setLastModified(\DateTime $lastModified): ActionResult
+    {
 		$this->m_clCache->setLastModified($lastModified);
 
 		return $this;
@@ -315,7 +296,7 @@ class ActionResult
 	/**
 	 * @return ActionResultCache
 	 */
-	public function getCache()
+	public function getCache() : ActionResultCache
 	{
 		return $this->m_clCache;
 	}
@@ -323,15 +304,16 @@ class ActionResult
     /**
      * @return Count
      */
-    public function getCount()
+    public function getCount(): ?Count
     {
         return $this->m_clCount;
     }
 
     /**
      * @param Count $m_clCount
+     * @return $this
      */
-    public function setCount(Count $m_clCount)
+    public function setCount(Count $m_clCount): ActionResult
     {
         $this->m_clCount = $m_clCount;
         return $this;
@@ -340,7 +322,7 @@ class ActionResult
     /**
      * @return string
      */
-    public function getTypeAction()
+    public function getTypeAction(): string
     {
         return $this->getAction()->getTypeAction();
     }

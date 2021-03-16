@@ -6,10 +6,8 @@
  * Time: 17:53
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
+namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 
 class RecordCache
 {
@@ -34,12 +32,17 @@ class RecordCache
 		$this->m_MapXMLKey2Record			= array();
 	}
 
-	public function getMapIDTableauIDEnreg2Record(){
+    /**
+     * @return array
+     */
+	public function getMapIDTableauIDEnreg2Record(): array
+    {
 	    return $this->m_MapIDTableauIDEnreg2Record;
     }
 
 	/**
 	 * @param Record $clRecord
+     * @param $nNiv
 	 */
 	public function SetRecord($nNiv, Record $clRecord)
 	{
@@ -66,11 +69,11 @@ class RecordCache
 
 	/**
 	 * @param $sIDForm
-	 * @param $sIDEreng
+	 * @param $sIDEnreg
 	 * @return null|Record
 	 */
-	public function getRecord($sIDForm, $sIDEnreg)
-	{
+	public function getRecord($sIDForm, $sIDEnreg): ?Record
+    {
 		$sKey2Record = $sIDForm.'/'.$sIDEnreg;
 
 		if (!isset($this->m_MapIDTableauIDEnreg2Record[$sKey2Record]))
@@ -83,12 +86,12 @@ class RecordCache
 
 	/**
 	 * @param $sIDForm
-	 * @param $sIDEreng
+	 * @param $sIDEnreg
 	 * @param $nNiv
 	 * @return null|Record
 	 */
-	public function getRecordFromIdLevel($sIDForm, $sIDEnreg, $nNiv)
-	{
+	public function getRecordFromIdLevel($sIDForm, $sIDEnreg, $nNiv): ?Record
+    {
 		$sKey2Record = $sIDForm.'/'.$sIDEnreg.'/'.$nNiv;
 		if (!isset($this->m_MapXMLKey2Record[$sKey2Record]))
 		{
@@ -102,7 +105,7 @@ class RecordCache
      * @param RecordCache $cacheSrc
      * @return $this
      */
-    public function update(RecordCache $cacheSrc)
+    public function update(RecordCache $cacheSrc): RecordCache
     {
         foreach($cacheSrc->m_MapIDTableauIDEnreg2Record as $key=>$clRecord)
         {

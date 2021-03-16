@@ -18,24 +18,36 @@ class Folder
     /** @var Folder[] $children */
     private $children;
 
-    public function __construct($id, $name){
+    /**
+     * Folder constructor.
+     * @param $id
+     * @param string $name
+     */
+    public function __construct($id, string $name){
         $this->id = $id;
         $this->name = $name;
         $this->children = array();
     }
 
+    /**
+     * @param Folder $folder
+     */
     public function addChild(Folder $folder) {
         array_push($this->children, $folder);
     }
 
-    public function find($id) {
+    /**
+     * @param $id
+     * @return $this
+     */
+    public function find($id): Folder
+    {
         if($id == $this->id) {
             return $this;
         }
         foreach($this->children as $child) {
             try {
-                $folder = $child->find($id);
-                return $folder;
+                return $child->find($id);
             }
             catch(\RuntimeException $e) {
                 continue;

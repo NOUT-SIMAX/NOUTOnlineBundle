@@ -26,28 +26,31 @@ class ColonneRestriction
 		$this->m_IconRestriction = array();
 	}
 
-	/**
-	 * @param string $Type
-     * @param mixed $Valeur
-	 * @return $this
-	 */
-	public function addRestrictionSimple($Type, $Valeur)
-	{
+    /**
+     * @param string $Type
+     * @param mixed  $Valeur
+     * @return $this
+     */
+	public function addRestrictionSimple(string $Type, $Valeur): ColonneRestriction
+    {
         $this->m_TabRestriction[$Type]=$Valeur;
+        return $this;
 	}
 
-	public  function getRestrictions() {
+	public  function getRestrictions(): array
+    {
 	    return $this->m_TabRestriction;
     }
 
 	/**
+     * @param $Type
 	 * @param $key
 	 * @param $value
 	 * @param $icon
 	 * @return $this
 	 */
-	public function addRestrictionArray($Type, $key, $value, $icon=null)
-	{
+	public function addRestrictionArray($Type, $key, $value, $icon=null): ColonneRestriction
+    {
         if (!isset($this->m_TabRestriction[$Type]))
         {
             $this->m_TabRestriction[$Type] = array();
@@ -63,6 +66,7 @@ class ColonneRestriction
 	}
 
 	/**
+     * @param $Type
 	 * @return string|array
 	 */
 	public function getIconRestriction($Type)
@@ -76,6 +80,7 @@ class ColonneRestriction
 	}
 
 	/**
+     * @param $type
 	 * @return mixed
 	 */
 	public function getRestriction($type)
@@ -92,7 +97,7 @@ class ColonneRestriction
      * @param $type
      * @return bool
      */
-    public function hasTypeRestriction($type)
+    public function hasTypeRestriction($type): bool
     {
         return isset($this->m_TabRestriction[$type]);
     }
