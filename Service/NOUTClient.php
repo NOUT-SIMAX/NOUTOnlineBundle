@@ -1344,23 +1344,6 @@ class NOUTClient
                 break;
             }
 
-
-            case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
-            case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
-            case XMLResponseWS::RETURNTYPE_CHOICE:
-            {
-
-                // Instance d'un parser
-                $clResponseParser = new ReponseWSParser();
-
-                /** @var ParserList $clParser */
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
-
-                $clSelectorList = new SelectorList($clParser->getSelectorList($clReponseXML));
-                $clActionResult->setData($clSelectorList);
-                break;
-            }
-
             case XMLResponseWS::RETURNTYPE_REPORT:
             {
                 $clActionResult->setElement($clReponseXML->clGetElement());
@@ -1424,8 +1407,8 @@ class NOUTClient
                 // dump($clParser);
                 // clParser est bien du type ParserList mais n'a pas encore les données
 
-                $list   = $clParser->getList($clReponseXML);
-                $users  = $clParser->getScheduler($clReponseXML); // Les utilisateurs pour un planning partagé
+                $list   = $clParser->getList();
+                $users  = $clParser->getScheduler(); // Les utilisateurs pour un planning partagé
 
                 $clActionResult
                     ->setData($list) //le pas écraser list sinon on perd les boutons
@@ -1435,6 +1418,7 @@ class NOUTClient
 
                 break;
             }
+
 
             case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
             case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
@@ -1466,7 +1450,7 @@ class NOUTClient
                 // clParser est bien du type ParserList mais n'a pas encore les données
 
                 // getList renvoi un RecordList
-                $list = $clParser->getList($clReponseXML);
+                $list = $clParser->getList();
                 // dump($list);
 
                 $clActionResult
@@ -1474,6 +1458,22 @@ class NOUTClient
                     ->setValidateError($clReponseXML->getValidateError())
                     ->setCount($clReponseXML->clGetCount());
 
+                break;
+            }
+
+            case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
+            case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
+            case XMLResponseWS::RETURNTYPE_CHOICE:
+            {
+
+                // Instance d'un parser
+                $clResponseParser = new ReponseWSParser();
+
+                /** @var ParserList $clParser */
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+                $clSelectorList = new SelectorList($clParser->getList());
+                $clActionResult->setData($clSelectorList);
                 break;
             }
 
@@ -1500,9 +1500,7 @@ class NOUTClient
                 /** @var ParserNumberOfChart $clParser */
                 $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
-
-
-                $clActionResult->setData($clReponseXML->nGetNumberOfChart());
+                $clActionResult->setData($clParser->getNumberOfChart());
                 break;
             }
 

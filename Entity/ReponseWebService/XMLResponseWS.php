@@ -8,6 +8,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\AbstractParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 
 /**
  * Class XMLResponseWS
@@ -340,8 +342,19 @@ class XMLResponseWS
 	 */
 	public function clGetForm(): Form
     {
-		$ndForm = $this->m_ndHeader->children()->Form;
-        $clForm = new Form($ndForm, $ndForm['title'], $ndForm['withBtnOrderPossible'], $ndForm['withBtnOrderActive']);
+        $ndForm = $this->m_ndHeader->children()->Form;
+
+        $bWithGhost = !!$ndForm['withGhost'];
+        $ndSchema = $this->getNodeSchema();
+        if ($ndSchema)
+        {
+            $TabAttribSIMAX = $ndSchema->children(AbstractParser::NAMESPACE_XSD)->element->attributes(AbstractParser::NAMESPACE_NOUT_XSD);
+            if (!$bWithGhost){
+                $bWithGhost = ((int) $TabAttribSIMAX[StructureColonne::OPTION_WithGhost])==1;
+            }
+        }
+
+        $clForm = new Form($ndForm, $ndForm['title'], $ndForm['withBtnOrderPossible'], $ndForm['withBtnOrderActive'], $bWithGhost);
 
 		for ($n = 1; $n <= 3; $n++)
 		{

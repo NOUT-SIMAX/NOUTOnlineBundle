@@ -40,4 +40,26 @@ class ParserWithParam extends Parser
             $this->m_clParserParam->ParseXML($ndXML, $clXMLReponseWS->clGetAction()->getIDForm(), StructureElement::NV_XSD_Enreg);
         }
     }
+
+
+    /**
+     * @param \SimpleXMLElement|null $ndXml
+     * @return array
+     */
+    protected function _getImportOrExportArray(\SimpleXMLElement $ndXml=null) : array
+    {
+        $ret = array();
+        if(!is_null($ndXml)) {
+            foreach($ndXml as $ndChild) {
+                /** @var \SimpleXMLElement $ndChild */
+                $obj = new \stdClass();
+                foreach($ndChild->attributes() as $name => $value) {
+                    $obj->$name = (string) $value;
+                }
+                $obj->value = (string) $ndChild;
+                array_push($exports, $obj);
+            }
+        }
+        return $ret;
+    }
 }

@@ -68,7 +68,7 @@ class RecordSerializer
     {
         $aModifiedFiles = array();
 
-        $structElem = $clRecord->clGetStructElem();
+        $structElem = $clRecord->getStructElem();
         $fiche = $structElem->getFiche();
 
         $aModifiedFiles = $this->_getFilesFromSection($clRecord, $idcontexte, $idihm, $fiche, $aModifiedFiles, $bIsParam);

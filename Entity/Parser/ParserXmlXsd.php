@@ -41,48 +41,10 @@ class ParserXmlXsd extends AbstractParser
     /** @var \SimpleXMLElement */
     protected $m_clXML;
 
-    /**
-     * @var \SimpleXMLElement
-     */
-    protected $m_ndImports;
-
-    /** @var \SimpleXMLElement */
-    protected $m_ndExports;
-
     public function __construct()
     {
         $this->m_clRecordCache 		= new RecordCache();
         $this->m_TabEnregTableau 	= new EnregTableauArray();
-    }
-
-    /**
-     * @return \SimpleXMLElement|null
-     */
-    public function getImports():? \SimpleXMLElement
-    {
-        return $this->m_ndImports;
-    }
-
-    /**
-     * @param \SimpleXMLElement $imports
-     */
-    public function setImports(\SimpleXMLElement $imports) {
-        $this->m_ndImports = $imports;
-    }
-
-    /**
-     * @return \SimpleXMLElement|null
-     */
-    public function getExports():? \SimpleXMLElement
-    {
-        return $this->m_ndExports;
-    }
-
-    /**
-     * @param \SimpleXMLElement $exports
-     */
-    public function setExports(\SimpleXMLElement $exports) {
-        $this->m_ndExports = $exports;
     }
 
 

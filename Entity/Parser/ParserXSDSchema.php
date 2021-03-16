@@ -63,8 +63,11 @@ class ParserXSDSchema extends AbstractParser
 		$this->m_MapIDTableauNiv2StructureElement=array();
 
 		//récupération du noeud element fils de schema
-		$ndElement = $clSchema->children(self::NAMESPACE_XSD)->element;
-		$this->_clParseXSDElementComplex($nNiv, $ndElement);
+        if (!$clSchema->count()==0)
+        {
+            $ndElement = $clSchema->children(self::NAMESPACE_XSD)->element;
+            $this->_clParseXSDElementComplex($nNiv, $ndElement);
+        }
 	}
 
 	/**
@@ -87,7 +90,7 @@ class ParserXSDSchema extends AbstractParser
 		$sIDTableau = str_replace('id_', '', $TabAttribXS['name']);
 
 		$TabAttribSIMAX = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
-		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name'], ((int) $TabAttribSIMAX[StructureColonne::OPTION_WithGhost])==1);
+		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name']);
 
 		if (isset($TabAttribSIMAX[StructureSection::OPTION_ModeMultiC]) && isset($TabAttribSIMAX[StructureSection::OPTION_SensMultiC])){
             $clStructureElement->setMultiColonneInfo((int)$TabAttribSIMAX[StructureSection::OPTION_ModeMultiC], (int)$TabAttribSIMAX[StructureSection::OPTION_SensMultiC], (string)$TabAttribSIMAX[StructureSection::OPTION_BackgroundColor]);

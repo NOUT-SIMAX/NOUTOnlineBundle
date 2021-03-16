@@ -15,19 +15,14 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
  * @package NOUT\Bundle\NOUTOnlineBundle\Entity
  *
  */
-class Record
+class Record extends IHMWindows
 {
-	/** @var string : contient la mini desc de l'enregistrement */
-	protected $m_sTitle='';
 
     /** @var string : contient le sous-titre quand il y en a un */
     protected $m_sSubTitle='';
 
 	/** @var string : identitifant de l'enregistrement */
 	protected $m_nIDEnreg='';
-
-	/** @var string : identifiant du formulaire */
-	protected $m_nIDTableau='';
 
     /** @var array */
     protected $m_TabOptionsRecord;
@@ -43,9 +38,6 @@ class Record
 
 	/** @var array : tableau de booleen pour indiquer que la valeur à changée */
 	protected $m_TabColumnsModified;
-
-	/** @var StructureElement */
-	protected $m_clStructElem;
 
 	/** @var RecordCache */
 	protected $m_TabRecordLie;
@@ -76,16 +68,15 @@ class Record
      * Record constructor.
      * @param string                $sIDTableau
      * @param string                $sIDEnreg
-     * @param string                $sLibelle
+     * @param string                $sTitle
      * @param int                   $nNiv
      * @param StructureElement|null $clStruct
      */
-	public function __construct(string $sIDTableau, string $sIDEnreg, string $sLibelle, int $nNiv, StructureElement $clStruct = null)
+	public function __construct(string $sIDTableau, string $sIDEnreg, string $sTitle, int $nNiv, StructureElement $clStruct = null)
 	{
-		$this->m_nIDTableau   = $sIDTableau;
+	    parent::__construct($sTitle, $sIDTableau, $clStruct);
+
 		$this->m_nIDEnreg     = $sIDEnreg;
-		$this->m_sTitle       = $sLibelle;
-		$this->m_clStructElem = $clStruct;
 		$this->m_nXSDNiv      = (int)$nNiv;
 
 		$this->m_TabColumnsInfo     = array();
@@ -207,22 +198,6 @@ class Record
         return $this->m_TabRecordLie;
     }
 
-	/**
-	 * @return string
-	 */
-	public function getIDTableau(): string
-    {
-		return $this->m_nIDTableau;
-	}
-
-    /**
-     * renvoi la minidesc de l'enregistrement
-     * @return string
-     */
-    public function getTitle(): string
-    {
-        return $this->m_sTitle;
-    }
 
     /**
      * @return string
@@ -243,26 +218,6 @@ class Record
     }
 
 
-    /**
-     * @param $idColonne
-     * @return StructureColonne|null
-     */
-    public function clGetStructColonne($idColonne): ?StructureColonne
-    {
-        if ($this->m_clStructElem instanceof StructureElement){
-            return $this->m_clStructElem->getStructureColonne($idColonne);
-        }
-        return null;
-    }
-
-
-    /**
-	 * @return StructureElement
-	 */
-	public function clGetStructElem(): ?StructureElement
-    {
-		return $this->m_clStructElem;
-	}
 
     /**
      * @return array

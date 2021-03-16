@@ -23,6 +23,9 @@ class ParserScheduler extends ParserList
     /** @var ParserXmlXsd */
     protected $m_clParserScheduler;
 
+    /** @var RecordList|null */
+    protected $m_clScheduler;
+
 
     public function __construct()
     {
@@ -59,26 +62,21 @@ class ParserScheduler extends ParserList
         if (count($ndXML)>0){
             $this->m_clParserScheduler->ParseXML($ndXML, $idForm, StructureElement::NV_XSD_List);
         }
+
+        $clStructElem = $this->m_clParserList->getStructureElem($idForm, StructureElement::NV_XSD_List);
+
+        //Instance d'une nouvelle clList avec toutes les donnees precedentes
+        $this->m_clScheduler = new RecordList('', '', $idForm, $this->m_clParserScheduler->m_TabEnregTableau, $clStructElem, false,false, false, array(), array());
+
+        // Param�tres pour la clList
+        $this->m_clScheduler->setRecordCache($this->m_clParserScheduler->getFullCache());
     }
 
     /**
-     * @return RecordList
+     * @return RecordList|null
      */
-    public function getScheduler(): RecordList
+    public function getScheduler(): ?RecordList
     {
-        $sIDForm        = Langage::TABL_Ressource;
-
-        $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
-
-
-        $exports = $this->_getExports();
-        $imports = $this->_getImports();
-
-        // Instance d'une nouvelle clList avec toutes les donn�es pr�c�dentes
-        $clList = new RecordList('', '', $sIDForm, $this->m_clParserScheduler->m_TabEnregTableau, $clStructElem, false, false, $exports, $imports);
-
-        // Param�tres pour la clList
-        $clList->setRecordCache($this->m_clParserScheduler->getFullCache());
-        return $clList;
+        return $this->m_clScheduler;
     }
 }

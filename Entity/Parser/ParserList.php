@@ -9,7 +9,6 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
@@ -18,10 +17,11 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 class ParserList extends ParserWithParam
 {
-    /**
-     * @var ParserXmlXsd
-     */
+    /** @var ParserXmlXsd */
     protected $m_clParserList;
+
+    /** @var RecordList|null */
+    protected $m_clRecordList;
 
 
     public function __construct()
@@ -62,24 +62,36 @@ class ParserList extends ParserWithParam
 
         $ndSchema   = $clXMLReponseWS->getNodeSchema();
         $ndXML      = $clXMLReponseWS->getNodeXML();
-        $idForm     = $clXMLReponseWS->clGetForm()->getID();
-        $exports    = $clXMLReponseWS->getExportsNode();
-        $imports    = $clXMLReponseWS->getImportsNode();
+        $clForm     = $clXMLReponseWS->clGetForm();
+        $idForm     = $clForm->getID();
 
         if (isset($ndSchema))
         {
             $this->m_clParserList->ParseXSD($ndSchema, StructureElement::NV_XSD_List);
         }
 
-        if(!is_null($imports)) {
-            $this->m_clParserList->setImports($imports);
-        }
-
-        if(!is_null($exports)) {
-            $this->m_clParserList->setExports($exports);
-        }
-
         $this->m_clParserList->ParseXML($ndXML, $idForm, StructureElement::NV_XSD_List);
+
+
+
+        $returnType = $clXMLReponseWS->sGetReturnType();
+        if (    ($returnType == XMLResponseWS::RETURNTYPE_PRINTTEMPLATE)
+            ||  ($returnType == XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION)
+            ||  ($returnType == XMLResponseWS::RETURNTYPE_CHOICE))
+        {
+            //on pas besoin des exports, tri et autre
+            $this->m_clRecordList = $this->_getRecordList($clXMLReponseWS, false,false, false, array(), null, null);
+            return ;
+        }
+
+        $withBtnOrder = $clForm->hasOrderBtn();
+        $withOrderActive = $clForm->hasOrderActive();
+        $withGhost = $clForm->getWithGhost();
+        $tabSort = $clForm->getTabSort();
+        $exports    = $clXMLReponseWS->getExportsNode();
+        $imports    = $clXMLReponseWS->getImportsNode();
+
+        $this->m_clRecordList = $this->_getRecordList($clXMLReponseWS, $withGhost, $withBtnOrder, $withOrderActive, $tabSort, $exports, $imports);
     }
 
 
@@ -90,7 +102,7 @@ class ParserList extends ParserWithParam
      * @param $bPossibleReorder
      * @return RecordList
      */
-    protected function _getRecordList(XMLResponseWS $clReponseXML, $bPossibleReorder, $bActiveReorder, $aTabSort): RecordList
+    protected function _getRecordList(XMLResponseWS $clReponseXML, $bWithGhost, $bPossibleReorder, $bActiveReorder, $aTabSort, $exportsNode, $importsNode): RecordList
     {
         $clAction = $clReponseXML->clGetAction();
         $sIDFormAction = $clAction->getIDForm();
@@ -102,12 +114,11 @@ class ParserList extends ParserWithParam
 
         $clStructElem = $this->m_clParserList->getStructureElem($sIDForm, StructureElement::NV_XSD_List);
 
-
-        $exports = $this->_getExports();
-        $imports = $this->_getImports();
+        $exports = $this->_getImportOrExportArray($exportsNode);
+        $imports = $this->_getImportOrExportArray($importsNode);
 
         // Instance d'une nouvelle clList avec toutes les données précédentes
-        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, $bPossibleReorder, $bActiveReorder, $exports, $imports, $aTabSort);
+        $clList = new RecordList($sTitre, $sIDAction, $sIDForm, $this->m_clParserList->m_TabEnregTableau, $clStructElem, $bWithGhost, $bPossibleReorder, $bActiveReorder, $exports, $imports, $aTabSort);
         $clList->setDefaultDisplayMode($clReponseXML->sGetDefaultDisplayMode());
         $clList->setTabPossibleDisplayMode($clReponseXML->GetTabPossibleDisplayMode());
 
@@ -122,66 +133,11 @@ class ParserList extends ParserWithParam
     }
 
     /**
-     * @param XMLResponseWS $clReponseXML
      * @return RecordList
      */
-    public function getList(XMLResponseWS $clReponseXML): RecordList
+    public function getList(): ?RecordList
     {
-        $clForm = $clReponseXML->clGetForm();
-        $withBtnOrder = $clForm->hasOrderBtn();
-        $withOrderActive = $clForm->hasOrderActive();
-        $tabSort = $clForm->getTabSort();
-
-        return $this->_getRecordList($clReponseXML, $withBtnOrder, $withOrderActive, $tabSort);
+        return $this->m_clRecordList;
     }
 
-
-    /**
-     * @param XMLResponseWS $clReponseXML
-     * @return RecordList
-     */
-    public function getSelectorList(XMLResponseWS $clReponseXML) : RecordList
-    {
-        return $this->_getRecordList($clReponseXML, false, false, array());
-    }
-
-    /**
-     * @return array
-     */
-    protected function _getExports(): array
-    {
-        $exports = array();
-        if(!is_null($this->m_clParserList->getExports())) {
-            foreach($this->m_clParserList->getExports() as $xmlExport) {
-                /** @var \SimpleXMLElement $xmlExport */
-                $export = new \stdClass();
-                foreach($xmlExport->attributes() as $name => $value) {
-                    $export->$name = (string) $value;
-                }
-                $export->value = (string) $xmlExport;
-                array_push($exports, $export);
-            }
-        }
-        return $exports;
-    }
-    /**
-     * @return array
-     */
-    protected function _getImports(): array
-    {
-        $imports = array();
-        if(!is_null($this->m_clParserList->getImports())) {
-            foreach($this->m_clParserList->getImports() as $xmlImport) {
-                /** @var \SimpleXMLElement $xmlImport */
-
-                $import = new \stdClass();
-                foreach($xmlImport->attributes() as $name => $value) {
-                    $import->$name = (string) $value;
-                }
-                $import->value = (string) $xmlImport;
-                array_push($imports, $import);
-            }
-        }
-        return $imports;
-    }
 }
