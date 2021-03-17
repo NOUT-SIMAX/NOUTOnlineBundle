@@ -1388,10 +1388,10 @@ class NOUTClient
                 // OutOfMemory\Exception in ParserRecordList.php line 183:
                 // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
 
-                $totalElements = $clReponseXML->clGetCount();
+                $clCount = $clReponseXML->clGetCount();
 
                 // Par sécurité quand on affiche une liste
-                if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
+                if ($clCount->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
                     $this->__stopStopwatch($stopWatchEvent);
@@ -1430,10 +1430,10 @@ class NOUTClient
                 // OutOfMemory\Exception in ParserRecordList.php line 183:
                 // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
 
-                $totalElements = $clReponseXML->clGetCount();
+                $clCount = $clReponseXML->clGetCount();
 
                 // Par sécurité quand on affiche une liste
-                if ($totalElements->m_nNbDisplay > NOUTClient::MaxEnregs)
+                if ($clCount->m_nNbDisplay > NOUTClient::MaxEnregs)
                 {
                     //@@@ TODO trad
                     $this->__stopStopwatch($stopWatchEvent);
@@ -1456,7 +1456,7 @@ class NOUTClient
                 $clActionResult
                     ->setData($list)
                     ->setValidateError($clReponseXML->getValidateError())
-                    ->setCount($clReponseXML->clGetCount());
+                    ->setCount($clCount);
 
                 break;
             }
@@ -1500,7 +1500,10 @@ class NOUTClient
                 /** @var ParserNumberOfChart $clParser */
                 $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
-                $clActionResult->setData($clParser->getNumberOfChart());
+                $clActionResult
+                    ->setData($clParser->getNumberOfChart())
+                    ->setValidateError($clReponseXML->getValidateError())
+                    ->setCount($clReponseXML->clGetCount());
                 break;
             }
 
