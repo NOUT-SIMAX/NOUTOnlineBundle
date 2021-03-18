@@ -318,7 +318,8 @@ class OnlineError implements \JsonSerializable
 
 	//-------------------------------------------
 	// Erreurs perso
-	const ERR_MEMORY_OVERFLOW					= 100001;
+	const ERR_MEMORY_OVERFLOW                   = 100001;
+	const ERR_VALIDATE_ERROR                    = 100002;
 
 	const CAT_GLOBAL        = 0;
 	const CAT_ROUTAGE       = 1;
