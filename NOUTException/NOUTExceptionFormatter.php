@@ -73,6 +73,15 @@ class NOUTExceptionFormatter
         $aException['line']     = $this->exception->getLine();
         $aException['code']     = $this->code;
         $aException['details']  = $this->getNOUTOnlineMessage($this->exception);
+
+        if ($this->exception instanceof NOUTValidateErrorException){
+            $aException['validate_error']  = $this->exception->getValidateError();
+        }
+        elseif($this->exception->getPrevious() instanceof NOUTValidateErrorException) {
+            $aException['validate_error']  = $this->exception->getPrevious()->getValidateError();
+        }
+
+
         return $aException;
     }
 
