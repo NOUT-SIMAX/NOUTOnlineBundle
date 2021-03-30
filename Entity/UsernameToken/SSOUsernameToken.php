@@ -5,8 +5,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 class SSOUsernameToken extends UsernameToken
 {
-    use UseEncryptionUsernameTokenTrait;
-    use UseBlowfishUsernameTokenTrait;
+    use TraitUseEncryptionUsernameToken;
+    use TraitUseBlowfishUsernameToken;
 
     protected $m_sEmail='';
     protected $m_sId='';

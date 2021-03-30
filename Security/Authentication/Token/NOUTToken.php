@@ -17,7 +17,7 @@ use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
 class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, TokenWithNOUTOnlineVersionInterface
 {
-    use TokenWithNOUTOnlineVersionTrait;
+    use TraitTokenWithNOUTOnlineVersion;
 
     /**
      * @var Langage

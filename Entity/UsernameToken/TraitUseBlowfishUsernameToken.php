@@ -6,7 +6,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Encryption;
 
-trait UseBlowfishUsernameTokenTrait
+trait TraitUseBlowfishUsernameToken
 {
     protected function _crypt(Encryption $encryption, $txt, $secret, $nonce, $created) : string
     {

@@ -7,7 +7,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineState;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 
-trait TokenWithNOUTOnlineVersionTrait
+trait TraitTokenWithNOUTOnlineVersion
 {
     /**
      * version du noutonline
