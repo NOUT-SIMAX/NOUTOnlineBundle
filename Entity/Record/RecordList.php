@@ -47,7 +47,7 @@ class RecordList extends MultiElement
                                 string $sIDAction,
                                 string $sIDForm,
                                 EnregTableauArray $TabIDEnreg,
-                                StructureElement $clStructElem,
+                                StructureElement $clStructElem=null,
                                 bool $withGhost=false,
                                 bool $possibleReorder=false,
                                 bool $activeReorder=false,

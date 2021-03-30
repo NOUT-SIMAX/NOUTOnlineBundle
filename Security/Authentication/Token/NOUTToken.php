@@ -20,38 +20,41 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
     use TraitTokenWithNOUTOnlineVersion;
 
     /**
-     * @var Langage
+     * @var Langage|null
      */
-    protected $m_clLangage;
+    protected $m_clLangage=null;
 
 	/**
 	 * @var string
 	 */
-	protected $m_sTimeZone;
+	protected $m_sTimeZone='';
 
 	/**
 	 * @var string
 	 */
-	protected $m_sLocale;
+	protected $m_sLocale='';
 
 	/**
 	 * @var string
 	 */
-	protected $m_sSessionToken;
+	protected $m_sSessionToken='';
 
 	/**
 	 * @var string m_sIP
 	 */
-	protected $m_sIP;
+	protected $m_sIP='';
 
 	/** @var string */
 	protected $m_sNameToDisplay='';
 
 	/** @var UsernameToken|null */
-	protected $m_oUsernameToken;
+	protected $m_oUsernameToken=null;
 
 	/** @var UsernameToken|null */
 	protected $m_oExtranetUsernameToken=null;
+
+	/** @var bool  */
+	protected $m_bAnonyme=false;
 
 	/**
 	 * {@inheritdoc}
@@ -74,7 +77,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
      * @param UsernameToken $oUsernameToken
      * @return $this
      */
-    public function setExtranetUsernameToken(UsernameToken $oUsernameToken)
+    public function setExtranetUsernameToken(UsernameToken $oUsernameToken): NOUTToken
     {
         $this->m_oExtranetUsernameToken = $oUsernameToken;
         return $this;
@@ -83,7 +86,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
     /**
      * @return boolean
      */
-    public function isExtranet()
+    public function isExtranet() : bool
     {
         return !is_null($this->m_oExtranetUsernameToken);
     }
@@ -92,7 +95,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
      * @param string $name
      * @return $this
      */
-    public function setNameToDisplay(string $name)
+    public function setNameToDisplay(string $name): NOUTToken
     {
         $this->m_sNameToDisplay = $name;
         return $this;
@@ -106,10 +109,9 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
         return $this->m_sNameToDisplay;
     }
 
-
     /**
-     * @param bool $bCompute recalcule le created, nonce, password
-     * @return UsernameToken
+     * @return UsernameToken|null
+     * @throws \Exception
      */
     public function getUsernameToken() : ?UsernameToken
     {
@@ -122,7 +124,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
      * @param UsernameToken $oUsernameToken
      * @return $this
      */
-    public function setUsernameToken(UsernameToken $oUsernameToken)
+    public function setUsernameToken(UsernameToken $oUsernameToken): NOUTToken
     {
         $this->m_oUsernameToken = $oUsernameToken;
         return $this;
@@ -132,7 +134,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 	 * @param string $sSessionToken
      * @return $this
 	 */
-	public function setSessionToken(string $sSessionToken)
+	public function setSessionToken(string $sSessionToken): NOUTToken
 	{
 		$this->m_sSessionToken = $sSessionToken;
 		return $this;
@@ -141,7 +143,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 	/**
 	 * @return string
 	 */
-	public function getSessionToken()
+	public function getSessionToken() : string
 	{
 		return $this->m_sSessionToken;
 	}
@@ -150,7 +152,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 	 * @param Langage $clLangage
 	 * @return $this
 	 */
-	public function setLangage(Langage $clLangage)
+	public function setLangage(Langage $clLangage): NOUTToken
 	{
 		$this->m_clLangage = $clLangage;
 		return $this;
@@ -159,7 +161,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 	/**
 	 * @return Langage
 	 */
-	public function getLangage()
+	public function getLangage() : ?Langage
 	{
 		return $this->m_clLangage;
 	}
@@ -168,7 +170,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 	 * @param string $sTimeZone
 	 * @return $this
 	 */
-	public function setTimeZone(string $sTimeZone)
+	public function setTimeZone(string $sTimeZone) : NOUTToken
 	{
 		$this->m_sTimeZone = $sTimeZone;
 		return $this;
@@ -176,9 +178,9 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 
     /**
      * @param string $sLocale
-     * @return $this$locale
+     * @return $this
      */
-    public function setLocale(string $sLocale) {
+    public function setLocale(string $sLocale) : NOUTToken {
         $this->m_sLocale = $sLocale;
         return $this;
     }
@@ -186,14 +188,14 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
     /**
      * @return string
      */
-    public function getTimeZone() {
+    public function getTimeZone() : string {
         return $this->m_sTimeZone;
     }
 
 	/**
 	 * @return string
 	 */
-	public function getLocale()
+	public function getLocale() : string
 	{
 		return $this->m_sLocale;
 	}
@@ -201,7 +203,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 	/**
 	 * @return string
 	 */
-	public function getIP()
+	public function getIP() : string
 	{
 		return $this->m_sIP;
 	}
@@ -210,11 +212,31 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 	 * @param string $sIP
 	 * @return $this
 	 */
-	public function setIP(string $sIP)
+	public function setIP(string $sIP) : NOUTToken
 	{
 		$this->m_sIP = $sIP;
 		return $this;
 	}
+
+    /**
+     * @return bool
+     */
+    public function isAnonyme(): bool
+    {
+        return $this->m_bAnonyme;
+    }
+
+    /**
+     * @param bool $bAnonyme
+     * @return NOUTToken
+     */
+    public function setAnonyme(bool $bAnonyme): NOUTToken
+    {
+        $this->m_bAnonyme = $bAnonyme;
+        return $this;
+    }
+
+
 
 	/**
 	 * {@inheritdoc}
@@ -235,6 +257,7 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
                 'class' => get_class($this->m_oExtranetUsernameToken),
                 'data' => $this->m_oExtranetUsernameToken->forSerialization()
             ],
+            'anonyme' => $this->m_bAnonyme,
             'version' => $this->getVersionNO(),
             'language' => is_null($this->m_clLangage) ? null : $this->m_clLangage->forSerialization(),
             'parent_data' => parent::__serialize()
@@ -266,6 +289,9 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
         if (!is_null($aUnserialised['extranet'])){
             $this->m_oExtranetUsernameToken = new $aUnserialised['extranet']['class']();
             $this->m_oExtranetUsernameToken->fromSerialization($aUnserialised['extranet']['data']);
+        }
+        if (isset($aUnserialised['anonyme'])){
+            $this->m_bAnonyme = boolval($aUnserialised['anonyme']);
         }
 
         $this->m_sNameToDisplay=$aUnserialised['name'];
