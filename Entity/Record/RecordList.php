@@ -8,9 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ListSort;
-
 /**
  * Class RecordList, Description d'une liste d'enregistrement
  *
