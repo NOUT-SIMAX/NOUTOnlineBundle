@@ -8,9 +8,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ListSort;
-
 /**
  * Class RecordList, Description d'une liste d'enregistrement
  *
@@ -47,7 +44,7 @@ class RecordList extends MultiElement
                                 string $sIDAction,
                                 string $sIDForm,
                                 EnregTableauArray $TabIDEnreg,
-                                StructureElement $clStructElem,
+                                StructureElement $clStructElem=null,
                                 bool $withGhost=false,
                                 bool $possibleReorder=false,
                                 bool $activeReorder=false,

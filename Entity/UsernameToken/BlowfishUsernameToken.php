@@ -5,8 +5,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 class BlowfishUsernameToken extends LoginPasswordUsernameToken
 {
-    use UseEncryptionUsernameTokenTrait;
-    use UseBlowfishUsernameTokenTrait;
+    use TraitUseEncryptionUsernameToken;
+    use TraitUseBlowfishUsernameToken;
 
     /**
      * BlowfishUsernameToken constructor.

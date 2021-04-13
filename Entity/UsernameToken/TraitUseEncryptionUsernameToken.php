@@ -6,7 +6,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Encryption;
 
-trait UseEncryptionUsernameTokenTrait
+trait TraitUseEncryptionUsernameToken
 {
     /**
      * @var string

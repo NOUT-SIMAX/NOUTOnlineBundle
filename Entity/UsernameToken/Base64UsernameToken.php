@@ -6,7 +6,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 class Base64UsernameToken extends LoginPasswordUsernameToken
 {
-    use UseEncryptionUsernameTokenTrait;
+    use TraitUseEncryptionUsernameToken;
 
     /**
      * Base64UsernameToken constructor.
