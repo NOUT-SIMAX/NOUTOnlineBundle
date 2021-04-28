@@ -9,7 +9,7 @@ abstract class LoginPasswordUsernameToken extends UsernameToken
     /**
      * @var string
      */
-    protected $m_sClearPassword;
+    protected $m_sSecretPassword;
 
     /**
      * LoginPasswordUsernameToken constructor.
@@ -18,7 +18,7 @@ abstract class LoginPasswordUsernameToken extends UsernameToken
      */
     public function __construct(string $sUsername='', string $sPassword='')
     {
-        $this->m_sClearPassword = $sPassword;
+        $this->m_sSecretPassword = $sPassword;
 
         parent::__construct($sUsername);
     }
@@ -36,6 +36,6 @@ abstract class LoginPasswordUsernameToken extends UsernameToken
      */
     protected function _setClearPassword(string $password) : void
     {
-        $this->m_sClearPassword = $password;
+        $this->m_sSecretPassword = $password;
     }
 }

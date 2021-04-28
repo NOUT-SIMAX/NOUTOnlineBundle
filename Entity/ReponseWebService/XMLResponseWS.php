@@ -312,12 +312,21 @@ class XMLResponseWS
 		/* @var $clConnectedUser \SimpleXMLElement */
 		$clConnectedUser = $this->m_ndHeader->children()->ConnectedUser;
 
-		return new ConnectedUser(
+		$oUser = new ConnectedUser(
 			$clConnectedUser->children()->Element,
 			$clConnectedUser->children()->Element['title'],
 			$clConnectedUser->children()->Form,
 			$clConnectedUser->children()->Form['title']
 		);
+
+		if (isset($clConnectedUser->children()->Element['pwd'])){
+            $oUser->initPassword(
+		        $clConnectedUser->children()->Element['pwd'],
+                $clConnectedUser->children()->Element['iv'],
+                $clConnectedUser->children()->Element['ks']);
+        }
+
+		return $oUser;
 	}
 
     /**

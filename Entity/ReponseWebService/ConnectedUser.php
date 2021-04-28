@@ -15,10 +15,20 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class ConnectedUser
 {
+    /** @var string  */
 	protected $m_nUserID;
+	/** @var string  */
 	protected $m_sUserTitle;
+	/** @var string  */
 	protected $m_nFormID;
+	/** @var string  */
 	protected $m_sFormTitle;
+	/** @var null|int  */
+	protected $m_nKS = null;
+	/** @var null|string  */
+	protected $m_sPwd = null;
+	/** @var null|string  */
+	protected $m_sIV = null;
 
 	/**
 	 * @param $nUserID : identifiant de l'utilisateur
@@ -65,4 +75,42 @@ class ConnectedUser
     {
 		return $this->m_sUserTitle;
 	}
+
+    /**
+     * @param $pwd
+     * @param $iv
+     * @param $ks
+     */
+	public function initPassword($pwd, $iv, $ks) :void
+    {
+        $this->m_sPwd = (string)$pwd;
+        $this->m_sIV = (string)$iv;
+        $this->m_nKS = (int)$ks;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getKS(): ?int
+    {
+        return $this->m_nKS;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPwd(): ?string
+    {
+        return $this->m_sPwd;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIV(): ?string
+    {
+        return $this->m_sIV;
+    }
+
+
 }

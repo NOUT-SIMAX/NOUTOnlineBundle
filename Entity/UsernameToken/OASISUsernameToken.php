@@ -11,8 +11,8 @@ class OASISUsernameToken extends LoginPasswordUsernameToken
      */
     public function _Compute() : void
     {
-        if (!empty($this->m_sClearPassword)){
-            $sSecurePassword = base64_encode(md5($this->m_sClearPassword, true));
+        if (!empty($this->m_sSecretPassword)){
+            $sSecurePassword = base64_encode(md5($this->m_sSecretPassword, true));
         }
         else{
             $sSecurePassword = 'AAAAAAAAAAAAAAAAAAAAAA==';
@@ -26,7 +26,7 @@ class OASISUsernameToken extends LoginPasswordUsernameToken
      */
     public function forSerialization(): array
     {
-        return [$this->Username, $this->m_sClearPassword];
+        return [$this->Username, $this->m_sSecretPassword];
     }
 
     /**
@@ -34,6 +34,6 @@ class OASISUsernameToken extends LoginPasswordUsernameToken
      */
     public function fromSerialization(array $data): void
     {
-        list($this->Username, $this->m_sClearPassword) = $data;
+        list($this->Username, $this->m_sSecretPassword) = $data;
     }
 }

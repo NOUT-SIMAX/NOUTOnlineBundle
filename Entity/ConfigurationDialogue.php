@@ -105,7 +105,7 @@ class ConfigurationDialogue
 		$this->m_sProtocolPrefix = $sProtocolPrefix;
 
         $this->m_sModeAuth = isset($aAuth['mode']) ? $aAuth['mode'] : '';
-        $this->m_sSecret = isset($aAuth['secret']) ? $aAuth['secret'] : '';
+        $this->m_sSecret = isset($aAuth['secret']) ? trim($aAuth['secret']) : '';
 	}
 
 	public function Init($sWSDLUri, $bWsdl = false, $sHost = false, $sPort = false, $sProtocolPrefix = 'http://')

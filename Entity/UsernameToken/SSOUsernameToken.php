@@ -5,6 +5,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 class SSOUsernameToken extends UsernameToken
 {
+    use TraitWithPassPhraseUsernameToken;
     use TraitUseEncryptionUsernameToken;
     use TraitUseBlowfishUsernameToken;
 
@@ -15,13 +16,14 @@ class SSOUsernameToken extends UsernameToken
      * SSOUsernameToken constructor.
      * @param string $email
      * @param string $id
-     * @param string $sSecret
+     * @param string $sPassPhrase
      */
-    public function __construct(string $email='', string $id='', string $sSecret='')
+    public function __construct(string $email='', string $id='', string $sPassPhrase='')
     {
         $this->m_sEmail = $email;
         $this->m_sId = $id;
-        $this->_setEncryptionInfo('sso', $sSecret);
+        $this->_setEncryptionMode('sso');
+        $this->_setPassPhrase($sPassPhrase);
         parent::__construct();
     }
 
@@ -40,7 +42,7 @@ class SSOUsernameToken extends UsernameToken
      */
     protected function _Compute(): void
     {
-        $this->Password = $this->_crypt($this->Encryption, json_encode([$this->m_sEmail, $this->m_sId]), $this->m_sSecret, $this->Nonce, $this->Created);
+        $this->Password = $this->_crypt($this->Encryption, json_encode([$this->m_sEmail, $this->m_sId]), $this->m_sPassPhrase, $this->Nonce, $this->Created);
     }
 
     /**
@@ -48,7 +50,7 @@ class SSOUsernameToken extends UsernameToken
      */
     public function forSerialization(): array
     {
-        return [$this->m_sEmail, $this->m_sId, $this->m_sSecret];
+        return [$this->m_sEmail, $this->m_sId, $this->m_sPassPhrase];
     }
 
     /**
@@ -56,6 +58,6 @@ class SSOUsernameToken extends UsernameToken
      */
     public function fromSerialization(array $data): void
     {
-        list($this->m_sEmail, $this->m_sId, $this->m_sSecret) = $data;
+        list($this->m_sEmail, $this->m_sId, $this->m_sPassPhrase) = $data;
     }
 }
