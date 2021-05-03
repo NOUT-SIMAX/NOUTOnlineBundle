@@ -7,16 +7,18 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 class Base64UsernameToken extends LoginPasswordUsernameToken
 {
     use TraitUseEncryptionUsernameToken;
+    use TraitWithPassPhraseUsernameToken;
 
     /**
      * Base64UsernameToken constructor.
      * @param string $sUsername
      * @param string $sPassword
-     * @param string $sSecret
+     * @param string $sPassPhrase
      */
-    public function __construct(string $sUsername='', string $sPassword='', string $sSecret='')
+    public function __construct(string $sUsername='', string $sPassword='', string $sPassPhrase='')
     {
-        $this->_setEncryptionInfo('base64', $sSecret);
+        $this->_setEncryptionMode('base64');
+        $this->_setPassPhrase($sPassPhrase);
         parent::__construct($sUsername, $sPassword);
     }
 
@@ -25,8 +27,8 @@ class Base64UsernameToken extends LoginPasswordUsernameToken
      */
     public function _Compute() : void
     {
-        $sSecret = base64_encode(md5($this->Nonce.$this->m_sSecret.$this->Created, true));
-        $this->Password = base64_encode($sSecret.$this->m_sClearPassword);
+        $sSecret = base64_encode(md5($this->Nonce.$this->m_sPassPhrase.$this->Created, true));
+        $this->Password = base64_encode($sSecret.$this->m_sSecretPassword);
     }
 
     /**
@@ -34,7 +36,7 @@ class Base64UsernameToken extends LoginPasswordUsernameToken
      */
     public function forSerialization(): array
     {
-        return [$this->Username, $this->m_sClearPassword, $this->m_sSecret];
+        return [$this->Username, $this->m_sSecretPassword, $this->m_sPassPhrase];
     }
 
     /**
@@ -42,6 +44,6 @@ class Base64UsernameToken extends LoginPasswordUsernameToken
      */
     public function fromSerialization(array $data): void
     {
-        list($this->Username, $this->m_sClearPassword, $this->m_sSecret) = $data;
+        list($this->Username, $this->m_sSecretPassword, $this->m_sPassPhrase) = $data;
     }
 }

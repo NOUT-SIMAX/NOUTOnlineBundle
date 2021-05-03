@@ -5,6 +5,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 class BlowfishUsernameToken extends LoginPasswordUsernameToken
 {
+    use TraitWithPassPhraseUsernameToken;
     use TraitUseEncryptionUsernameToken;
     use TraitUseBlowfishUsernameToken;
 
@@ -12,17 +13,18 @@ class BlowfishUsernameToken extends LoginPasswordUsernameToken
      * BlowfishUsernameToken constructor.
      * @param string $sUsername
      * @param string $sPassword
-     * @param string $sSecret
+     * @param string $sPassPhrase
      */
-    public function __construct(string $sUsername='', string $sPassword='', string $sSecret='')
+    public function __construct(string $sUsername='', string $sPassword='', string $sPassPhrase='')
     {
-        $this->_setEncryptionInfo('blowfish', $sSecret);
+        $this->_setEncryptionMode('blowfish');
+        $this->_setPassPhrase($sPassPhrase);
         parent::__construct($sUsername, $sPassword);
     }
 
     protected function _Compute(): void
     {
-        $this->Password = $this->_crypt($this->Encryption, $this->m_sClearPassword, $this->m_sSecret, $this->Nonce, $this->Created);
+        $this->Password = $this->_crypt($this->Encryption, $this->m_sSecretPassword, $this->m_sPassPhrase, $this->Nonce, $this->Created);
     }
 
     /**
@@ -30,7 +32,7 @@ class BlowfishUsernameToken extends LoginPasswordUsernameToken
      */
     public function forSerialization(): array
     {
-        return [$this->Username, $this->m_sClearPassword, $this->m_sSecret];
+        return [$this->Username, $this->m_sSecretPassword, $this->m_sPassPhrase];
     }
 
     /**
@@ -38,6 +40,6 @@ class BlowfishUsernameToken extends LoginPasswordUsernameToken
      */
     public function fromSerialization(array $data): void
     {
-        list($this->Username, $this->m_sClearPassword, $this->m_sSecret) = $data;
+        list($this->Username, $this->m_sSecretPassword, $this->m_sPassPhrase) = $data;
     }
 }

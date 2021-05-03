@@ -25,4 +25,16 @@ class GetTokenSession extends WSDLGetTokenSession
     {
         parent::__construct($token, $usernameToken, $extranetUser, $defaultClientLanguageCode);
     }
+
+    /**
+     * @return UsernameToken|null
+     */
+    public function getIntranetUsernameToken() : ?UsernameToken
+    {
+        if (!isset($this->UsernameToken)){
+            return null;
+        }
+
+        return $this->UsernameToken;
+    }
 }
