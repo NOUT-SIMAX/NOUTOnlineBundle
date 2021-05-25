@@ -22,7 +22,7 @@ trait TraitUseBlowfishUsernameToken
         $key = substr($securePassPhrase, 0, $encryption->ks);
 
         #PKCS #7 padding scheme by default
-        return openssl_encrypt($txt, 'bf-cbc', $key, $options=0, $iv);
+        return openssl_encrypt($txt, 'bf-cbc', $key, 0, $iv);
     }
 
     /**
