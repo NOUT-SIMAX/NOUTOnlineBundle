@@ -227,7 +227,7 @@ class NOUTClient
                     {
                         $sMessage .= $Value . ', ';
                     }
-                    rtrim($sMessage, ", ");
+                    $sMessage = rtrim($sMessage, ", ");
                     $sMessage .= '.';
 
                     throw new \Exception($sMessage);
@@ -680,7 +680,8 @@ class NOUTClient
             //l'ancien système
             $oInfoMenu = $this->_oGetInfoIhmMenu();
             $clActionResult->setData($oInfoMenu->$member_name);
-        } else
+        }
+        else
         {
             $tabMenu = $this->__oGetIhmMenuPart($method_name, $prefix);
             $clActionResult->setData($tabMenu);
@@ -901,7 +902,15 @@ class NOUTClient
         ]);
 
         //on execute l'action
-        return $this->_oExecute($clParam, []);
+        try{
+            $oRet = $this->_oExecute($clParam, []);
+        }
+        catch (\Exception $e){
+            throw $e; //on fait suivre l'exception
+        }
+        //ici il faut invalider le cache
+        //$this->m_clCache
+        return $oRet;
     }
 
     /**
@@ -2331,8 +2340,6 @@ class NOUTClient
     private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontexte, false);
-        $sFile = null; // Pour stocker le contenu du fichier
-
 
         //on veut le contenu
         $aTabOptions[RESTProxy::OPTION_WantContent] = 1;
@@ -2653,10 +2660,11 @@ class NOUTClient
      * @param $encoding
      * @param $filename
      * @param $size
-     * @return XMLResponseWS
+     * @return string
      * @throws \Exception
      */
-    public function oAddAttachment(array $requestHeaders, $messageId, $data, $encoding, $filename, $size) {
+    public function oAddAttachment(array $requestHeaders, $messageId, $data, $encoding, $filename, $size) : string
+    {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
 
