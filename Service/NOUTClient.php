@@ -13,6 +13,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
@@ -226,7 +227,7 @@ class NOUTClient
                     {
                         $sMessage .= $Value . ', ';
                     }
-                    rtrim($sMessage, ", ");
+                    $sMessage = rtrim($sMessage, ", ");
                     $sMessage .= '.';
 
                     throw new \Exception($sMessage);
@@ -679,7 +680,8 @@ class NOUTClient
             //l'ancien système
             $oInfoMenu = $this->_oGetInfoIhmMenu();
             $clActionResult->setData($oInfoMenu->$member_name);
-        } else
+        }
+        else
         {
             $tabMenu = $this->__oGetIhmMenuPart($method_name, $prefix);
             $clActionResult->setData($tabMenu);
@@ -856,6 +858,60 @@ class NOUTClient
         return $this->_oExecute($clParam, $aTabHeaderSuppl);
     }
 
+    /**
+     * @param string $sLoginExtranet
+     * @param string $sPassword
+     * @param string $sTypeEncodage
+     * @param        $codeLangue
+     * @param string $sLoginSIMAX
+     * @param string $sPassworSIMAX
+     * @param string $sFormulaireExtranet
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oConnexionExtranet(string $sLoginExtranet, string $sPassword, string $sTypeEncodage, $codeLangue, string $sLoginSIMAX, string $sPassworSIMAX, string $sFormulaireExtranet) : ActionResult
+    {
+        $clParam = new Execute();
+        $clParam->ID = Langage::ACTION_ConnexionExtranet;
+
+        //il faut encoder le mot de passe simax
+        $sSecretSIMAX = ($sPassworSIMAX == '') ? '00000000000000000000000000000000' : bin2hex(md5(  $sPassworSIMAX,true ));
+        $sEncodedSIMAX = bin2hex(sha1($sSecretSIMAX, true));
+
+        switch ($sTypeEncodage)
+        {
+            case Langage::PASSWORD_ENCODAGE_plaintext:
+            case Langage::PASSWORD_ENCODAGE_sha1:
+                $sEncodedExtranet = bin2hex(hash('sha1', $sPassword, true));
+                break;
+            case Langage::PASSWORD_ENCODAGE_sha256:
+                $sEncodedExtranet = bin2hex(hash('sha256', $sPassword, true));
+                break;
+            case Langage::PASSWORD_ENCODAGE_md5:
+                $sEncodedExtranet = bin2hex(hash('md5', $sPassword, true));
+                break;
+        }
+
+        $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
+            Langage::PA_ConnexionExtranet_Extranet_Pseudo => $sLoginExtranet,
+            Langage::PA_ConnexionExtranet_Extranet_Mdp => $sEncodedExtranet,
+            Langage::PA_ConnexionExtranet_Intranet_Pseudo => $sLoginSIMAX,
+            Langage::PA_ConnexionExtranet_Intranet_Mdp => $sEncodedSIMAX,
+            Langage::PA_ConnexionExtranet_Formulaire => $sFormulaireExtranet,
+            Langage::PA_ConnexionExtranet_Langue => $codeLangue,
+        ]);
+
+        //on execute l'action
+        try{
+            $oRet = $this->_oExecute($clParam, []);
+        }
+        catch (\Exception $e){
+            throw $e; //on fait suivre l'exception
+        }
+        //ici il faut invalider le cache
+        //$this->m_clCache
+        return $oRet;
+    }
 
     /**
      * @param array  $tabParamQuery
@@ -1546,7 +1602,7 @@ class NOUTClient
 
         $clParamUpdate              = new Update();
         $clParamUpdate->Table       = $sIDForm;
-        $clParamUpdate->ParamXML    = "<id_$sIDForm>$sIDEnreg</id_$sIDForm>";
+        $clParamUpdate->ParamXML    = ParametersManagement::s_sStringifyParamXML([$sIDForm=>$sIDEnreg]);
 
         //m_clRecordSerializer->getRecordUpdateData fait la gestion des fichiers
         $clParamUpdate->UpdateData = $this->m_clRecordSerializer->getRecordUpdateData($clRecord, $sIDContexte, $idihm);
@@ -1869,7 +1925,7 @@ class NOUTClient
 
         $clParam = $this->_oGetParam(Delete::class, $tabParamQuery);
         $clParam->Table = $sIDFormulaire;
-        $clParam->ParamXML = "<id_$sIDFormulaire>$sIDEnreg</id_$sIDFormulaire>";
+        $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([$sIDFormulaire=>$sIDEnreg]);
 
         $clReponseXML = $this->m_clSOAPProxy->delete($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
 
@@ -1891,20 +1947,14 @@ class NOUTClient
 
         $clParamModify = $this->_oGetParam(Modify::class, $tabParamQuery);
         $clParamModify->Table = $idformulaire;
-        $clParamModify->ParamXML .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
+        $clParamModify->ParamXML .= ParametersManagement::s_sStringifyParamXML([$idformulaire=>$idenreg]);
 
         if(!is_null($updateData)) {
             $aTabHeaderSuppl = array(
                 SOAPProxy::HEADER_ActionContext => $sIDContexte,
                 SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Validate
             );
-            $sUpdateData = "<xml><id_$idformulaire>";
-            $sUpdateData.= '<id_'.$updateData->idColumn.'>';
-            $sUpdateData.= $updateData->val;
-            $sUpdateData .= '</id_'.$updateData->idColumn.'>';
-            $sUpdateData.= '</id_'.$idformulaire.'></xml>';
-
-            $clParamModify->UpdateData = $sUpdateData;
+            $clParamModify->UpdateData = ParametersManagement::s_sStringifyUpdateData($idformulaire, [$updateData->idColumn=>$updateData->val]);
         }
         else {
             $aTabHeaderSuppl = array(
@@ -1935,7 +1985,7 @@ class NOUTClient
 
         $clParamDisplay = $this->_oGetParam(Display::class, $tabParamQuery);
         $clParamDisplay->Table = $idformulaire;
-        $clParamDisplay->ParamXML .= "<id_$idformulaire>$idenreg</id_$idformulaire>";
+        $clParamDisplay->ParamXML = ParametersManagement::s_sStringifyParamXML([$idformulaire=>$idenreg]);
 
         $clReponseXML = $this->m_clSOAPProxy->display($clParamDisplay, $this->_aGetTabHeader($aTabHeaderSuppl));
 
@@ -2290,8 +2340,6 @@ class NOUTClient
     private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontexte, false);
-        $sFile = null; // Pour stocker le contenu du fichier
-
 
         //on veut le contenu
         $aTabOptions[RESTProxy::OPTION_WantContent] = 1;
@@ -2612,10 +2660,11 @@ class NOUTClient
      * @param $encoding
      * @param $filename
      * @param $size
-     * @return XMLResponseWS
+     * @return string
      * @throws \Exception
      */
-    public function oAddAttachment(array $requestHeaders, $messageId, $data, $encoding, $filename, $size) {
+    public function oAddAttachment(array $requestHeaders, $messageId, $data, $encoding, $filename, $size) : string
+    {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
 
@@ -2679,6 +2728,7 @@ class NOUTClient
 
         return $sRes!=="Non";
     }
+
 
     // Fin Fichiers
     // ------------------------------------------------------------------------------------

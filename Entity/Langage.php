@@ -1751,6 +1751,8 @@ class Langage
 	const PA_ConnexionExtranet_Extranet_Mdp    = 17218;
 	const PA_ConnexionExtranet_Intranet_Pseudo = 17299;
 	const PA_ConnexionExtranet_Intranet_Mdp    = 17300;
+	const PA_ConnexionExtranet_Formulaire      = 18020;
+	const PA_ConnexionExtranet_Langue          = 18021;
 
 	const PA_Requete_Tous_Form                  = 6293;
 
@@ -1771,5 +1773,10 @@ class Langage
     const ICONCENTRAL_OverlayTop    = 3;
     const ICONCENTRAL_OverlayMiddle = 4;
     const ICONCENTRAL_OverlayBottom = 5;
+
+    const PASSWORD_ENCODAGE_plaintext = 'plaintext';
+    const PASSWORD_ENCODAGE_sha1 = 'sha-1';
+    const PASSWORD_ENCODAGE_sha256 = 'sha-2-256';
+    const PASSWORD_ENCODAGE_md5 = 'md5';
 
 }

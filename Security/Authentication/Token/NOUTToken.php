@@ -64,6 +64,17 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
 		parent::__construct($user, $credentials, $providerKey, $roles);
 	}
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getUsername()
+    {
+        if ($this->m_oUsernameToken instanceof UsernameToken){
+            return $this->m_oUsernameToken->Username;
+        }
+
+        return parent::getUsername();
+    }
 
     /**
      * @return UsernameToken|null

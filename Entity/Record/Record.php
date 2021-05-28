@@ -8,7 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 
 /**
  * Class Record, Description d'un enregistrement
@@ -591,31 +591,34 @@ class Record extends IHMWindows
     }
 
     /**
+     * @param false      $onlyModified
+     * @param array|null $aFilesToSend
+     * @return array
+     */
+    protected function _filterTabColumnsValues(array $aFilesToSend = null, $onlyModified=false) : array
+    {
+        $aTabColumnsValues = array_filter($this->m_TabColumnsValues, function ($sIDColonne) use ($aFilesToSend, $onlyModified)
+        {
+            if(!is_null($aFilesToSend) && array_key_exists($sIDColonne, $aFilesToSend)){
+                return true;
+            }
+
+            return (!$onlyModified || $this->isModified($sIDColonne, true));
+
+        }, ARRAY_FILTER_USE_KEY);
+
+        return $aTabColumnsValues;
+    }
+
+    /**
      * @param null|array  $aFilesToSend
      * @param false $onlyModified
      * @return string
      */
     public function getXMLColonne(array $aFilesToSend = null, $onlyModified=false): string
     {
-        $sXML = '';
-
-        foreach($this->m_TabColumnsValues as $sIDColonne=>$sValue)
-        {
-            if(!is_null($aFilesToSend) && array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier et a été modifiée
-            {
-                $sXML.= $this->_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne])."\n";
-            }
-            else if (!$onlyModified || $this->isModified($sIDColonne, true)) // La colonne n'est pas un fichier et a été modifie
-            {
-                if(is_array($sValue))
-                {
-                    $sValue=implode('|', array_values($sValue));
-                }
-                $sXML.="<id_$sIDColonne>".htmlspecialchars($sValue)."</id_$sIDColonne>\n";
-            }
-        }
-
-        return $sXML;
+        $aTabColumnsValues = $this->_filterTabColumnsValues($aFilesToSend, $onlyModified);
+        return ParametersManagement::s_sStringifyXMLColonne($aTabColumnsValues, $aFilesToSend);
     }
 
     /**
@@ -626,67 +629,10 @@ class Record extends IHMWindows
     {
         $sIDForm                    = $this->m_clStructElem->getID();
 
-        $sUpdateData = "<xml><id_$sIDForm>\n";
-        $sUpdateData.= $this->getXMLColonne($aFilesToSend, true);
-        $sUpdateData.= "\n</id_$sIDForm></xml>";
+        $aTabColumnsValues = $this->_filterTabColumnsValues($aFilesToSend, true);
 
+        $sUpdateData = ParametersManagement::s_sStringifyUpdateData($sIDForm, $aTabColumnsValues, $aFilesToSend);
         return $sUpdateData;
-    }
-
-    /**
-     * @param $sIDColonne
-     * @param $oFile
-     * @return string
-     */
-    public function _sGetFileXML($sIDColonne, NOUTFileInfo $oFile=null): string
-    {
-        // Structure attendue des données XML d'un fichier
-        /*
-            <id_47723350017105 simax:ref="14673000757953052016">    // Identifiant 1 = idColonne et 2 = id unique au choix, retrouvé dans ref
-                lst_oper_L33-1 (1) (1) (1).csv
-            </id_47723350017105>
-
-            <simax:Data
-            simax:ref = "14673000757953052016"
-            simax:title = "lst_oper_L33-1 (1) (1) (1).csv"
-            simax:encoding = "base64"
-            simax:size = "215465"
-            simax:filename = "lst_oper_L33-1 (1) (1) (1).csv"
-            simax:typemime = "text/plain" >
-                fileContentHere
-            </simax:Data>
-        */
-
-        if($oFile instanceof NOUTFileInfo)
-        {
-            $fileUniqueId  = uniqid();
-
-            // Headers
-            $sFileXml = "<id_$sIDColonne simax:ref=\"$fileUniqueId\">";
-            $sFileXml .= $oFile->filename;
-            $sFileXml .= "</id_$sIDColonne>\n";
-
-            // Paramètres
-            $sFileXml .= '<simax:Data ';
-            $sFileXml .= 'simax:ref="' . $fileUniqueId . '" ';
-            $sFileXml .= 'simax:title="' . $oFile->filename . '" ';
-            $sFileXml .= 'simax:encoding="' . 'base64' . '" ';
-            $sFileXml .= 'simax:size="' . $oFile->size . '" ';
-            $sFileXml .= 'simax:filename="' . $oFile->filename . '" ';
-            $sFileXml .= 'simax:typemime="' . $oFile->mimetype . '">';
-
-            // Content
-            $sFileXml .= base64_encode($oFile->content);
-
-            // Fin Paramètres
-            $sFileXml .= "</simax:Data>\n";
-        }
-        else // Champ vide
-        {
-            $sFileXml = "<id_$sIDColonne></id_$sIDColonne>\n";
-        }
-
-        return $sFileXml;
     }
 
 

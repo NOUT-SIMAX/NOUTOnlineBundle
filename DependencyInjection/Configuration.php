@@ -2,6 +2,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DependencyInjection;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -81,9 +82,9 @@ class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
             ->enumNode('mode')
-            ->info("mode d'authentification pour NOUTOnline")
-            ->values(array('OASIS', 'base64'))
-            ->defaultValue('OASIS')
+                ->info("mode d'authentification pour NOUTOnline")
+                ->values(array('OASIS', 'base64'))
+                ->defaultValue('OASIS')
             ->end()
             ->scalarNode('secret')
             ->defaultValue("// ManipDonnees.h : classe abstraite pour la manipulation des données\n///////////////////////////////////////////////////////////////////////////////////////\n\n#pragma once\n\n#include InterfaceMAXEx.h\n#include IPasserelle.h\n#include IMaxBDDPasserelle.h\n\n#define  OR_IDENTIQUE\t 0x00080000\t\t// HLitRechercheXXX... à l'ident\n#define  OR_COMMENCEPAR\t 0x00001000\t\t// HLitRechercheXXX... générique")
@@ -106,8 +107,10 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('user')->defaultValue('')->end()
             ->scalarNode('password')->defaultValue('')->end()
             ->scalarNode('form')->defaultValue('')->end()
+            ->enumNode('password_encryption')->values([Langage::PASSWORD_ENCODAGE_plaintext, Langage::PASSWORD_ENCODAGE_md5, Langage::PASSWORD_ENCODAGE_sha1, Langage::PASSWORD_ENCODAGE_sha256])->defaultValue('plaintext')->end()
             ->end()
         ;
+
         return $node;
     }
 
