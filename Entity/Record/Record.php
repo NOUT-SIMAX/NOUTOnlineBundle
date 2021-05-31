@@ -521,6 +521,23 @@ class Record extends IHMWindows
         return $this;
     }
 
+    public function emptyPassword()
+    {
+        foreach($this->m_clStructElem->getMapIDColonne2Structure() as $idcolonne=>$clStructureColonne)
+        {
+            if (!$clStructureColonne->isOption(StructureColonne::OPTION_Hidden))
+            {
+                $transform = $clStructureColonne->getOption(StructureColonne::OPTION_Transform);
+                if ($transform == StructureColonne::OPTION_Transform_Secret)
+                {
+                    //il faut vider le champ
+                    $this->m_TabColumnsValues[$idcolonne]='';
+                }
+            }
+
+        }
+    }
+
     /**
      * @param $option
      * @return string

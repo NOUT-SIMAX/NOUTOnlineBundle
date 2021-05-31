@@ -14,6 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConnexionExtranetHashPassword;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
@@ -879,19 +880,7 @@ class NOUTClient
         $sSecretSIMAX = ($sPassworSIMAX == '') ? '00000000000000000000000000000000' : bin2hex(md5(  $sPassworSIMAX,true ));
         $sEncodedSIMAX = bin2hex(sha1($sSecretSIMAX, true));
 
-        switch ($sTypeEncodage)
-        {
-            case Langage::PASSWORD_ENCODAGE_plaintext:
-            case Langage::PASSWORD_ENCODAGE_sha1:
-                $sEncodedExtranet = bin2hex(hash('sha1', $sPassword, true));
-                break;
-            case Langage::PASSWORD_ENCODAGE_sha256:
-                $sEncodedExtranet = bin2hex(hash('sha256', $sPassword, true));
-                break;
-            case Langage::PASSWORD_ENCODAGE_md5:
-                $sEncodedExtranet = bin2hex(hash('md5', $sPassword, true));
-                break;
-        }
+        $sEncodedExtranet = ConnexionExtranetHashPassword::s_sHashPassword($sPassword, $sTypeEncodage);
 
         $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
             Langage::PA_ConnexionExtranet_Extranet_Pseudo => $sLoginExtranet,
