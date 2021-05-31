@@ -866,10 +866,11 @@ class NOUTClient
      * @param string $sLoginSIMAX
      * @param string $sPassworSIMAX
      * @param string $sFormulaireExtranet
+     * @param bool   $bFromLogin
      * @return ActionResult
      * @throws \Exception
      */
-    public function oConnexionExtranet(string $sLoginExtranet, string $sPassword, string $sTypeEncodage, $codeLangue, string $sLoginSIMAX, string $sPassworSIMAX, string $sFormulaireExtranet) : ActionResult
+    public function oConnexionExtranet(string $sLoginExtranet, string $sPassword, string $sTypeEncodage, $codeLangue, string $sLoginSIMAX, string $sPassworSIMAX, string $sFormulaireExtranet, bool $bFromLogin) : ActionResult
     {
         $clParam = new Execute();
         $clParam->ID = Langage::ACTION_ConnexionExtranet;
@@ -894,11 +895,12 @@ class NOUTClient
 
         $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
             Langage::PA_ConnexionExtranet_Extranet_Pseudo => $sLoginExtranet,
-            Langage::PA_ConnexionExtranet_Extranet_Mdp => $sEncodedExtranet,
+            Langage::PA_ConnexionExtranet_Extranet_Mdp    => $sEncodedExtranet,
             Langage::PA_ConnexionExtranet_Intranet_Pseudo => $sLoginSIMAX,
-            Langage::PA_ConnexionExtranet_Intranet_Mdp => $sEncodedSIMAX,
-            Langage::PA_ConnexionExtranet_Formulaire => $sFormulaireExtranet,
-            Langage::PA_ConnexionExtranet_Langue => $codeLangue,
+            Langage::PA_ConnexionExtranet_Intranet_Mdp    => $sEncodedSIMAX,
+            Langage::PA_ConnexionExtranet_Formulaire      => $sFormulaireExtranet,
+            Langage::PA_ConnexionExtranet_CodeLangue      => $codeLangue,
+            Langage::PA_ConnexionExtranet_FromLogin       => $bFromLogin ? 1 : 0,
         ]);
 
         //on execute l'action
