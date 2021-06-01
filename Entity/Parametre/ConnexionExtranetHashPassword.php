@@ -27,4 +27,15 @@ class ConnexionExtranetHashPassword
                 return bin2hex(hash('md5', $sPassword, true));
         }
     }
+
+    /**
+     * @param string $sPassword
+     * @return string
+     */
+    static public function s_sHashPasswordSIMAX(string $sPassword) : string
+    {
+        //il faut encoder le mot de passe simax
+        $sSecretSIMAX = ($sPassword == '') ? '00000000000000000000000000000000' : bin2hex(md5(  $sPassword,true ));
+        return bin2hex(sha1($sSecretSIMAX, true));
+    }
 }

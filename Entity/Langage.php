@@ -1754,6 +1754,7 @@ class Langage
 	const PA_ConnexionExtranet_Formulaire      = 18020;
 	const PA_ConnexionExtranet_CodeLangue      = 18021;
 	const PA_ConnexionExtranet_FromLogin       = 18022;
+	const PA_ConnexionExtranet_Hachage         = 18023;
 
 	const PA_Requete_Tous_Form                  = 6293;
 

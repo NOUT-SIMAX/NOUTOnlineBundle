@@ -319,32 +319,16 @@ class XMLResponseWS
 			$clConnectedUser->children()->Form['title']
 		);
 
-		if (isset($clConnectedUser->children()->Element['pwd'])){
+		if (isset($clConnectedUser->children()->User['pwd'])){
             $oUser->initPassword(
-		        $clConnectedUser->children()->Element['pwd'],
-                $clConnectedUser->children()->Element['iv'],
-                $clConnectedUser->children()->Element['ks']);
+                $clConnectedUser->children()->User['title'],
+		        $clConnectedUser->children()->User['pwd'],
+                $clConnectedUser->children()->User['iv'],
+                $clConnectedUser->children()->User['ks']);
         }
 
 		return $oUser;
 	}
-
-    /**
-     * utilisateur extranet actuellement connecté
-     * @return ConnectedUser
-     */
-	public function clGetConnectedExtranet(): ConnectedUser
-    {
-        /* @var $clConnectedUser \SimpleXMLElement */
-        $clConnectedUser = $this->m_ndHeader->children()->ConnectedExtranet;
-
-        return new ConnectedUser(
-            $clConnectedUser->children()->Element,
-            $clConnectedUser->children()->Element['title'],
-            $clConnectedUser->children()->Form,
-            $clConnectedUser->children()->Form['title']
-        );
-    }
 
 	/**
 	 * @return Form

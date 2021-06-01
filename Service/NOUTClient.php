@@ -877,9 +877,8 @@ class NOUTClient
         $clParam->ID = Langage::ACTION_ConnexionExtranet;
 
         //il faut encoder le mot de passe simax
-        $sSecretSIMAX = ($sPassworSIMAX == '') ? '00000000000000000000000000000000' : bin2hex(md5(  $sPassworSIMAX,true ));
-        $sEncodedSIMAX = bin2hex(sha1($sSecretSIMAX, true));
-
+        $sEncodedSIMAX = ConnexionExtranetHashPassword::s_sHashPasswordSIMAX($sPassworSIMAX);
+        //et le mot de passe extranet
         $sEncodedExtranet = ConnexionExtranetHashPassword::s_sHashPassword($sPassword, $sTypeEncodage);
 
         $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
