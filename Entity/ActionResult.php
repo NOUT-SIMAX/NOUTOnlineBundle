@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ConnectedUser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
@@ -79,6 +80,11 @@ class ActionResult
     private $m_oElement;
 
     /**
+     * @var ConnectedUser
+     */
+    private $m_clConnectedUser=null;
+
+    /**
      * ActionResult constructor.
      * @param XMLResponseWS|null $clReponseXML
      */
@@ -92,6 +98,7 @@ class ActionResult
 			$this->m_clAction    = $clReponseXML->clGetAction();
             $this->m_sIDContexteToValidateOnClose = $clReponseXML->sGetContextToValidateOnClose();
             $this->m_aContexteToClose = $clReponseXML->aGetActionContextToClose();
+            $this->m_clConnectedUser = $clReponseXML->clGetConnectedUser();
 		}
 
 		$this->m_clCache  = new ActionResultCache();
@@ -326,4 +333,13 @@ class ActionResult
     {
         return $this->getAction()->getTypeAction();
     }
+
+    /**
+     * @return ConnectedUser|null
+     */
+    public function getConnectedUser(): ?ConnectedUser
+    {
+        return $this->m_clConnectedUser;
+    }
+
 }

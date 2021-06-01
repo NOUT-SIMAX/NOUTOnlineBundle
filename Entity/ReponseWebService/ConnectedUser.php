@@ -23,6 +23,9 @@ class ConnectedUser
 	protected $m_nFormID;
 	/** @var string  */
 	protected $m_sFormTitle;
+
+	/** @var string  */
+	protected $m_sPseudo='';
 	/** @var null|int  */
 	protected $m_nKS = null;
 	/** @var null|string  */
@@ -81,8 +84,9 @@ class ConnectedUser
      * @param $iv
      * @param $ks
      */
-	public function initPassword($pwd, $iv, $ks) :void
+	public function initPassword($pseudo, $pwd, $iv, $ks) :void
     {
+        $this->m_sPseudo = (string)$pseudo;
         $this->m_sPwd = (string)$pwd;
         $this->m_sIV = (string)$iv;
         $this->m_nKS = (int)$ks;
@@ -94,6 +98,14 @@ class ConnectedUser
     public function getKS(): ?int
     {
         return $this->m_nKS;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPseudo(): ?string
+    {
+        return $this->m_sPseudo;
     }
 
     /**

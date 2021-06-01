@@ -30,27 +30,44 @@ class RecordSerializer
         $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
     }
 
+    /**
+     * @param Record $clRecord
+     * @param        $idcontexte
+     * @param        $idihm
+     * @param false  $bIsParam
+     * @return string
+     */
     public function getRecordUpdateData(Record $clRecord, $idcontexte, $idihm, $bIsParam=false)
     {
         $aFilesToSend = $this->_getModifiedFiles($clRecord, $idcontexte, $idihm, $bIsParam);
         return $clRecord->getUpdateData($aFilesToSend);
     }
 
-    public function getParamXML(Record $clRecord, $paramXML, $idcontexte, $idihm)
+    /**
+     * @param Record $clRecord
+     * @param        $paramXML
+     */
+    public function updateRecordFromParamXML(Record $clRecord, $paramXML)
     {
-        if (strlen($paramXML)==0){
-            return $paramXML;
+        if (!empty($paramXML)){
+            $clXML = simplexml_load_string("<xml>$paramXML</xml>");
+            foreach ($clXML->children() as $clParam) {
+                $idcolonne = str_replace('id_', '', $clParam->getName());
+                $value = (string)$clParam;
+
+                $clRecord->setValCol($idcolonne, $value);
+            }
         }
+    }
 
-        //mise à jour depuis les paramètres
-        $clXML = simplexml_load_string("<xml>$paramXML</xml>");
-        foreach ($clXML->children() as $clParam) {
-            $idcolonne = str_replace('id_', '', $clParam->getName());
-            $value = (string)$clParam;
-
-            $clRecord->setValCol($idcolonne, $value);
-        }
-
+    /**
+     * @param Record $clRecord
+     * @param        $idcontexte
+     * @param        $idihm
+     * @return string
+     */
+    public function serializeParamXML(Record $clRecord, $idcontexte, $idihm) : string
+    {
         $sIDForm = $clRecord->getIDTableau();
         $paramXML = str_replace(array("<xml><id_$sIDForm>", "</id_$sIDForm></xml>"), array('',''), $this->getRecordUpdateData($clRecord, $idcontexte, $idihm, true));
 
