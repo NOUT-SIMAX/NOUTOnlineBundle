@@ -324,7 +324,8 @@ class XMLResponseWS
                 $clConnectedUser->children()->User['title'],
 		        $clConnectedUser->children()->User['pwd'],
                 $clConnectedUser->children()->User['iv'],
-                $clConnectedUser->children()->User['ks']);
+                $clConnectedUser->children()->User['ks'],
+                $clConnectedUser->children()->User['extranet']);
         }
 
 		return $oUser;
