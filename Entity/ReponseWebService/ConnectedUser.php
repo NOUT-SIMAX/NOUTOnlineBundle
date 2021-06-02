@@ -32,6 +32,8 @@ class ConnectedUser
 	protected $m_sPwd = null;
 	/** @var null|string  */
 	protected $m_sIV = null;
+	/** @var bool */
+	protected $m_bExtranet = false;
 
 	/**
 	 * @param $nUserID : identifiant de l'utilisateur
@@ -84,12 +86,13 @@ class ConnectedUser
      * @param $iv
      * @param $ks
      */
-	public function initPassword($pseudo, $pwd, $iv, $ks) :void
+	public function initPassword($pseudo, $pwd, $iv, $ks, $extranet) :void
     {
         $this->m_sPseudo = (string)$pseudo;
         $this->m_sPwd = (string)$pwd;
         $this->m_sIV = (string)$iv;
         $this->m_nKS = (int)$ks;
+        $this->m_bExtranet = boolval((int)$extranet);
     }
 
     /**
@@ -124,5 +127,12 @@ class ConnectedUser
         return $this->m_sIV;
     }
 
+    /**
+     * @return bool
+     */
+    public function getExtranet() : bool
+    {
+        return $this->m_bExtranet;
+    }
 
 }
