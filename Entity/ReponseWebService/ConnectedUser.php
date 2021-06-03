@@ -24,16 +24,11 @@ class ConnectedUser
 	/** @var string  */
 	protected $m_sFormTitle;
 
-	/** @var string  */
-	protected $m_sPseudo='';
-	/** @var null|int  */
-	protected $m_nKS = null;
-	/** @var null|string  */
-	protected $m_sPwd = null;
-	/** @var null|string  */
-	protected $m_sIV = null;
-	/** @var bool */
-	protected $m_bExtranet = false;
+	/** @var null|PwdInfo */
+	protected $m_oPwdInfo = null;
+
+	/** @var null|ConnectedUser */
+	protected $m_oExtranet = null;
 
 	/**
 	 * @param $nUserID : identifiant de l'utilisateur
@@ -82,6 +77,42 @@ class ConnectedUser
 	}
 
     /**
+     * @param PwdInfo $pdwInfo
+     * @return $this
+     */
+	public function setPwdInfo(PwdInfo $pdwInfo) : ConnectedUser
+    {
+        $this->m_oPwdInfo = $pdwInfo;
+        return $this;
+    }
+
+    /**
+     * @return PwdInfo|null
+     */
+    public function getPwdInfo() : ?PwdInfo
+    {
+        return $this->m_oPwdInfo;
+    }
+
+    /**
+     * @param ConnectedUser $clExtranet
+     * @return $this
+     */
+    public function setExtranet(ConnectedUser $clExtranet): ConnectedUser
+    {
+        $this->m_oExtranet = $clExtranet;
+        return $this;
+    }
+
+    /**
+     * @return ConnectedUser|null
+     */
+    public function getExtranet() :?ConnectedUser
+    {
+        return $this->m_oExtranet;
+    }
+
+    /**
      * @param $pwd
      * @param $iv
      * @param $ks
@@ -94,45 +125,4 @@ class ConnectedUser
         $this->m_nKS = (int)$ks;
         $this->m_bExtranet = boolval((int)$extranet);
     }
-
-    /**
-     * @return int|null
-     */
-    public function getKS(): ?int
-    {
-        return $this->m_nKS;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPseudo(): ?string
-    {
-        return $this->m_sPseudo;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPwd(): ?string
-    {
-        return $this->m_sPwd;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getIV(): ?string
-    {
-        return $this->m_sIV;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getExtranet() : bool
-    {
-        return $this->m_bExtranet;
-    }
-
 }

@@ -309,23 +309,31 @@ class XMLResponseWS
 	 */
 	public function clGetConnectedUser(): ConnectedUser
     {
-		/* @var $clConnectedUser \SimpleXMLElement */
-		$clConnectedUser = $this->m_ndHeader->children()->ConnectedUser;
+		/* @var $oXMLConnecterUser \SimpleXMLElement */
+		$oXMLConnecterUser = $this->m_ndHeader->children()->ConnectedUser;
 
 		$oUser = new ConnectedUser(
-			$clConnectedUser->children()->Element,
-			$clConnectedUser->children()->Element['title'],
-			$clConnectedUser->children()->Form,
-			$clConnectedUser->children()->Form['title']
+			$oXMLConnecterUser->children()->Element,
+			$oXMLConnecterUser->children()->Element['title'],
+			$oXMLConnecterUser->children()->Form,
+			$oXMLConnecterUser->children()->Form['title']
 		);
 
-		if (isset($clConnectedUser->children()->User['pwd'])){
-            $oUser->initPassword(
-                $clConnectedUser->children()->User['title'],
-		        $clConnectedUser->children()->User['pwd'],
-                $clConnectedUser->children()->User['iv'],
-                $clConnectedUser->children()->User['ks'],
-                $clConnectedUser->children()->User['extranet']);
+		if (isset($oXMLConnecterUser->children()->PwdInfo)){
+		    $oUser->setPwdInfo(new PwdInfo(
+                $oXMLConnecterUser->children()->PwdInfo,
+                $oXMLConnecterUser->children()->PwdInfo['iv'],
+                $oXMLConnecterUser->children()->PwdInfo['ks']
+            ));
+        }
+        if (isset($oXMLConnecterUser->children()->Extranet)){
+            $clXMLExtranet = $oXMLConnecterUser->children()->Extranet;
+            $oUser->setExtranet(new ConnectedUser(
+                $clXMLExtranet->children()->Element,
+                $clXMLExtranet->children()->Element['title'],
+                $clXMLExtranet->children()->Form,
+                $clXMLExtranet->children()->Form['title']
+            ));
         }
 
 		return $oUser;
