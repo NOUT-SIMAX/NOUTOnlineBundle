@@ -109,6 +109,7 @@ class OnlineServiceProxy
      */
     private function __sGetUsernameToken(UsernameToken $usernameToken)
     {
+        $usernameToken->Compute(); //on fait le compute
         $sBottom = 'Username='.urlencode(utf8_decode($usernameToken->Username));
         $sBottom .= '&Password='.urlencode($usernameToken->Password);
         $sBottom .= '&nonce='.urlencode(utf8_decode($usernameToken->Nonce));
