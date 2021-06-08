@@ -16,6 +16,10 @@ use NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader;
  */
 class ConfigurationDialogue
 {
+    /**
+     * @var string
+     */
+    protected $m_sNOVersionUri='';
 	/**
 	 * @var string
 	 */
@@ -97,8 +101,10 @@ class ConfigurationDialogue
         $this->m_sAPIUUID     = trim($sAPIUUID);
 		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
 		$this->m_sWSDLUri       = $this->m_sServiceAddress.'getwsdl';
+		$this->m_sNOVersionUri    = $this->m_sServiceAddress.'getversion';
         if (!empty($this->m_sAPIUUID)){
             $this->m_sWSDLUri.='!&APIUUID='.urlencode($this->m_sAPIUUID);
+            $this->m_sNOVersionUri.='!&APIUUID='.urlencode($this->m_sAPIUUID);
         }
 		$this->m_sHost          = $sHost;
 		$this->m_nPort          = $sPort;
@@ -229,6 +235,14 @@ class ConfigurationDialogue
     {
 		return $this->m_sWSDLUri;
 	}
+
+    /**
+     * @return string
+     */
+    public function getNOVersionUri(): string
+    {
+        return $this->m_sNOVersionUri;
+    }
 
 	/**
 	 * @return string

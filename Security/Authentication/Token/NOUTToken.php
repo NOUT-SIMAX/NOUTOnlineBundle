@@ -126,7 +126,6 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
      */
     public function getUsernameToken() : ?UsernameToken
     {
-        $this->m_oUsernameToken->Compute();
         return $this->m_oUsernameToken;
     }
 

@@ -26,20 +26,8 @@ class GestionWSDL
      */
     protected $__translator;
 
-    /**
-     * @var string
-     */
-    protected $m_sUri = '';
-
-    /**
-     * @var string
-     */
-    protected $m_sHash = '';
-
-    /**
-     * @var float
-     */
-    protected $m_dVersion = 0;
+    /** @var double */
+    protected $m_sNOVersion = '';
 
     public function __construct(TranslatorInterface $translator)
     {
@@ -56,10 +44,10 @@ class GestionWSDL
      * @param $sUri
      * @throws SOAPException
      */
-    public function initUri($sUri)
+    public function init($sNOVersionUri)
     {
         //initialisation de curl
-        $curl = curl_init($sUri);
+        $curl = curl_init($sNOVersionUri);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , 2);
 
         //autres options
@@ -68,7 +56,7 @@ class GestionWSDL
 
         //---------------------------
         //execution
-        $output = curl_exec($curl);
+        $this->m_sNOVersion = curl_exec($curl);
         $curl_errno = curl_errno($curl);
         if($curl_errno){
 
@@ -91,9 +79,6 @@ class GestionWSDL
             }
         }
         curl_close($curl);
-        $sDebutWSDL=substr($output, 0, 1000);
-        $this->m_sHash = md5($sDebutWSDL, false);
-        $this->m_dVersion = $this->_getVersion($sDebutWSDL);
     }
 
     /**
@@ -101,14 +86,14 @@ class GestionWSDL
      */
     public function load()
     {
-        if (!isset($this->__cache) || empty($this->m_sHash))
-        {
+        if (!isset($this->__cache) || empty($this->m_sNOVersion)) {
             return false;
         }
 
-        if ($this->__cache->contains(array('wsdl', $this->m_sHash)))
+
+        if ($this->__cache->contains(array('wsdl', $this->m_sNOVersion)))
         {
-            return $this->__cache->fetch(array('wsdl', $this->m_sHash));
+            return $this->__cache->fetch(array('wsdl', $this->m_sNOVersion));
         }
 
         return false;
@@ -121,46 +106,12 @@ class GestionWSDL
      */
     public function save($wsdl, $dureeVie)
     {
-        if (!isset($this->__cache) || empty($this->m_sHash))
+        if (!isset($this->__cache) || empty($this->m_sNOVersion))
         {
             return ;
         }
 
-        $this->__cache->save(array('wsdl', $this->m_sHash), $wsdl, $dureeVie);
-    }
-
-    /**
-     * récupère le numéro de version de la wsdl
-     * @param $sDebutWSDL
-     * @return float
-     */
-    protected function _getVersion($sDebutWSDL)
-    {
-        //xmlns:serviceversion="http://www.nout.fr/wsdl/noutonline/1548.01"
-        $nPos=strpos($sDebutWSDL, 'xmlns:serviceversion="');
-        if ($nPos===FALSE)
-        {
-            return 0;
-        }
-
-        $nPos+=strlen('xmlns:serviceversion="');
-
-        $nFin = strpos($sDebutWSDL, '"', $nPos);
-
-        $sValeur = substr($sDebutWSDL, $nPos, $nFin-$nPos);
-
-        $nPos=strrpos($sValeur, '/');
-        $sValeur = substr($sValeur, $nPos+1);
-
-        return floatval($sValeur);
-    }
-
-    /**
-     * @return float
-     */
-    public function getVersion()
-    {
-        return $this->m_dVersion;
+        $this->__cache->save(array('wsdl', $this->m_sNOVersion), $wsdl, $dureeVie);
     }
 
     public function bGere($options)
@@ -169,7 +120,7 @@ class GestionWSDL
         {
             case self::OPT_MenuVisible:
             {
-                return $this->m_dVersion >= 1550.01;
+                return floatval($this->m_sNOVersion) >= 1550.01;
             }
         }
         return false;

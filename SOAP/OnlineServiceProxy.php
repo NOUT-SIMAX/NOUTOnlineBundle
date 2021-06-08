@@ -156,7 +156,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 	    //il faut lire le début de endpoint pour avoir la version de la wsdl
         $this->__clGestionWSDL = $clGestionWSDL;
-        $this->__clGestionWSDL->initUri($clConfig->getWSDLUri());
+        $this->__clGestionWSDL->init($clConfig->getNOVersionUri());
     }
 
 
@@ -457,6 +457,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
         //on rajoute les header
         $this->addMultipleHeaders($mHeaders);
+
+        if (isset($this->__aListHeaders[self::HEADER_UsernameToken]) && $this->__aListHeaders[self::HEADER_UsernameToken] instanceof UsernameToken){
+            $this->__aListHeaders[self::HEADER_UsernameToken]->Compute();
+        }
 
 	    if (!isset($this->__aListHeaders[self::HEADER_OptionDialogue]) || is_object($this->__aListHeaders[self::HEADER_OptionDialogue]))
 	    {
@@ -1092,9 +1096,17 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
      * @param array $aHeaders tableau d'headers a ajouter a la requete
      * @return XMLResponseWS
      * @access public
+     * @throws \Exception
      */
     public function getTokenSession(GetTokenSession $clWsdlType_GetTokenSession, $aHeaders = array())
     {
+        if ($clWsdlType_GetTokenSession->UsernameToken instanceof UsernameToken){
+            $clWsdlType_GetTokenSession->UsernameToken->Compute();
+        }
+        if ($clWsdlType_GetTokenSession->ExtranetUser && $clWsdlType_GetTokenSession->ExtranetUser->UsernameToken instanceof UsernameToken){
+            $clWsdlType_GetTokenSession->ExtranetUser->UsernameToken->Compute();
+        }
+
 	    return $this->call('GetTokenSession', array($clWsdlType_GetTokenSession) , null, null , $aHeaders);
     }
 
