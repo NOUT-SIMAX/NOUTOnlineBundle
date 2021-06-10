@@ -522,13 +522,13 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    catch(SOAPException $e)
 	    {
             $sError = empty($this->response) ? $this->error_str : $this->response;
-	        $this->__stopLogQuery($sOperation, $sError);
+	        $this->__stopLogQuery($sOperation, $sError, true);
 
 		    throw $e;
 	    }
 
         //ajoute au log s'il faut
-        $this->__stopLogQuery($sOperation, $this->response);
+        $this->__stopLogQuery($sOperation, $this->response, false);
 
 	    //on ne veut pas l'objet retourné par NUSOAP qui est un tableau associatif mais un objet qui permet de manipuler la réponse
         return $this->getXMLResponseWS();
@@ -546,7 +546,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
             $this->__stopwatch->start('NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy::call');
         }
     }
-    protected function __stopLogQuery($operation, $reponse)
+    protected function __stopLogQuery($operation, $reponse, $bError)
     {
         if (isset($this->__stopwatch)){
             $this->__stopwatch->stop('NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy::call');
@@ -561,7 +561,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
             if (isset($this->__aListHeaders[self::HEADER_ActionContext])){
                 $extra[NOUTOnlineLogger::EXTRA_ActionContext]=$this->__aListHeaders[self::HEADER_ActionContext];
             }
-            $this->__clLogger->stopQuery($this->request, $reponse, $operation, true, $extra);
+            $this->__clLogger->stopQuery($this->request, $reponse, $operation, true, $extra, $bError);
         }
     }
 

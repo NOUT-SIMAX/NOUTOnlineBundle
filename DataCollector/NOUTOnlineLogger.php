@@ -151,7 +151,7 @@ class NOUTOnlineLogger
 	 * @param $sTo
 	 * @param $sFrom
 	 */
-	public function stopQuery($sTo, $sFrom, $sOperation, $bSOAP, $extra)
+	public function stopQuery($sTo, $sFrom, $sOperation, $bSOAP, $extra, $bError=false)
 	{
 		if ($this->m_bEnabled)
 		{
@@ -160,10 +160,18 @@ class NOUTOnlineLogger
 				$sTo = str_replace('><', ">\r\n<", $sTo);
 			}
 
-			$this->m_clMonolog->notice(
-				$sTo,
-				$this->_getContext(true, $sOperation, $bSOAP, $extra)
-			);
+			if ($bError){
+                $this->m_clMonolog->error(
+                    $sTo,
+                    $this->_getContext(true, $sOperation, $bSOAP, $extra)
+                );
+            }
+			else {
+                $this->m_clMonolog->notice(
+                    $sTo,
+                    $this->_getContext(true, $sOperation, $bSOAP, $extra)
+                );
+            }
 
 			//il faut
             $sFromPourLog = $sFrom;
@@ -177,10 +185,18 @@ class NOUTOnlineLogger
                 $sFromPourLog = base64_encode($sFrom);
             }
 
-			$this->m_clMonolog->notice(
-                $sFromPourLog,
-				$this->_getContext(false, $sOperation, $bSOAP, $extra)
-			);
+            if ($bError){
+                $this->m_clMonolog->error(
+                    $sFromPourLog,
+                    $this->_getContext(false, $sOperation, $bSOAP, $extra)
+                );
+            }
+            else {
+                $this->m_clMonolog->notice(
+                    $sFromPourLog,
+                    $this->_getContext(false, $sOperation, $bSOAP, $extra)
+                );
+            }
 
 			if ($bSOAP)
 			{
