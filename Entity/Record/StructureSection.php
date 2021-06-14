@@ -107,7 +107,7 @@ class StructureSection extends StructureColonne
     }
 
     /**
-     * @return StructureBouton[]
+     * @return StructureDonnee[]
      */
     public function getData(): array
     {
@@ -119,6 +119,27 @@ class StructureSection extends StructureColonne
         }
         return $data;
     }
+
+    /**
+     * @return bool
+     */
+    public function canGrow() : bool
+    {
+        foreach($this->m_MapIDColonne2Colonne as $column)
+        {
+            if ($column instanceof StructureSection){
+                if ($column->canGrow()){
+                    return true;
+                }
+                continue;
+            }
+            if (($column instanceof StructureDonnee) && $column->canGrow()){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     const LEVEL_FICHE   = 0;
     const LEVEL_PRINCIPAL = 1;
