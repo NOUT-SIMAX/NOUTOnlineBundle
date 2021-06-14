@@ -123,17 +123,17 @@ class StructureSection extends StructureColonne
     /**
      * @return bool
      */
-    public function hasSubList() : bool
+    public function canGrow() : bool
     {
         foreach($this->m_MapIDColonne2Colonne as $column)
         {
             if ($column instanceof StructureSection){
-                if ($column->hasSubList()){
+                if ($column->canGrow()){
                     return true;
                 }
                 continue;
             }
-            if (($column instanceof StructureDonnee) && ($column->getTypeElement()==self::TM_ListeElem)){
+            if (($column instanceof StructureDonnee) && $column->canGrow()){
                 return true;
             }
         }

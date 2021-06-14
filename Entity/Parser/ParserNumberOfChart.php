@@ -62,6 +62,7 @@ class ParserNumberOfChart extends ParserWithParam
 
         // Paramètres
         $this->m_clNbOfChart->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));
+        $this->m_clNbOfChart->setNbChart($clXMLReponseWS->nGetNumberOfChart());
     }
 
     /**
