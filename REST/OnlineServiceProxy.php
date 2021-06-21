@@ -213,6 +213,10 @@ class OnlineServiceProxy
         {
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , (floatval($timeout)<1) ? 1 : intval($timeout));
         }
+        else
+        {
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , 0);
+        }
 
         //autres options
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); //Demande du contenu du fichier
