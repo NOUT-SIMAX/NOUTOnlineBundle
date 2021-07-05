@@ -617,7 +617,7 @@ abstract class StructureColonne
 	const TM_Heure     	= 'xs:time';
 	const TM_Reel      	= 'xs:float';
 	const TM_Monetaire 	= 'xs:decimal';
-	const TM_Duree 		= 'xs:duration';
+    const TM_Duree 		= 'simax-duration';
     //n'existe dans le xsd, pour cohérence de code
     const TM_TexteMultiLigne = 'xs:multilinestring';
 
