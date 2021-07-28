@@ -67,13 +67,21 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     /**
      * {@inheritdoc}
      */
-    public function getUsername()
+	public function getUsername()
+    {
+        return $this->getUserIdentifier();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUserIdentifier(): string
     {
         if ($this->m_oUsernameToken instanceof UsernameToken){
             return $this->m_oUsernameToken->Username;
         }
 
-        return parent::getUsername();
+        return parent::getUserIdentifier();
     }
 
     /**
