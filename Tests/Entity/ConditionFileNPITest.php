@@ -6,7 +6,7 @@
  * Time: 09:24
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
+namespace NOUT\Bundle\NOUTOnlineBundle\Tests\Entity;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondType;
