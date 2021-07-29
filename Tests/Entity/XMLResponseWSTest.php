@@ -6,7 +6,7 @@
  * Time: 14:51
  */
 
-namespace NOUT\Bundle\NOUTOnlineBundle\Tests\SOAP;
+namespace NOUT\Bundle\NOUTOnlineBundle\Tests\Entity;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
