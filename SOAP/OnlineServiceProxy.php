@@ -1,7 +1,6 @@
 <?php
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 //WSDLEntity utilsé en paramètres
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
@@ -315,11 +314,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 				} else {
 					return $this->_parseResponse($http->incoming_headers, $this->responseData, $http->response_status_line);
 				}
-				break;
 			default:
 				$this->setError('no transport found, or selected transport is not yet supported!');
 				return false;
-				break;
 		}
 	}
 
@@ -1100,7 +1097,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
      */
     public function getTokenSession(GetTokenSession $clWsdlType_GetTokenSession, $aHeaders = array())
     {
-        if ($clWsdlType_GetTokenSession->UsernameToken instanceof UsernameToken){
+        if (isset($clWsdlType_GetTokenSession->UsernameToken) && $clWsdlType_GetTokenSession->UsernameToken instanceof UsernameToken){
             $clWsdlType_GetTokenSession->UsernameToken->Compute();
         }
         if ($clWsdlType_GetTokenSession->ExtranetUser && $clWsdlType_GetTokenSession->ExtranetUser->UsernameToken instanceof UsernameToken){
