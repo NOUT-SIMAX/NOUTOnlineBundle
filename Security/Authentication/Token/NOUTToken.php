@@ -168,6 +168,14 @@ class NOUTToken extends PostAuthenticationToken implements TokenInterface, Token
 		return $this->m_sSessionToken;
 	}
 
+    /**
+     * {@inheritdoc}
+     */
+    public function isAuthenticated()
+    {
+        return !empty($this->m_sSessionToken);
+    }
+
 	/**
 	 * @param Langage $clLangage
 	 * @return $this
