@@ -14,8 +14,10 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
-class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWithNOUTOnlineVersionInterface
+class NOUTToken extends PostAuthenticationToken implements TokenInterface, TokenWithNOUTOnlineVersionInterface
 {
     use TraitTokenWithNOUTOnlineVersion;
 
@@ -59,9 +61,9 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __construct($user, $credentials, $providerKey, array $roles = array())
+	public function __construct(UserInterface $user, $providerKey, array $roles = array())
 	{
-		parent::__construct($user, $credentials, $providerKey, $roles);
+		parent::__construct($user, $providerKey, $roles);
 	}
 
     /**
@@ -165,6 +167,14 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
 	{
 		return $this->m_sSessionToken;
 	}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAuthenticated()
+    {
+        return !empty($this->m_sSessionToken);
+    }
 
 	/**
 	 * @param Langage $clLangage
