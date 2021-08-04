@@ -11,13 +11,11 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
+use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
-class NOUTToken extends PostAuthenticationToken implements TokenInterface, TokenWithNOUTOnlineVersionInterface
+class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, TokenWithNOUTOnlineVersionInterface
 {
     use TraitTokenWithNOUTOnlineVersion;
 
@@ -26,64 +24,56 @@ class NOUTToken extends PostAuthenticationToken implements TokenInterface, Token
      */
     protected $m_clLangage=null;
 
-	/**
-	 * @var string
-	 */
-	protected $m_sTimeZone='';
+    /**
+     * @var string
+     */
+    protected $m_sTimeZone='';
 
-	/**
-	 * @var string
-	 */
-	protected $m_sLocale='';
+    /**
+     * @var string
+     */
+    protected $m_sLocale='';
 
-	/**
-	 * @var string
-	 */
-	protected $m_sSessionToken='';
+    /**
+     * @var string
+     */
+    protected $m_sSessionToken='';
 
-	/**
-	 * @var string m_sIP
-	 */
-	protected $m_sIP='';
+    /**
+     * @var string m_sIP
+     */
+    protected $m_sIP='';
 
-	/** @var string */
-	protected $m_sNameToDisplay='';
+    /** @var string */
+    protected $m_sNameToDisplay='';
 
-	/** @var UsernameToken|null */
-	protected $m_oUsernameToken=null;
+    /** @var UsernameToken|null */
+    protected $m_oUsernameToken=null;
 
-	/** @var UsernameToken|null */
-	protected $m_oExtranetUsernameToken=null;
+    /** @var UsernameToken|null */
+    protected $m_oExtranetUsernameToken=null;
 
-	/** @var bool  */
-	protected $m_bAnonyme=false;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct(UserInterface $user, $providerKey, array $roles = array())
-	{
-		parent::__construct($user, $providerKey, $roles);
-	}
+    /** @var bool  */
+    protected $m_bAnonyme=false;
 
     /**
      * {@inheritdoc}
      */
-	public function getUsername()
+    public function __construct($user, $credentials, $providerKey, array $roles = array())
     {
-        return $this->getUserIdentifier();
+        parent::__construct($user, $credentials, $providerKey, $roles);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getUserIdentifier(): string
+    public function getUsername()
     {
         if ($this->m_oUsernameToken instanceof UsernameToken){
             return $this->m_oUsernameToken->Username;
         }
 
-        return parent::getUserIdentifier();
+        return parent::getUsername();
     }
 
     /**
@@ -150,59 +140,51 @@ class NOUTToken extends PostAuthenticationToken implements TokenInterface, Token
         return $this;
     }
 
-	/**
-	 * @param string $sSessionToken
-     * @return $this
-	 */
-	public function setSessionToken(string $sSessionToken): NOUTToken
-	{
-		$this->m_sSessionToken = $sSessionToken;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getSessionToken() : string
-	{
-		return $this->m_sSessionToken;
-	}
-
     /**
-     * {@inheritdoc}
+     * @param string $sSessionToken
+     * @return $this
      */
-    public function isAuthenticated()
+    public function setSessionToken(string $sSessionToken): NOUTToken
     {
-        return !empty($this->m_sSessionToken);
+        $this->m_sSessionToken = $sSessionToken;
+        return $this;
     }
 
-	/**
-	 * @param Langage $clLangage
-	 * @return $this
-	 */
-	public function setLangage(Langage $clLangage): NOUTToken
-	{
-		$this->m_clLangage = $clLangage;
-		return $this;
-	}
+    /**
+     * @return string
+     */
+    public function getSessionToken() : string
+    {
+        return $this->m_sSessionToken;
+    }
 
-	/**
-	 * @return Langage
-	 */
-	public function getLangage() : ?Langage
-	{
-		return $this->m_clLangage;
-	}
+    /**
+     * @param Langage $clLangage
+     * @return $this
+     */
+    public function setLangage(Langage $clLangage): NOUTToken
+    {
+        $this->m_clLangage = $clLangage;
+        return $this;
+    }
 
-	/**
-	 * @param string $sTimeZone
-	 * @return $this
-	 */
-	public function setTimeZone(string $sTimeZone) : NOUTToken
-	{
-		$this->m_sTimeZone = $sTimeZone;
-		return $this;
-	}
+    /**
+     * @return Langage
+     */
+    public function getLangage() : ?Langage
+    {
+        return $this->m_clLangage;
+    }
+
+    /**
+     * @param string $sTimeZone
+     * @return $this
+     */
+    public function setTimeZone(string $sTimeZone) : NOUTToken
+    {
+        $this->m_sTimeZone = $sTimeZone;
+        return $this;
+    }
 
     /**
      * @param string $sLocale
@@ -220,31 +202,31 @@ class NOUTToken extends PostAuthenticationToken implements TokenInterface, Token
         return $this->m_sTimeZone;
     }
 
-	/**
-	 * @return string
-	 */
-	public function getLocale() : string
-	{
-		return $this->m_sLocale;
-	}
+    /**
+     * @return string
+     */
+    public function getLocale() : string
+    {
+        return $this->m_sLocale;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getIP() : string
-	{
-		return $this->m_sIP;
-	}
+    /**
+     * @return string
+     */
+    public function getIP() : string
+    {
+        return $this->m_sIP;
+    }
 
-	/**
-	 * @param string $sIP
-	 * @return $this
-	 */
-	public function setIP(string $sIP) : NOUTToken
-	{
-		$this->m_sIP = $sIP;
-		return $this;
-	}
+    /**
+     * @param string $sIP
+     * @return $this
+     */
+    public function setIP(string $sIP) : NOUTToken
+    {
+        $this->m_sIP = $sIP;
+        return $this;
+    }
 
     /**
      * @return bool
@@ -266,9 +248,9 @@ class NOUTToken extends PostAuthenticationToken implements TokenInterface, Token
 
 
 
-	/**
-	 * {@inheritdoc}
-	 */
+    /**
+     * {@inheritdoc}
+     */
     public function __serialize(): array
     {
         return [
@@ -292,12 +274,12 @@ class NOUTToken extends PostAuthenticationToken implements TokenInterface, Token
         ];
     }
 
-	/**
-	 * {@inheritdoc}
+    /**
+     * {@inheritdoc}
      * @throw \Exception
-	 */
-	public function __unserialize(array $aUnserialised): void
-	{
+     */
+    public function __unserialize(array $aUnserialised): void
+    {
         if (!array_key_exists('ip', $aUnserialised)){
             throw new UnserializeTokenException('Invalid Token');
         }
@@ -324,7 +306,7 @@ class NOUTToken extends PostAuthenticationToken implements TokenInterface, Token
 
         $this->m_sNameToDisplay=$aUnserialised['name'];
         parent::__unserialize($aUnserialised['parent_data']);
-	}
+    }
 
-	const SESSION_LastTimeZone='LastTimeZone';
+    const SESSION_LastTimeZone='LastTimeZone';
 } 
