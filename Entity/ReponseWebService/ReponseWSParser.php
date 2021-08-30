@@ -26,11 +26,11 @@ class ReponseWSParser
 
     /**
      * @param XMLResponseWS $clXMLReponseWS
-     * @param null          $returnTypeForce
+     * @param null          $idForm
      * @return Parser
      * @throws \Exception
      */
-	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS, $returnTypeForce=null) : ?Parser
+	public function InitFromXmlXsd(XMLResponseWS $clXMLReponseWS, $idForm=null) : ?Parser
 	{
         // Tableau de pointeur de méthodes
 		$aPtrFct = array(
@@ -47,7 +47,7 @@ class ReponseWSParser
             XMLResponseWS::RETURNTYPE_PRINTTEMPLATE   	=> ParserList::class,
             XMLResponseWS::RETURNTYPE_CHOICE           	=> ParserList::class,
             XMLResponseWS::RETURNTYPE_REQUESTFILTER     => ParserList::class,
-            //XMLResponseWS::RETURNTYPE_MAILSERVICELIST   => '_ParseMailServiceList',
+            XMLResponseWS::RETURNTYPE_MAILSERVICELIST   => ParserList::class,
             XMLResponseWS::RETURNTYPE_NUMBEROFCHART     => ParserNumberOfChart::class,
 
             XMLResponseWS::RETURNTYPE_LISTCALCULATION 	=> ParserListCalculation::class,
@@ -72,7 +72,7 @@ class ReponseWSParser
 
 		/** @var Parser $clParser */
 		$clParser = new $parserClass();
-		$clParser->Parse($clXMLReponseWS);
+		$clParser->Parse($clXMLReponseWS, $idForm);
 
 		// Appel des fonctions à la volée grâce au tableau de méthodes
 		return $clParser;

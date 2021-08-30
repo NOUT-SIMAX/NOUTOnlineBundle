@@ -99,6 +99,14 @@ class Record extends IHMWindows
 	}
 
     /**
+     * @return array
+     */
+    public function aGetTabColumnsValues(): array
+    {
+        return $this->m_TabColumnsValues;
+    }
+
+    /**
      * @param $option
      * @param $valeur
      * @return $this

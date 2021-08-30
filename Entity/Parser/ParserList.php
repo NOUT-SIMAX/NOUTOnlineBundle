@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
@@ -54,16 +55,16 @@ class ParserList extends ParserWithParam
      * @param XMLResponseWS $clXMLReponseWS
      * @throws \Exception
      */
-    public function Parse(XMLResponseWS $clXMLReponseWS)
+    public function Parse(XMLResponseWS $clXMLReponseWS, $idForm)
     {
         // Parser les paramètres
         // Permet de savoir combien on a d'éléments avant de traiter les données ?
-        parent::Parse($clXMLReponseWS);
+        parent::Parse($clXMLReponseWS, $idForm);
 
         $ndSchema   = $clXMLReponseWS->getNodeSchema();
         $ndXML      = $clXMLReponseWS->getNodeXML();
         $clForm     = $clXMLReponseWS->clGetForm();
-        $idForm     = $clForm->getID();
+        $idForm     = (!empty($idForm)) ? $idForm : $clForm->getID();
 
         if (isset($ndSchema))
         {
@@ -77,7 +78,8 @@ class ParserList extends ParserWithParam
         $returnType = $clXMLReponseWS->sGetReturnType();
         if (    ($returnType == XMLResponseWS::RETURNTYPE_PRINTTEMPLATE)
             ||  ($returnType == XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION)
-            ||  ($returnType == XMLResponseWS::RETURNTYPE_CHOICE))
+            ||  ($returnType == XMLResponseWS::RETURNTYPE_CHOICE)
+            ||  ($returnType == XMLResponseWS::RETURNTYPE_MAILSERVICELIST))
         {
             //on pas besoin des exports, tri et autre
             $this->m_clRecordList = $this->_getRecordList($clXMLReponseWS, false,false, false, array(), null, null);

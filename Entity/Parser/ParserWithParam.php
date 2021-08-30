@@ -22,7 +22,7 @@ class ParserWithParam extends Parser
      * @param XMLResponseWS $clXMLReponseWS
      * @throws \Exception
      */
-    public function Parse(XMLResponseWS $clXMLReponseWS)
+    public function Parse(XMLResponseWS $clXMLReponseWS, $idForm)
     {
         $ndSchema    = $clXMLReponseWS->getNodeXSDParam();
 
