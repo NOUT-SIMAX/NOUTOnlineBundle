@@ -291,7 +291,7 @@ class XMLResponseWS
     }
 
     /**
-     * @return String title of the document
+     * @return String
      */
     public function sGetIDIHM(): ?string
     {
@@ -300,6 +300,26 @@ class XMLResponseWS
         }
         catch(\Exception $e){
             return null;
+        }
+    }
+
+
+    /**
+     * @return String[]
+     */
+    public function aGetIDIHMToClose(): ?array
+    {
+        try{
+            $aRet = [];
+            foreach($this->m_ndHeader->children()->IDIHMToClose->children() as $child)
+            {
+                $aRet[] = (string)$child;
+            }
+
+            return $aRet;
+        }
+        catch(\Exception $e){
+            return [];
         }
     }
 

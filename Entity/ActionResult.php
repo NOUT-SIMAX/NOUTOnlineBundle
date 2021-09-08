@@ -27,6 +27,9 @@ class ActionResult
      */
     public $IDIHM=null;
 
+    /** @var array  */
+    public $IDIHMToClose=[];
+
 	/**
 	 * @var mixed
 	 */
@@ -99,6 +102,7 @@ class ActionResult
             $this->m_sIDContexteToValidateOnClose = $clReponseXML->sGetContextToValidateOnClose();
             $this->m_aContexteToClose = $clReponseXML->aGetActionContextToClose();
             $this->m_clConnectedUser = $clReponseXML->clGetConnectedUser();
+            $this->IDIHMToClose = $clReponseXML->aGetIDIHMToClose();
 		}
 
 		$this->m_clCache  = new ActionResultCache();
