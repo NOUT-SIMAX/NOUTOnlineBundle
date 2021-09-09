@@ -1512,6 +1512,13 @@ class NOUTClient
                     ->setValidateError($clReponseXML->getValidateError())
                     ->setCount($clCount);
 
+                if ($clActionResult->ReturnType == XMLResponseWS::RETURNTYPE_MAILSERVICELIST){
+                    $clFolderCount = $clReponseXML->clGetFolderCount();
+                    if ($clFolderCount){
+                        $clActionResult->setFolderCount($clFolderCount);
+                    }
+                }
+
                 break;
             }
 
@@ -2455,7 +2462,6 @@ class NOUTClient
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $clReponseXML = $this->m_clSOAPProxy->getFolderList($aTabHeaderSuppl, $requestParams);
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Dossier);
-        //return json_encode($clReponseXML->getNodeXML()->children(), JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -2473,12 +2479,7 @@ class NOUTClient
         $folderContent->SpecialParamList = $requestParams;
         $folderContent->IDFolder = $folderID;
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $aTabHeaderSuppl);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-//        $res = new \stdClass();
-//        $res->data = $clReponseXML->getNodeXML()->children();
-//        $res->totalCount = $clReponseXML->clGetFolderCount()->m_nNbReceived;
-//        $res->unreadCount = $clReponseXML->clGetFolderCount()->m_nNbUnread;
-//        return $res;
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
     /**
