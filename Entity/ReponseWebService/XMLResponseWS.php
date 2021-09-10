@@ -405,16 +405,16 @@ class XMLResponseWS
 	}
 
     /**
-     * @return Foldercount
+     * @return FolderCount
      */
-	public function clGetFolderCount(): Foldercount
+	public function clGetFolderCount(): FolderCount
     {
         $ndFolderCount = $this->m_ndHeader->children()->FolderCount;
         if (!isset($ndFolderCount) || empty($ndFolderCount)) {
-            return new Foldercount();
+            return new FolderCount();
         }
 
-        $clFolderCount                    = new Foldercount();
+        $clFolderCount                    = new FolderCount();
         $clFolderCount->m_nNbReceive     = (int) $ndFolderCount->children()->NbReceive;
         $clFolderCount->m_nNbUnRead      = (int) $ndFolderCount->children()->NbUnRead;
 

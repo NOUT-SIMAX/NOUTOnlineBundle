@@ -23,7 +23,7 @@ class ParserRecord extends Parser
      * @param XMLResponseWS $clXMLReponseWS
      * @throws \Exception
      */
-    public function Parse(XMLResponseWS $clXMLReponseWS)
+    public function Parse(XMLResponseWS $clXMLReponseWS, $idForm)
     {
         $ndSchema    = $clXMLReponseWS->getNodeSchema();
         if (isset($ndSchema))
@@ -31,8 +31,9 @@ class ParserRecord extends Parser
             $this->m_clParser->ParseXSD($ndSchema, StructureElement::NV_XSD_Enreg);
         }
 
+        $idForm     = (!empty($idForm)) ? $idForm : $clXMLReponseWS->clGetForm()->getID();
         $ndXML = $clXMLReponseWS->getNodeXML();
-        $this->m_clParser->ParseXML($ndXML, $clXMLReponseWS->clGetForm()->getID(), StructureElement::NV_XSD_Enreg);
+        $this->m_clParser->ParseXML($ndXML, $idForm, StructureElement::NV_XSD_Enreg);
     }
 
     /**
@@ -43,5 +44,19 @@ class ParserRecord extends Parser
     {
         return $this->m_clParser->getRecord($clResponseXML);
     }
+
+    /**
+     * @return null|Record
+     */
+    public function getFirstRecord() : ?Record
+    {
+        $tabRecord =$this->m_clParser->getFullCache()->getMapIDTableauIDEnreg2Record();
+        if (count($tabRecord)==0){
+            return null;
+        }
+        $key = array_key_first($tabRecord);
+        return $tabRecord[$key];
+    }
+
 
 }

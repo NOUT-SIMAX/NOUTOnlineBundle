@@ -37,6 +37,7 @@ class ReponseWSParser
             XMLResponseWS::RETURNTYPE_RECORD          	=> ParserRecord::class,
             XMLResponseWS::RETURNTYPE_VALIDATERECORD  	=> ParserRecord::class,
             XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> ParserRecord::class,
+            XMLResponseWS::RETURNTYPE_MAILSERVICERECORD	=> ParserRecord::class,
 
             XMLResponseWS::RETURNTYPE_SCHEDULER 		=> ParserScheduler::class,
             XMLResponseWS::RETURNTYPE_THUMBNAIL         => ParserList::class,

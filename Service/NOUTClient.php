@@ -1371,7 +1371,6 @@ class NOUTClient
             case XMLResponseWS::RETURNTYPE_EXCEPTION:
 
 
-            case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
             case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
             case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
             {
@@ -1403,16 +1402,24 @@ class NOUTClient
                 break;
             }
 
+            case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
             case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
             case XMLResponseWS::RETURNTYPE_RECORD:
             case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
             {
                 // Instance d'un parser
                 $clResponseParser = new ReponseWSParser();
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML, $idForm);
 
                 /** @var ParserXmlXsd $clParser */
-                $clActionResult->setData($clParser->getRecord($clReponseXML));
+                if ($clActionResult->ReturnType === XMLResponseWS::RETURNTYPE_MAILSERVICERECORD)
+                {
+                    $clActionResult->setData($clParser->getFirstRecord());
+                }
+                else
+                {
+                    $clActionResult->setData($clParser->getRecord($clReponseXML));
+                }
                 $clActionResult->setValidateError($clReponseXML->getValidateError());
 
                 break;
@@ -2662,7 +2669,7 @@ class NOUTClient
         $message = new ModifyMessage();
         $message->IDMessage = $messageID;
         $clReponseXML = $this->m_clSOAPProxy->modifyMessage($message, $aTabHeaderSuppl);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
     /**
