@@ -1352,12 +1352,13 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, $idForm = null) : ActionResult
+    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, $idForm = null, $ReturnType = null) : ActionResult
     {
         $clActionResult = new ActionResult($clReponseXML);
 
-        $this->__startStopwatch($stopWatchEvent = $this->_getStopWatchEventName(__FUNCTION__, $clActionResult->ReturnType));
-        switch ($clActionResult->ReturnType)
+        $ReturnType = $ReturnType ?? $clActionResult->ReturnType;
+        $this->__startStopwatch($stopWatchEvent = $this->_getStopWatchEventName(__FUNCTION__, $ReturnType));
+        switch ($ReturnType)
         {
             case XMLResponseWS::RETURNTYPE_EMPTY:
                 break; //on ne fait rien de plus
@@ -1378,6 +1379,12 @@ class NOUTClient
                 throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
             }
 
+            case XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ:
+            {
+                $clData = $clReponseXML->getFile();
+                $clActionResult->setData($clData);
+                break;
+            }
 
             case XMLResponseWS::RETURNTYPE_REPORT:
             {
@@ -2663,7 +2670,7 @@ class NOUTClient
         $getPJ->IDPJ = $attachmentId;
 
         $clReponseXML =  $this->m_clSOAPProxy->getPJ($getPJ, $aTabHeaderSuppl);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, null, XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ);
     }
 
     /**
