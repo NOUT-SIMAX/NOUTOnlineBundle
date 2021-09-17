@@ -2582,49 +2582,7 @@ class NOUTClient
             $message->IDMessage = $originalMessage;
 
         $clReponseXML=$this->m_clSOAPProxy->createMessage($message, $aTabHeaderSuppl);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-
-        // depuis le schema on retrouve la liste des comptes email (adresse de retour)
-//        $ndSchema=$resCreate->getNodeSchema();
-//        $clParserXSD = new ParserXSDSchema();
-//        $clParserXSD->Parse(0, $ndSchema);
-//        $clMessageXSD=$clParserXSD->clGetStructureElement('16510');
-//        $clStructureColonne=$clMessageXSD->getStructureColonne('16078'); // adresse de retour
-//        assert($clStructureColonne->getTypeElement()==StructureColonne::TM_Combo);
-//        $aTabCompteEmail=$clStructureColonne->clGetRestriction()->getRestriction(ColonneRestriction::R_ENUMERATION);
-//
-//        // ajoute les comptes a l'xml
-//        $xml=$resCreate->getNodeXML();
-//        $xmlEmails=$xml->addChild('emails');
-//        foreach( $aTabCompteEmail as $id => $sCompte)
-//        {
-//            $xmlEmail=$xmlEmails->addChild('email');
-//            $xmlEmail->addChild('compte', $sCompte);
-//            $xmlEmail->addChild('id', $id);
-//        }
-//
-//        // compte du message
-//        $aElemIDCompte=$xml->id_16510->id_16078;
-//        if ($aElemIDCompte)
-//        {
-//            $nIDCompte=(string)$aElemIDCompte;
-//            // si on doit ajouter la signature
-//            $sSignature="";
-//            try{
-//                if ($this->bGetSiAjouteSignature($nIDCompte, $type, ($originalMessage !== 'undefined')))
-//                {
-//                    $sSignature=$this->sGetSignature($nIDCompte);
-//                }
-//            }
-//            catch(\Exception $e)
-//            {
-//                $sSignature="";
-//            }
-//            if ($sSignature!="")
-//                $xml->addChild('signature', $sSignature);
-//        }
-//
-//        return $xml->asXML();
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
     /**
@@ -2645,12 +2603,6 @@ class NOUTClient
         $execaction->SpecialParamList = $specialParamList;
         $clReponseXML = $this->m_clSOAPProxy->execute($execaction, $aTabHeaderSuppl);
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-
-
-//        if(!$oRet->sGetReturnType() === XMLResponseWS::RETURNTYPE_LIST) {
-//            throw new \Exception("Expected List but got " . $oRet->sGetReturnType());
-//        }
-//        return $oRet->getNodeXML()->asXML();
     }
 
     /**
@@ -2786,8 +2738,8 @@ class NOUTClient
         $aTabParam=[];
         $aTabOption=[];
 
-        $clReponseXML = $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        $sSignature = $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
+        return $sSignature;
     }
 
     /**
@@ -2799,8 +2751,9 @@ class NOUTClient
      */
     public function bGetSiAjouteSignature($compteID, $sType, $withOriginalMessage)
     {
-
-        $nIDCol=($sType==CreateMessage::CREATE_TYPE_EMPTY || (($sType==CreateMessage::CREATE_TYPE_ANSWER_TYPE) && !$withOriginalMessage)) ? Langage::COL_COMPTEEMAIL_SignatureNouveau : Langage::COL_COMPTEEMAIL_SignatureRepondre;
+        $nIDCol=(($sType==CreateMessage::CREATE_TYPE_EMPTY) || (($sType==CreateMessage::CREATE_TYPE_ANSWER_TYPE) && !$withOriginalMessage))
+            ? Langage::COL_COMPTEEMAIL_SignatureNouveau
+            : Langage::COL_COMPTEEMAIL_SignatureRepondre;
 
         $clIdentification = $this->_clGetIdentificationREST('', false);
 
@@ -2809,7 +2762,7 @@ class NOUTClient
 
         $sRes=$this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
 
-        return $sRes!=="Non";
+        return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes);
     }
 
 
