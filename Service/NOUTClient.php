@@ -2543,7 +2543,7 @@ class NOUTClient
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
         $clReponseXML = $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
     /**
@@ -2735,10 +2735,10 @@ class NOUTClient
 
     /**
      * @param $compteID
-     * @return ActionResult
+     * @return string
      * @throws \Exception
      */
-    public function sGetSignature($compteID)
+    public function sGetSignature($compteID) : string
     {
         $clIdentification = $this->_clGetIdentificationREST('', false);
 
@@ -2765,7 +2765,7 @@ class NOUTClient
         $clIdentification = $this->_clGetIdentificationREST('', false);
 
         $aTabParam=[];
-        $aTabOption=[];
+        $aTabOption=['displayvalue' => 0];
 
         $sRes=$this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
 
