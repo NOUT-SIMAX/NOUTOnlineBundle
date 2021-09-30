@@ -1513,9 +1513,9 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
      * @return XMLResponseWS
      * @access public
      */
-    public function updateMessage($xmlData, $aHeaders = array())
+    public function updateMessage(UpdateMessage $clWsdlType_UpdateMessage, $aHeaders = array())
     {
-	    return $this->call('UpdateMessage', $xmlData ,  null, null , $aHeaders);
+	    return $this->call('UpdateMessage', [$clWsdlType_UpdateMessage] ,  null, null , $aHeaders);
     }
     //---
 

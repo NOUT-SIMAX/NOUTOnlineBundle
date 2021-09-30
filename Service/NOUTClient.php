@@ -95,6 +95,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\NOUTException\NOUTValidationException;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -2497,7 +2498,7 @@ class NOUTClient
     }
 
     /**
-     * @param array $requestHeaders
+     * @param array $requestParams
      * @param       $requestParams
      * @param       $filters
      * @param       $startdate
@@ -2505,29 +2506,17 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oGetMessageRequest(array $requestHeaders, $requestParams, $filters, $startdate, $endDate) : ActionResult
+    public function oGetMessageRequest(array $requestParams) : ActionResult
     {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl([]);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $requestMessage = new RequestMessage();
-        $requestMessage->SpecialParamList = $requestParams;
-        $requestMessage->StartDate = $startdate;
-        $requestMessage->EndDate = $endDate;
-        $requestMessage->Filter = new FilterType();
-        $requestMessage->Filter->Way = $filters->way;
-        $requestMessage->Filter->State = $filters->state;
-        $requestMessage->Filter->Inner = $filters->inner;
-        $requestMessage->Filter->Email = $filters->email;
-        $requestMessage->Filter->Spam = $filters->spam;
-        $requestMessage->Filter->Max = $filters->max;
-        $requestMessage->Filter->From = $filters->from;
-        $requestMessage->Filter->Containing = $filters->containing;
+        $requestMessage->SpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
+        $requestMessage->StartDate = $requestParams[self::PARAMMESS_StartDate];
+        $requestMessage->EndDate = $requestParams[self::PARAMMESS_EndDate];
+        $requestMessage->Filter = $requestParams[self::PARAMMESS_Filter];
         $clReponseXML = $this->m_clSOAPProxy->getRequestMesage($requestMessage, $aTabHeaderSuppl);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-//        $res = new \stdClass();
-//        $res->data = $clReponseXML->getNodeXML()->children();
-//        $res->totalCount = $clReponseXML->clGetCount()->m_nNbTotal;
-//        return $res;
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
     /**
@@ -2536,13 +2525,20 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdateMessage(array $requestHeaders, $xmlData) : ActionResult
+    public function oUpdateMessage($idmessage, array $updateData, $autovalidate = SOAPProxy::AUTOVALIDATE_None) : ActionResult
     {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl([
+            SOAPProxy::HEADER_AutoValidate => $autovalidate,
+        ]);
         $aTabHeaderSuppl = $this->_aGetTabHeader($aTabHeaderSuppl);
         $asyncProp = SOAPProxy::HEADER_OptionDialogue_ListContentAsync;
         $aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->$asyncProp = 0;
-        $clReponseXML = $this->m_clSOAPProxy->updateMessage($xmlData, $aTabHeaderSuppl);
+
+        $updateMessage = new UpdateMessage();
+        $updateMessage->IDMessage=$idmessage;
+        $updateMessage->UpdateData = ParametersManagement::s_sStringifyUpdateData(Langage::TABL_Messagerie_Message, $updateData);
+
+        $clReponseXML = $this->m_clSOAPProxy->updateMessage($updateMessage, $aTabHeaderSuppl);
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
@@ -2567,7 +2563,7 @@ class NOUTClient
         $updateMessages->Value = $value;
 
         $clReponseXML =  $this->m_clSOAPProxy->updateMessages($updateMessages, $aTabHeaderSuppl);
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
     /**
@@ -2787,4 +2783,8 @@ class NOUTClient
     const PARAM_CHECKSUM            = 'Checksum';
     const PARAM_CALLINGINFO         = 'CallingInfo';
     const PARAM_BTN_LISTMODE        = 'BtnListMode';
+
+    const PARAMMESS_StartDate   = 'StartDate';
+    const PARAMMESS_EndDate     = 'EndDate';
+    const PARAMMESS_Filter      = 'Filter';
 }
