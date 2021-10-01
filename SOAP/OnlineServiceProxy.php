@@ -971,7 +971,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
      * @return XMLResponseWS
      * @access public
      */
-    public function getFolderList($aHeaders, $aParams)
+    public function getFolderList($aParams, $aHeaders = array())
     {
 	    return $this->call('GetFolderList', $aParams ,  null, null , $aHeaders);
     }
