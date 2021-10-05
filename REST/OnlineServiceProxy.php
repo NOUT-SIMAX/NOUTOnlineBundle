@@ -175,7 +175,13 @@ class OnlineServiceProxy
 		return $sUrl;
 	}
 
-    protected function _oMakeResponse($output, $headers)
+    /**
+     * @param $output
+     * @param $headers
+     * @return HTTPResponse
+     * @throws SOAPException
+     */
+    protected function _oMakeResponse($output, $headers) : HTTPResponse
     {
         $ret = new HTTPResponse($output, $headers);
         if ($ret->getStatus()!=200)
@@ -266,7 +272,15 @@ class OnlineServiceProxy
         $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
         // ------------------------------------------------
 
-        $ret = $this->_oMakeResponse($output, $parsedHeaders);
+        try {
+            $ret = $this->_oMakeResponse($output, $parsedHeaders);
+        }
+        catch (\Exception $e)
+        {
+            //on stop le log pour avoir la requête
+            $this->__stopLogQuery($sURI, $header_request, $output, $sAction, $parsedHeaders, $function, $clIdentification, true);
+            throw $e;
+        }
 
         $this->__stopLogQuery($sURI, $header_request, $ret->content, $sAction, $ret->headers, $function, $clIdentification);
         return $ret;
@@ -284,7 +298,7 @@ class OnlineServiceProxy
             $this->__stopwatch->start(get_class($this).'::'.$function);
         }
     }
-    private function __stopLogQuery($uri, $request, $reponse, $action, $header, $function, Identification $clIdentification=null)
+    private function __stopLogQuery($uri, $request, $reponse, $action, $header, $function, Identification $clIdentification=null, $bError=false)
     {
         if (isset($this->__stopwatch)){
             $this->__stopwatch->stop(get_class($this).'::'.$function);
@@ -303,7 +317,7 @@ class OnlineServiceProxy
                 $extra[NOUTOnlineLogger::EXTRA_ActionContext]=$clIdentification->m_sIDContexteAction;
             }
 
-            $this->__clLogger->stopQuery($request, $reponse, (empty($action) ? substr($uri, 0, 50) : $action), false, $extra);
+            $this->__clLogger->stopQuery($request, $reponse, (empty($action) ? substr($uri, 0, 50) : $action), false, $extra, $bError);
         }
     }
 
@@ -316,7 +330,7 @@ class OnlineServiceProxy
 	 * - TYPEUTIL_UTILISATEUR : utilisateur non superviseur
 	 * - TYPEUTIL_SUPERVISEUR : utilisateur superviseur
 	 */
-	public function nGetUserExists($login)
+	public function nGetUserExists($login) : int
 	{
 		$sURI = $this->_sCreateRequest('GetUserExists', array('login' => $login), array());
 
@@ -333,7 +347,7 @@ class OnlineServiceProxy
 	 * récupère la version de NOUTOnline
 	 * @return NOUTOnlineVersion
 	 */
-	public function clGetVersion()
+	public function clGetVersion() : NOUTOnlineVersion
 	{
 		$sURI = $this->_sCreateRequest('GetVersion', array(), array());
 
@@ -363,7 +377,7 @@ class OnlineServiceProxy
      * récupère le menu
      * @return string
      */
-    public function sGetMenu(Identification $clIdentification)
+    public function sGetMenu(Identification $clIdentification) : string
     {
         $sURI = $this->_sCreateRequest('GetMenu', array(), array(), $clIdentification);
 
