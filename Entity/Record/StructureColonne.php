@@ -323,10 +323,19 @@ abstract class StructureColonne
 		return $this->m_eTypeElement;
 	}
 
-	public function canGrow() : bool
+    /**
+     * @return int
+     */
+	public function canGrow() : int
     {
-        return ($this->m_eTypeElement == self::TM_ListeElem)
-            || $this->isMultilineText();
+        $canGrow = 0;
+        if ($this->m_eTypeElement == self::TM_ListeElem){
+            $canGrow |= 0x10;
+        }
+        if ($this->isMultilineText()){
+            $canGrow |= 0x01;
+        }
+        return $canGrow;
     }
 
     /**
