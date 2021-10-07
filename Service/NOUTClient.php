@@ -553,7 +553,7 @@ class NOUTClient
     {
         $clIdentification = $this->_clGetIdentificationREST($idContext, false);
 
-        return $this->m_clRESTProxy->sGetHelp($clIdentification);
+        return $this->m_clRESTProxy->oGetHelp($clIdentification)->content;
     }
 
     /**
@@ -578,7 +578,9 @@ class NOUTClient
 
         $aInfo = array();
         //on a pas les infos, il faut les calculer
-        $json = json_decode($this->m_clRESTProxy->$method($clIdentification), false, 512, JSON_BIGINT_AS_STRING);
+        /** @var HTTPResponse $oRetHTTP */
+        $oRetHTTP = $this->m_clRESTProxy->$method($clIdentification);
+        $json = json_decode($oRetHTTP->content, false, 512, JSON_BIGINT_AS_STRING);
         if (is_array($json) && (count($json) > 0))
         {
             foreach ($json as $objet)
@@ -692,7 +694,7 @@ class NOUTClient
      */
     public function getTabMenu() : ActionResult
     {
-        return $this->_oGetIhmMenuPart('aMenu', 'sGetMenu', 'menu');
+        return $this->_oGetIhmMenuPart('aMenu', 'oGetMenu', 'menu');
     }
 
 
@@ -703,7 +705,7 @@ class NOUTClient
      */
     public function getCentralIcon(): ActionResult
     {
-        return $this->_oGetIhmMenuPart('aBigIcon', 'sGetCentralIcon', 'home');
+        return $this->_oGetIhmMenuPart('aBigIcon', 'oGetCentralIcon', 'home');
     }
 
     /**
@@ -713,7 +715,7 @@ class NOUTClient
      */
     public function getToolbar(): ActionResult
     {
-        return $this->_oGetIhmMenuPart('aToolbar', 'sGetToolbar', 'toolbar');
+        return $this->_oGetIhmMenuPart('aToolbar', 'oGetToolbar', 'toolbar');
     }
 
     /**
@@ -2136,7 +2138,7 @@ class NOUTClient
 
         $clIdentification = $this->_clGetIdentificationREST($idContext, false);
 
-        $sRet = $this->m_clRESTProxy->sGetSchedulerInfo($aTabParam, $clIdentification);
+        $sRet = $this->m_clRESTProxy->oGetSchedulerInfo($aTabParam, $clIdentification);
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($sRet);
@@ -2163,7 +2165,7 @@ class NOUTClient
 
         $clIdentification = $this->_clGetIdentificationREST($idContext, false);
 
-        $sRet = $this->m_clRESTProxy->sGetSchedulerCardInfo($idForm, $idEnreg, $idColumn, $aTabParam, $clIdentification);
+        $sRet = $this->m_clRESTProxy->oGetSchedulerCardInfo($idForm, $idEnreg, $idColumn, $aTabParam, $clIdentification);
 
         $clActionResult = new ActionResult(null);
         $clActionResult->setData($sRet);
@@ -2207,7 +2209,7 @@ class NOUTClient
 
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
 
-        return $this->m_clRESTProxy->sGetSuggestFromQuery(
+        return $this->m_clRESTProxy->oGetSuggestFromQuery(
             $idformulaire,
             $query,
             $aTabParam,
@@ -2482,7 +2484,7 @@ class NOUTClient
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
-        $clReponseXML = $this->m_clSOAPProxy->getFolderList($requestParams, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML = $this->m_clSOAPProxy->getFolderList($this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Dossier);
     }
 
@@ -2671,13 +2673,13 @@ class NOUTClient
 
     /**
      * @param $messageId
-     * @return string
+     * @return HTTPResponse
      * @throws \Exception
      */
-    public function oPrintMessage($messageId) : string
+    public function oPrintMessage($messageId) : HTTPResponse
     {
         $clIdentification = $this->_clGetIdentificationREST(null, false);
-        return $this->m_clRESTProxy->sPrintMessage($messageId, $clIdentification);
+        return $this->m_clRESTProxy->oPrintMessage($messageId, $clIdentification);
     }
 
     /**
@@ -2729,8 +2731,9 @@ class NOUTClient
         $aTabParam=[];
         $aTabOption=[];
 
-        $sSignature = $this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
-        return $sSignature;
+        $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
+
+        return $oRetHTTP->content;
     }
 
     /**
@@ -2751,7 +2754,8 @@ class NOUTClient
         $aTabParam=[];
         $aTabOption=['displayvalue' => 0];
 
-        $sRes=$this->m_clRESTProxy->sGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
+        $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
+        $sRes= $oRetHTTP->content;
 
         return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes);
     }

@@ -26,7 +26,7 @@ class OnlineServiceProxy
 {
 	/**
 	 * classe de configuration
-	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
+	 * @var ConfigurationDialogue
 	 */
 	private $__ConfigurationDialogue;
 
@@ -48,9 +48,10 @@ class OnlineServiceProxy
 
 	/**
 	 * constructeur permettant d'instancier les classe de communication soap avec les bonne question
-	 * @param ClientInformation $clientInfo
+	 * @param ClientInformation     $clientInfo
 	 * @param ConfigurationDialogue $clConfig
-	 * @param NOUTOnlineLogger $_clLogger
+	 * @param NOUTOnlineLogger      $_clLogger
+     * @param Stopwatch|null        $stopwatch
 	 */
 	public function __construct(ClientInformation $clientInfo, ConfigurationDialogue $clConfig, NOUTOnlineLogger $_clLogger, Stopwatch $stopwatch=null)
 	{
@@ -62,10 +63,11 @@ class OnlineServiceProxy
 
 	/**
 	 * Retourne la fin de la requette rest (partie identification)
-	 * @param string $sIdContext le context de l'action (facultatif)
+     * @param Identification|null $clIdentification
 	 * @return string la fin de la requette rest
+     * @throws \Exception
 	 */
-	private function _sCreateIdentification(Identification $clIdentification=null)
+	private function _sCreateIdentification(Identification $clIdentification=null) : string
 	{
 		if (is_null($clIdentification) || empty($clIdentification->m_clUsernameToken) || !$clIdentification->m_clUsernameToken->bIsValid())
 		{
@@ -106,8 +108,9 @@ class OnlineServiceProxy
     /**
      * @param UsernameToken $usernameToken
      * @return string la partie username token
+     * @throws \Exception
      */
-    private function __sGetUsernameToken(UsernameToken $usernameToken)
+    private function __sGetUsernameToken(UsernameToken $usernameToken) : string
     {
         $usernameToken->Compute(); //on fait le compute
         $sBottom = 'Username='.urlencode(utf8_decode($usernameToken->Username));
@@ -134,18 +137,19 @@ class OnlineServiceProxy
 	/**
 	 * fonction creant la requette rest
 	 *
-	 * @param string $sAction le nom de l'action
+	 * @param $sAction
 	 * @param array $aTabParam tableau des parametres
 	 * @param array $aTabOption tableau des options
-     * @param $clIdentification
+     * @param Identification|null $clIdentification
 	 * @return string la requette rest
+     * @throws \Exception
 	 */
-	private function _sCreateRequest($sAction, array $aTabParam, array $aTabOption, Identification $clIdentification=null)
+	private function _sCreateRequest($sAction, array $aTabParam, array $aTabOption, Identification $clIdentification=null) : string
 	{
 		$sUrl = $this->__ConfigurationDialogue->getServiceAddress().$sAction.'?';
 
 		//la liste des paramètres (entre ? et ;)
-		if (is_array($aTabParam) && count($aTabParam)>0)
+		if (count($aTabParam)>0)
 		{
 			$sListeParam = '';
 
@@ -158,7 +162,7 @@ class OnlineServiceProxy
 		}
 
 		//la liste des options (entre ; et !)
-		if (is_array($aTabOption) && count($aTabOption)>0)
+		if (count($aTabOption)>0)
 		{
 			$sListeOption = '';
 
@@ -175,7 +179,13 @@ class OnlineServiceProxy
 		return $sUrl;
 	}
 
-    protected function _oMakeResponse($output, $headers)
+    /**
+     * @param $output
+     * @param $headers
+     * @return HTTPResponse
+     * @throws SOAPException
+     */
+    protected function _oMakeResponse($output, $headers) : HTTPResponse
     {
         $ret = new HTTPResponse($output, $headers);
         if ($ret->getStatus()!=200)
@@ -192,10 +202,13 @@ class OnlineServiceProxy
     /**
      * @param $sAction
      * @param $sURI
+     * @param Identification|null $clIdentification
+     * @param $function
+     * @param null $timeout
      * @return HTTPResponse
      * @throws \Exception
      */
-	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null)
+	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null) : HTTPResponse
 	{
 	    //demarre le log si necessaire
 		$this->__startLogQuery($function);
@@ -311,19 +324,26 @@ class OnlineServiceProxy
 	/**
 	 * recherche un utilisateur par son pseudo
 	 * @param $login
+     * @throws \Exception
 	 * @return int :
 	 * - TYPEUTIL_NONE : n'existe pas
 	 * - TYPEUTIL_UTILISATEUR : utilisateur non superviseur
 	 * - TYPEUTIL_SUPERVISEUR : utilisateur superviseur
 	 */
-	public function nGetUserExists($login)
+	public function nGetUserExists($login) : int
 	{
 		$sURI = $this->_sCreateRequest('GetUserExists', array('login' => $login), array());
 
 		return (int) $this->_oExecute('GetUserExists', $sURI, __FUNCTION__)->content;
 	}
 
-	public function nGetUserSSOExists($email, $id)
+    /**
+     * @param $email
+     * @param $id
+     * @return int
+     * @throws \Exception
+     */
+	public function nGetUserSSOExists($email, $id) : int
     {
         $sURI = $this->_sCreateRequest('GetUserSSOExists', array('login' => $email, 'id' => $id), array());
         return (int) $this->_oExecute('GetUserSSOExists', $sURI, __FUNCTION__)->content;
@@ -332,17 +352,19 @@ class OnlineServiceProxy
 	/**
 	 * récupère la version de NOUTOnline
 	 * @return NOUTOnlineVersion
+     * @throws \Exception
 	 */
-	public function clGetVersion()
+	public function clGetVersion() : NOUTOnlineVersion
 	{
 		$sURI = $this->_sCreateRequest('GetVersion', array(), array());
 
-		return $clVersion = new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
+		return new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
 	}
 
     /**
      * @param string $versionMin
      * @return NOUTOnlineState
+     * @throws \Exception
      */
 	public function clGetNOUTOnlineState(string $versionMin) :NOUTOnlineState
     {
@@ -359,36 +381,27 @@ class OnlineServiceProxy
         return $ret;
     }
 
-    /**
-     * récupère le menu
-     * @return string
-     */
-    public function sGetMenu(Identification $clIdentification)
-    {
-        $sURI = $this->_sCreateRequest('GetMenu', array(), array(), $clIdentification);
-
-        return $this->_oExecute('GetMenu', $sURI, __FUNCTION__, $clIdentification)->content;
-    }
 
     /**
-     * @return string
+     * @return HTTPResponse
      * @param Identification $clIdentification
+     * @throws \Exception
      */
-    public function sGetHelp(Identification $clIdentification)
+    public function oGetHelp(Identification $clIdentification) : HTTPResponse
     {
         $sURI = $this->_sCreateRequest('GetHelp', array(), array(), $clIdentification);
 
-        return $this->_oExecute('GetHelp', $sURI, __FUNCTION__, $clIdentification)->content;
+        return $this->_oExecute('GetHelp', $sURI, __FUNCTION__, $clIdentification);
     }
 
     /**
      * récupère des évènements
      * @param array          $aTabParam
      * @param Identification $clIdentification
-     * @return string
+     * @return HTTPResponse
      * @throws \Exception
      */
-    public function sGetSchedulerInfo(array $aTabParam, Identification $clIdentification)
+    public function oGetSchedulerInfo(array $aTabParam, Identification $clIdentification) : HTTPResponse
     {
         $sURI = $this->_sCreateRequest('GetSchedulerInfo', $aTabParam, array(), $clIdentification);
 
@@ -402,10 +415,10 @@ class OnlineServiceProxy
      * @param $idForm
      * @param $idEnreg
      * @param $idColumn
-     * @return string
+     * @return HTTPResponse
      * @throws \Exception
      */
-    public function sGetSchedulerCardInfo($idForm, $idEnreg, $idColumn, array $aTabParam, Identification $clIdentification)
+    public function oGetSchedulerCardInfo($idForm, $idEnreg, $idColumn, array $aTabParam, Identification $clIdentification): HTTPResponse
     {
         $sURI = $this->_sCreateRequest($idForm.'/'.$idEnreg.'/'.$idColumn.'/GetSchedulerInfo', $aTabParam, array(), $clIdentification);
 
@@ -414,50 +427,68 @@ class OnlineServiceProxy
 
 
     /**
-     * récupère la barre de menu
-     * @return string
+     * récupère le menu
+     * @return HTTPResponse
+     * @throws \Exception
      */
-    public function sGetToolbar(Identification $clIdentification)
+    public function oGetMenu(Identification $clIdentification) : HTTPResponse
     {
-        $sURI = $this->_sCreateRequest('GetToolbar', array(), array(), $clIdentification);
+        $sURI = $this->_sCreateRequest('GetMenu', array(), array(), $clIdentification);
 
-        return $this->_oExecute('GetToolbar', $sURI, __FUNCTION__, $clIdentification)->content;
+        return $this->_oExecute('GetMenu', $sURI, __FUNCTION__, $clIdentification);
     }
 
     /**
-     * récupère les icones centraux
-     * @return string
+     * ne pas supprimer est utilisé par NOUTClient::_oGetIhmMenuPart
+     * récupère la barre de menu
+     * @return HTTPResponse
+     * @throws \Exception
      */
-    public function sGetCentralIcon(Identification $clIdentification)
+    public function oGetToolbar(Identification $clIdentification) : HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest('GetToolbar', array(), array(), $clIdentification);
+
+        return $this->_oExecute('GetToolbar', $sURI, __FUNCTION__, $clIdentification);
+    }
+
+    /**
+     * ne pas supprimer est utilisé par NOUTClient::_oGetIhmMenuPart
+     * récupère les icones centraux
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oGetCentralIcon(Identification $clIdentification) : HTTPResponse
     {
         $sURI = $this->_sCreateRequest('GetCentralIcon', array(), array(), $clIdentification);
 
-        return $this->_oExecute('GetCentralIcon', $sURI, __FUNCTION__, $clIdentification)->content;
+        return $this->_oExecute('GetCentralIcon', $sURI, __FUNCTION__, $clIdentification);
     }
 
 	/**
 	 * récupère la version du langage
 	 * @param Identification $clIdentification
-	 * @return string
+	 * @return HTTPResponse
+     * @throws \Exception
 	 */
-	public function sGetChecksumLangage(Identification $clIdentification)
+	public function oGetChecksumLangage(Identification $clIdentification) : HTTPResponse
 	{
 		$sURI = $this->_sCreateRequest('GetLangageVersion', array(), array(), $clIdentification);
 
-		return $this->_oExecute('GetLangageVersion', $sURI, __FUNCTION__, $clIdentification)->content;
+		return $this->_oExecute('GetLangageVersion', $sURI, __FUNCTION__, $clIdentification);
 	}
 
 	/**
 	 * récupère le checksum d'un formulaire
 	 * @param string $idTableau identifiant du formulaire
 	 * @param Identification $clIdentification
-	 * @return string
+	 * @return HTTPResponse
+     * @throws \Exception
 	 */
-	public function sGetChecksum($idTableau, Identification $clIdentification)
+	public function oGetChecksum($idTableau, Identification $clIdentification) : HTTPResponse
 	{
 		$sURI = $this->_sCreateRequest($idTableau.'/GetChecksum', array(), array(), $clIdentification);
 
-		return $this->_oExecute('GetChecksum', $sURI, __FUNCTION__, $clIdentification)->content;
+		return $this->_oExecute('GetChecksum', $sURI, __FUNCTION__, $clIdentification);
 	}
 
 	// IdTableau est IDForm
@@ -469,12 +500,13 @@ class OnlineServiceProxy
 	 * @param $aTabParam
 	 * @param $aTabOption
 	 * @param Identification $clIdentification
-	 * @return string
+	 * @return HTTPResponse
+     * @throws \Exception
 	 */
-	public function sGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
+	public function oGetColInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification) : HTTPResponse
 	{
 		$sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
-        return $this->_oExecute('GetColInRecord', $sURI, __FUNCTION__, $clIdentification)->content;
+        return $this->_oExecute('GetColInRecord', $sURI, __FUNCTION__, $clIdentification);
 	}
 
     /**
@@ -487,7 +519,7 @@ class OnlineServiceProxy
      * @return NOUTFileInfo
      * @throws \Exception
      */
-    public function oGetFileInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification)
+    public function oGetFileInRecord($sIDTableau, $sIDEnreg, $sIDColonne, $aTabParam, $aTabOption, Identification $clIdentification) : NOUTFileInfo
     {
         $sURI = $this->_sCreateRequest($sIDTableau.'/'.$sIDEnreg.'/'.$sIDColonne.'/', $aTabParam, $aTabOption, $clIdentification);
 
@@ -509,7 +541,7 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-	public function sGetSuggestFromQuery($sIDForm, $sQuery,  $aTabParam, $aTabOption, Identification $clIdentification)
+	public function oGetSuggestFromQuery($sIDForm, $sQuery, $aTabParam, $aTabOption, Identification $clIdentification) : HTTPResponse
 	{
         $sEndPart = "autocomplete";
 
@@ -520,7 +552,14 @@ class OnlineServiceProxy
 		return $result;
 	}
 
-	public function sPrintMessage($messageId, $clIdentification) {
+    /**
+     * @param $messageId
+     * @param $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+	public function oPrintMessage($messageId, $clIdentification) : HTTPResponse
+    {
 	    $identification = $this->_sCreateIdentification($clIdentification);
 
         $host = $this->__ConfigurationDialogue->getServiceAddress();
@@ -540,14 +579,15 @@ class OnlineServiceProxy
      *
      * @param $response
      * @return array
+     * @throws \Exception
      */
-    protected function _aGetHeadersFromCurlResponse($response)
+    protected function _aGetHeadersFromCurlResponse($response) : array
     {
         $headers = array();
 
         $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
 
-        foreach (explode("\r\n", $header_text) as $i => $line)
+        foreach (explode("\r\n", $header_text) as /*$i =>*/ $line)
         {
             array_push($headers, $line);
         }
