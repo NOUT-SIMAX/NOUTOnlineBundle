@@ -123,21 +123,15 @@ class StructureSection extends StructureColonne
     /**
      * @return bool
      */
-    public function canGrow() : bool
+    public function canGrow() : int
     {
+        $canGrow = 0;
         foreach($this->m_MapIDColonne2Colonne as $column)
         {
-            if ($column instanceof StructureSection){
-                if ($column->canGrow()){
-                    return true;
-                }
-                continue;
-            }
-            if (($column instanceof StructureDonnee) && $column->canGrow()){
-                return true;
-            }
+            /** @var StructureColonne $column */
+            $canGrow |= $column->canGrow();
         }
-        return false;
+        return $canGrow;
     }
 
 

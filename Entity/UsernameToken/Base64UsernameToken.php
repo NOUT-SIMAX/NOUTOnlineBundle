@@ -29,6 +29,7 @@ class Base64UsernameToken extends LoginPasswordUsernameToken
     {
         $sSecret = base64_encode(md5($this->Nonce.$this->m_sPassPhrase.$this->Created, true));
         $this->Password = base64_encode($sSecret.$this->m_sSecretPassword);
+        $this->Encryption->md5 = base64_encode(md5($this->m_sPassPhrase.$this->Nonce.$this->Created, true));
     }
 
     /**

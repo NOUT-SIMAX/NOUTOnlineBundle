@@ -279,7 +279,15 @@ class OnlineServiceProxy
         $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
         // ------------------------------------------------
 
-        $ret = $this->_oMakeResponse($output, $parsedHeaders);
+        try {
+            $ret = $this->_oMakeResponse($output, $parsedHeaders);
+        }
+        catch (\Exception $e)
+        {
+            //on stop le log pour avoir la requête
+            $this->__stopLogQuery($sURI, $header_request, $output, $sAction, $parsedHeaders, $function, $clIdentification, true);
+            throw $e;
+        }
 
         $this->__stopLogQuery($sURI, $header_request, $ret->content, $sAction, $ret->headers, $function, $clIdentification);
         return $ret;
@@ -297,7 +305,7 @@ class OnlineServiceProxy
             $this->__stopwatch->start(get_class($this).'::'.$function);
         }
     }
-    private function __stopLogQuery($uri, $request, $reponse, $action, $header, $function, Identification $clIdentification=null)
+    private function __stopLogQuery($uri, $request, $reponse, $action, $header, $function, Identification $clIdentification=null, $bError=false)
     {
         if (isset($this->__stopwatch)){
             $this->__stopwatch->stop(get_class($this).'::'.$function);
@@ -316,7 +324,7 @@ class OnlineServiceProxy
                 $extra[NOUTOnlineLogger::EXTRA_ActionContext]=$clIdentification->m_sIDContexteAction;
             }
 
-            $this->__clLogger->stopQuery($request, $reponse, (empty($action) ? substr($uri, 0, 50) : $action), false, $extra);
+            $this->__clLogger->stopQuery($request, $reponse, (empty($action) ? substr($uri, 0, 50) : $action), false, $extra, $bError);
         }
     }
 
