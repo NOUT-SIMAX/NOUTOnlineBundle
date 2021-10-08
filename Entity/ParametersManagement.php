@@ -209,7 +209,12 @@ class ParametersManagement
                 {
                     $sValue=implode('|', array_values($sValue));
                 }
-                $sXML.="<id_$sIDColonne>".htmlspecialchars($sValue)."</id_$sIDColonne>\n";
+                //on preprend par id_ si nécessaire
+                if (strncmp('id_', $sIDColonne, 3) !== 0){
+                    $sIDColonne='id_'.$sIDColonne;
+                }
+
+                $sXML.="<$sIDColonne>".htmlspecialchars($sValue)."</$sIDColonne>\n";
             }
         }
 
