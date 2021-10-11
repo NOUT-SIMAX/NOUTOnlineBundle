@@ -1781,4 +1781,8 @@ class Langage
     const PASSWORD_ENCODAGE_sha256 = 'sha-2-256';
     const PASSWORD_ENCODAGE_md5 = 'md5';
 
+
+    //-------------------------------------------------
+    const TABL_Messagerie_Message		= 16510;
+    const TABL_Messagerie_Dossier		= 16511;
 }

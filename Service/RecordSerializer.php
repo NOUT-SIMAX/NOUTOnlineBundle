@@ -10,6 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureDonnee;

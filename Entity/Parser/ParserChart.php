@@ -31,7 +31,7 @@ class ParserChart extends Parser
     /**
      * @param XMLResponseWS $clXMLReponseWS
      */
-	public function Parse(XMLResponseWS $clXMLReponseWS)
+	public function Parse(XMLResponseWS $clXMLReponseWS, $idForm)
 	{
         $ndXML = $clXMLReponseWS->getNodeXML();
 

@@ -424,16 +424,19 @@ class XMLResponseWS
 		return $clCount;
 	}
 
-	public function clGetFolderCount(): Foldercount
+    /**
+     * @return FolderCount
+     */
+	public function clGetFolderCount(): FolderCount
     {
         $ndFolderCount = $this->m_ndHeader->children()->FolderCount;
         if (!isset($ndFolderCount) || empty($ndFolderCount)) {
-            return new Foldercount();
+            return new FolderCount();
         }
 
-        $clFolderCount                    = new Foldercount();
-        $clFolderCount->m_nNbReceived     = (int) $ndFolderCount->children()->NbReceive;
-        $clFolderCount->m_nNbUnread       = (int) $ndFolderCount->children()->NbUnRead;
+        $clFolderCount                    = new FolderCount();
+        $clFolderCount->m_nNbReceive     = (int) $ndFolderCount->children()->NbReceive;
+        $clFolderCount->m_nNbUnRead      = (int) $ndFolderCount->children()->NbUnRead;
 
         return $clFolderCount;
     }
@@ -758,6 +761,7 @@ class XMLResponseWS
     const VIRTUALRETURNTYPE_CASCADE = 'Cascade';
     const VIRTUALRETURNTYPE_CASCADE_INPUT = 'CascadeInput';
     const VIRTUALRETURNTYPE_CASCADE_VALIDATE = 'CascadeValidate';
+    const VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ = 'CascadeValidate';
 
     //les différent type d'affichage pour les listes
     const DISPLAYMODE_List = 'List';

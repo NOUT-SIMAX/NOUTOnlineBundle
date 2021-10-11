@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ConnectedUser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\FolderCount;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
@@ -75,7 +76,12 @@ class ActionResult
     /**
      * @var Count
      */
-    private $m_clCount;
+    private $m_clCount = null;
+
+    /**
+     * @var FolderCount
+     */
+    private $m_clFolderCount = null;
 
 	/**
      * @var Element
@@ -321,12 +327,30 @@ class ActionResult
     }
 
     /**
-     * @param Count $m_clCount
+     * @param Count $clCount
      * @return $this
      */
-    public function setCount(Count $m_clCount): ActionResult
+    public function setCount(Count $clCount): ActionResult
     {
-        $this->m_clCount = $m_clCount;
+        $this->m_clCount = $clCount;
+        return $this;
+    }
+
+    /**
+     * @return FolderCount
+     */
+    public function getFolderCount(): ?FolderCount
+    {
+        return $this->m_clFolderCount;
+    }
+
+    /**
+     * @param FolderCount $clCount
+     * @return $this
+     */
+    public function setFolderCount(FolderCount $clCount): ActionResult
+    {
+        $this->m_clFolderCount = $clCount;
         return $this;
     }
 
