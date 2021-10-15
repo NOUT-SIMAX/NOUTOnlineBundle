@@ -17,6 +17,8 @@ class Langage
 {
 	protected $m_sVersion_Langage='';
 	protected $m_sVersion_Icone='';
+	protected $m_bWithUndo = false;
+	protected $m_bWithRedo = false;
 
 
 	/**
@@ -24,7 +26,7 @@ class Langage
 	 */
 	public function forSerialization() : array
 	{
-		return [$this->m_sVersion_Langage, $this->m_sVersion_Icone];
+		return [$this->m_sVersion_Langage, $this->m_sVersion_Icone, $this->m_bWithUndo, $this->m_bWithRedo];
 	}
 
     /**
@@ -32,7 +34,11 @@ class Langage
      */
 	public function fromSerialization(array $data)
     {
-        list($this->m_sVersion_Langage, $this->m_sVersion_Icone) = $data;
+        if (count($data)<=2){
+            list($this->m_sVersion_Langage, $this->m_sVersion_Icone) = $data;
+            return;
+        }
+        list($this->m_sVersion_Langage, $this->m_sVersion_Icone, $this->m_bWithUndo, $this->m_bWithRedo) = $data;
     }
 
 	/**
@@ -46,11 +52,15 @@ class Langage
 	/**
 	 * @param $sVLangage string
 	 * @param $sVIcone string
+     * @param bool $bUndo
+     * @param bool $bRedo
 	 */
-	public function __construct($sVLangage='', $sVIcone='')
+	public function __construct($sVLangage='', $sVIcone='', $bUndo=false, $bRedo=false)
 	{
 		$this->m_sVersion_Langage = $sVLangage;
 		$this->m_sVersion_Icone   = $sVIcone;
+		$this->m_bWithUndo = $bUndo;
+		$this->m_bWithRedo = $bRedo;
 	}
 
 	/**
@@ -90,6 +100,33 @@ class Langage
 
 		return $this;
 	}
+
+    /**
+     * @return bool
+     */
+	public function getWithUndo(): bool
+    {
+	    return $this->m_bWithUndo;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getWithRedo(): bool
+    {
+        return $this->m_bWithRedo;
+    }
+
+    /**
+     * @param bool $bUndo
+     * @param bool $bRedo
+     * @return $this
+     */
+	public function setUndoRedo(bool $bUndo, bool $bRedo){
+	    $this->m_bWithRedo = $bRedo;
+	    $this->m_bWithUndo = $bUndo;
+	    return $this;
+    }
 
 	public static function s_isActionReadOnly($eTYPEACTION)
 	{
