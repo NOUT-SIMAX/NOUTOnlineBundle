@@ -59,7 +59,7 @@ class Configuration implements ConfigurationInterface
 
                 ->scalarNode('apiuuid')
                     ->info('Identifiant du site pour la vérification par application de NOUTOnline.')
-                    ->defaultValue('')
+                    ->defaultValue('40b4657b-a495-4080-ab1c-682dc7a69c50')
                 ->end()
                 ->booleanNode('log')
                     ->info('Indique s\'il faut logger les requetes a NOUTOnline.')
