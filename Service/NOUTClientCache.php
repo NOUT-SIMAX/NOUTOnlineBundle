@@ -159,7 +159,7 @@ class NOUTClientCache
      */
     public function saveMessagePJ($messageId, $attachmentId, $data)
     {
-        return $this->m_clCacheSession->save(array('pj', $messageId, $attachmentId), $data, self::TIMEOUT_1J);
+        return $this->m_clCacheSession->save(array('pj', $messageId, $attachmentId), $data, self::TIMEOUT_1H);
     }
 
     /**
