@@ -152,6 +152,27 @@ class NOUTClientCache
     }
 
     /**
+     * @param $messageId
+     * @param $attachmentId
+     * @param $data
+     * @return bool
+     */
+    public function saveMessagePJ($messageId, $attachmentId, $data)
+    {
+        return $this->m_clCacheSession->save(array('pj', $messageId, $attachmentId), $data, self::TIMEOUT_1H);
+    }
+
+    /**
+     * @param $messageId
+     * @param $attachmentId
+     * @return false|mixed
+     */
+    public function fetchMessagePJ($messageId, $attachmentId)
+    {
+        return $this->m_clCacheSession->fetch(array('pj', $messageId, $attachmentId));
+    }
+
+    /**
      * @param $sIDFormulaire
      * @param $sIDColonne
      * @param $sIDEnreg
@@ -181,11 +202,16 @@ class NOUTClientCache
         }
     }
 
+    /**
+     * @param $sIDContexte
+     * @param $idihm
+     * @param $name
+     * @return false|mixed
+     */
     public function fetchFileFromName($sIDContexte, $idihm, $name)
     {
         return $this->m_clCacheSession->fetch(array($sIDContexte, $idihm, 'file', $name));
     }
-
 
     protected function _sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption)
     {

@@ -2453,7 +2453,6 @@ class NOUTClient
         return $clActionResult;
     }
 
-
     /**
      * @param $idcontexte
      * @param $idihm
@@ -2473,6 +2472,43 @@ class NOUTClient
 
         return $clActionResult;
     }
+
+    /**
+     * @param              $messageId
+     * @param              $attachmentId
+     * @param NOUTFileInfo $pj
+     * @return ActionResult
+     */
+    public function savePJInCache($messageId, $attachmentId, NOUTFileInfo $pj)
+    {
+        $name = $this->m_clCache->saveMessagePJ($messageId, $attachmentId, $pj);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($name);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+
+        return $clActionResult;
+    }
+
+    /**
+     * @param $messageId
+     * @param $attachmentId
+     * @return ActionResult
+     */
+    public function getPJInCache($messageId, $attachmentId)
+    {
+        $data = $this->m_clCache->fetchMessagePJ($messageId, $attachmentId);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($data);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+        return $clActionResult;
+    }
+
 
     /**
      * @param array|null $requestHeaders
