@@ -9,6 +9,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
@@ -322,4 +324,41 @@ class NOUTClientMessagerie extends NOUTClientBase
 
         return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes) <> 0;
     }
+
+    /**
+     * @param              $messageId
+     * @param              $attachmentId
+     * @param NOUTFileInfo $pj
+     * @return ActionResult
+     */
+    public function savePJInCache($messageId, $attachmentId, NOUTFileInfo $pj)
+    {
+        $name = $this->m_clCache->saveMessagePJ($messageId, $attachmentId, $pj);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($name);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+
+        return $clActionResult;
+    }
+
+    /**
+     * @param $messageId
+     * @param $attachmentId
+     * @return ActionResult
+     */
+    public function getPJInCache($messageId, $attachmentId)
+    {
+        $data = $this->m_clCache->fetchMessagePJ($messageId, $attachmentId);
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($data);
+
+        //gestion du cache
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+        return $clActionResult;
+    }
+
 }
