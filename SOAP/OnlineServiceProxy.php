@@ -26,6 +26,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeleteFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayRedoMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayUndoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
@@ -36,10 +38,12 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetUndoList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromAddress;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
@@ -63,6 +67,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SendMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Undo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFolder;
@@ -946,7 +951,13 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     }
     //---
 
-    public function getRequestMesage($requestMessage, $aHeaders = array()) {
+    /**
+     * @param RequestMessage $requestMessage
+     * @param array          $aHeaders
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    public function getRequestMessage(RequestMessage $requestMessage, $aHeaders = array()) {
         return $this->call('RequestMessage', array($requestMessage), null, null, $aHeaders);
     }
 
@@ -1587,7 +1598,88 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('Import', array($import), null, null, $aHeaders);
     }
 
-	static public function s_isValidHeaderProp($sHeaderProp)
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : getUndoList
+     *
+     * @param GetUndoList $clWsdlType_GetUndoList
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getUndoList(GetUndoList $clWsdlType_GetUndoList, $aHeaders = array())
+    {
+        return $this->call('GetUndoList', array($clWsdlType_GetUndoList) ,  null, null , $aHeaders);
+    }
+    //---
+    
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetRedoList
+     *
+     * @param GetRedoList $clWsdlType_GetRedoList
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getRedoList(GetRedoList $clWsdlType_GetRedoList, $aHeaders = array())
+    {
+        return $this->call('GetRedoList', array($clWsdlType_GetRedoList) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DisplayUndoMessage
+     *
+     * @param DisplayUndoMessage $clWsdlType_DisplayUndoMessage
+     * @param array              $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function displayUndoMessage(DisplayUndoMessage $clWsdlType_DisplayUndoMessage, $aHeaders = array())
+    {
+        return $this->call('DisplayUndoMessage', array($clWsdlType_DisplayUndoMessage) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DisplayRedoMessage
+     *
+     * @param DisplayRedoMessage $clWsdlType_DisplayRedoMessage
+     * @param array              $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function displayRedoMessage(DisplayRedoMessage $clWsdlType_DisplayRedoMessage, $aHeaders = array())
+    {
+        return $this->call('DisplayRedoMessage', array($clWsdlType_DisplayRedoMessage) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Undo
+     *
+     * @param Undo  $clWsdlType_Undo
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function undo(Undo $clWsdlType_Undo, $aHeaders = array())
+    {
+        return $this->call('Undo', array($clWsdlType_Undo) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**  fonction permettant l'appel de la fonction SOAP du service simaxOnline : Redo
+     *
+     * @param Redo  $clWsdlType_Redo
+     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function Redo(Redo $clWsdlType_Redo, $aHeaders = array())
+    {
+        return $this->call('Redo', array($clWsdlType_Redo) ,  null, null , $aHeaders);
+    }
+    //---
+
+
+    static public function s_isValidHeaderProp($sHeaderProp)
 	{
         return( $sHeaderProp == self::HEADER_APIUUID ||
                 $sHeaderProp == self::HEADER_UsernameToken ||

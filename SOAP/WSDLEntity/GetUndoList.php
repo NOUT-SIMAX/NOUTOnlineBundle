@@ -4,8 +4,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 /**
  * Created by PhpStorm.
  * User: Ninon
- * Date: 22/07/14
- * Time: 17:33
+ * Date: 29/10/2021
  */
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -14,12 +13,14 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
 
-class GetListMessage
+class GetUndoList
 {
 	public $StartDate; // string
 	public $EndDate; // string
-	public $UserMessagerie; // string
-	public $Filter; // FilterType
+	public $DoneBy; // string
+	public $ActionType; // string
+	public $Form; // string
+    public $OtherCriteria; // string
 	public $SpecialParamList; // SpecialParamListType
 }
 //***

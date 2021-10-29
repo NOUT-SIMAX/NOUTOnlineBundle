@@ -13,13 +13,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 // Note : les conventions de code peuvent semblé non respecté sur les nom de variables, mais elle corresponde en realite
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
-
-class GetListMessage
+class Redo
 {
-	public $StartDate; // string
-	public $EndDate; // string
-	public $UserMessagerie; // string
-	public $Filter; // FilterType
-	public $SpecialParamList; // SpecialParamListType
+    public $IDMessage; // string
 }
 //***
