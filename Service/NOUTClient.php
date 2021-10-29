@@ -17,6 +17,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConnexionExtranetHashPassword;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
@@ -191,6 +192,34 @@ class NOUTClient
     }
 
     /**
+     * @param $eventName
+     */
+    private function __startStopwatch($eventName){
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->start($eventName);
+        }
+    }
+
+    /**
+     * @param $eventName
+     */
+    private function __stopStopwatch($eventName){
+        if (isset($this->__stopwatch)){
+            $this->__stopwatch->stop($eventName);
+        }
+    }
+
+    /**
+     * @param $function
+     * @param $plus
+     * @return string
+     */
+    private function _getStopWatchEventName($function, $plus) : string
+    {
+        return get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus);
+    }
+
+    /**
      * @return NOUTToken|TokenInterface
      */
     protected function _oGetToken()
@@ -234,1148 +263,13 @@ class NOUTClient
     }
 
     /**
-     * récupère le numéro de version
-     * @return NOUTOnlineVersion
-     */
-    public function clGetVersion() : NOUTOnlineVersion
-    {
-        return $this->m_clRESTProxy->clGetVersion();
-    }
-
-    /**
-     * teste le client pour savoir s'il correspond à la version minimale
-     * @return bool
-     */
-    public function isVersionMin() : bool
-    {
-        return $this->clGetVersion()->isVersionSup($this->m_sVersionMin, true);
-    }
-
-    /**
-     * @return NOUTCacheProvider
-     */
-    public function getCacheSession() : ?NOUTCacheProvider
-    {
-        if (!is_null($this->m_clCache))
-        {
-            return $this->m_clCache->getCacheSession();
-        }
-
-        return null;
-    }
-
-    /**
-     * @param $cache
-     * @param $name
-     * @return mixed
-     */
-    public function fetchFromCache($cache, $name)
-    {
-        if (!is_null($this->m_clCache))
-        {
-            return $this->m_clCache->fetch($cache, $name);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param $cache
-     * @param $name
-     * @param $data
-     * @return mixed|null
-     */
-    protected function _saveInCache($cache, $name, $data)
-    {
-        if (!is_null($this->m_clCache))
-        {
-            return $this->m_clCache->save($cache, $name, $data);
-        }
-
-        return null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTimeZone() : string
-    {
-        return $this->_oGetToken()->getTimeZone();
-    }
-
-    /**
-     * initialise les options de dialogue
-     * @param $nVersionPref
-     */
-    protected function _initOptionDialogue($nVersionPref)
-    {
-        $this->m_clOptionDialogue->InitDefault($nVersionPref);
-        $this->m_clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
-        $this->m_clOptionDialogue->LanguageCode = $this->m_clConfigurationDialogue->getLangCode();
-    }
-
-    /**
-     * Ne pas renommer ou supprimer, la méthode est utilisé par _aGetHeaderSuppl
-     * @param $property
-     * @param $value
-     */
-    protected function setOptionDialogueProperty($property, $value)
-    {
-        if (property_exists($this->m_clOptionDialogue, $property)){
-            $this->m_clOptionDialogue->$property = $value;
-        }
-    }
-
-    /**
-     * retourne les options de dialogue
-     * @return OptionDialogue
-     */
-    protected function _clGetOptionDialogue() : OptionDialogue
-    {
-        return $this->m_clOptionDialogue;
-    }
-
-    /**
-     * @param NOUTToken $oToken
-     * @return UsernameToken|null
-     * @throws \Exception
-     */
-    protected function _oGetUsernameToken(NOUTToken $oToken) :?UsernameToken
-    {
-        return $oToken->getUsernameToken();
-    }
-
-    /**
-     * @param $sIDContexteAction
-     * @param $bAPIUser
-     * @return Identification
-     * @throws \Exception
-     */
-    protected function _clGetIdentificationREST($sIDContexteAction, $bAPIUser) : Identification
-    {
-        $clIdentification = new Identification();
-
-        // récupération de l'utilisateur connecté
-        $oToken = $this->_oGetToken();
-
-        $clIdentification->m_clUsernameToken = $this->_oGetUsernameToken($oToken);
-        $clIdentification->m_sTokenSession = $oToken->getSessionToken();
-        $clIdentification->m_sIDContexteAction = $sIDContexteAction;
-        $clIdentification->m_bAPIUser = $bAPIUser;
-
-        return $clIdentification;
-    }
-
-    /**
-     * @param array|null $aHeaderSuppl
-     * @return array
-     * @throws \Exception
-     */
-    protected function _aGetTabHeader(array $aHeaderSuppl = null) : array
-    {
-        // récupération de l'utilisateur connecté
-        $oToken = $this->_oGetToken();
-
-        // Headers par défaut
-        $aTabHeader = array(
-            SOAPProxy::HEADER_UsernameToken => $this->_oGetUsernameToken($oToken),
-            SOAPProxy::HEADER_SessionToken => $oToken->getSessionToken(),
-            SOAPProxy::HEADER_OptionDialogue => $this->_clGetOptionDialogue(),
-        );
-
-        // Headers supplémentaires
-        if (!empty($aHeaderSuppl))
-        {
-            $aTabHeader = array_merge($aTabHeader, $aHeaderSuppl);
-        }
-
-        return $aTabHeader;
-    }
-
-    /**
-     * @param string $sIDform identifiant du formulaire
-     * @param ConditionFileNPI $clFileNPI condition pour la requête
-     * @param array $TabColonneAff tableau des colonnes a afficher
-     * @param array|null $TabHeaderSuppl tableau des headers
-     * @throws \Exception
-     * @return XMLResponseWS
-     */
-    protected function _oRequest(string $sIDform, ConditionFileNPI $clFileNPI, array $TabColonneAff, ?array $TabHeaderSuppl=null) : XMLResponseWS
-    {
-        $clParamRequest = new Request();
-        $clParamRequest->Table = $sIDform;
-        $clParamRequest->CondList = $clFileNPI->sToSoap();
-        $clParamRequest->ColList = new ColListType($TabColonneAff);
-
-        return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($TabHeaderSuppl));
-    }
-
-    /**
-     * @param $table
-     * @param CondListType $condList
-     * @param array $colList
-     * @param array|null $tabHeaderSuppl
-     * @return XMLResponseWS
-     * @throws \Exception
-     */
-    protected function _oNewRequest($table, CondListType $condList, array $colList, ?array $tabHeaderSuppl=null) : XMLResponseWS
-    {
-        $clParamRequest = new Request();
-        $clParamRequest->ColList = new ColListType($colList);
-        $clParamRequest->Table = $table;
-        $clParamRequest->CondList = $condList;
-        $clParamRequest->MaxResult = self::MaxEnregs;
-        return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($tabHeaderSuppl));
-    }
-
-
-    /**
-     * récupère la liste des icônes avec une grosse image
-     * @param $idCol
-     * @return XMLResponseWS
-     * @throws \Exception
-     */
-    protected function _oGetTabIcon($idCol) : XMLResponseWS
-    {
-        $aTabColonne = array();
-
-        $clFileNPI = new ConditionFileNPI();
-        $clFileNPI->EmpileCondition($idCol, CondType::COND_DIFFERENT, '');
-
-
-        $aTabHeaderSuppl = array(
-            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
-        );
-
-        return $this->_oRequest(Langage::TABL_ImageCatalogue, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
-    }
-
-
-    /**
-     * récupère la liste des options de menu sur les actions accordées par les droits et les séparateurs
-     * @return XMLResponseWS
-     * @throws \Exception
-     */
-    protected function _oGetTabMenu_OptionMenu() : XMLResponseWS
-    {
-        $aTabColonne = array(
-            Langage::COL_OPTIONMENUPOURTOUS_IDAction,
-            Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu,
-            Langage::COL_OPTIONMENUPOURTOUS_Libelle,
-            Langage::COL_OPTIONMENUPOURTOUS_Commande,
-            Langage::COL_OPTIONMENUPOURTOUS_IDIcone,
-            Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent,
-        );
-
-        $clFileNPI = new ConditionFileNPI();
-
-        //les options de menu qui servent de séparateur
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_EQUAL, '');
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Libelle, CondType::COND_EQUAL, '-');
-        $clFileNPI->EmpileOperateur(Operator::OP_AND);
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Commande, CondType::COND_EQUAL, '');
-        $clFileNPI->EmpileOperateur(Operator::OP_AND);
-
-        //les options de menu sur lesquelles les droits sont accordés
-        if ($this->m_clSOAPProxy->getGestionWSDL()->bGere(GestionWSDL::OPT_MenuVisible))
-        {
-            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, CondType::COND_MENUVISIBLE, 1);
-        } else
-        {
-            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_WITHRIGHT, 1);
-        }
-        $clFileNPI->EmpileOperateur(Operator::OP_OR);
-        $aTabHeaderSuppl = array(
-            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
-        );
-
-        return $this->_oRequest(Langage::TABL_OptionMenuPourTous, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
-    }
-
-
-    /**
-     * récupère la liste des menus
-     * @return XMLResponseWS
-     * @throws \Exception
-     */
-    protected function _oGetTabMenu_Menu() : XMLResponseWS
-    {
-        $aTabColonne = array(
-            Langage::COL_MENUPOURTOUS_OptionsMenu,
-            Langage::COL_MENUPOURTOUS_IDMenuParent,
-            Langage::COL_MENUPOURTOUS_Libelle,
-            Langage::COL_MENUPOURTOUS_Ordre,
-        );
-
-        $aTabHeaderSuppl = array(
-            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel, //on ne garde pas le contexte ouvert
-            SOAPProxy::HEADER_APIUser => SOAPProxy::APIUSER_Active,           //on force l'utilisation de l'user d'application (max) car un utilisateur classique n'aura pas les droit d'exécuter cette requête
-        );
-
-        return $this->_oRequest(Langage::TABL_MenuPourTous, new ConditionFileNPI(), $aTabColonne, $aTabHeaderSuppl);
-    }
-
-    /**
-     * récupère les infos du menu,
-     * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
-     *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
-     *
-     * @return mixed|InfoIHM|null
-     * @throws \Exception
-     */
-    protected function _oGetInfoIhmMenu()
-    {
-        $sUsername = $this->_oGetToken()->getUsername();
-        $oInfoIHM = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_$sUsername");
-        if (isset($oInfoIHM) && ($oInfoIHM !== false)){
-            return $oInfoIHM; //on a déjà les infos du menu
-        }
-
-        //on a pas les infos, il faut les calculer
-        $clReponseXML_OptionMenu = $this->_oGetTabMenu_OptionMenu();
-        $clReponseXML_Menu = $this->_oGetTabMenu_Menu();
-        $clReponseXML_SmallIcon = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_Image);
-        $clReponseXML_BigIcon = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_ImageGrande);
-
-        $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
-        $oInfoIHM = $clIHMLoader->oGetInfoIHM();
-
-        $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_$sUsername", $oInfoIHM);
-        return $oInfoIHM;
-    }
-
-    /**
-     * @param $idContext
-     * @return string
-     * @throws \Exception
-     */
-    public function getHelp($idContext) : string
-    {
-        $clIdentification = $this->_clGetIdentificationREST($idContext, false);
-
-        return $this->m_clRESTProxy->oGetHelp($clIdentification)->content;
-    }
-
-    /**
-     * récupère les infos d'ihm lié au menu (menu, toolbar, et icône centraux)
-     * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
-     *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
-     *
-     * @param $method
-     * @param $prefix
-     * @return array|mixed|null
-     * @throws \Exception
-     */
-    protected function __oGetIhmMenuPart($method, $prefix)
-    {
-        $sUsername = $this->_oGetToken()->getUsername();
-        $aTabMenu = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_$sUsername");
-        if (isset($aTabMenu) && ($aTabMenu !== false)){
-            return $aTabMenu; //on a déjà les infos du menu
-        }
-
-        $clIdentification = $this->_clGetIdentificationREST('', false);
-
-        $aInfo = array();
-        //on a pas les infos, il faut les calculer
-        /** @var HTTPResponse $oRetHTTP */
-        $oRetHTTP = $this->m_clRESTProxy->$method($clIdentification);
-        $json = json_decode($oRetHTTP->content, false, 512, JSON_BIGINT_AS_STRING);
-        if (is_array($json) && (count($json) > 0))
-        {
-            foreach ($json as $objet)
-            {
-                //TODO: Remove when annuler/refaire/recherche globale is implemented
-                if(
-                    $objet->idaction != Langage::ACTION_Annulation &&
-                    $objet->idaction != Langage::ACTION_Refaire &&
-                    $objet->idaction != Langage::ACTION_RechercheGlobale
-                ) {
-                    $itemMenu = $this->__oGetItemMenu($objet);
-                    $aInfo[] = $itemMenu;
-                }
-            }
-
-            if ($prefix=='menu'){
-                //c'est le menu, il faut vérifier le a plat
-                if (count($aInfo)==1)
-                {
-                    $tabOptions = $aInfo[0]->tabOptions;
-                    $aInfo = array();
-                    foreach($tabOptions as $clMenu)
-                    {
-                        /** @var ItemMenu $clMenu */
-                        if (!$clMenu->isSeparator()){
-                            $aInfo[]=$clMenu;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!json_last_error()){
-            $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_$sUsername", $aInfo);
-        }
-        return $aInfo;
-    }
-
-    /**
-     * récupère les infos du menu
-     * @param \stdClass $objSrc
-     * @return ItemMenu
-     */
-    protected function __oGetItemMenu(\stdClass $objSrc) : ItemMenu
-    {
-        $itemMenu = new ItemMenu($objSrc->id, $objSrc->title, boolval($objSrc->is_menu_option));
-        $itemMenu
-            ->setSeparator(boolval($objSrc->is_separator))
-            ->setRootMenu(boolval($objSrc->is_root))
-            ->setIdAction($objSrc->idaction)
-            ->setCommand($objSrc->command)
-            ->setIconBig($objSrc->icon_big)
-            ->setIconSmall($objSrc->icon_small)
-            ->setHomeWithImg(boolval($objSrc->home_withimg))
-            ->setHomeDesc($objSrc->home_desc)
-            ->setHomeTitle($objSrc->home_title)
-            ->setHomeWidth(intval($objSrc->home_width))
-            ->setHomeHeight(intval($objSrc->home_height));
-
-        if (count($objSrc->tab_options) > 0)
-        {
-            foreach ($objSrc->tab_options as $objChild)
-            {
-                //TODO: Remove when annuler/refaire is implemented
-                if(
-                    $objChild->idaction != Langage::ACTION_Annulation &&
-                    $objChild->idaction != Langage::ACTION_Refaire &&
-                    $objChild->idaction != Langage::ACTION_RechercheGlobale
-                ) {
-                    $childMenu = $this->__oGetItemMenu($objChild);
-                    $itemMenu->AddOptionMenu($childMenu);
-                }
-            }
-        }
-
-        return $itemMenu;
-    }
-
-    /**
-     * @param $member_name
-     * @param $method_name
-     * @param $prefix
-     * @return ActionResult
-     * @throws \Exception
-     */
-    protected function _oGetIhmMenuPart($member_name, $method_name, $prefix) : ActionResult
-    {
-        $clActionResult = new ActionResult(null);
-        if (!$this->_oGetToken()->isVersionSup('1637.02', false))
-        {
-            //l'ancien système
-            $oInfoMenu = $this->_oGetInfoIhmMenu();
-            $clActionResult->setData($oInfoMenu->$member_name);
-        }
-        else
-        {
-            $tabMenu = $this->__oGetIhmMenuPart($method_name, $prefix);
-            $clActionResult->setData($tabMenu);
-        }
-
-        //le menu dépend de l'utilisateur, c'est un cache privé
-        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
-        return $clActionResult;
-
-    }
-
-    /**
-     * retourne un tableau d'option de menu
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function getTabMenu() : ActionResult
-    {
-        return $this->_oGetIhmMenuPart('aMenu', 'oGetMenu', 'menu');
-    }
-
-
-    /**
-     * retourne un tableau d'option de menu
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function getCentralIcon(): ActionResult
-    {
-        return $this->_oGetIhmMenuPart('aBigIcon', 'oGetCentralIcon', 'home');
-    }
-
-    /**
-     * retourne un tableau d'option de menu
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function getToolbar(): ActionResult
-    {
-        return $this->_oGetIhmMenuPart('aToolbar', 'oGetToolbar', 'toolbar');
-    }
-
-    /**
-     * initialise la structure de paramètre a partir du tableau des paramètres de la requête HTTP
-     * @param $classname
-     * @param array $aTabParamRequest
-     * @return mixed
-     */
-    protected function _oGetParam($classname, array $aTabParamRequest)
-    {
-        $oParam = new $classname();
-        foreach ($aTabParamRequest as $property => $valeur)
-        {
-            if (property_exists($oParam, $property))
-            {
-                $oParam->$property = $valeur;
-            }
-        }
-
-        if (property_exists($oParam, self::PARAM_SPECIALPARAMLIST) && is_null($oParam->{self::PARAM_SPECIALPARAMLIST}))
-        {
-            $oParam->{self::PARAM_SPECIALPARAMLIST} = new SpecialParamListType();
-            $oParam->{self::PARAM_SPECIALPARAMLIST}->initFirstLength();
-        }
-
-        if (property_exists($oParam, self::PARAM_PARAMXML) && is_null($oParam->{self::PARAM_PARAMXML}))
-        {
-            $oParam->{self::PARAM_PARAMXML} = '';
-        }
-        return $oParam;
-    }
-
-    /**
-     * initialise la structure du header a partir du tableau du header de la requête HTTP
-     * @param array|null $aTabHeaderQuery
-     * @param null       $idcontexte
-     * @param null       $autovalidate
-     * @return array
-     */
-    protected function _aGetHeaderSuppl(?array $aTabHeaderQuery, $idcontexte=null, $autovalidate=null) : array
-    {
-        $aTabHeaderSuppl = array();
-
-        if (is_array($aTabHeaderQuery))
-        {
-            // $oParam du type OptionDialogue
-            foreach ($aTabHeaderQuery as $property => $value)
-            {
-                if(is_array($value)) // On a une propriété de second niveau (par exemple OptionDialogue)
-                {
-                    $setFunctionName = "set" . $property . "Property";
-
-                    if(method_exists($this, $setFunctionName))
-                    {
-                        foreach ($value as $optionProperty => $optionValue)
-                        {
-                            $this->$setFunctionName($optionProperty, $optionValue);
-                        }
-                    }
-                }
-                elseif(!is_object($value)) // Propriété de premier niveau (scalar)
-                {
-                    if(SOAPProxy::s_isValidHeaderProp($property))
-                    {
-                        $aTabHeaderSuppl[$property] = $value;
-                    }
-                }
-            }
-        }
-
-        if (!empty($idcontexte)){
-            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $idcontexte;
-        }
-        if (!empty($autovalidate)){
-            $aTabHeaderSuppl[SOAPProxy::HEADER_AutoValidate] = $autovalidate;
-        }
-        return $aTabHeaderSuppl;
-    }
-
-
-    /**
-     * Execute une action via son id
-     * @param array $tabParamQuery
-     * @param array|null $aTabHeaderQuery
-     * @param       $sIDAction
-     * @param       $final
-     * @param       $sIDContext
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExecIDAction($sIDAction, $sIDContext, array $tabParamQuery, ?array $aTabHeaderQuery = null, $final = 0) : ActionResult
-    {
-        // Les paramètres du header sont passés par array
-
-        //--------------------------------------------------------------------------------------------
-        // Paramètres
-        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
-        $clParam->ID = (string)$sIDAction;             // identifiant de l'action (String)
-        $clParam->Final = $final;
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $sIDContext);
-
-        //--------------------------------------------------------------------------------------------
-        // L'action
-        return $this->_oExecute($clParam, $aTabHeaderSuppl);
-    }
-
-    /**
-     * @param array $tabParamQuery
-     * @param array|null $tabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExecute(array $tabParamQuery, ?array $tabHeaderQuery=null) : ActionResult
-    {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
-        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
-
-        return $this->_oExecute($clParam, $aTabHeaderSuppl);
-    }
-
-    /**
-     * Execute une action via sa phrase
-     * @param array  $tabParamQuery
-     * @param        $sPhrase
-     * @param string $sIDContexte
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExecSentence($sPhrase, $sIDContexte, array $tabParamQuery, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //--------------------------------------------------------------------------------------------
-        // Création de $clParamExecute
-        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
-        $clParam->Sentence = (string)$sPhrase;
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $sIDContexte);
-
-        return $this->_oExecute($clParam, $aTabHeaderSuppl);
-    }
-
-    /**
-     * @param string $sLoginExtranet
-     * @param string $sPassword
-     * @param string $sTypeEncodage
-     * @param        $codeLangue
-     * @param string $sLoginSIMAX
-     * @param string $sPassworSIMAX
-     * @param string $sFormulaireExtranet
-     * @param bool   $bFromLogin
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oConnexionExtranet(string $sLoginExtranet, string $sPassword, string $sTypeEncodage, $codeLangue, string $sLoginSIMAX, string $sPassworSIMAX, string $sFormulaireExtranet, bool $bFromLogin) : ActionResult
-    {
-        $clParam = new Execute();
-        $clParam->ID = Langage::ACTION_ConnexionExtranet;
-
-        //il faut encoder le mot de passe simax
-        $sEncodedSIMAX = ConnexionExtranetHashPassword::s_sHashPasswordSIMAX($sPassworSIMAX);
-        //et le mot de passe extranet
-        $sEncodedExtranet = ConnexionExtranetHashPassword::s_sHashPassword($sPassword, $sTypeEncodage);
-
-        $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
-            Langage::PA_ConnexionExtranet_Extranet_Pseudo => $sLoginExtranet,
-            Langage::PA_ConnexionExtranet_Extranet_Mdp    => $sEncodedExtranet,
-            Langage::PA_ConnexionExtranet_Intranet_Pseudo => $sLoginSIMAX,
-            Langage::PA_ConnexionExtranet_Intranet_Mdp    => $sEncodedSIMAX,
-            Langage::PA_ConnexionExtranet_Formulaire      => $sFormulaireExtranet,
-            Langage::PA_ConnexionExtranet_CodeLangue      => $codeLangue,
-            Langage::PA_ConnexionExtranet_FromLogin       => $bFromLogin ? 1 : 0,
-        ]);
-
-        $oRet = $this->_oExecute($clParam, []);
-
-        //ici il faut invalider le cache
-        //$this->m_clCache
-        return $oRet;
-    }
-
-    /**
-     * @param array      $tabParamQuery
-     * @param        $sIDTableau
-     * @param string     $sIDContexte
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExecList(array $tabParamQuery, $sIDTableau, $sIDContexte = '', ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //paramètre de l'action liste
-        $clParam = $this->_oGetParam(ListParams::class, $tabParamQuery);
-        $clParam->Table = $sIDTableau;
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $sIDContexte);
-
-        $clReponseXML = $this->m_clSOAPProxy->listAction($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param $tableID
-     * @param string $contextID
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExecListRequest($tableID, $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Requete, Langage::COL_REQUETE_IDTableau, [], $aTabHeaderQuery);
-    }
-
-    /**
-     * @param $tableID
-     * @param $contextID
-     * @param $requestTableId
-     * @param $requestColId
-     * @param $colList
-     * @return ActionResult
-     * @throws \Exception
-     */
-    protected function _oExecRequestOnIDTableau($tableID, $contextID, $requestTableId, $requestColId, $colList, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        $condition = new Condition(
-            new CondColumn($requestColId),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue($tableID));
-        $condList = CondListTypeFactory::create($condition);
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
-
-        $clReponseXML = $this->_oNewRequest(
-            $requestTableId,
-            $condList,
-            $colList,
-            $aTabHeaderSuppl);
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param string     $contextID
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExecListCalculation(string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
-
-        $clReponseXML = $this->m_clSOAPProxy->getEndListCalculation($this->_aGetTabHeader($aTabHeaderSuppl));
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param string     $contextID
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetDefaultExportAction(string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
-
-        //----------------------------------------------------------------------------------
-        $aTabColonne = array();
-        $default_export_action = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDAction),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue(Langage::ACTION_Export)
-        );
-        $has_rights = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDAction),
-            new CondType(CondType::COND_WITHRIGHT),
-            new CondValue('1')
-        );
-
-        $operator = new Operator(Operator::OP_AND);
-        $operator->addCondition($default_export_action)
-            ->addCondition($has_rights);
-
-        $condList = CondListTypeFactory::create($operator);
-
-        $clReponseXML = $this->_oNewRequest(Langage::TABL_Action,
-            $condList,
-            $aTabColonne,
-            $aTabHeaderSuppl);
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param string     $tableID
-     * @param string     $contextID
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetExportsList(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Export, Langage::COL_EXPORT_IDTableau, [Langage::COL_EXPORT_Libelle], $aTabHeaderQuery);
-    }
-
-    /**
-     * @param string $tableID
-     * @param string $contextID
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetImportsList(string $tableID, string $contextID) : ActionResult
-    {
-        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Import, Langage::COL_IMPORT_Formulaire, [Langage::COL_IMPORT_Libelle]);
-    }
-
-    /**
-     * @param $contextID
-     * @param $tableId
-     * @param $actionId
-     * @param $exportId
-     * @param $format
-     * @param $module
-     * @param $colType
-     * @param $items
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExport($contextID, $tableId, $actionId, $exportId, $format, $module, $colType, $items, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
-
-        $export = new Export();
-        $export->Table = $tableId;
-        $export->ID = $actionId;
-        $export->Export = $exportId;
-        $export->Format = $format;
-        $export->Module = $module;
-        $export->ColType = $colType;
-        $export->items = $items;
-
-        $clReponseXML = $this->m_clSOAPProxy->export($export, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param $tableId
-     * @param $actionId
-     * @param $importId
-     * @param UploadedFile|null $file
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oImport($tableId, $actionId, $importId, ?UploadedFile $file = null, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery);
-
-        //------------------------------------------------------------------------------------------------------
-        $data = null;
-
-        if($file instanceof UploadedFile) {
-            $encoding = 'base64';
-            $filename = $file->getClientOriginalName();
-            $size = $file->getSize();
-            $fileData = base64_encode(stream_get_contents(fopen($file->getRealPath(), 'rb')));
-
-            $data = new DataType();
-            $data->filename = $filename;
-            $data->encoding = $encoding;
-            $data->size = $size;
-            $data->_ = $fileData;
-        }
-        $import = new Import();
-
-        $import->Table = $tableId;
-        $import->ID = $actionId;
-        $import->Import = $importId;
-        $import->File = $data;
-
-        $clReponseXML = $this->m_clSOAPProxy->import($import, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param $tableID
-     * @param $contextID
-     * @param $eTypeAction
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    protected function _oRequestImportExportActions($tableID, $contextID, $eTypeAction, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
-
-        //--------------------------------------------------------------------------------------------
-        $colList = array(Langage::COL_ACTION_Libelle);
-        $table_actions = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDTableau),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue($tableID)
-        );
-        $has_rights = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDAction),
-            new CondType(CondType::COND_WITHRIGHT),
-            new CondValue(1)
-        );
-        $type_actions = new Condition(
-            new CondColumn(Langage::COL_ACTION_TypeAction),
-            new CondType(CondType::COND_EQUAL),
-            new CondValue($eTypeAction)
-        );
-        $operator = new Operator(Operator::OP_AND);
-        $operator->addCondition($table_actions)
-            ->addCondition($has_rights)
-            ->addCondition($type_actions);
-
-        $condList = CondListTypeFactory::create($operator);
-
-        //----------------------------------
-        $clReponseXML = $this->_oNewRequest(
-            Langage::TABL_Action,
-            $condList,
-            $colList,
-            $aTabHeaderSuppl);
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param string     $tableID
-     * @param string     $contextID
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetExportsActions(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Exporter, $aTabHeaderQuery);
-    }
-
-    /**
-     * @param string     $tableID
-     * @param string     $contextID
-     * @param array|null $aTabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetImportsActions(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Importer, $aTabHeaderQuery);
-    }
-
-    /**
-     * Affichage d'une liste via l'action recherche
-     * @param array $tabParamQuery
-     * @param $sIDTableau
-     * @param string $contextID
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oExecSearch(array $tabParamQuery, $sIDTableau, $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
-
-        //-----------------------------
-        //paramètre de l'action liste
-        $clParam = $this->_oGetParam(Search::class, $tabParamQuery);
-        $clParam->Table = $sIDTableau;
-
-        $clReponseXML = $this->m_clSOAPProxy->search($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param Execute $clParamExecute
-     * @param array $aTabHeaderSuppl
-     * @return ActionResult
-     * @throws \Exception
-     */
-    protected function _oExecute(Execute $clParamExecute, array $aTabHeaderSuppl) : ActionResult
-    {
-        $clReponseXML = $this->m_clSOAPProxy->execute($clParamExecute, $this->_aGetTabHeader($aTabHeaderSuppl));
-
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * Execute une action via son id
-     * @param array $tabParamQuery
-     * @param array|null $tabHeaderQuery
-     * @param string $idcolonne
-     * @param Record $clRecord
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetSublistContent(Record $clRecord, string $idcolonne, $idcontexte, array $tabParamQuery, ?array $aTabHeaderQuery=null) : ActionResult
-    {
-        //test des valeurs des paramètres
-        $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idcolonne, null);
-
-        //paramètre de l'action liste
-        $clParam = $this->_oGetParam(GetSubListContent::class, $tabParamQuery);
-        $clParam->Record = $clRecord->getIDEnreg();
-        $clParam->Column = $idcolonne;
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $idcontexte);
-
-        $clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param string $idenreg
-     * @param int    $idcolonne
-     * @param $idContext
-     * @param array  $tabParamQuery
-     * @param array|null  $tabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oDrillthrough(string $idenreg, int $idcolonne, $idContext, array $tabParamQuery, ?array $tabHeaderQuery=null) : ActionResult
-    {
-        $clParam = $this->_oGetParam(DrillThrough::class, $tabParamQuery);
-        $clParam->Record = $idenreg;
-        $clParam->Column = $idcolonne;
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContext);
-
-        $clReponseXML = $this->m_clSOAPProxy->drillThrough($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param array $tabParamQuery
-     * @param array|null $tabHeaderQuery
-     * @return ActionResult
-     * @throws \Exception
-     */
-    public function oGetChart($idContexte, array $tabParamQuery, ?array $tabHeaderQuery=null) : ActionResult
-    {
-        $getChart = $this->_oGetParam(GetChart::class, $tabParamQuery);
-        $getChart->Width = 5000;
-        $getChart->Height = 5000;
-        $getChart->DPI = 92;
-
-        //--------------------------------------------------------------------------------------------
-        // Headers
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContexte);
-
-        $clReponseXML = $this->m_clSOAPProxy->getChart($getChart, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
-    }
-
-    /**
-     * @param array $tabHeaderQuery
-     * @param $column
-     * @param $items
-     * @return array
-     * @throws NOUTValidationException|\Exception
-     */
-    public function oSetSublistOrder($column, $items, $idContext, ?array $tabHeaderQuery=null) : array
-    {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContext);
-
-        $setSublistOrder = new SetOrderSubList();
-        $setSublistOrder->items = $items;
-        $setSublistOrder->column = $column;
-
-        $clXMLResponse = $this->m_clSOAPProxy->setOrderSubList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
-
-        if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
-            return explode('|', trim($clXMLResponse->getValue(), '|'));
-        }
-        else {
-            throw new NOUTValidationException("No valid ReturnType");
-        }
-    }
-
-    /**
-     * @param array $tabHeaderQuery
-     * @param $items
-     * @return array
-     * @throws NOUTValidationException|\Exception
-     */
-    public function oSetFullListOrder($items, $idContext, ?array $tabHeaderQuery=null) : array
-    {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContext);
-
-        $setSublistOrder = new SetOrderList();
-        $setSublistOrder->items = $items;
-
-        $clXMLResponse = $this->m_clSOAPProxy->setOrderList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
-
-        if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
-            return explode('|', trim($clXMLResponse->getValue(), '|'));
-        }
-        else {
-            throw new NOUTValidationException("No valid ReturnType");
-        }
-    }
-
-    /**
-     * @param $eventName
-     */
-    private function __startStopwatch($eventName){
-        if (isset($this->__stopwatch)){
-            $this->__stopwatch->start($eventName);
-        }
-    }
-
-    /**
-     * @param $eventName
-     */
-    private function __stopStopwatch($eventName){
-        if (isset($this->__stopwatch)){
-            $this->__stopwatch->stop($eventName);
-        }
-    }
-
-    /**
-     * @param $function
-     * @param $plus
-     * @return string
-     */
-    private function _getStopWatchEventName($function, $plus) : string
-    {
-        return get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus);
-    }
-
-    /**
      * @param XMLResponseWS $clReponseXML
-     * @param $idForm
+     * @param string|null   $idForm
+     * @param string|null   $ReturnType
      * @return ActionResult
      * @throws \Exception
      */
-    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, $idForm = null, $ReturnType = null) : ActionResult
+    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, string $idForm = null, string $ReturnType = null) : ActionResult
     {
         $clActionResult = new ActionResult($clReponseXML);
 
@@ -1444,6 +338,7 @@ class NOUTClient
                 /** @var ParserXmlXsd $clParser */
                 if ($clActionResult->ReturnType === XMLResponseWS::RETURNTYPE_MAILSERVICERECORD)
                 {
+                    /** @var ParserRecord $clParser */
                     $clActionResult->setData($clParser->getFirstRecord());
                 }
                 else
@@ -1623,17 +518,1136 @@ class NOUTClient
         return $clActionResult;
     }
 
+    /**
+     * récupère le numéro de version
+     * @return NOUTOnlineVersion
+     * @throws \Exception
+     */
+    public function clGetVersion() : NOUTOnlineVersion
+    {
+        return $this->m_clRESTProxy->clGetVersion();
+    }
 
     /**
-     * @param $sIDContexte
-     * @param Record $clRecord
-     * @param int $autovalidate
-     * @param boolean $bComplete
-     * @param $idihm
+     * teste le client pour savoir s'il correspond à la version minimale
+     * @return bool
+     * @throws \Exception
+     */
+    public function isVersionMin() : bool
+    {
+        return $this->clGetVersion()->isVersionSup($this->m_sVersionMin, true);
+    }
+
+    /**
+     * @return NOUTCacheProvider
+     */
+    public function getCacheSession() : ?NOUTCacheProvider
+    {
+        if (!is_null($this->m_clCache))
+        {
+            return $this->m_clCache->getCacheSession();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $cache
+     * @param $name
+     * @return mixed
+     */
+    public function fetchFromCache($cache, $name)
+    {
+        if (!is_null($this->m_clCache))
+        {
+            return $this->m_clCache->fetch($cache, $name);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $cache
+     * @param $name
+     * @param $data
+     * @return mixed|null
+     */
+    protected function _saveInCache($cache, $name, $data)
+    {
+        if (!is_null($this->m_clCache))
+        {
+            return $this->m_clCache->save($cache, $name, $data);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimeZone() : string
+    {
+        return $this->_oGetToken()->getTimeZone();
+    }
+
+    /**
+     * initialise les options de dialogue
+     * @param $nVersionPref
+     */
+    protected function _initOptionDialogue($nVersionPref)
+    {
+        $this->m_clOptionDialogue->InitDefault($nVersionPref);
+        $this->m_clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
+        $this->m_clOptionDialogue->LanguageCode = $this->m_clConfigurationDialogue->getLangCode();
+    }
+
+    /**
+     * Ne pas renommer ou supprimer, la méthode est utilisé par _aGetHeaderSuppl
+     * @param $property
+     * @param $value
+     */
+    protected function setOptionDialogueProperty($property, $value)
+    {
+        if (property_exists($this->m_clOptionDialogue, $property)){
+            $this->m_clOptionDialogue->$property = $value;
+        }
+    }
+
+    /**
+     * retourne les options de dialogue
+     * @return OptionDialogue
+     */
+    protected function _clGetOptionDialogue() : OptionDialogue
+    {
+        return $this->m_clOptionDialogue;
+    }
+
+    /**
+     * @param NOUTToken $oToken
+     * @return UsernameToken|null
+     * @throws \Exception
+     */
+    protected function _oGetUsernameToken(NOUTToken $oToken) :?UsernameToken
+    {
+        return $oToken->getUsernameToken();
+    }
+
+    /**
+     * @param string $sIDContexteAction
+     * @param bool $bAPIUser
+     * @return Identification
+     * @throws \Exception
+     */
+    protected function _clGetIdentificationREST(string $sIDContexteAction, bool $bAPIUser) : Identification
+    {
+        $clIdentification = new Identification();
+
+        // récupération de l'utilisateur connecté
+        $oToken = $this->_oGetToken();
+
+        $clIdentification->m_clUsernameToken = $this->_oGetUsernameToken($oToken);
+        $clIdentification->m_sTokenSession = $oToken->getSessionToken();
+        $clIdentification->m_sIDContexteAction = $sIDContexteAction;
+        $clIdentification->m_bAPIUser = $bAPIUser;
+
+        return $clIdentification;
+    }
+
+    /**
+     * @param array|null $aHeaderSuppl
+     * @return array
+     * @throws \Exception
+     */
+    protected function _aGetTabHeader(array $aHeaderSuppl = null) : array
+    {
+        // récupération de l'utilisateur connecté
+        $oToken = $this->_oGetToken();
+
+        // Headers par défaut
+        $aTabHeader = array(
+            SOAPProxy::HEADER_UsernameToken => $this->_oGetUsernameToken($oToken),
+            SOAPProxy::HEADER_SessionToken => $oToken->getSessionToken(),
+            SOAPProxy::HEADER_OptionDialogue => $this->_clGetOptionDialogue(),
+        );
+
+        // Headers supplémentaires
+        if (!empty($aHeaderSuppl))
+        {
+            $aTabHeader = array_merge($aTabHeader, $aHeaderSuppl);
+        }
+
+        return $aTabHeader;
+    }
+
+    /**
+     * @param string           $sIDform        identifiant du formulaire
+     * @param ConditionFileNPI $clFileNPI      condition pour la requête
+     * @param array            $TabColonneAff  tableau des colonnes a afficher
+     * @param array|null       $TabHeaderSuppl tableau des headers
+     * @return XMLResponseWS
+     *@throws \Exception
+     */
+    protected function _oRequest(string $sIDform, ConditionFileNPI $clFileNPI, array $TabColonneAff, ?array $TabHeaderSuppl=null) : XMLResponseWS
+    {
+        $clParamRequest = new Request();
+        $clParamRequest->Table = $sIDform;
+        $clParamRequest->CondList = $clFileNPI->sToSoap();
+        $clParamRequest->ColList = new ColListType($TabColonneAff);
+
+        return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($TabHeaderSuppl));
+    }
+
+    /**
+     * @param string       $table
+     * @param CondListType $condList
+     * @param array        $colList
+     * @param array|null   $tabHeaderSuppl
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    protected function _oNewRequest(string $table, CondListType $condList, array $colList, ?array $tabHeaderSuppl=null) : XMLResponseWS
+    {
+        $clParamRequest = new Request();
+        $clParamRequest->ColList = new ColListType($colList);
+        $clParamRequest->Table = $table;
+        $clParamRequest->CondList = $condList;
+        $clParamRequest->MaxResult = self::MaxEnregs;
+        return $this->m_clSOAPProxy->request($clParamRequest, $this->_aGetTabHeader($tabHeaderSuppl));
+    }
+
+
+    /**
+     * récupère la liste des icônes avec une grosse image
+     * @param string $idCol
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    protected function _oGetTabIcon(string $idCol) : XMLResponseWS
+    {
+        $aTabColonne = array();
+
+        $clFileNPI = new ConditionFileNPI();
+        $clFileNPI->EmpileCondition($idCol, CondType::COND_DIFFERENT, '');
+
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
+        );
+
+        return $this->_oRequest(Langage::TABL_ImageCatalogue, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
+    }
+
+
+    /**
+     * récupère la liste des options de menu sur les actions accordées par les droits et les séparateurs
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    protected function _oGetTabMenu_OptionMenu() : XMLResponseWS
+    {
+        $aTabColonne = array(
+            Langage::COL_OPTIONMENUPOURTOUS_IDAction,
+            Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu,
+            Langage::COL_OPTIONMENUPOURTOUS_Libelle,
+            Langage::COL_OPTIONMENUPOURTOUS_Commande,
+            Langage::COL_OPTIONMENUPOURTOUS_IDIcone,
+            Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent,
+        );
+
+        $clFileNPI = new ConditionFileNPI();
+
+        //les options de menu qui servent de séparateur
+        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_EQUAL, '');
+        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Libelle, CondType::COND_EQUAL, '-');
+        $clFileNPI->EmpileOperateur(Operator::OP_AND);
+        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Commande, CondType::COND_EQUAL, '');
+        $clFileNPI->EmpileOperateur(Operator::OP_AND);
+
+        //les options de menu sur lesquelles les droits sont accordés
+        if ($this->m_clSOAPProxy->getGestionWSDL()->bGere(GestionWSDL::OPT_MenuVisible))
+        {
+            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, CondType::COND_MENUVISIBLE, 1);
+        } else
+        {
+            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_WITHRIGHT, 1);
+        }
+        $clFileNPI->EmpileOperateur(Operator::OP_OR);
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
+        );
+
+        return $this->_oRequest(Langage::TABL_OptionMenuPourTous, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
+    }
+
+
+    /**
+     * récupère la liste des menus
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    protected function _oGetTabMenu_Menu() : XMLResponseWS
+    {
+        $aTabColonne = array(
+            Langage::COL_MENUPOURTOUS_OptionsMenu,
+            Langage::COL_MENUPOURTOUS_IDMenuParent,
+            Langage::COL_MENUPOURTOUS_Libelle,
+            Langage::COL_MENUPOURTOUS_Ordre,
+        );
+
+        $aTabHeaderSuppl = array(
+            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel, //on ne garde pas le contexte ouvert
+            SOAPProxy::HEADER_APIUser => SOAPProxy::APIUSER_Active,           //on force l'utilisation de l'user d'application (max) car un utilisateur classique n'aura pas les droit d'exécuter cette requête
+        );
+
+        return $this->_oRequest(Langage::TABL_MenuPourTous, new ConditionFileNPI(), $aTabColonne, $aTabHeaderSuppl);
+    }
+
+    /**
+     * récupère les infos du menu,
+     * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
+     *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
+     *
+     * @return mixed|InfoIHM|null
+     * @throws \Exception
+     */
+    protected function _oGetInfoIhmMenu()
+    {
+        $sUsername = $this->_oGetToken()->getUsername();
+        $oInfoIHM = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_$sUsername");
+        if (isset($oInfoIHM) && ($oInfoIHM !== false)){
+            return $oInfoIHM; //on a déjà les infos du menu
+        }
+
+        //on a pas les infos, il faut les calculer
+        $clReponseXML_OptionMenu = $this->_oGetTabMenu_OptionMenu();
+        $clReponseXML_Menu = $this->_oGetTabMenu_Menu();
+        $clReponseXML_SmallIcon = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_Image);
+        $clReponseXML_BigIcon = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_ImageGrande);
+
+        $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
+        $oInfoIHM = $clIHMLoader->oGetInfoIHM();
+
+        $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_$sUsername", $oInfoIHM);
+        return $oInfoIHM;
+    }
+
+    /**
+     * @param string $idContext
+     * @return string
+     * @throws \Exception
+     */
+    public function getHelp(string $idContext) : string
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idContext, false);
+
+        return $this->m_clRESTProxy->oGetHelp($clIdentification)->content;
+    }
+
+    /**
+     * récupère les infos d'ihm lié au menu (menu, toolbar, et icône centraux)
+     * c'est sauvé dans le cache de session à cause de la Formule Visible des menu et option de menu
+     *  comme on peut avoir n'importe quoi dans la formule, cela ne peut pas être lié au paramétrage
+     *
+     * @param string $method
+     * @param string $prefix
+     * @return array|mixed|null
+     * @throws \Exception
+     */
+    protected function __oGetIhmMenuPart(string $method, string $prefix)
+    {
+        $sUsername = $this->_oGetToken()->getUsername();
+        $aTabMenu = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_$sUsername");
+        if (isset($aTabMenu) && ($aTabMenu !== false)){
+            return $aTabMenu; //on a déjà les infos du menu
+        }
+
+        $clIdentification = $this->_clGetIdentificationREST('', false);
+
+        $aInfo = array();
+        //on a pas les infos, il faut les calculer
+        /** @var HTTPResponse $oRetHTTP */
+        $oRetHTTP = $this->m_clRESTProxy->$method($clIdentification);
+        $json = json_decode($oRetHTTP->content, false, 512, JSON_BIGINT_AS_STRING);
+        if (is_array($json) && (count($json) > 0))
+        {
+            foreach ($json as $objet)
+            {
+                //TODO: Remove when annuler/refaire/recherche globale is implemented
+                if(
+                    $objet->idaction != Langage::ACTION_Annulation &&
+                    $objet->idaction != Langage::ACTION_Refaire &&
+                    $objet->idaction != Langage::ACTION_RechercheGlobale
+                ) {
+                    $itemMenu = $this->__oGetItemMenu($objet);
+                    $aInfo[] = $itemMenu;
+                }
+            }
+
+            if ($prefix=='menu'){
+                //c'est le menu, il faut vérifier le a plat
+                if (count($aInfo)==1)
+                {
+                    $tabOptions = $aInfo[0]->tabOptions;
+                    $aInfo = array();
+                    foreach($tabOptions as $clMenu)
+                    {
+                        /** @var ItemMenu $clMenu */
+                        if (!$clMenu->isSeparator()){
+                            $aInfo[]=$clMenu;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!json_last_error()){
+            $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_{$prefix}_$sUsername", $aInfo);
+        }
+        return $aInfo;
+    }
+
+    /**
+     * récupère les infos du menu
+     * @param \stdClass $objSrc
+     * @return ItemMenu
+     */
+    protected function __oGetItemMenu(\stdClass $objSrc) : ItemMenu
+    {
+        $itemMenu = new ItemMenu($objSrc->id, $objSrc->title, boolval($objSrc->is_menu_option));
+        $itemMenu
+            ->setSeparator(boolval($objSrc->is_separator))
+            ->setRootMenu(boolval($objSrc->is_root))
+            ->setIdAction($objSrc->idaction)
+            ->setCommand($objSrc->command)
+            ->setIconBig($objSrc->icon_big)
+            ->setIconSmall($objSrc->icon_small)
+            ->setHomeWithImg(boolval($objSrc->home_withimg))
+            ->setHomeDesc($objSrc->home_desc)
+            ->setHomeTitle($objSrc->home_title)
+            ->setHomeWidth(intval($objSrc->home_width))
+            ->setHomeHeight(intval($objSrc->home_height));
+
+        if (count($objSrc->tab_options) > 0)
+        {
+            foreach ($objSrc->tab_options as $objChild)
+            {
+                //TODO: Remove when annuler/refaire is implemented
+                if(
+                    $objChild->idaction != Langage::ACTION_Annulation &&
+                    $objChild->idaction != Langage::ACTION_Refaire &&
+                    $objChild->idaction != Langage::ACTION_RechercheGlobale
+                ) {
+                    $childMenu = $this->__oGetItemMenu($objChild);
+                    $itemMenu->AddOptionMenu($childMenu);
+                }
+            }
+        }
+
+        return $itemMenu;
+    }
+
+    /**
+     * @param string $member_name
+     * @param string $method_name
+     * @param string $prefix
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdate($sIDContexte, $idihm, Record $clRecord, $autovalidate = SOAPProxy::AUTOVALIDATE_None, $bComplete=false) : ActionResult
+    protected function _oGetIhmMenuPart(string $member_name, string $method_name, string $prefix) : ActionResult
+    {
+        $clActionResult = new ActionResult(null);
+        if (!$this->_oGetToken()->isVersionSup('1637.02', false))
+        {
+            //l'ancien système
+            $oInfoMenu = $this->_oGetInfoIhmMenu();
+            $clActionResult->setData($oInfoMenu->$member_name);
+        }
+        else
+        {
+            $tabMenu = $this->__oGetIhmMenuPart($method_name, $prefix);
+            $clActionResult->setData($tabMenu);
+        }
+
+        //le menu dépend de l'utilisateur, c'est un cache privé
+        $clActionResult->setTypeCache(ActionResultCache::TYPECACHE_Private);
+        return $clActionResult;
+
+    }
+
+    /**
+     * retourne un tableau d'option de menu
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function getTabMenu() : ActionResult
+    {
+        return $this->_oGetIhmMenuPart('aMenu', 'oGetMenu', 'menu');
+    }
+
+
+    /**
+     * retourne un tableau d'option de menu
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function getCentralIcon(): ActionResult
+    {
+        return $this->_oGetIhmMenuPart('aBigIcon', 'oGetCentralIcon', 'home');
+    }
+
+    /**
+     * retourne un tableau d'option de menu
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function getToolbar(): ActionResult
+    {
+        return $this->_oGetIhmMenuPart('aToolbar', 'oGetToolbar', 'toolbar');
+    }
+
+    /**
+     * initialise la structure de paramètre a partir du tableau des paramètres de la requête HTTP
+     * @param string $classname
+     * @param array $aTabParamRequest
+     * @return mixed
+     */
+    protected function _oGetParam(string $classname, array $aTabParamRequest)
+    {
+        $oParam = new $classname();
+        foreach ($aTabParamRequest as $property => $valeur)
+        {
+            if (property_exists($oParam, $property))
+            {
+                $oParam->$property = $valeur;
+            }
+        }
+
+        if (property_exists($oParam, self::PARAM_SPECIALPARAMLIST) && is_null($oParam->{self::PARAM_SPECIALPARAMLIST}))
+        {
+            $oParam->{self::PARAM_SPECIALPARAMLIST} = new SpecialParamListType();
+            $oParam->{self::PARAM_SPECIALPARAMLIST}->initFirstLength();
+        }
+
+        if (property_exists($oParam, self::PARAM_PARAMXML) && is_null($oParam->{self::PARAM_PARAMXML}))
+        {
+            $oParam->{self::PARAM_PARAMXML} = '';
+        }
+        return $oParam;
+    }
+
+    /**
+     * initialise la structure du header a partir du tableau du header de la requête HTTP
+     * @param array|null  $aTabHeaderQuery
+     * @param string|null $idcontexte
+     * @param int|null    $autovalidate
+     * @return array
+     */
+    protected function _aGetHeaderSuppl(?array $aTabHeaderQuery, string $idcontexte=null, int $autovalidate=null) : array
+    {
+        $aTabHeaderSuppl = array();
+
+        if (is_array($aTabHeaderQuery))
+        {
+            // $oParam du type OptionDialogue
+            foreach ($aTabHeaderQuery as $property => $value)
+            {
+                if(is_array($value)) // On a une propriété de second niveau (par exemple OptionDialogue)
+                {
+                    $setFunctionName = "set" . $property . "Property";
+
+                    if(method_exists($this, $setFunctionName))
+                    {
+                        foreach ($value as $optionProperty => $optionValue)
+                        {
+                            $this->$setFunctionName($optionProperty, $optionValue);
+                        }
+                    }
+                }
+                elseif(!is_object($value)) // Propriété de premier niveau (scalar)
+                {
+                    if(SOAPProxy::s_isValidHeaderProp($property))
+                    {
+                        $aTabHeaderSuppl[$property] = $value;
+                    }
+                }
+            }
+        }
+
+        if (!empty($idcontexte)){
+            $aTabHeaderSuppl[SOAPProxy::HEADER_ActionContext] = $idcontexte;
+        }
+        if (!empty($autovalidate)){
+            $aTabHeaderSuppl[SOAPProxy::HEADER_AutoValidate] = $autovalidate;
+        }
+        return $aTabHeaderSuppl;
+    }
+
+
+    /**
+     * Execute une action via son id
+     * @param array      $tabParamQuery
+     * @param array|null $aTabHeaderQuery
+     * @param string     $sIDAction
+     * @param int        $final
+     * @param string     $sIDContext
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExecIDAction(string $sIDAction, string $sIDContext, array $tabParamQuery, ?array $aTabHeaderQuery = null, int $final = 0) : ActionResult
+    {
+        // Les paramètres du header sont passés par array
+
+        //--------------------------------------------------------------------------------------------
+        // Paramètres
+        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
+        $clParam->ID = $sIDAction;             // identifiant de l'action (String)
+        $clParam->Final = $final;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $sIDContext);
+
+        //--------------------------------------------------------------------------------------------
+        // L'action
+        return $this->_oExecute($clParam, $aTabHeaderSuppl);
+    }
+
+    /**
+     * @param array $tabParamQuery
+     * @param array|null $tabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExecute(array $tabParamQuery, ?array $tabHeaderQuery=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery);
+        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
+
+        return $this->_oExecute($clParam, $aTabHeaderSuppl);
+    }
+
+    /**
+     * Execute une action via sa phrase
+     * @param array      $tabParamQuery
+     * @param string     $sPhrase
+     * @param string     $sIDContexte
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExecSentence(string $sPhrase, string $sIDContexte, array $tabParamQuery, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //--------------------------------------------------------------------------------------------
+        // Création de $clParamExecute
+        $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
+        $clParam->Sentence = $sPhrase;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $sIDContexte);
+
+        return $this->_oExecute($clParam, $aTabHeaderSuppl);
+    }
+
+    /**
+     * @param string $sLoginExtranet
+     * @param string $sPassword
+     * @param string $sTypeEncodage
+     * @param int    $codeLangue
+     * @param string $sLoginSIMAX
+     * @param string $sPassworSIMAX
+     * @param string $sFormulaireExtranet
+     * @param bool   $bFromLogin
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oConnexionExtranet(string $sLoginExtranet, string $sPassword, string $sTypeEncodage, int $codeLangue, string $sLoginSIMAX, string $sPassworSIMAX, string $sFormulaireExtranet, bool $bFromLogin) : ActionResult
+    {
+        $clParam = new Execute();
+        $clParam->ID = Langage::ACTION_ConnexionExtranet;
+
+        //il faut encoder le mot de passe simax
+        $sEncodedSIMAX = ConnexionExtranetHashPassword::s_sHashPasswordSIMAX($sPassworSIMAX);
+        //et le mot de passe extranet
+        $sEncodedExtranet = ConnexionExtranetHashPassword::s_sHashPassword($sPassword, $sTypeEncodage);
+
+        $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
+            Langage::PA_ConnexionExtranet_Extranet_Pseudo => $sLoginExtranet,
+            Langage::PA_ConnexionExtranet_Extranet_Mdp    => $sEncodedExtranet,
+            Langage::PA_ConnexionExtranet_Intranet_Pseudo => $sLoginSIMAX,
+            Langage::PA_ConnexionExtranet_Intranet_Mdp    => $sEncodedSIMAX,
+            Langage::PA_ConnexionExtranet_Formulaire      => $sFormulaireExtranet,
+            Langage::PA_ConnexionExtranet_CodeLangue      => $codeLangue,
+            Langage::PA_ConnexionExtranet_FromLogin       => $bFromLogin ? 1 : 0,
+        ]);
+
+        $oRet = $this->_oExecute($clParam, []);
+
+        //ici il faut invalider le cache
+        //$this->m_clCache
+        return $oRet;
+    }
+
+    /**
+     * @param array      $tabParamQuery
+     * @param string     $sIDTableau
+     * @param string     $sIDContexte
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExecList(array $tabParamQuery, string $sIDTableau, string $sIDContexte = '', ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //paramètre de l'action liste
+        $clParam = $this->_oGetParam(ListParams::class, $tabParamQuery);
+        $clParam->Table = $sIDTableau;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $sIDContexte);
+
+        $clReponseXML = $this->m_clSOAPProxy->listAction($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string     $tableID
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExecListRequest(string $tableID, string $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Requete, Langage::COL_REQUETE_IDTableau, [], $aTabHeaderQuery);
+    }
+
+    /**
+     * @param string     $tableID
+     * @param string     $contextID
+     * @param string     $requestTableId
+     * @param string     $requestColId
+     * @param array      $colList
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    protected function _oExecRequestOnIDTableau(string $tableID, string $contextID, string $requestTableId, string $requestColId, array $colList, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        $condition = new Condition(
+            new CondColumn($requestColId),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($tableID));
+        $condList = CondListTypeFactory::create($condition);
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
+
+        $clReponseXML = $this->_oNewRequest(
+            $requestTableId,
+            $condList,
+            $colList,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExecListCalculation(string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
+
+        $clReponseXML = $this->m_clSOAPProxy->getEndListCalculation($this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetDefaultExportAction(string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
+
+        //----------------------------------------------------------------------------------
+        $aTabColonne = array();
+        $default_export_action = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue(Langage::ACTION_Export)
+        );
+        $has_rights = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondType(CondType::COND_WITHRIGHT),
+            new CondValue('1')
+        );
+
+        $operator = new Operator(Operator::OP_AND);
+        $operator->addCondition($default_export_action)
+            ->addCondition($has_rights);
+
+        $condList = CondListTypeFactory::create($operator);
+
+        $clReponseXML = $this->_oNewRequest(Langage::TABL_Action,
+            $condList,
+            $aTabColonne,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string     $tableID
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetExportsList(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Export, Langage::COL_EXPORT_IDTableau, [Langage::COL_EXPORT_Libelle], $aTabHeaderQuery);
+    }
+
+    /**
+     * @param string $tableID
+     * @param string $contextID
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetImportsList(string $tableID, string $contextID) : ActionResult
+    {
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Import, Langage::COL_IMPORT_Formulaire, [Langage::COL_IMPORT_Libelle]);
+    }
+
+    /**
+     * @param string     $contextID
+     * @param string     $tableId
+     * @param string     $actionId
+     * @param string     $exportId
+     * @param string     $format
+     * @param string     $module
+     * @param string     $colType
+     * @param string     $items
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExport(string $contextID, string $tableId, string $actionId, string $exportId, string $format, string $module, string $colType, string $items, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
+
+        $export = new Export();
+        $export->Table = $tableId;
+        $export->ID = $actionId;
+        $export->Export = $exportId;
+        $export->Format = $format;
+        $export->Module = $module;
+        $export->ColType = $colType;
+        $export->items = $items;
+
+        $clReponseXML = $this->m_clSOAPProxy->export($export, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string            $tableId
+     * @param string            $actionId
+     * @param string            $importId
+     * @param UploadedFile|null $file
+     * @param array|null        $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oImport(string $tableId, string $actionId, string $importId, ?UploadedFile $file = null, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery);
+
+        //------------------------------------------------------------------------------------------------------
+        $data = null;
+
+        if($file instanceof UploadedFile) {
+            $encoding = 'base64';
+            $filename = $file->getClientOriginalName();
+            $size = $file->getSize();
+            $fileData = base64_encode(stream_get_contents(fopen($file->getRealPath(), 'rb')));
+
+            $data = new DataType();
+            $data->filename = $filename;
+            $data->encoding = $encoding;
+            $data->size = $size;
+            $data->_ = $fileData;
+        }
+        $import = new Import();
+
+        $import->Table = $tableId;
+        $import->ID = $actionId;
+        $import->Import = $importId;
+        $import->File = $data;
+
+        $clReponseXML = $this->m_clSOAPProxy->import($import, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string     $tableID
+     * @param string     $contextID
+     * @param string     $eTypeAction
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    protected function _oRequestImportExportActions(string $tableID, string $contextID, string $eTypeAction, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
+
+        //--------------------------------------------------------------------------------------------
+        $colList = array(Langage::COL_ACTION_Libelle);
+        $table_actions = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDTableau),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($tableID)
+        );
+        $has_rights = new Condition(
+            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondType(CondType::COND_WITHRIGHT),
+            new CondValue(1)
+        );
+        $type_actions = new Condition(
+            new CondColumn(Langage::COL_ACTION_TypeAction),
+            new CondType(CondType::COND_EQUAL),
+            new CondValue($eTypeAction)
+        );
+        $operator = new Operator(Operator::OP_AND);
+        $operator->addCondition($table_actions)
+            ->addCondition($has_rights)
+            ->addCondition($type_actions);
+
+        $condList = CondListTypeFactory::create($operator);
+
+        //----------------------------------
+        $clReponseXML = $this->_oNewRequest(
+            Langage::TABL_Action,
+            $condList,
+            $colList,
+            $aTabHeaderSuppl);
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string     $tableID
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetExportsActions(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Exporter, $aTabHeaderQuery);
+    }
+
+    /**
+     * @param string     $tableID
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetImportsActions(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Importer, $aTabHeaderQuery);
+    }
+
+    /**
+     * Affichage d'une liste via l'action recherche
+     * @param array      $tabParamQuery
+     * @param string     $sIDTableau
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oExecSearch(array $tabParamQuery, string $sIDTableau, string $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
+
+        //-----------------------------
+        //paramètre de l'action liste
+        $clParam = $this->_oGetParam(Search::class, $tabParamQuery);
+        $clParam->Table = $sIDTableau;
+
+        $clReponseXML = $this->m_clSOAPProxy->search($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param Execute $clParamExecute
+     * @param array $aTabHeaderSuppl
+     * @return ActionResult
+     * @throws \Exception
+     */
+    protected function _oExecute(Execute $clParamExecute, array $aTabHeaderSuppl) : ActionResult
+    {
+        $clReponseXML = $this->m_clSOAPProxy->execute($clParamExecute, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * Execute une action via son id
+     * @param array      $tabParamQuery
+     * @param string     $idcolonne
+     * @param Record     $clRecord
+     * @param array|null $aTabHeaderQuery
+     * @param string     $idcontexte
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetSublistContent(Record $clRecord, string $idcolonne, string $idcontexte, array $tabParamQuery, ?array $aTabHeaderQuery=null) : ActionResult
+    {
+        //test des valeurs des paramètres
+        $this->_TestParametre(self::TP_NotEmpty, '$idColumn', $idcolonne, null);
+
+        //paramètre de l'action liste
+        $clParam = $this->_oGetParam(GetSubListContent::class, $tabParamQuery);
+        $clParam->Record = $clRecord->getIDEnreg();
+        $clParam->Column = $idcolonne;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $idcontexte);
+
+        $clReponseXML = $this->m_clSOAPProxy->getSubListContent($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param string     $idenreg
+     * @param string     $idcolonne
+     * @param string     $idContext
+     * @param array      $tabParamQuery
+     * @param array|null $tabHeaderQuery
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oDrillthrough(string $idenreg, string $idcolonne, string $idContext, array $tabParamQuery, ?array $tabHeaderQuery=null) : ActionResult
+    {
+        $clParam = $this->_oGetParam(DrillThrough::class, $tabParamQuery);
+        $clParam->Record = $idenreg;
+        $clParam->Column = $idcolonne;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContext);
+
+        $clReponseXML = $this->m_clSOAPProxy->drillThrough($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param array      $tabParamQuery
+     * @param array|null $tabHeaderQuery
+     * @param string     $idContexte
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetChart(string $idContexte, array $tabParamQuery, ?array $tabHeaderQuery=null) : ActionResult
+    {
+        $getChart = $this->_oGetParam(GetChart::class, $tabParamQuery);
+        $getChart->Width = 5000;
+        $getChart->Height = 5000;
+        $getChart->DPI = 92;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContexte);
+
+        $clReponseXML = $this->m_clSOAPProxy->getChart($getChart, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @param array|null $tabHeaderQuery
+     * @param string     $column
+     * @param string     $items
+     * @param string     $idContext
+     * @return array
+     * @throws NOUTValidationException|\Exception
+     */
+    public function oSetSublistOrder(string $column, string $items, string $idContext, ?array $tabHeaderQuery=null) : array
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContext);
+
+        $setSublistOrder = new SetOrderSubList();
+        $setSublistOrder->items = $items;
+        $setSublistOrder->column = $column;
+
+        $clXMLResponse = $this->m_clSOAPProxy->setOrderSubList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
+            return explode('|', trim($clXMLResponse->getValue(), '|'));
+        }
+        else {
+            throw new NOUTValidationException("No valid ReturnType");
+        }
+    }
+
+    /**
+     * @param array|null $tabHeaderQuery
+     * @param string     $items
+     * @param string     $idContext
+     * @return array
+     * @throws NOUTValidationException|\Exception
+     */
+    public function oSetFullListOrder(string $items, string $idContext, ?array $tabHeaderQuery=null) : array
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($tabHeaderQuery, $idContext);
+
+        $setSublistOrder = new SetOrderList();
+        $setSublistOrder->items = $items;
+
+        $clXMLResponse = $this->m_clSOAPProxy->setOrderList($setSublistOrder, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        if($clXMLResponse->sGetReturnType() === XMLResponseWS::RETURNTYPE_VALUE) {
+            return explode('|', trim($clXMLResponse->getValue(), '|'));
+        }
+        else {
+            throw new NOUTValidationException("No valid ReturnType");
+        }
+    }
+
+
+    /**
+     * @param string $sIDContexte
+     * @param Record $clRecord
+     * @param int    $autovalidate
+     * @param bool   $bComplete
+     * @param string $idihm
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oUpdate(string $sIDContexte, string $idihm, Record $clRecord, int $autovalidate = SOAPProxy::AUTOVALIDATE_None, bool $bComplete=false) : ActionResult
     {
 
         //test des valeurs des paramètres
@@ -1678,13 +1692,13 @@ class NOUTClient
 
 
     /**
-     * @param $sIDContexte
+     * @param string $sIDContexte
      * @param Record $clRecord
-     * @param $idihm
+     * @param string $idihm
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdateFilter($sIDContexte, $idihm, Record $clRecord) : ActionResult
+    public function oUpdateFilter(string $sIDContexte, string $idihm, Record $clRecord) : ActionResult
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
@@ -1755,12 +1769,12 @@ class NOUTClient
     /**
      * @param string $sIDContexte
      * @param string $idButton
-     * @param $ColumnSelection
-     * @param null $dataRecord
+     * @param string $ColumnSelection
+     * @param Record|null $dataRecord
      * @return ActionResult
      * @throws \Exception
      */
-    public function oButtonAction(string $sIDContexte, string $idButton, $ColumnSelection, $dataRecord = null) : ActionResult
+    public function oButtonAction(string $sIDContexte, string $idButton, string $ColumnSelection, Record $dataRecord = null) : ActionResult
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
@@ -1792,11 +1806,11 @@ class NOUTClient
 
     /**
      * Valide l'action courante du contexte
-     * @param $sIDContexte
+     * @param string $sIDContexte
      * @return ActionResult
      * @throws \Exception
      */
-    public function oValidate($sIDContexte) : ActionResult
+    public function oValidate(string $sIDContexte) : ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
@@ -1810,14 +1824,14 @@ class NOUTClient
 
     /**
      * Valide l'action courante du contexte
-     * @param $sIDContexte
-     * @param $final
-     * @param $form
-     * @param $record
+     * @param string $sIDContexte
+     * @param int    $final
+     * @param string $form
+     * @param string $record
      * @return ActionResult
      * @throws \Exception
      */
-    public function oCreateFrom($sIDContexte, $form, $record, $final) :ActionResult
+    public function oCreateFrom(string $sIDContexte, string $form, string $record, int $final) :ActionResult
     {
         //paramètre de l'action liste
         $clCreateFrom = new CreateFrom();
@@ -1834,14 +1848,14 @@ class NOUTClient
     }
 
     /**
-     * @param $sIDContexte
-     * @param $form
-     * @param $dstRecord
-     * @param $srcRecords
+     * @param string $sIDContexte
+     * @param string $form
+     * @param string $dstRecord
+     * @param string $srcRecords
      * @return ActionResult
      * @throws \Exception
      */
-    public function oMerge($sIDContexte, $form, $dstRecord, $srcRecords) :ActionResult
+    public function oMerge(string $sIDContexte, string $form, string $dstRecord, string $srcRecords) :ActionResult
     {
         //paramètre de l'action liste
         $clMerge = new  Merge();
@@ -1859,13 +1873,13 @@ class NOUTClient
 
     /**
      * annulation
-     * @param $sIDContexte
+     * @param string $sIDContexte
      * @param bool $bAll tout le contexte
      * @param bool $bByUser action utilisateur
      * @return ActionResult
      * @throws \Exception
      */
-    public function oCancel($sIDContexte, $bAll = false, $bByUser = true) :ActionResult
+    public function oCancel(string $sIDContexte, bool $bAll = false, bool $bByUser = true) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
@@ -1883,12 +1897,12 @@ class NOUTClient
 
 
     /**
-     * @param $sIDContexte
-     * @param $ResponseValue
+     * @param string $sIDContexte
+     * @param string $ResponseValue
      * @return ActionResult
      * @throws \Exception
      */
-    public function oConfirmResponse($sIDContexte, $ResponseValue) :ActionResult
+    public function oConfirmResponse(string $sIDContexte, string $ResponseValue) :ActionResult
     {
         //header
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl(null, $sIDContexte);
@@ -1905,13 +1919,13 @@ class NOUTClient
     // pour les Elements liés et les sous-listes
 
     /**
-     * @param array $tabParamQuery
-     * @param $sIDFormulaire
-     * @param $sIDContexte
+     * @param array  $tabParamQuery
+     * @param string $sIDFormulaire
+     * @param string $sIDContexte
      * @return ActionResult
      * @throws \Exception
      */
-    public function oSelectElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte) :ActionResult
+    public function oSelectElem(array $tabParamQuery, string $sIDFormulaire, string $sIDContexte) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
@@ -1932,13 +1946,13 @@ class NOUTClient
     }
 
     /**
-     * @param array $tabParamQuery
-     * @param $sIDFormulaire
-     * @param $sIDContexte
+     * @param array  $tabParamQuery
+     * @param string $sIDFormulaire
+     * @param string $sIDContexte
      * @return ActionResult
      * @throws \Exception
      */
-    public function oCreateElem(array $tabParamQuery, $sIDFormulaire, $sIDContexte) :ActionResult
+    public function oCreateElem(array $tabParamQuery, string $sIDFormulaire, string $sIDContexte) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
@@ -1956,14 +1970,14 @@ class NOUTClient
 
 
     /**
-     * @param array $tabParamQuery
-     * @param $sIDFormulaire
-     * @param $sIDEnreg
-     * @param $sIDContexte
+     * @param array  $tabParamQuery
+     * @param string $sIDFormulaire
+     * @param string $sIDEnreg
+     * @param string $sIDContexte
      * @return ActionResult
      * @throws \Exception
      */
-    public function oDeleteElem(array $tabParamQuery, $sIDFormulaire, $sIDEnreg, $sIDContexte) :ActionResult
+    public function oDeleteElem(array $tabParamQuery, string $sIDFormulaire, string $sIDEnreg, string $sIDContexte) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
@@ -1980,15 +1994,16 @@ class NOUTClient
     }
 
     /**
-     * @param array $tabParamQuery
-     * @param $sIDContexte
+     * @param array          $tabParamQuery
+     * @param string         $sIDContexte
      * @param \stdClass|null $updateData
-     * @param $idenreg
-     * @param $idformulaire
+     * @param string         $idenreg
+     * @param string         $idformulaire
+     * @param int            $autovalidate
      * @return ActionResult
      * @throws \Exception
      */
-    public function oModifyElem(array $tabParamQuery, $sIDContexte, $idformulaire, $idenreg, $updateData = null, $autovalidate = SOAPProxy::AUTOVALIDATE_None) :ActionResult
+    public function oModifyElem(array $tabParamQuery, string $sIDContexte, string $idformulaire, string $idenreg, \stdClass $updateData = null, int $autovalidate = SOAPProxy::AUTOVALIDATE_None) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
         //header
@@ -2008,14 +2023,14 @@ class NOUTClient
     }
 
     /**
-     * @param array $tabParamQuery
-     * @param $sIDContexte
-     * @param $idenreg
-     * @param $idformulaire
+     * @param array  $tabParamQuery
+     * @param string $sIDContexte
+     * @param string $idenreg
+     * @param string $idformulaire
      * @return ActionResult
      * @throws \Exception
      */
-    public function oDisplayElem(array $tabParamQuery, $sIDContexte, $idformulaire, $idenreg) :ActionResult
+    public function oDisplayElem(array $tabParamQuery, string $sIDContexte, string $idformulaire, string $idenreg) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
 
@@ -2032,12 +2047,12 @@ class NOUTClient
     }
 
     /**
-     * @param $sIDFormulaire
-     * @param $sIDContexte
+     * @param string $sIDFormulaire
+     * @param string $sIDContexte
      * @return ActionResult
      * @throws \Exception
      */
-    public function oSelectAmbiguous($sIDFormulaire, $sIDContexte) :ActionResult
+    public function oSelectAmbiguous(string $sIDFormulaire, string $sIDContexte) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDFormulaire', $sIDFormulaire, null);
 
@@ -2055,12 +2070,12 @@ class NOUTClient
 
 
     /**
-     * @param $sIDTemplate
-     * @param $sIDContexte
+     * @param string $sIDTemplate
+     * @param string $sIDContexte
      * @return ActionResult
      * @throws \Exception
      */
-    public function oSelectTemplate($sIDTemplate, $sIDContexte) :ActionResult
+    public function oSelectTemplate(string $sIDTemplate, string $sIDContexte) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDTemplate', $sIDTemplate, null);
 
@@ -2077,12 +2092,12 @@ class NOUTClient
     }
 
     /**
-     * @param $sIDChoice
-     * @param $sIDContexte
+     * @param string $sIDChoice
+     * @param string $sIDContexte
      * @return ActionResult
      * @throws \Exception
      */
-    public function oSelectChoice($sIDChoice, $sIDContexte) :ActionResult
+    public function oSelectChoice(string $sIDChoice, string $sIDContexte) :ActionResult
     {
         $this->_TestParametre(self::TP_NotEmpty, '$sIDChoice', $sIDChoice, null);
 
@@ -2123,13 +2138,13 @@ class NOUTClient
     // ------------------------------------------------------------------------------------
 
     /**
-     * @param $idContext
-     * @param $startTime
-     * @param $endTime
+     * @param string $idContext
+     * @param string $startTime
+     * @param string $endTime
      * @return ActionResult
      * @throws \Exception
      */
-    public function getSchedulerInfo($idContext, $startTime, $endTime) : ActionResult
+    public function getSchedulerInfo(string $idContext, string $startTime, string $endTime) : ActionResult
     {
         $aTabParam = array(
             RESTProxy::PARAM_StartTime  => $startTime,
@@ -2147,16 +2162,16 @@ class NOUTClient
     }
 
     /**
-     * @param $idContext
-     * @param $startTime
-     * @param $endTime
-     * @param $idForm
-     * @param $idEnreg
-     * @param $idColumn
+     * @param string $idContext
+     * @param string $startTime
+     * @param string $endTime
+     * @param string $idForm
+     * @param string $idEnreg
+     * @param string $idColumn
      * @return ActionResult
      * @throws \Exception
      */
-    public function getSchedulerCardInfo($idContext, $idForm, $idEnreg, $idColumn, $startTime, $endTime) :ActionResult
+    public function getSchedulerCardInfo(string $idContext, string $idForm, string $idEnreg, string $idColumn, string $startTime, string $endTime) :ActionResult
     {
         $aTabParam = array(
             RESTProxy::PARAM_StartTime  => $startTime,
@@ -2174,14 +2189,14 @@ class NOUTClient
     }
 
     /**
-     * @param $idcontext
-     * @param $idformulaire
-     * @param $idcallingcolumn
-     * @param $query
+     * @param string $idcontext
+     * @param string $idformulaire
+     * @param string $idcallingcolumn
+     * @param string $query
      * @return ActionResult
      * @throws \Exception
      */
-    public function getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query) : ActionResult
+    public function getSuggest(string $idcontext, string $idformulaire, string $idcallingcolumn, string $query) : ActionResult
     {
         $oSuggestData = $this->_getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query);
 
@@ -2194,14 +2209,14 @@ class NOUTClient
     }
 
     /**
-     * @param $idcontext
-     * @param $idformulaire
-     * @param $idcallingcolumn
-     * @param $query
+     * @param string $idcontext
+     * @param string $idformulaire
+     * @param string $idcallingcolumn
+     * @param string $query
      * @return HTTPResponse
      * @throws \Exception
      */
-    private function _getSuggest($idcontext, $idformulaire, $idcallingcolumn, $query) : HTTPResponse
+    private function _getSuggest(string $idcontext, string $idformulaire, string $idcallingcolumn, string $query) : HTTPResponse
     {
         // Création des options
         $aTabOption = array();
@@ -2239,15 +2254,15 @@ class NOUTClient
     // FICHIERS
     /**
      * récupère une icône, écrit le fichier de l'icône dans le cache s'il n'existe pas déjà
-     * @param $sIDIcon
-     * @param $aTabOptions
-     * @param $sIDColonne
-     * @param $sIDFormulaire
-     * @param array $aTabPHPManipulation
+     * @param string $sIDIcon
+     * @param array  $aTabOptions
+     * @param string $sIDColonne
+     * @param string $sIDFormulaire
+     * @param array  $aTabPHPManipulation
      * @return ActionResult
      * @throws \Exception
      */
-    public function getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions, array $aTabPHPManipulation=array()) : ActionResult
+    public function getImageFromLangage(string $sIDFormulaire, string $sIDColonne, string $sIDIcon, array $aTabOptions, array $aTabPHPManipulation=array()) : ActionResult
     {
         //le retour c'est le chemin de fichier enregistré dans le cache
         $oHTTPResponse = $this->_getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDIcon, $aTabOptions, $aTabPHPManipulation);
@@ -2256,15 +2271,15 @@ class NOUTClient
 
     /**
      * récupère une image du langage
-     * @param array $aTabOptions
-     * @param $sIDColonne
-     * @param $sIDFormulaire
-     * @param array $aTabPHPManipulation
-     * @param $sIDEnreg
+     * @param array  $aTabOptions
+     * @param string $sIDColonne
+     * @param string $sIDFormulaire
+     * @param array  $aTabPHPManipulation
+     * @param string $sIDEnreg
      * @return NOUTFileInfo
      * @throws \Exception
      */
-    protected function _getImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, array $aTabOptions, array $aTabPHPManipulation=array()) : NOUTFileInfo
+    protected function _getImageFromLangage(string $sIDFormulaire, string $sIDColonne, string $sIDEnreg, array $aTabOptions, array $aTabPHPManipulation=array()) : NOUTFileInfo
     {
         //on veut le contenu
         $aTabOptions[RESTProxy::OPTION_WantContent] = 1;
@@ -2341,16 +2356,16 @@ class NOUTClient
 
     /**
      * récupère un fichier
-     * @param $idcontexte
-     * @param $idihm
-     * @param $idForm
-     * @param $idColumn
-     * @param $idRecord
-     * @param array $aTabOptions
+     * @param string $idcontexte
+     * @param string $idihm
+     * @param string $idForm
+     * @param string $idColumn
+     * @param string $idRecord
+     * @param array  $aTabOptions
      * @return ActionResult
      * @throws \Exception
      */
-    public function getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions) : ActionResult
+    public function getFile(string $idcontexte, string $idihm, string $idForm, string $idColumn, string $idRecord, array $aTabOptions) : ActionResult
     {
         $oHTTPResponse = $this->_getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, $aTabOptions);
         return $this->_oMakeResultFromFile($oHTTPResponse);
@@ -2359,16 +2374,16 @@ class NOUTClient
 
     /**
      * récupère un fichier pour téléchargement
-     * @param $idcontexte
-     * @param $idihm
-     * @param $idForm
-     * @param $idColumn
-     * @param $idRecord
-     * @param array $aTabOptions
+     * @param string $idcontexte
+     * @param string $idihm
+     * @param string $idForm
+     * @param string $idColumn
+     * @param string $idRecord
+     * @param array  $aTabOptions
      * @return false|NOUTFileInfo
      * @throws \Exception
      */
-    private function _getFile($idcontexte, $idihm, $idForm, $idColumn, $idRecord, array $aTabOptions)
+    private function _getFile(string $idcontexte, string $idihm, string $idForm, string $idColumn, string $idRecord, array $aTabOptions)
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontexte, false);
 
@@ -2402,12 +2417,12 @@ class NOUTClient
 
     /**
      * @param UploadedFile $file
-     * @param              $idcontexte
-     * @param              $idihm
-     * @param              $idcolonne
+     * @param string       $idcontexte
+     * @param string       $idihm
+     * @param string       $idcolonne
      * @return ActionResult
      */
-    public function saveUploadFileInCache(UploadedFile $file, $idcontexte, $idihm, $idcolonne) : ActionResult
+    public function saveUploadFileInCache(UploadedFile $file, string $idcontexte, string $idihm, string $idcolonne) : ActionResult
     {
         $data = new NOUTFileInfo();
         $data->initFromUploadedFile($file);
@@ -2415,14 +2430,14 @@ class NOUTClient
     }
 
     /**
-     * @param              $idcontexte
-     * @param              $idihm
-     * @param              $idcolonne
-     * @param $dataBase64
-     * @param $mimetype
+     * @param string $idcontexte
+     * @param string $idihm
+     * @param string $idcolonne
+     * @param string $dataBase64
+     * @param string $mimetype
      * @return ActionResult
      */
-    public function saveBase64DataInCache($dataBase64, $mimetype, $idcontexte, $idihm, $idcolonne) : ActionResult
+    public function saveBase64DataInCache(string $dataBase64, string $mimetype, string $idcontexte, string $idihm, string $idcolonne) : ActionResult
     {
 //        $temp_file = tempnam(sys_get_temp_dir(), 'drawing');
 //        file_put_contents($temp_file, base64_decode($dataBase64));
@@ -2435,12 +2450,12 @@ class NOUTClient
 
     /**
      * @param NOUTFileInfo $file
-     * @param              $idcontexte
-     * @param              $idihm
-     * @param              $idcolonne
+     * @param string       $idcontexte
+     * @param string       $idihm
+     * @param string       $idcolonne
      * @return ActionResult
      */
-    public function saveNOUTFileInCache(NOUTFileInfo $file, $idcontexte, $idihm, $idcolonne) : ActionResult
+    public function saveNOUTFileInCache(NOUTFileInfo $file, string $idcontexte, string $idihm, string $idcolonne) : ActionResult
     {
         $name = $this->m_clCache->saveFile($idcontexte, $idihm, '', $idcolonne, '', array(), $file);
 
@@ -2455,12 +2470,12 @@ class NOUTClient
 
 
     /**
-     * @param $idcontexte
-     * @param $idihm
-     * @param $name
+     * @param string $idcontexte
+     * @param string $idihm
+     * @param string $name
      * @return ActionResult
      */
-    public function getFileInCache($idcontexte, $idihm, $name) : ActionResult
+    public function getFileInCache(string $idcontexte, string $idihm, string $name) : ActionResult
     {
         $data = $this->m_clCache->fetchFileFromName($idcontexte, $idihm, $name);
 
@@ -2489,13 +2504,13 @@ class NOUTClient
     }
 
     /**
-     * @param array $requestParams
-     * @param array $requestHeaders
-     * @param $folderID
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @param string     $folderID
      * @return ActionResult
      * @throws \Exception
      */
-    public function oGetFolderContent($folderID, array $requestParams, ?array $requestHeaders=null): ActionResult
+    public function oGetFolderContent(string $folderID, array $requestParams, ?array $requestHeaders=null): ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -2508,11 +2523,8 @@ class NOUTClient
     }
 
     /**
-     * @param array $requestParams
-     * @param       $requestParams
-     * @param       $filters
-     * @param       $startdate
-     * @param       $endDate
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
      * @return ActionResult
      * @throws \Exception
      */
@@ -2526,17 +2538,18 @@ class NOUTClient
         $requestMessage->EndDate = $requestParams[self::PARAMMESS_EndDate];
         $requestMessage->Filter = $requestParams[self::PARAMMESS_Filter];
 
-        $clReponseXML = $this->m_clSOAPProxy->getRequestMesage($requestMessage, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML = $this->m_clSOAPProxy->getRequestMessage($requestMessage, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
     /**
-     * @param array $requestHeaders
-     * @param       $xmlData
+     * @param string $idmessage
+     * @param int    $autovalidate
+     * @param array  $updateData
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdateMessage($idmessage, array $updateData, $autovalidate = SOAPProxy::AUTOVALIDATE_None) : ActionResult
+    public function oUpdateMessage(string $idmessage, array $updateData, int $autovalidate = SOAPProxy::AUTOVALIDATE_None) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl([], null, $autovalidate);
         //$aTabHeaderSuppl[SOAPProxy::HEADER_OptionDialogue]->{SOAPProxy::HEADER_OptionDialogue_ListContentAsync} = 0;
@@ -2551,13 +2564,14 @@ class NOUTClient
 
     /**
      * @param array|null $requestHeaders
-     * @param       $messages
-     * @param       $column
-     * @param       $value
+     * @param string     $messages
+     * @param string     $column
+     * @param string     $value
+     * @param int        $autovalidate
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdateMessages($messages, $column, $value, $autovalidate, ?array $requestHeaders=null) : ActionResult
+    public function oUpdateMessages(string $messages, string $column, string $value, int $autovalidate, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders, null, $autovalidate);
 
@@ -2572,13 +2586,13 @@ class NOUTClient
 
     /**
      * @param array|null $requestHeaders
-     * @param       $type
-     * @param       $originalMessage
-     * @param       $templateId
+     * @param string     $type
+     * @param string     $originalMessage
+     * @param string     $templateId
      * @return ActionResult
      * @throws \Exception
      */
-    public function oCreateMessage($type, $originalMessage, $templateId, ?array $requestHeaders=null)
+    public function oCreateMessage(string $type, string $originalMessage, string $templateId, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -2596,7 +2610,7 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oGetReplyTemplates()
+    public function oGetReplyTemplates() : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl(null, null, SOAPProxy::AUTOVALIDATE_Cancel);
 
@@ -2614,13 +2628,13 @@ class NOUTClient
     }
 
     /**
-     * @param       $messageID
-     * @param array $requestParams
-     * @param array $requestHeaders
+     * @param string     $messageID
+     * @param array|null $requestParams
+     * @param array|null $requestHeaders
      * @return ActionResult
      * @throws \Exception
      */
-    public function oReadMessage($messageID, array $requestParams, ?array $requestHeaders=null) :ActionResult
+    public function oReadMessage(string $messageID, ?array $requestParams, ?array $requestHeaders=null) :ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -2634,12 +2648,12 @@ class NOUTClient
     }
 
     /**
-     * @param array $requestHeaders
-     * @param $messageID
+     * @param array|null $requestHeaders
+     * @param string     $messageID
      * @return ActionResult
      * @throws \Exception
      */
-    public function oSendMessage($messageID, ?array $requestHeaders=null) : ActionResult
+    public function oSendMessage(string $messageID, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -2653,13 +2667,13 @@ class NOUTClient
     }
 
     /**
-     * @param array $requestHeaders
-     * @param       $messageId
-     * @param       $attachmentId
+     * @param array|null $requestHeaders
+     * @param string     $messageId
+     * @param string     $attachmentId
      * @return ActionResult
      * @throws \Exception
      */
-    public function oGetAttachment($messageId, $attachmentId, ?array $requestHeaders=null) : ActionResult
+    public function oGetAttachment(string $messageId, string $attachmentId, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -2672,23 +2686,24 @@ class NOUTClient
     }
 
     /**
-     * @param $messageId
+     * @param string $messageId
      * @return HTTPResponse
      * @throws \Exception
      */
-    public function oPrintMessage($messageId) : HTTPResponse
+    public function oPrintMessage(string $messageId) : HTTPResponse
     {
         $clIdentification = $this->_clGetIdentificationREST(null, false);
         return $this->m_clRESTProxy->oPrintMessage($messageId, $clIdentification);
     }
 
     /**
-     * @param array      $requestHeaders
+     * @param array|null $requestHeaders
      * @param DataPJType $PJType
+     * @param string     $messageId
      * @return ActionResult
      * @throws \Exception
      */
-    public function oAddAttachment($messageId, DataPJType $PJType, ?array $requestHeaders=null) : ActionResult
+    public function oAddAttachment(string $messageId, DataPJType $PJType, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -2701,13 +2716,13 @@ class NOUTClient
     }
 
     /**
-     * @param array $requestHeaders
-     * @param       $messageId
-     * @param       $attachmentId
+     * @param array|null $requestHeaders
+     * @param string     $messageId
+     * @param string     $attachmentId
      * @return ActionResult
      * @throws \Exception
      */
-    public function oDeleteAttachment($messageId, $attachmentId, ?array $requestHeaders=null) : ActionResult
+    public function oDeleteAttachment(string $messageId, string $attachmentId, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -2720,11 +2735,11 @@ class NOUTClient
     }
 
     /**
-     * @param $compteID
+     * @param string $compteID
      * @return string
      * @throws \Exception
      */
-    public function sGetSignature($compteID) : string
+    public function sGetSignature(string $compteID) : string
     {
         $clIdentification = $this->_clGetIdentificationREST('', false);
 
@@ -2737,13 +2752,13 @@ class NOUTClient
     }
 
     /**
-     * @param $compteID
-     * @param $sType
-     * @param $withOriginalMessage
+     * @param string $compteID
+     * @param string $sType
+     * @param bool   $withOriginalMessage
      * @return bool
      * @throws \Exception
      */
-    public function bGetSiAjouteSignature($compteID, $sType, $withOriginalMessage)
+    public function bGetSiAjouteSignature(string $compteID, string $sType, bool $withOriginalMessage) : bool
     {
         $nIDCol=(($sType==CreateMessage::CREATE_TYPE_EMPTY) || (($sType==CreateMessage::CREATE_TYPE_ANSWER_TYPE) && !$withOriginalMessage))
             ? Langage::COL_COMPTEEMAIL_SignatureNouveau
@@ -2757,7 +2772,7 @@ class NOUTClient
         $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
         $sRes= $oRetHTTP->content;
 
-        return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes);
+        return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes) <> 0;
     }
 
 
