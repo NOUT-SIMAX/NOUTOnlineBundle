@@ -11,7 +11,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserListCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserPlanning;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
@@ -135,7 +137,7 @@ abstract class NOUTClientBase
     /**
      * @param $eventName
      */
-    private function __startStopwatch($eventName){
+    protected function __startStopwatch($eventName){
         if (isset($this->__stopwatch)){
             $this->__stopwatch->start($eventName);
         }
@@ -144,7 +146,7 @@ abstract class NOUTClientBase
     /**
      * @param $eventName
      */
-    private function __stopStopwatch($eventName){
+    protected function __stopStopwatch($eventName){
         if (isset($this->__stopwatch)){
             $this->__stopwatch->stop($eventName);
         }
@@ -155,7 +157,7 @@ abstract class NOUTClientBase
      * @param $plus
      * @return string
      */
-    private function _getStopWatchEventName($function, $plus) : string
+    protected function _getStopWatchEventName($function, $plus) : string
     {
         return get_class($this).'::'.$function.(empty($plus) ? '' : '::'.$plus);
     }
@@ -210,254 +212,279 @@ abstract class NOUTClientBase
      * @return ActionResult
      * @throws \Exception
      */
-    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, string $idForm = null, string $ReturnType = null) : ActionResult
+    protected function _oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, ?string $idForm=null, ?string $ReturnType=null) : ActionResult
     {
         $clActionResult = new ActionResult($clReponseXML);
-
         $ReturnType = $ReturnType ?? $clActionResult->ReturnType;
         $this->__startStopwatch($stopWatchEvent = $this->_getStopWatchEventName(__FUNCTION__, $ReturnType));
-        switch ($ReturnType)
-        {
-            case XMLResponseWS::RETURNTYPE_EMPTY:
-                break; //on ne fait rien de plus
 
-            case XMLResponseWS::RETURNTYPE_VALUE:
+        // Instance d'un parser
+        $clResponseParser = new ReponseWSParser();
+        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
 
-            case XMLResponseWS::RETURNTYPE_XSD:
-            case XMLResponseWS::RETURNTYPE_IDENTIFICATION:
-            case XMLResponseWS::RETURNTYPE_PLANNING:
-            case XMLResponseWS::RETURNTYPE_LISTCALCULATION:
-            case XMLResponseWS::RETURNTYPE_EXCEPTION:
-
-
-            case XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS:
-            case XMLResponseWS::RETURNTYPE_WITHAUTOMATICRESPONSE:
-            {
-                $this->__stopStopwatch($stopWatchEvent);
-                throw new \Exception("Type de retour $clActionResult->ReturnType non géré", 1);
-            }
-
-            case XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ:
-            {
-                $clData = $clReponseXML->getFile();
-                $clActionResult->setData($clData);
-                break;
-            }
-
-            case XMLResponseWS::RETURNTYPE_REPORT:
-            {
-                $clActionResult->setElement($clReponseXML->clGetElement());
-
-                $oNOUTFileInfo  = $clReponseXML->getFile();   // Récupérer éventuellement un fichier
-                if (is_null($oNOUTFileInfo))
-                {
-                    // Cas normal
-                    $clActionResult->setData($clReponseXML->sGetReport());
-                }
-                else
-                {
-                    $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
-                    $clActionResult->setData($oNOUTFileInfo);
-                    if($clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_ModeleFichier ||
-                        $clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_NomFichier)
-                    {
-                        $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE_PREVIEW);
-                    }
-                }
-                break;
-            }
-
-            case XMLResponseWS::RETURNTYPE_MAILSERVICERECORD:
-            case XMLResponseWS::RETURNTYPE_VALIDATERECORD:
-            case XMLResponseWS::RETURNTYPE_RECORD:
-            case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
-            {
-                // Instance d'un parser
-                $clResponseParser = new ReponseWSParser();
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML, $idForm);
-
-                /** @var ParserXmlXsd $clParser */
-                if ($clActionResult->ReturnType === XMLResponseWS::RETURNTYPE_MAILSERVICERECORD)
-                {
-                    /** @var ParserRecord $clParser */
-                    $clActionResult->setData($clParser->getFirstRecord());
-                }
-                else
-                {
-                    $clActionResult->setData($clParser->getRecord($clReponseXML));
-                }
-                $clActionResult->setValidateError($clReponseXML->getValidateError());
-
-                break;
-            }
-
-            case XMLResponseWS::RETURNTYPE_SCHEDULER:
-            {
-                // Bug dans InitFromXmlXsd si trop volumineux
-                // OutOfMemory\Exception in ParserRecordList.php line 183:
-                // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
-
-                $clCount = $clReponseXML->clGetCount();
-
-                // Par sécurité quand on affiche une liste
-                if ($clCount->m_nNbDisplay > self::MaxEnregs)
-                {
-                    //@@@ TODO trad
-                    $this->__stopStopwatch($stopWatchEvent);
-                    throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
-                }
-
-                // Instance d'un parser
-                $clResponseParser = new ReponseWSParser();
-
-                /** @var ParserScheduler $clParser */
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
-
-                // dump($clParser);
-                // clParser est bien du type ParserList mais n'a pas encore les données
-
-                $list   = $clParser->getList();
-                $users  = $clParser->getScheduler(); // Les utilisateurs pour un planning partagé
-
-                $clActionResult
-                    ->setData($list) //le pas écraser list sinon on perd les boutons
-                    ->setExtraData($users)
-                    ->setValidateError($clReponseXML->getValidateError())
-                    ->setCount($clReponseXML->clGetCount());
-
-                break;
-            }
-
-//            case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
-//            {
-//                $idColumn = 'id_' . Langage::COL_MESSAGERIE_IDDossier;
-//                $idName = 'id_' . Langage::COL_MESSAGERIE_Libelle;
-//                $idParent = 'id_' . Langage::COL_MESSAGERIE_IDDossierPere;
-//                $list = new FolderList();
-//
-//                foreach($clReponseXML->getNodeXML()->children() as $type => $child) {
-//                    $id = (string) $child->$idColumn;
-//                    $name = (string) $child->$idName;
-//                    $parentID = (string) $child->$idParent;
-//                    $list->add($id, $name, $parentID);
-//                }
-//                //var_dump($list);
-//                $clActionResult->setData($list);
-//                break;
-//            }
-
-            case XMLResponseWS::RETURNTYPE_MAILSERVICELIST:
-            case XMLResponseWS::RETURNTYPE_GLOBALSEARCH:
-            case XMLResponseWS::RETURNTYPE_REQUESTFILTER:
-            case XMLResponseWS::RETURNTYPE_THUMBNAIL:
-            case XMLResponseWS::RETURNTYPE_DATATREE:
-            case XMLResponseWS::RETURNTYPE_LIST:
-            {
-                // Bug dans InitFromXmlXsd si trop volumineux
-                // OutOfMemory\Exception in ParserRecordList.php line 183:
-                // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
-
-                $clCount = $clReponseXML->clGetCount();
-
-                // Par sécurité quand on affiche une liste
-                if ($clCount->m_nNbDisplay > self::MaxEnregs)
-                {
-                    //@@@ TODO trad
-                    $this->__stopStopwatch($stopWatchEvent);
-                    throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
-                }
-
-                // Instance d'un parser
-                $clResponseParser = new ReponseWSParser();
-
-                /** @var ParserList $clParser */
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML, $idForm);
-
-                // dump($clParser);
-                // clParser est bien du type ParserList mais n'a pas encore les données
-
-                // getList renvoi un RecordList
-                $list = $clParser->getList();
-                // dump($list);
-
-                $clActionResult
-                    ->setData($list)
-                    ->setValidateError($clReponseXML->getValidateError())
-                    ->setCount($clCount);
-
-                if ($clActionResult->ReturnType == XMLResponseWS::RETURNTYPE_MAILSERVICELIST){
-                    $clFolderCount = $clReponseXML->clGetFolderCount();
-                    if ($clFolderCount){
-                        $clActionResult->setFolderCount($clFolderCount);
-                    }
-                }
-
-                break;
-            }
-
-            case XMLResponseWS::RETURNTYPE_PRINTTEMPLATE:
-            case XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION:
-            case XMLResponseWS::RETURNTYPE_CHOICE:
-            {
-
-                // Instance d'un parser
-                $clResponseParser = new ReponseWSParser();
-
-                /** @var ParserList $clParser */
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
-
-                $clSelectorList = new SelectorList($clParser->getList());
-                $clActionResult->setData($clSelectorList);
-                break;
-            }
-
-            /*
-            case XMLResponseWS::RETURNTYPE_VALIDATEACTION:
-			{
-                throw new \Exception("Type de retour RETURNTYPE_VALIDATEACTION non géré", 1);
-			}
-            */
-
-            case XMLResponseWS::RETURNTYPE_MESSAGEBOX:
-            {
-                // On fabrique la messageBox avec les données XML
-                $clActionResult->setData($clReponseXML->clGetMessageBox());
-                break;
-            }
-
-            //pour la gestion des graphes
-            case XMLResponseWS::RETURNTYPE_NUMBEROFCHART:
-            {
-                // Instance d'un parser
-                $clResponseParser = new ReponseWSParser();
-
-                /** @var ParserNumberOfChart $clParser */
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
-
-                $clActionResult
-                    ->setData($clParser->getNumberOfChart())
-                    ->setValidateError($clReponseXML->getValidateError())
-                    ->setCount($clReponseXML->clGetCount());
-                break;
-            }
-
-            case XMLResponseWS::RETURNTYPE_CHART:
-            {
-                // Instance d'un parser
-                $clResponseParser = new ReponseWSParser();
-
-                /** @var ParserChart $clParser */
-                $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
-
-                $clActionResult->setData($clParser->getChart());
-                break;
-            }
-
-        }
+        $clActionResult->setData($clParser->getRecord($clReponseXML));
+        $clActionResult->setValidateError($clReponseXML->getValidateError());
 
         $this->__stopStopwatch($stopWatchEvent);
         return $clActionResult;
     }
+
+    protected function __oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $ReturnType, string $idForm)
+    {
+        $aPtrFct = array(
+            XMLResponseWS::RETURNTYPE_EMPTY => null,
+
+            XMLResponseWS::RETURNTYPE_REPORT => function () use ($clReponseXML, $clActionResult) {
+                $this->_oGetReport($clReponseXML, $clActionResult);
+            },
+            //retour de type fiche
+            XMLResponseWS::RETURNTYPE_VALIDATERECORD    => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetRecord($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_VALIDATEACTION    => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetRecord($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_RECORD            => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetRecord($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_MAILSERVICERECORD => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetRecord($clReponseXML, $clActionResult, $idForm);
+            },
+
+            XMLResponseWS::RETURNTYPE_SCHEDULER => function () use ($clReponseXML, $clActionResult) {
+                $this->_oGetScheduler($clReponseXML, $clActionResult);
+            },
+            //retour de type liste
+            XMLResponseWS::RETURNTYPE_GLOBALSEARCH    => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_REQUESTFILTER   => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_THUMBNAIL       => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_DATATREE        => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_LIST            => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_MAILSERVICELIST => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
+            },
+            //retour de type choix
+            XMLResponseWS::RETURNTYPE_AMBIGUOUSCREATION => function () use ($clReponseXML, $clActionResult) {
+                $this->_oGetSelectorList($clReponseXML, $clActionResult);
+            },
+            XMLResponseWS::RETURNTYPE_PRINTTEMPLATE     => function () use ($clReponseXML, $clActionResult) {
+                $this->_oGetSelectorList($clReponseXML, $clActionResult);
+            },
+            XMLResponseWS::RETURNTYPE_CHOICE            => function () use ($clReponseXML, $clActionResult) {
+                $this->_oGetSelectorList($clReponseXML, $clActionResult);
+            },
+
+            //message box
+            XMLResponseWS::RETURNTYPE_MESSAGEBOX => function () use ($clReponseXML, $clActionResult) {
+                $clActionResult->setData($clReponseXML->clGetMessageBox());
+            },
+
+            //les graphes
+            XMLResponseWS::RETURNTYPE_CHART         => function () use ($clReponseXML, $clActionResult) {
+                $this->_oGetChart($clReponseXML, $clActionResult);
+            },
+            XMLResponseWS::RETURNTYPE_NUMBEROFCHART => function () use ($clReponseXML, $clActionResult) {
+                $this->_oGetNumberOfChart($clReponseXML, $clActionResult);
+            },
+
+        );
+
+        if (!array_key_exists($ReturnType, $aPtrFct)){
+            throw new \Exception("Type de retour $ReturnType non géré", 1);
+        }
+
+        $fct = $aPtrFct[$ReturnType];
+        if (!is_null($fct)){
+            //on applique la fonction
+            $fct();
+        }
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @throws \Exception
+     */
+    private function _oGetReport(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        $clActionResult->setElement($clReponseXML->clGetElement());
+
+        $oNOUTFileInfo  = $clReponseXML->getFile();   // Récupérer éventuellement un fichier
+        if (is_null($oNOUTFileInfo))
+        {
+            // Cas normal
+            $clActionResult->setData($clReponseXML->sGetReport());
+        }
+        else
+        {
+            $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
+            $clActionResult->setData($oNOUTFileInfo);
+            if($clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_ModeleFichier ||
+                $clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_NomFichier)
+            {
+                $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE_PREVIEW);
+            }
+        }
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @param string        $idForm
+     * @throws \Exception
+     */
+    protected function _oGetRecord(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $idForm)
+    {
+        // Instance d'un parser
+        $clResponseParser = new ReponseWSParser();
+        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML, $idForm);
+
+        /** @var ParserRecord $clParser */
+        $clActionResult->setData($clParser->getRecord($clReponseXML));
+        $clActionResult->setValidateError($clReponseXML->getValidateError());
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @param string        $idForm
+     * @throws \Exception
+     */
+    protected function _oGetList(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $idForm)
+    {
+        // Bug dans InitFromXmlXsd si trop volumineux
+        // OutOfMemory\Exception in ParserRecordList.php line 183:
+        // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
+
+        $clCount = $clReponseXML->clGetCount();
+
+        // Par sécurité quand on affiche une liste
+        if ($clCount->m_nNbDisplay > self::MaxEnregs)
+        {
+            //@@@ TODO trad
+            throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
+        }
+
+        // Instance d'un parser
+        $clResponseParser = new ReponseWSParser();
+
+        /** @var ParserList $clParser */
+        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML, $idForm);
+
+        // dump($clParser);
+        // clParser est bien du type ParserList mais n'a pas encore les données
+
+        // getList renvoi un RecordList
+        $list = $clParser->getList();
+        // dump($list);
+
+        $clActionResult
+            ->setData($list)
+            ->setValidateError($clReponseXML->getValidateError())
+            ->setCount($clCount);
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetSelectorList(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        // Instance d'un parser
+        $clResponseParser = new ReponseWSParser();
+
+        /** @var ParserList $clParser */
+        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+        $clSelectorList = new SelectorList($clParser->getList());
+        $clActionResult->setData($clSelectorList);
+    }
+
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetChart(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        // Instance d'un parser
+        $clResponseParser = new ReponseWSParser();
+
+        /** @var ParserChart $clParser */
+        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+        $clActionResult->setData($clParser->getChart());
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetNumberOfChart(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        // Instance d'un parser
+        $clResponseParser = new ReponseWSParser();
+
+        /** @var ParserNumberOfChart $clParser */
+        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+        $clActionResult
+            ->setData($clParser->getNumberOfChart())
+            ->setValidateError($clReponseXML->getValidateError())
+            ->setCount($clReponseXML->clGetCount());
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetScheduler(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        // Bug dans InitFromXmlXsd si trop volumineux
+        // OutOfMemory\Exception in ParserRecordList.php line 183:
+        // Error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 262144 bytes)
+
+        $clCount = $clReponseXML->clGetCount();
+
+        // Par sécurité quand on affiche une liste
+        if ($clCount->m_nNbDisplay > self::MaxEnregs)
+        {
+            //@@@ TODO trad
+            throw new \Exception("Votre requête a renvoyé trop d'éléments. Contactez l'éditeur du logiciel.", OnlineError::ERR_MEMORY_OVERFLOW);
+        }
+
+        // Instance d'un parser
+        $clResponseParser = new ReponseWSParser();
+
+        /** @var ParserScheduler $clParser */
+        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
+
+        // dump($clParser);
+        // clParser est bien du type ParserList mais n'a pas encore les données
+
+        $list   = $clParser->getList();
+        $users  = $clParser->getScheduler(); // Les utilisateurs pour un planning partagé
+
+        $clActionResult
+            ->setData($list) //le pas écraser list sinon on perd les boutons
+            ->setExtraData($users)
+            ->setValidateError($clReponseXML->getValidateError())
+            ->setCount($clReponseXML->clGetCount());
+    }
+
 
     /**
      * récupère le numéro de version
@@ -864,7 +891,4 @@ abstract class NOUTClientBase
     const PARAM_CALLINGINFO         = 'CallingInfo';
     const PARAM_BTN_LISTMODE        = 'BtnListMode';
 
-    const PARAMMESS_StartDate   = 'StartDate';
-    const PARAMMESS_EndDate     = 'EndDate';
-    const PARAMMESS_Filter      = 'Filter';
 }

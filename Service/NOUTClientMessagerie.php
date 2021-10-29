@@ -20,14 +20,20 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayRedoMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayUndoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetUndoList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Redo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SendMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Undo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 
@@ -38,6 +44,57 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
  */
 class NOUTClientMessagerie extends NOUTClientBase
 {
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @param string        $ReturnType
+     * @param string        $idForm
+     * @throws \Exception
+     */
+    protected function __oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $ReturnType, string $idForm)
+    {
+        $aPtrFct = array(
+            XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ => function() use($clReponseXML, $clActionResult) { $this->_oGetPJ($clReponseXML, $clActionResult); },
+        );
+
+        if (!array_key_exists($ReturnType, $aPtrFct)){
+            parent::__oGetActionResultFromXMLResponse($clReponseXML, $clActionResult, $ReturnType, $idForm);
+            return ;
+        }
+
+        $fct = $aPtrFct[$ReturnType];
+        if (!is_null($fct)){
+            //on applique la fonction
+            $fct();
+        }
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     */
+    protected function _oGetPJ(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        $clData = $clReponseXML->getFile();
+        $clActionResult->setData($clData);
+    }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @param string        $idForm
+     * @throws \Exception
+     */
+    protected function _oGetList(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $idForm)
+    {
+        parent::_oGetList($clReponseXML, $clActionResult, $idForm);
+
+        $clFolderCount = $clReponseXML->clGetFolderCount();
+        if ($clFolderCount){
+            $clActionResult->setFolderCount($clFolderCount);
+        }
+    }
 
     /**
      * @param array|null $requestHeaders
@@ -326,12 +383,12 @@ class NOUTClientMessagerie extends NOUTClientBase
     }
 
     /**
-     * @param              $messageId
-     * @param              $attachmentId
+     * @param string       $messageId
+     * @param string       $attachmentId
      * @param NOUTFileInfo $pj
      * @return ActionResult
      */
-    public function savePJInCache($messageId, $attachmentId, NOUTFileInfo $pj)
+    public function savePJInCache(string $messageId, string $attachmentId, NOUTFileInfo $pj) : ActionResult
     {
         $name = $this->m_clCache->saveMessagePJ($messageId, $attachmentId, $pj);
 
@@ -345,11 +402,11 @@ class NOUTClientMessagerie extends NOUTClientBase
     }
 
     /**
-     * @param $messageId
-     * @param $attachmentId
+     * @param string $messageId
+     * @param string $attachmentId
      * @return ActionResult
      */
-    public function getPJInCache($messageId, $attachmentId)
+    public function getPJInCache(string $messageId, string $attachmentId): ActionResult
     {
         $data = $this->m_clCache->fetchMessagePJ($messageId, $attachmentId);
 
@@ -361,4 +418,119 @@ class NOUTClientMessagerie extends NOUTClientBase
         return $clActionResult;
     }
 
+    /**
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetUndoList(array $requestParams, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $getUndoListParam = new GetUndoList();
+        $getUndoListParam->SpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
+        $getUndoListParam->StartDate = $requestParams[self::PARAMMESS_StartDate];
+        $getUndoListParam->EndDate = $requestParams[self::PARAMMESS_EndDate];
+        $getUndoListParam->ActionType = '';
+        $getUndoListParam->DoneBy = '';
+        $getUndoListParam->Form = '';
+        $getUndoListParam->OtherCriteria = '';
+
+        $clReponseXML = $this->m_clSOAPProxy->getUndoList($getUndoListParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+
+    /**
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetRedoList(array $requestParams, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $getRedoListParam = new GetRedoList();
+        $getRedoListParam->SpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
+        $getRedoListParam->StartDate = $requestParams[self::PARAMMESS_StartDate];
+        $getRedoListParam->EndDate = $requestParams[self::PARAMMESS_EndDate];
+        $getRedoListParam->ActionType = '';
+        $getRedoListParam->DoneBy = '';
+        $getRedoListParam->Form = '';
+        $getRedoListParam->OtherCriteria = '';
+
+        $clReponseXML = $this->m_clSOAPProxy->getRedoList($getRedoListParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param string     $idMessage
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oDisplayUndoMessage(string $idMessage, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $param = new DisplayUndoMessage();
+        $param->IDMessage = $idMessage;
+
+        $clReponseXML = $this->m_clSOAPProxy->displayUndoMessage($param, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+
+    /**
+     * @param string     $idMessage
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oDisplayRedoMessage(string $idMessage, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $param = new DisplayRedoMessage();
+        $param->IDMessage = $idMessage;
+
+        $clReponseXML = $this->m_clSOAPProxy->displayRedoMessage($param, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param string     $idMessage
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oUndo(string $idMessage, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $param = new Undo();
+        $param->IDMessage = $idMessage;
+
+        $clReponseXML = $this->m_clSOAPProxy->undo($param, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param string     $idMessage
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oRedo(string $idMessage, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $param = new Redo();
+        $param->IDMessage = $idMessage;
+
+        $clReponseXML = $this->m_clSOAPProxy->redo($param, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    const PARAMMESS_StartDate   = 'StartDate';
+    const PARAMMESS_EndDate     = 'EndDate';
+    const PARAMMESS_Filter      = 'Filter';
 }

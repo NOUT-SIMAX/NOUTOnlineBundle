@@ -12,6 +12,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\Parser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserListCalculation;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserMailRecord;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserPlanning;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
@@ -37,7 +38,7 @@ class ReponseWSParser
             XMLResponseWS::RETURNTYPE_RECORD          	=> ParserRecord::class,
             XMLResponseWS::RETURNTYPE_VALIDATERECORD  	=> ParserRecord::class,
             XMLResponseWS::RETURNTYPE_VALIDATEACTION  	=> ParserRecord::class,
-            XMLResponseWS::RETURNTYPE_MAILSERVICERECORD	=> ParserRecord::class,
+            XMLResponseWS::RETURNTYPE_MAILSERVICERECORD	=> ParserMailRecord::class,
 
             XMLResponseWS::RETURNTYPE_SCHEDULER 		=> ParserScheduler::class,
             XMLResponseWS::RETURNTYPE_THUMBNAIL         => ParserList::class,

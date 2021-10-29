@@ -52,6 +52,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\PrintParams;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Redo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ReorderList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ReorderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
@@ -1672,7 +1673,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
      * @return XMLResponseWS
      * @access public
      */
-    public function Redo(Redo $clWsdlType_Redo, $aHeaders = array())
+    public function redo(Redo $clWsdlType_Redo, $aHeaders = array())
     {
         return $this->call('Redo', array($clWsdlType_Redo) ,  null, null , $aHeaders);
     }
