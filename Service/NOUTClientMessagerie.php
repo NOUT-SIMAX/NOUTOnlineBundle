@@ -59,7 +59,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         );
 
         if (!array_key_exists($ReturnType, $aPtrFct)){
-            parent::__oGetActionResultFromXMLResponse($clReponseXML, $clActionResult, $ReturnType, $idForm);
+            parent::__GetActionResultFromXMLResponse($clReponseXML, $clActionResult, $ReturnType, $idForm);
             return ;
         }
 
@@ -86,7 +86,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      * @param string        $idForm
      * @throws \Exception
      */
-    protected function _oGetList(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $idForm)
+    protected function _oGetList(XMLResponseWS $clReponseXML, ActionResult $clActionResult, ?string $idForm)
     {
         parent::_oGetList($clReponseXML, $clActionResult, $idForm);
 

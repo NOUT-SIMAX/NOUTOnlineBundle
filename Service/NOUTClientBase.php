@@ -218,18 +218,13 @@ abstract class NOUTClientBase
         $ReturnType = $ReturnType ?? $clActionResult->ReturnType;
         $this->__startStopwatch($stopWatchEvent = $this->_getStopWatchEventName(__FUNCTION__, $ReturnType));
 
-        // Instance d'un parser
-        $clResponseParser = new ReponseWSParser();
-        $clParser = $clResponseParser->InitFromXmlXsd($clReponseXML);
-
-        $clActionResult->setData($clParser->getRecord($clReponseXML));
-        $clActionResult->setValidateError($clReponseXML->getValidateError());
+        $this->__GetActionResultFromXMLResponse($clReponseXML, $clActionResult, $ReturnType, $idForm);
 
         $this->__stopStopwatch($stopWatchEvent);
         return $clActionResult;
     }
 
-    protected function __oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $ReturnType, string $idForm)
+    protected function __GetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $ReturnType, ?string $idForm)
     {
         $aPtrFct = array(
             XMLResponseWS::RETURNTYPE_EMPTY => null,
@@ -306,7 +301,7 @@ abstract class NOUTClientBase
         $fct = $aPtrFct[$ReturnType];
         if (!is_null($fct)){
             //on applique la fonction
-            $fct();
+            $fct(); //pas de paramètre on utilise les use
         }
     }
 
@@ -359,7 +354,7 @@ abstract class NOUTClientBase
      * @param string        $idForm
      * @throws \Exception
      */
-    protected function _oGetList(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $idForm)
+    protected function _oGetList(XMLResponseWS $clReponseXML, ActionResult $clActionResult, ?string $idForm)
     {
         // Bug dans InitFromXmlXsd si trop volumineux
         // OutOfMemory\Exception in ParserRecordList.php line 183:
