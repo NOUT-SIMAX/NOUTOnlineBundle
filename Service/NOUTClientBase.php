@@ -334,10 +334,10 @@ abstract class NOUTClientBase
     /**
      * @param XMLResponseWS $clReponseXML
      * @param ActionResult  $clActionResult
-     * @param string        $idForm
+     * @param string|null        $idForm
      * @throws \Exception
      */
-    protected function _oGetRecord(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $idForm)
+    protected function _oGetRecord(XMLResponseWS $clReponseXML, ActionResult $clActionResult, ?string $idForm)
     {
         // Instance d'un parser
         $clResponseParser = new ReponseWSParser();
