@@ -20,14 +20,11 @@ class ParserNumberOfChart extends ParserWithParam
      * @param XMLResponseWS $clXMLReponseWS
      * @throws \Exception
      */
-    public function Parse(XMLResponseWS $clXMLReponseWS)
+    public function Parse(XMLResponseWS $clXMLReponseWS, $idForm)
     {
-
-
-
         // Parser les paramètres
         // Permet de savoir combien on a d'éléments avant de traiter les données ?
-        parent::Parse($clXMLReponseWS);
+        parent::Parse($clXMLReponseWS, $idForm);
 
         $clAction = $clXMLReponseWS->clGetAction();
         $sIDFormAction = $clAction->getIDForm();
