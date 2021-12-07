@@ -236,6 +236,7 @@ class NOUTClient
     /**
      * récupère le numéro de version
      * @return NOUTOnlineVersion
+     * @throws \Exception
      */
     public function clGetVersion() : NOUTOnlineVersion
     {
@@ -245,6 +246,7 @@ class NOUTClient
     /**
      * teste le client pour savoir s'il correspond à la version minimale
      * @return bool
+     * @throws \Exception
      */
     public function isVersionMin() : bool
     {
@@ -841,13 +843,14 @@ class NOUTClient
 
     /**
      * Execute une action via sa phrase
-     * @param array  $tabParamQuery
-     * @param        $sPhrase
-     * @param string $sIDContexte
+     * @param array      $tabParamQuery
+     * @param            $sPhrase
+     * @param string     $sIDContexte
+     * @param array|null $aTabHeaderQuery
      * @return ActionResult
      * @throws \Exception
      */
-    public function oExecSentence($sPhrase, $sIDContexte, array $tabParamQuery, ?array $aTabHeaderQuery=null) : ActionResult
+    public function oExecSentence($sPhrase, string $sIDContexte, array $tabParamQuery, ?array $aTabHeaderQuery=null) : ActionResult
     {
         //--------------------------------------------------------------------------------------------
         // Création de $clParamExecute
@@ -908,7 +911,7 @@ class NOUTClient
      * @return ActionResult
      * @throws \Exception
      */
-    public function oExecList(array $tabParamQuery, $sIDTableau, $sIDContexte = '', ?array $aTabHeaderQuery=null) : ActionResult
+    public function oExecList(array $tabParamQuery, $sIDTableau, string $sIDContexte = '', ?array $aTabHeaderQuery=null) : ActionResult
     {
         //paramètre de l'action liste
         $clParam = $this->_oGetParam(ListParams::class, $tabParamQuery);
@@ -925,10 +928,11 @@ class NOUTClient
     /**
      * @param $tableID
      * @param string $contextID
+     * @param array|null $aTabHeaderQuery
      * @return ActionResult
      * @throws \Exception
      */
-    public function oExecListRequest($tableID, $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
+    public function oExecListRequest($tableID, string  $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
     {
         return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Requete, Langage::COL_REQUETE_IDTableau, [], $aTabHeaderQuery);
     }
@@ -939,6 +943,7 @@ class NOUTClient
      * @param $requestTableId
      * @param $requestColId
      * @param $colList
+     * @param array|null $aTabHeaderQuery
      * @return ActionResult
      * @throws \Exception
      */
@@ -1051,6 +1056,7 @@ class NOUTClient
      * @param $module
      * @param $colType
      * @param $items
+     * @param array|null $aTabHeaderQuery
      * @return ActionResult
      * @throws \Exception
      */
@@ -1188,13 +1194,14 @@ class NOUTClient
 
     /**
      * Affichage d'une liste via l'action recherche
-     * @param array $tabParamQuery
+     * @param array      $tabParamQuery
      * @param $sIDTableau
-     * @param string $contextID
+     * @param string     $contextID
+     * @param array|null $aTabHeaderQuery
      * @return ActionResult
      * @throws \Exception
      */
-    public function oExecSearch(array $tabParamQuery, $sIDTableau, $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
+    public function oExecSearch(array $tabParamQuery, $sIDTableau, string $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
     {
         //--------------------------------------------------------------------------------------------
         // Headers
@@ -1225,9 +1232,10 @@ class NOUTClient
     /**
      * Execute une action via son id
      * @param array $tabParamQuery
-     * @param array|null $tabHeaderQuery
+     * @param array|null $aTabHeaderQuery
      * @param string $idcolonne
      * @param Record $clRecord
+     * @param $idcontexte
      * @return ActionResult
      * @throws \Exception
      */
@@ -1273,6 +1281,7 @@ class NOUTClient
     }
 
     /**
+     * @param $idContexte
      * @param array $tabParamQuery
      * @param array|null $tabHeaderQuery
      * @return ActionResult
