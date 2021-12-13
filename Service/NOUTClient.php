@@ -2788,8 +2788,12 @@ class NOUTClient
      * @return bool
      * @throws \Exception
      */
-    public function bGetSiAjouteSignature($compteID, $sType, $withOriginalMessage)
+    public function bGetSiAjouteSignature($compteID, $sType, $withOriginalMessage) : bool
     {
+        if ($sType == CreateMessage::CREATE_TYPE_ANSWER_TYPE){
+            return false; //par défaut on ajoute pas la signature sur un reponse type
+        }
+
         $nIDCol=(($sType==CreateMessage::CREATE_TYPE_EMPTY) || (($sType==CreateMessage::CREATE_TYPE_ANSWER_TYPE) && !$withOriginalMessage))
             ? Langage::COL_COMPTEEMAIL_SignatureNouveau
             : Langage::COL_COMPTEEMAIL_SignatureRepondre;
@@ -2802,7 +2806,7 @@ class NOUTClient
         $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
         $sRes= $oRetHTTP->content;
 
-        return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes);
+        return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes)>0;
     }
 
 
