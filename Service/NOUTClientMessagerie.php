@@ -367,6 +367,10 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function bGetSiAjouteSignature(string $compteID, string $sType, bool $withOriginalMessage) : bool
     {
+        if ($sType == CreateMessage::CREATE_TYPE_ANSWER_TYPE){
+            return false; //par défaut on ajoute pas la signature sur un reponse type
+        }
+
         $nIDCol=(($sType==CreateMessage::CREATE_TYPE_EMPTY) || (($sType==CreateMessage::CREATE_TYPE_ANSWER_TYPE) && !$withOriginalMessage))
             ? Langage::COL_COMPTEEMAIL_SignatureNouveau
             : Langage::COL_COMPTEEMAIL_SignatureRepondre;
