@@ -30,30 +30,40 @@ class StructureElement
      * les boutons qu'on affiche dans la fiche ou en bas des listes
 	 * @var array
 	 */
-	protected $m_TabBouton;
+	protected $m_TabBouton=[];
+
+    /**
+     * @var array
+     */
+	protected $m_TabBoutonSurLigne=[];
+
+    /**
+     * @var array
+     */
+    protected $m_TabBoutonColNonDetail=[];
 
     /**
      * les boutons qu'on affiche dans la fiche ou en bas des listes qui sont en lecture seule
 	 * @var array
 	 */
-	protected $m_TabBoutonReadOnly;
+	protected $m_TabBoutonReadOnly=[];
 
     /**
      * les boutons de remplacement qui remplace enregistrer et annuler
      * @var array
      */
-    protected $m_TabBoutonRemplacementValidation;
+    protected $m_TabBoutonRemplacementValidation=[];
 
     /**
      * les autres boutons de remplacement
      * @var array
      */
-    protected $m_TabBoutonRemplacementAutre;
+    protected $m_TabBoutonRemplacementAutre=[];
 
 	/**
 	 * @var StructureColonne[]
 	 */
-	protected $m_MapIDColonne2Structure;
+	protected $m_MapIDColonne2Structure = [];
 
     /**
      * @var int
@@ -68,7 +78,7 @@ class StructureElement
     /**
      * @var string
      */
-    protected $m_sBackgroundColor;
+    protected $m_sBackgroundColor = '';
 
 
 	/**
@@ -83,13 +93,6 @@ class StructureElement
 		$this->m_clFiche					= new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
 		$this->m_eMultiColMode              = StructureSection::MODE_1COlONNE;
 		$this->m_eMultiColWay               = StructureSection::SENS_HORIZONTAL;
-		$this->m_sBackgroundColor           = '';
-
-		$this->m_MapIDColonne2Structure 			= array();
-        $this->m_TabBouton							= array();
-        $this->m_TabBoutonReadOnly					= array();
-        $this->m_TabBoutonRemplacementAutre			= array();
-        $this->m_TabBoutonRemplacementValidation	= array();
 	}
 
     /**
@@ -182,6 +185,15 @@ class StructureElement
                 }
 
                 return false;
+            }
+
+            if ($clStructBouton->isOption(StructureColonne::OPTION_DisplayOnLine))
+            {
+                $this->m_TabBoutonSurLigne[] = $clStructBouton;
+            }
+            elseif (!$clStructBouton->isOption(StructureColonne::OPTION_Detail))
+            {
+                $this->m_TabBoutonColNonDetail[] = $clStructBouton;
             }
 
             //sinon on le met avec les autres colonnes
@@ -286,6 +298,22 @@ class StructureElement
     /**
      * @return array
      */
+	public function getTabBtnColNonDetail() : array
+    {
+        return $this->m_TabBoutonColNonDetail;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTabBtnSurLigne() : array
+    {
+        return $this->m_TabBoutonSurLigne;
+    }
+
+    /**
+     * @return array
+     */
     public function getTabBtnRemplacementValidation(): array
     {
         return $this->m_TabBoutonRemplacementValidation;
@@ -297,45 +325,6 @@ class StructureElement
     public function getTabBtnRemplacementAutre(): array
     {
         return $this->m_TabBoutonRemplacementAutre;
-    }
-
-	/**
-	 * @return array
-	 */
-	public function getColButtons(): array
-    {
-        $fiche                      = $this->getFiche(); // Les boutons non détail sont dans la fiche ?
-        $structureColonne           = $fiche->getTabStructureColonne();
-
-        $actionButtonsArray = array();
-
-        // Appel à fonction récursive pour chercher les boutons dans l'arbre
-        $actionButtonsArray = $this->_extractButtonsFromSection($structureColonne, $actionButtonsArray);
-
-        return $actionButtonsArray;
-	}
-
-    /*
-    * La fonction est aussi dans TransformViewWebixJSON.php
-    */
-    private function _extractButtonsFromSection($colonne, $actionButtonsArray)
-    {
-        foreach ($colonne as $element)
-        {
-            /* @var $element StructureDonnee */
-            $typeElement = $element->getTypeElement();
-
-            if ($typeElement == StructureColonne::TM_Bouton)
-            {
-                $actionButtonsArray[] = $element;
-            }
-            else if($element instanceof StructureSection)
-            {
-                $this->_extractButtonsFromSection($element, $actionButtonsArray);
-            }
-        }
-
-        return $actionButtonsArray;
     }
 
 	/**

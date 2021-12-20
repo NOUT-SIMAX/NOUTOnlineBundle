@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 abstract class StructureColonne
 {
@@ -400,6 +401,12 @@ abstract class StructureColonne
 		return $this->m_TabOptions[$sOption];
 	}
 
+	public function getDisplayMode() : array
+    {
+        $sString = $this->m_TabOptions[self::OPTION_DisplayMode] ?? XMLResponseWS::DISPLAYMODE_List;
+        return explode('|', $sString);
+    }
+
     /**
      * vrai si le champ est un texte multiligne
      * @return bool
@@ -652,6 +659,7 @@ abstract class StructureColonne
 	const OPTION_Sort        = 'sort';
 	const OPTION_Link        = 'link';
 	const OPTION_LinkControl = 'linkControl';    // pour les colonnes (controles de validité)
+    const OPTION_DisplayMode = 'displayMode';
 
     const OPTION_Hidden = "hidden"; // Namespace déjà géré
     const OPTION_ContainerCol = "containerCol"; // Namespace déjà géré
@@ -705,6 +713,7 @@ abstract class StructureColonne
 	const OPTION_IDColToUpdate      = "columnToUpdate";
 	const OPTION_IDColSelection     = "columnSelection";
 	const OPTION_ColumnAssignation  = "columnAssignation";
+	const OPTION_DisplayOnLine      = "displayOnLine";
 
 	// Attributs des separateurs
 	const OPTION_ModeMultiC      = "multiColumnMode";
