@@ -1640,6 +1640,10 @@ class Langage
 	const JS_Samedi   = 9683;
 	const JS_Dimanche = 9684;
 
+    /*************************************************************
+     * IDENTIFIANT DE MODELE Particulier
+     *************************************************************/
+    const MT_TypeDAction = 2061;
 
 	/*************************************************************
 	 * IDENTIFIANT D'ACTION
@@ -1682,6 +1686,9 @@ class Langage
 	const ACTION_AppelEntrant               = 17267;
 //	const ACTION_Stock                      = 11776;
 //	const ACTION_Publipostage               = 10618;
+    const ACTION_ListeChoix                 = 2549;
+    const ACTION_ListeFormulaire            = 2317;
+    const ACTION_ListeUtilisateur           = 1496;
 
 	const ACTION_ExporterOrganigramme    = 13774;
 	const ACTION_Messagerie_ListeMessage = 0;
@@ -1794,6 +1801,9 @@ class Langage
 	const PA_ConnexionExtranet_Hachage         = 18023;
 
 	const PA_Requete_Tous_Form                  = 6293;
+
+	const PA_ListeChoix_Modele                  = 2554;
+	const PA_ListeFormulaire_SousModule         = 2532;
 
 
 

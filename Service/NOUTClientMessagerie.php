@@ -10,9 +10,11 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
@@ -233,6 +235,85 @@ class NOUTClientMessagerie extends NOUTClientBase
         $clReponseXML = $this->m_clSOAPProxy->execute($execaction, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
+
+    /**
+     * @return \stdClass
+     * @throws \Exception
+     */
+    public function oGetUndoRedoInitFilter() : \stdClass
+    {
+        $oUndoRedoFilter = $this->fetchFromCache(NOUTClientCache::CACHE_IHM, "undoredo_filter");
+        if (isset($oUndoRedoFilter) && ($oUndoRedoFilter !== false)){
+            return $oUndoRedoFilter; //on a déjà les infos, elles sont fixe par rapport au langage
+        }
+        //apiuser et on annule tout de suite
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl([SOAPProxy::HEADER_APIUser => 1], null, SOAPProxy::AUTOVALIDATE_Cancel);
+
+        //il faut construire le résultat,
+
+        // on commence par la liste des types d'action
+        $listTypeAction = new Execute();
+        $listTypeAction->ID = Langage::ACTION_ListeChoix;
+        $listTypeAction->ParamXML='<id_'.Langage::PA_ListeChoix_Modele.'>'.Langage::MT_TypeDAction.'</id_'.Langage::PA_ListeChoix_Modele.'>';
+
+
+        $clReponseXML = $this->m_clSOAPProxy->execute($listTypeAction, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $oRetTypeAction = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+
+
+        //on fait aussi la liste des formulaires
+        $listFormulaire = new Execute();
+        $listFormulaire->ID = Langage::ACTION_ListeFormulaire;
+        $listFormulaire->ParamXML='<id_'.Langage::PA_ListeFormulaire_SousModule.'></id_'.Langage::PA_ListeFormulaire_SousModule.'>';
+
+
+        $clReponseXML = $this->m_clSOAPProxy->execute($listFormulaire, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $oRetFormulaire = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+
+        $oRet = new \stdClass();
+
+        /** @var RecordList $clListTypeAction */
+        $clListTypeAction = $oRetTypeAction->getData();
+        $oRet->typeActions = $clListTypeAction->toIDTitleArray();
+
+        /** @var RecordList $clListFormulaire */
+        $clListFormulaire = $oRetFormulaire->getData();
+        $oRet->forms = $clListFormulaire->toIDTitleArray();
+
+        //on sauve en cache
+        $this->_saveInCache(NOUTClientCache::CACHE_IHM, "undoredo_filter", $oRet);
+
+        return $oRet;
+    }
+
+
+    /**
+     * @return \stdClass
+     * @throws \Exception
+     */
+    public function oGetUndoRedoUserList() : \stdClass
+    {
+        //apiuser et on annule tout de suite
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl([SOAPProxy::HEADER_APIUser => 1], null, SOAPProxy::AUTOVALIDATE_Cancel);
+
+        //il faut construire le résultat,
+
+        // on commence par la liste des types d'action
+        $listUtilisateur = new Execute();
+        $listUtilisateur->ID = Langage::ACTION_ListeUtilisateur;
+
+        $clReponseXML = $this->m_clSOAPProxy->execute($listUtilisateur, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $oRetUtilisateur = $this->_oGetActionResultFromXMLResponse($clReponseXML);
+
+        $oRet = new \stdClass();
+
+        /** @var RecordList $clListUtilisateur */
+        $clListUtilisateur = $oRetUtilisateur->getData();
+        $oRet->users = $clListUtilisateur->toIDTitleArray();
+
+        return $oRet;
+    }
+
 
     /**
      * @param string     $messageID
