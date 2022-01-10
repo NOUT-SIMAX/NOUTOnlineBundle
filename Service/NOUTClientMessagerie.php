@@ -511,16 +511,16 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function oGetUndoList(array $requestParams, ?array $requestHeaders=null) : ActionResult
     {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl(($requestHeaders ?? [])+[SOAPProxy::HEADER_ActionContext=>self::DM_UndoList]);
 
         $getUndoListParam = new GetUndoList();
         $getUndoListParam->SpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
         $getUndoListParam->StartDate = $requestParams[self::PARAMMESS_StartDate];
         $getUndoListParam->EndDate = $requestParams[self::PARAMMESS_EndDate];
-        $getUndoListParam->ActionType = '';
-        $getUndoListParam->DoneBy = '';
-        $getUndoListParam->Form = '';
-        $getUndoListParam->OtherCriteria = '';
+        $getUndoListParam->ActionType = $requestParams[self::PARAMMESS_ActionType];
+        $getUndoListParam->DoneBy = $requestParams[self::PARAMMESS_DoneBy];
+        $getUndoListParam->Form = $requestParams[self::PARAMMESS_Form];
+        $getUndoListParam->OtherCriteria = $requestParams[self::PARAMMESS_OtherCriteria];
 
         $clReponseXML = $this->m_clSOAPProxy->getUndoList($getUndoListParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
@@ -533,7 +533,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      * @return ActionResult
      * @throws \Exception
      */
-    public function oGetRedoList(array $requestParams, ?array $requestHeaders=null) : ActionResult
+    public function oGetRedoList(array $requestParams, ?array $requestHeaders=[]) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
@@ -541,10 +541,10 @@ class NOUTClientMessagerie extends NOUTClientBase
         $getRedoListParam->SpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
         $getRedoListParam->StartDate = $requestParams[self::PARAMMESS_StartDate];
         $getRedoListParam->EndDate = $requestParams[self::PARAMMESS_EndDate];
-        $getRedoListParam->ActionType = '';
-        $getRedoListParam->DoneBy = '';
-        $getRedoListParam->Form = '';
-        $getRedoListParam->OtherCriteria = '';
+        $getRedoListParam->ActionType = $requestParams[self::PARAMMESS_ActionType];
+        $getRedoListParam->DoneBy = $requestParams[self::PARAMMESS_DoneBy];
+        $getRedoListParam->Form = $requestParams[self::PARAMMESS_Form];
+        $getRedoListParam->OtherCriteria = $requestParams[self::PARAMMESS_OtherCriteria];
 
         $clReponseXML = $this->m_clSOAPProxy->getRedoList($getRedoListParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
@@ -558,7 +558,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function oDisplayUndoMessage(string $idMessage, ?array $requestHeaders=null) : ActionResult
     {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders,null, SOAPProxy::AUTOVALIDATE_Cancel);
         $param = new DisplayUndoMessage();
         $param->IDMessage = $idMessage;
 
@@ -575,7 +575,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function oDisplayRedoMessage(string $idMessage, ?array $requestHeaders=null) : ActionResult
     {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders, null, SOAPProxy::AUTOVALIDATE_Cancel);
         $param = new DisplayRedoMessage();
         $param->IDMessage = $idMessage;
 
@@ -615,7 +615,15 @@ class NOUTClientMessagerie extends NOUTClientBase
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
-    const PARAMMESS_StartDate   = 'StartDate';
-    const PARAMMESS_EndDate     = 'EndDate';
-    const PARAMMESS_Filter      = 'Filter';
+    const PARAMMESS_Filter = 'Filter';
+    const PARAMMESS_StartDate = 'StartDate';
+    const PARAMMESS_EndDate = 'EndDate';
+    const PARAMMESS_DoneBy = 'DoneBy';
+    const PARAMMESS_ActionType = 'ActionType';
+    const PARAMMESS_Form = 'Form';
+    const PARAMMESS_OtherCriteria = 'OtherCriteria';
+
+    const DM_Request = 11;
+    const DM_UndoList = 65534;
+    const DM_RedoList = 65535;
 }
