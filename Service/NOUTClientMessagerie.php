@@ -19,6 +19,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
@@ -212,6 +213,23 @@ class NOUTClientMessagerie extends NOUTClientBase
             $message->IDMessage = $originalMessage;
 
         $clReponseXML=$this->m_clSOAPProxy->createMessage($message, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param string     $idMessage
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oCancelMessage(string $idMessage, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $action = new CancelMessage();
+        $action->IDMessage = $idMessage;
+
+        $clReponseXML = $this->m_clSOAPProxy->cancelMessage($action,  $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
@@ -563,7 +581,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $param->IDMessage = $idMessage;
 
         $clReponseXML = $this->m_clSOAPProxy->displayUndoMessage($param, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return  $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
 
