@@ -56,6 +56,12 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
     /** @var bool  */
     protected $m_bAnonyme=false;
 
+    /** @var bool  */
+    protected $m_bSuperviseur=false;
+
+    /** @var string  */
+    protected $m_nIDUser='';
+
     /**
      * {@inheritdoc}
      */
@@ -246,6 +252,33 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
         return $this;
     }
 
+    /**
+     * @param string $nID
+     * @param bool   $bSuperviseur
+     * @return $this
+     */
+    public function setInfoUserConnected(string $nID, bool $bSuperviseur): NOUTToken
+    {
+        $this->m_nIDUser = $nID;
+        $this->m_bSuperviseur = $bSuperviseur;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuperviseur() : bool
+    {
+        return $this->m_bSuperviseur;
+    }
+
+    /**
+     * @return string
+     */
+    public function nGetIDUser(): string
+    {
+        return $this->m_nIDUser;
+    }
 
 
     /**
@@ -268,6 +301,8 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
                 'data' => $this->m_oExtranetUsernameToken->forSerialization()
             ],
             'anonyme' => $this->m_bAnonyme,
+            'superviseur' => $this->m_bSuperviseur,
+            'userID' => $this->m_nIDUser,
             'version' => $this->getVersionNO(),
             'language' => is_null($this->m_clLangage) ? null : $this->m_clLangage->forSerialization(),
             'parent_data' => parent::__serialize()
@@ -302,6 +337,12 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
         }
         if (isset($aUnserialised['anonyme'])){
             $this->m_bAnonyme = boolval($aUnserialised['anonyme']);
+        }
+        if (isset($aUnserialised['superviseur'])){
+            $this->m_bSuperviseur = boolval($aUnserialised['superviseur']);
+        }
+        if (isset($aUnserialised['userID'])){
+            $this->m_nIDUser = $aUnserialised['userID'];
         }
 
         $this->m_sNameToDisplay=$aUnserialised['name'];
