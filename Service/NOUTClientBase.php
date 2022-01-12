@@ -10,6 +10,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\MailServiceStatus;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserListCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
@@ -292,6 +293,10 @@ abstract class NOUTClientBase
                 $this->_oGetNumberOfChart($clReponseXML, $clActionResult);
             },
 
+            //le status de la messagerie
+            XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS => function () use ($clReponseXML, $clActionResult){
+                $this->_oGetMailServiceStatus($clReponseXML, $clActionResult);
+            }
         );
 
         if (!array_key_exists($ReturnType, $aPtrFct)){
@@ -480,6 +485,26 @@ abstract class NOUTClientBase
             ->setCount($clReponseXML->clGetCount());
     }
 
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetMailServiceStatus(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        $clXML = $clReponseXML->getNodeXML();
+
+        $clStatus = new MailServiceStatus();
+        $clStatus->nbUrgentUnreadFromMax = (int)$clXML->UrgentUnReadFromMax;
+        $clStatus->nbUnreadFromMax = (int)$clXML->UnReadFromMax;
+        $clStatus->nbUrgentUnread = (int)$clXML->UrgentUnRead;
+        $clStatus->nbUnread = (int)$clXML->UnRead;
+        $clStatus->nbReceive = (int)$clXML->Receive;
+        $clStatus->LastUnread = (string)$clXML->LastUnRead;
+
+        $clActionResult
+            ->setData($clStatus);
+    }
 
     /**
      * récupère le numéro de version

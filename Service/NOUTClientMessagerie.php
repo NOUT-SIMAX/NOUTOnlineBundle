@@ -100,6 +100,18 @@ class NOUTClientMessagerie extends NOUTClientBase
     }
 
     /**
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetMailServiceStatus(?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $clReponseXML = $this->m_clSOAPProxy->getMailServiceStatus($this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
      * @param array|null $requestHeaders
      * @param array $requestParams
      * @return ActionResult
