@@ -495,9 +495,9 @@ abstract class NOUTClientBase
         $clXML = $clReponseXML->getNodeXML();
 
         $clStatus = new MailServiceStatus();
-        $clStatus->nbUrgentUnreadFromMax = (int)$clXML->UrgentUnReadFromMax;
-        $clStatus->nbUnreadFromMax = (int)$clXML->UnReadFromMax;
-        $clStatus->nbUrgentUnread = (int)$clXML->UrgentUnRead;
+        $clStatus->nbMaxUnreadUrgent = (int)$clXML->UrgentUnReadFromMax;
+        $clStatus->nbMaxUnread = (int)$clXML->UnReadFromMax;
+        $clStatus->nbUnreadUrgent = (int)$clXML->UrgentUnRead;
         $clStatus->nbUnread = (int)$clXML->UnRead;
         $clStatus->nbReceive = (int)$clXML->Receive;
         $clStatus->LastUnread = (string)$clXML->LastUnRead;

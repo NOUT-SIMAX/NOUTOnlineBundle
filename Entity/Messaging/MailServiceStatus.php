@@ -10,13 +10,13 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging;
 class MailServiceStatus
 {
     /** @var int  */
-    public $nbUrgentUnreadFromMax = 0;
+    public $nbMaxUnreadUrgent = 0;
 
     /** @var int  */
-    public $nbUnreadFromMax = 0;
+    public $nbMaxUnread = 0;
 
     /** @var int  */
-    public $nbUrgentUnread = 0;
+    public $nbUnreadUrgent = 0;
 
     /** @var int  */
     public $nbUnread = 0;

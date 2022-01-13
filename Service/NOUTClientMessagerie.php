@@ -20,6 +20,8 @@ use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CancelMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CloseFolderList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CloseMessageList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
@@ -126,6 +128,24 @@ class NOUTClientMessagerie extends NOUTClientBase
     }
 
     /**
+     * @param string     $listID
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oCloseFolderList(string $listID, array $requestParams, ?array $requestHeaders=null): ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $clParam = new CloseFolderList();
+        $clParam->IDList = $listID;
+
+        $clReponseXML = $this->m_clSOAPProxy->closeFolderList($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Dossier);
+    }
+
+    /**
      * @param array      $requestParams
      * @param array|null $requestHeaders
      * @param string     $folderID
@@ -163,6 +183,25 @@ class NOUTClientMessagerie extends NOUTClientBase
         $clReponseXML = $this->m_clSOAPProxy->getRequestMessage($requestMessage, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
+
+    /**
+     * @param string     $listID
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oCloseMessageList(string $listID, array $requestParams, ?array $requestHeaders=null): ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $clParam = new CloseMessageList();
+        $clParam->IDList = $listID;
+
+        $clReponseXML = $this->m_clSOAPProxy->closeMessageList($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
 
     /**
      * @param string $idmessage
@@ -588,7 +627,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function oDisplayUndoMessage(string $idMessage, ?array $requestHeaders=null) : ActionResult
     {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders,null, SOAPProxy::AUTOVALIDATE_Cancel);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $param = new DisplayUndoMessage();
         $param->IDMessage = $idMessage;
 
@@ -605,7 +644,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function oDisplayRedoMessage(string $idMessage, ?array $requestHeaders=null) : ActionResult
     {
-        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders, null, SOAPProxy::AUTOVALIDATE_Cancel);
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
         $param = new DisplayRedoMessage();
         $param->IDMessage = $idMessage;
 
