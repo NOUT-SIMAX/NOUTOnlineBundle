@@ -761,7 +761,7 @@ class XMLResponseWS
     const VIRTUALRETURNTYPE_CASCADE = 'Cascade';
     const VIRTUALRETURNTYPE_CASCADE_INPUT = 'CascadeInput';
     const VIRTUALRETURNTYPE_CASCADE_VALIDATE = 'CascadeValidate';
-    const VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ = 'CascadeValidate';
+    const VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ = 'MailServiceRecordPJ';
 
     //les différent type d'affichage pour les listes
     const DISPLAYMODE_List = 'List';

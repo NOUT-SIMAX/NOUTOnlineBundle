@@ -12,9 +12,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\MailServiceStatus;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserListCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserPlanning;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
@@ -27,7 +25,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXmlXsd;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserScheduler;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
@@ -293,10 +290,13 @@ abstract class NOUTClientBase
                 $this->_oGetNumberOfChart($clReponseXML, $clActionResult);
             },
 
-            //le status de la messagerie
+            //specifique messagerie
             XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS => function () use ($clReponseXML, $clActionResult){
                 $this->_oGetMailServiceStatus($clReponseXML, $clActionResult);
-            }
+            },
+            XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ => function() use ($clReponseXML, $clActionResult){
+                $this->_oGetMailServiceRecordPJ($clReponseXML, $clActionResult);
+            },
         );
 
         if (!array_key_exists($ReturnType, $aPtrFct)){
@@ -504,6 +504,18 @@ abstract class NOUTClientBase
 
         $clActionResult
             ->setData($clStatus);
+    }
+
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetMailServiceRecordPJ(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        $clData = $clReponseXML->getFile();
+        $clActionResult->setData($clData);
     }
 
     /**
