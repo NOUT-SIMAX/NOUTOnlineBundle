@@ -246,22 +246,21 @@ class NOUTClientMessagerie extends NOUTClientBase
     }
 
     /**
-     * @param array|null $requestHeaders
-     * @param string     $type
-     * @param string     $originalMessage
-     * @param string     $templateId
+     * @param array|null  $requestHeaders
+     * @param string      $type
+     * @param string|null $originalMessage
+     * @param string|null $templateId
      * @return ActionResult
      * @throws \Exception
      */
-    public function oCreateMessage(string $type, string $originalMessage, string $templateId, ?array $requestHeaders=null) : ActionResult
+    public function oCreateMessage(string $type, ?string $originalMessage, ?string $templateId, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
         $message = new CreateMessage();
         $message->CreateType = $type;
-        $message->IDAnswerType = $templateId;
-        if($originalMessage !== 'undefined')
-            $message->IDMessage = $originalMessage;
+        $message->IDAnswerType = $templateId ?? '';
+        $message->IDMessage = $originalMessage ?? '';
 
         $clReponseXML=$this->m_clSOAPProxy->createMessage($message, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
