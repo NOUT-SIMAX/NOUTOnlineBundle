@@ -435,6 +435,7 @@ class OnlineServiceProxy
 
 
     /**
+     * ne pas supprimer est utilisé par NOUTClient::_oGetIhmMenuPart
      * récupère le menu
      * @return HTTPResponse
      * @throws \Exception

@@ -83,4 +83,31 @@ class RecordList extends MultiElement
         return $this->m_TabEnregTableau;
     }
 
+    /**
+     * @param string $idmember
+     * @param string $titlemember
+     * @return array
+     */
+    public function toIDTitleArray(string $idmember='id', string $titlemember='title') : array
+    {
+        $aRet = [];
+        foreach($this->m_TabEnregTableau as $idEnregTableau)
+        {
+            $idEnreg = $idEnregTableau->getIDEnreg();
+            $idTableau = $idEnregTableau->getIDTableau();
+
+            /**@var Record $clEnreg*/
+            $clEnreg       = $this->m_clRecordCache->getRecord($idTableau, $idEnreg);
+
+
+            $association        = new \stdClass();
+            $association->$idmember    = $clEnreg->getIDEnreg();
+            $association->$titlemember = $clEnreg->getTitle();
+
+            $aRet[]=$association;
+        }
+
+        return $aRet;
+    }
+
 }

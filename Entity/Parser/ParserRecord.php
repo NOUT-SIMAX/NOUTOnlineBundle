@@ -45,18 +45,4 @@ class ParserRecord extends Parser
         return $this->m_clParser->getRecord($clResponseXML);
     }
 
-    /**
-     * @return null|Record
-     */
-    public function getFirstRecord() : ?Record
-    {
-        $tabRecord =$this->m_clParser->getFullCache()->getMapIDTableauIDEnreg2Record();
-        if (count($tabRecord)==0){
-            return null;
-        }
-        $key = array_key_first($tabRecord);
-        return $tabRecord[$key];
-    }
-
-
 }

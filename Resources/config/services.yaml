@@ -10,11 +10,20 @@ services:
         resource: '../../Service/*'
         #exclude: '../../{DependencyInjection,Entity,Migrations,Tests,NOUTOnlineBundle.php}'
         
-    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClient:
+    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase:
         arguments:
             $sVersionMin:       '%noutonline.version.min%'
             $nVersionDialPref:  '%noutonline.version.dialogue_pref%'
-            
+
+    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientMessagerie:
+        parent: NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase
+    
+    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClient:
+        parent: NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase
+        
+    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientIHM:
+        parent: NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase
+        
     NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader:
         arguments:
             $bMultitenant: '%site.multitenant%'
