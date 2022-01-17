@@ -770,12 +770,12 @@ class NOUTClient extends NOUTClientBase
     /**
      * @param string $sIDContexte
      * @param string $idButton
-     * @param string $ColumnSelection
+     * @param array|null $ColumnSelection
      * @param Record|null $dataRecord
      * @return ActionResult
      * @throws \Exception
      */
-    public function oButtonAction(string $sIDContexte, string $idButton, string $ColumnSelection, Record $dataRecord = null) : ActionResult
+    public function oButtonAction(string $sIDContexte, string $idButton, ?array $ColumnSelection, Record $dataRecord = null) : ActionResult
     {
         //test des valeurs des paramètres
         $this->_TestParametre(self::TP_NotEmpty, '$sIDContexte', $sIDContexte, null);
