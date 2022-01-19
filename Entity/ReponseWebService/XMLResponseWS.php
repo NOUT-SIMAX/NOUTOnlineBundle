@@ -754,6 +754,7 @@ class XMLResponseWS
 	const RETURNTYPE_MAILSERVICELIST        = 'MailServiceList';
 	const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
 	const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
+	const RETURNTYPE_MAILSERVICEIDLIST      = 'MailServiceIDList';
 
 	//types virtuels pour traitement spéciaux
     const VIRTUALRETURNTYPE_FILE = "File";

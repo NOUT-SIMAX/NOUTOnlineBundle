@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\MailServiceStatus;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
@@ -29,6 +30,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayRedoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayUndoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListIDMessFromFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetMessagesFromListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetUndoList;
@@ -57,10 +60,24 @@ class NOUTClientMessagerie extends NOUTClientBase
      * @param string        $idForm
      * @throws \Exception
      */
-    protected function __oGetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $ReturnType, string $idForm)
+    protected function __GetActionResultFromXMLResponse(XMLResponseWS $clReponseXML, ActionResult $clActionResult, string $ReturnType, ?string $idForm)
     {
         $aPtrFct = array(
-            XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ => function() use($clReponseXML, $clActionResult) { $this->_oGetPJ($clReponseXML, $clActionResult); },
+            XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS => function () use ($clReponseXML, $clActionResult){
+                $this->_oGetMailServiceStatus($clReponseXML, $clActionResult);
+            },
+            XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ => function() use ($clReponseXML, $clActionResult){
+                $this->_oGetMailServiceRecordPJ($clReponseXML, $clActionResult);
+            },
+            XMLResponseWS::RETURNTYPE_MAILSERVICEIDLIST => function() use ($clReponseXML, $clActionResult){
+                $this->_oGetMailServiceIDList($clReponseXML, $clActionResult);
+            },
+            XMLResponseWS::RETURNTYPE_MAILSERVICERECORD => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetRecord($clReponseXML, $clActionResult, $idForm);
+            },
+            XMLResponseWS::RETURNTYPE_MAILSERVICELIST => function () use ($clReponseXML, $clActionResult, $idForm) {
+                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
+            },
         );
 
         if (!array_key_exists($ReturnType, $aPtrFct)){
@@ -78,12 +95,53 @@ class NOUTClientMessagerie extends NOUTClientBase
     /**
      * @param XMLResponseWS $clReponseXML
      * @param ActionResult  $clActionResult
+     * @throws \Exception
      */
-    protected function _oGetPJ(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    private function _oGetMailServiceStatus(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        $clXML = $clReponseXML->getNodeXML();
+
+        $clStatus = new MailServiceStatus();
+        $clStatus->nbMaxUnreadUrgent = (int)$clXML->UrgentUnReadFromMax;
+        $clStatus->nbMaxUnread = (int)$clXML->UnReadFromMax;
+        $clStatus->nbUnreadUrgent = (int)$clXML->UrgentUnRead;
+        $clStatus->nbUnread = (int)$clXML->UnRead;
+        $clStatus->nbReceive = (int)$clXML->Receive;
+        $clStatus->LastUnread = (string)$clXML->LastUnRead;
+
+        $clActionResult
+            ->setData($clStatus);
+    }
+
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetMailServiceRecordPJ(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
     {
         $clData = $clReponseXML->getFile();
         $clActionResult->setData($clData);
     }
+
+    /**
+     * @param XMLResponseWS $clReponseXML
+     * @param ActionResult  $clActionResult
+     * @throws \Exception
+     */
+    private function _oGetMailServiceIDList(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
+    {
+        $sListID = $clReponseXML->getValue();
+        $sListID = trim($sListID, '|');
+        $clActionResult->setData(explode('|', $sListID));
+
+        $clFolderCount = $clReponseXML->clGetFolderCount();
+        if ($clFolderCount){
+            $clActionResult->setFolderCount($clFolderCount);
+        }
+    }
+
 
     /**
      * @param XMLResponseWS $clReponseXML
@@ -167,6 +225,52 @@ class NOUTClientMessagerie extends NOUTClientBase
     /**
      * @param array      $requestParams
      * @param array|null $requestHeaders
+     * @param string     $folderID
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetListIDMessFromFolder(string $folderID, array $requestParams, ?array $requestHeaders=null): ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $clParam = new GetListIDMessFromFolder();
+        $clParam->IDFolder = $folderID;
+
+        //le tri
+        $clSpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
+        /** @var SpecialParamListType $clSpecialParamList */
+        if ($clSpecialParamList)
+        {
+            $clParam->Sort1 = $clSpecialParamList->Sort1;
+            $clParam->Sort2 = $clSpecialParamList->Sort2;
+            $clParam->Sort3 = $clSpecialParamList->Sort3;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->getListIDMessFromFolder($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @param string     $messagesID
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetMessagesFromListID(string $messagesID, array $requestParams, ?array $requestHeaders=null): ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $clParam = new GetMessagesFromListID();
+        $clParam->IDMessage = $messagesID;
+
+        $clReponseXML = $this->m_clSOAPProxy->getMessagesFromListID($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
      * @return ActionResult
      * @throws \Exception
      */
@@ -232,7 +336,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      * @return ActionResult
      * @throws \Exception
      */
-    public function oUpdateMessages(string $messages, string $column, string $value, int $autovalidate, ?array $requestHeaders=null) : ActionResult
+    public function oUpdateColumnMessageValueInBatch(string $messages, string $column, string $value, int $autovalidate, ?array $requestHeaders=null) : ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders, null, $autovalidate);
 
@@ -241,7 +345,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $updateMessages->Column = $column;
         $updateMessages->Value = $value;
 
-        $clReponseXML =  $this->m_clSOAPProxy->updateMessages($updateMessages, $this->_aGetTabHeader($aTabHeaderSuppl));
+        $clReponseXML =  $this->m_clSOAPProxy->updateColumnMessageValueInBatch($updateMessages, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 

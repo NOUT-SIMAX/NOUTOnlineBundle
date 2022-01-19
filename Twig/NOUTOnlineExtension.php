@@ -50,13 +50,13 @@ class NOUTOnlineExtension extends AbstractExtension
 	/**
 	 * @param OnlineServiceFactory  $factory
 	 * @param ConfigurationDialogue $configuration
-     * @param string $sVersionMin
+     * @param array                 $aVersionsMin
 	 */
-	public function __construct(TokenStorageInterface $tokenStorage, OnlineServiceFactory $factory, ConfigurationDialogue $configuration, $sVersionMin)
+	public function __construct(TokenStorageInterface $tokenStorage, OnlineServiceFactory $factory, ConfigurationDialogue $configuration, array $aVersionsMin)
 	{
 		$this->m_clServiceFactory = $factory;
 		$this->m_clConfiguration = $configuration;
-		$this->m_sVersionMin = $sVersionMin;
+		$this->m_sVersionMin = $aVersionsMin['site'];
 		$this->m_oToken = $tokenStorage->getToken();
 	}
 
