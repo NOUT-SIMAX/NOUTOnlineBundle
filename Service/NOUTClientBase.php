@@ -92,22 +92,22 @@ abstract class NOUTClientBase
     private $__stopwatch;
 
     /**
-     * @param OnlineServiceFactory $serviceFactory
+     * @param OnlineServiceFactory  $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
-     * @param NOUTCacheFactory $cacheFactory
+     * @param NOUTCacheFactory      $cacheFactory
      * @param $nVersionDialPref
-     * @param Stopwatch|null $stopwatch
-     * @param $sVersionMin
+     * @param Stopwatch|null        $stopwatch
+     * @param array                 $aVersionsMin
      * @param TokenStorageInterface $tokenStorage
      * @throws \Exception
      */
     public function __construct(TokenStorageInterface $tokenStorage,
-                                OnlineServiceFactory $serviceFactory,
+                                OnlineServiceFactory  $serviceFactory,
                                 ConfigurationDialogue $configurationDialogue,
-                                NOUTCacheFactory $cacheFactory,
-                                $sVersionMin,
-                                $nVersionDialPref,
-                                Stopwatch $stopwatch=null
+                                NOUTCacheFactory      $cacheFactory,
+                                array                 $aVersionsMin,
+                                                      $nVersionDialPref,
+                                Stopwatch             $stopwatch=null
     )
     {
         $this->__tokenStorage = $tokenStorage;
@@ -119,7 +119,7 @@ abstract class NOUTClientBase
         $this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 
         $this->m_clConfigurationDialogue = $configurationDialogue;
-        $this->m_sVersionMin = $sVersionMin;
+        $this->m_sVersionMin = $aVersionsMin['site'];
 
         //création du gestionnaire de cache
         if ($oSecurityToken instanceof NOUTToken)
@@ -240,9 +240,6 @@ abstract class NOUTClientBase
             XMLResponseWS::RETURNTYPE_RECORD            => function () use ($clReponseXML, $clActionResult, $idForm) {
                 $this->_oGetRecord($clReponseXML, $clActionResult, $idForm);
             },
-            XMLResponseWS::RETURNTYPE_MAILSERVICERECORD => function () use ($clReponseXML, $clActionResult, $idForm) {
-                $this->_oGetRecord($clReponseXML, $clActionResult, $idForm);
-            },
 
             XMLResponseWS::RETURNTYPE_SCHEDULER => function () use ($clReponseXML, $clActionResult) {
                 $this->_oGetScheduler($clReponseXML, $clActionResult);
@@ -261,9 +258,6 @@ abstract class NOUTClientBase
                 $this->_oGetList($clReponseXML, $clActionResult, $idForm);
             },
             XMLResponseWS::RETURNTYPE_LIST            => function () use ($clReponseXML, $clActionResult, $idForm) {
-                $this->_oGetList($clReponseXML, $clActionResult, $idForm);
-            },
-            XMLResponseWS::RETURNTYPE_MAILSERVICELIST => function () use ($clReponseXML, $clActionResult, $idForm) {
                 $this->_oGetList($clReponseXML, $clActionResult, $idForm);
             },
             //retour de type choix
@@ -290,13 +284,6 @@ abstract class NOUTClientBase
                 $this->_oGetNumberOfChart($clReponseXML, $clActionResult);
             },
 
-            //specifique messagerie
-            XMLResponseWS::RETURNTYPE_MAILSERVICESTATUS => function () use ($clReponseXML, $clActionResult){
-                $this->_oGetMailServiceStatus($clReponseXML, $clActionResult);
-            },
-            XMLResponseWS::VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ => function() use ($clReponseXML, $clActionResult){
-                $this->_oGetMailServiceRecordPJ($clReponseXML, $clActionResult);
-            },
         );
 
         if (!array_key_exists($ReturnType, $aPtrFct)){
@@ -485,38 +472,6 @@ abstract class NOUTClientBase
             ->setCount($clReponseXML->clGetCount());
     }
 
-    /**
-     * @param XMLResponseWS $clReponseXML
-     * @param ActionResult  $clActionResult
-     * @throws \Exception
-     */
-    private function _oGetMailServiceStatus(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
-    {
-        $clXML = $clReponseXML->getNodeXML();
-
-        $clStatus = new MailServiceStatus();
-        $clStatus->nbMaxUnreadUrgent = (int)$clXML->UrgentUnReadFromMax;
-        $clStatus->nbMaxUnread = (int)$clXML->UnReadFromMax;
-        $clStatus->nbUnreadUrgent = (int)$clXML->UrgentUnRead;
-        $clStatus->nbUnread = (int)$clXML->UnRead;
-        $clStatus->nbReceive = (int)$clXML->Receive;
-        $clStatus->LastUnread = (string)$clXML->LastUnRead;
-
-        $clActionResult
-            ->setData($clStatus);
-    }
-
-
-    /**
-     * @param XMLResponseWS $clReponseXML
-     * @param ActionResult  $clActionResult
-     * @throws \Exception
-     */
-    private function _oGetMailServiceRecordPJ(XMLResponseWS $clReponseXML, ActionResult $clActionResult)
-    {
-        $clData = $clReponseXML->getFile();
-        $clActionResult->setData($clData);
-    }
 
     /**
      * récupère le numéro de version

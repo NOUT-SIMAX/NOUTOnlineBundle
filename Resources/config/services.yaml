@@ -12,7 +12,7 @@ services:
         
     NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase:
         arguments:
-            $sVersionMin:       '%noutonline.version.min%'
+            $aVersionsMin:       '%noutonline.version.min%'
             $nVersionDialPref:  '%noutonline.version.dialogue_pref%'
 
     NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientMessagerie:
@@ -57,7 +57,7 @@ services:
     #les extension twigs
     NOUT\Bundle\NOUTOnlineBundle\Twig\NOUTOnlineExtension:
         arguments:
-            $sVersionMin: '%noutonline.version.min%'
+            $aVersionsMin: '%noutonline.version.min%'
         tags:
             - { name: twig.extension }
 

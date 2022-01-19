@@ -35,7 +35,9 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetChart;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListIDMessFromFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListMessage;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetMessagesFromListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoList;
@@ -953,6 +955,34 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     //---
 
     /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
+     *
+     * @param GetListIDMessFromFolder $clWsdType
+     * @param array                   $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getListIDMessFromFolder(GetListIDMessFromFolder $clWsdType, $aHeaders = array())
+    {
+        return $this->call('GetListIDMessFromFolder', array($clWsdType) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
+     *
+     * @param GetMessagesFromListID $clWsdType
+     * @param array                   $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getMessagesFromListID(GetMessagesFromListID $clWsdType, $aHeaders = array())
+    {
+        return $this->call('GetMessagesFromListID', array($clWsdType) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**
      * @param RequestMessage $requestMessage
      * @param array          $aHeaders
      * @return XMLResponseWS
@@ -1531,7 +1561,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     }
     //---
 
-    public function updateMessages($updateColumnMessageValueInBatch, $aHeaders = array()) {
+    public function updateColumnMessageValueInBatch($updateColumnMessageValueInBatch, $aHeaders = array()) {
         return $this->call('UpdateColumnMessageValueInBatch', array($updateColumnMessageValueInBatch), null, null, $aHeaders);
     }
 
