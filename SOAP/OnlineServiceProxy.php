@@ -36,6 +36,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetEndAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListIDMessFromFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListIDMessFromRequest;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetMessagesFromListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
@@ -965,6 +966,20 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     public function getListIDMessFromFolder(GetListIDMessFromFolder $clWsdType, $aHeaders = array())
     {
         return $this->call('GetListIDMessFromFolder', array($clWsdType) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
+     *
+     * @param GetListIDMessFromRequest $clWsdType
+     * @param array                   $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getListIDMessFromRequest(GetListIDMessFromRequest $clWsdType, $aHeaders = array())
+    {
+        return $this->call('GetListIDMessFromRequest', array($clWsdType) ,  null, null , $aHeaders);
     }
     //---
 
