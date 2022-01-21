@@ -42,11 +42,13 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetMessagesFromListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPlanningInfo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTableChild;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetTokenSession;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetUndoList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetUndoListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromAddress;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\InitRecordFromMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
@@ -1643,6 +1645,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     public function import($import, $aHeaders = array()) {
         return $this->call('Import', array($import), null, null, $aHeaders);
     }
+    //---
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : getUndoList
@@ -1657,6 +1660,20 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('GetUndoList', array($clWsdlType_GetUndoList) ,  null, null , $aHeaders);
     }
     //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : getUndoList
+     *
+     * @param GetUndoListID $clWsdlType
+     * @param array         $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getUndoListID(GetUndoListID $clWsdlType, $aHeaders = array())
+    {
+        return $this->call('GetUndoListID', array($clWsdlType) ,  null, null , $aHeaders);
+    }
+    //---
     
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetRedoList
@@ -1669,6 +1686,20 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     public function getRedoList(GetRedoList $clWsdlType_GetRedoList, $aHeaders = array())
     {
         return $this->call('GetRedoList', array($clWsdlType_GetRedoList) ,  null, null , $aHeaders);
+    }
+    //---
+
+    /**
+     *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetRedoList
+     *
+     * @param GetRedoListID $clWsdlType
+     * @param array         $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @access public
+     */
+    public function getRedoListID(GetRedoListID $clWsdlType, $aHeaders = array())
+    {
+        return $this->call('GetRedoListID', array($clWsdlType) ,  null, null , $aHeaders);
     }
     //---
 
