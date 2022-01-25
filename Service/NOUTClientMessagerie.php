@@ -31,10 +31,13 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayUndoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListIDMessFromFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetListIDMessFromRequest;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetMessagesFromListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetRedoListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetUndoList;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetUndoListID;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Redo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
@@ -134,7 +137,9 @@ class NOUTClientMessagerie extends NOUTClientBase
     {
         $sListID = $clReponseXML->getValue();
         $sListID = trim($sListID, '|');
-        $clActionResult->setData(explode('|', $sListID));
+        $data = empty($sListID) ? [] : explode('|', $sListID);
+
+        $clActionResult->setData($data);
 
         $clFolderCount = $clReponseXML->clGetFolderCount();
         if ($clFolderCount){
@@ -253,16 +258,45 @@ class NOUTClientMessagerie extends NOUTClientBase
     /**
      * @param array      $requestParams
      * @param array|null $requestHeaders
-     * @param string     $messagesID
      * @return ActionResult
      * @throws \Exception
      */
-    public function oGetMessagesFromListID(string $messagesID, array $requestParams, ?array $requestHeaders=null): ActionResult
+    public function oGetListIDMessFromRequest(array $requestParams, ?array $requestHeaders=null): ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $clParam = new GetListIDMessFromRequest();
+        $clParam->StartDate = $requestParams[self::PARAMMESS_StartDate];
+        $clParam->EndDate = $requestParams[self::PARAMMESS_EndDate];
+        $clParam->Filter = $requestParams[self::PARAMMESS_Filter];
+
+        //le tri
+        $clSpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
+        /** @var SpecialParamListType $clSpecialParamList */
+        if ($clSpecialParamList)
+        {
+            $clParam->Sort1 = $clSpecialParamList->Sort1;
+            $clParam->Sort2 = $clSpecialParamList->Sort2;
+            $clParam->Sort3 = $clSpecialParamList->Sort3;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->getListIDMessFromRequest($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @param array      $aMessagesID
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetMessagesFromListID(array $aMessagesID, array $requestParams, ?array $requestHeaders=null): ActionResult
     {
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
         $clParam = new GetMessagesFromListID();
-        $clParam->IDMessage = $messagesID;
+        $clParam->IDMessage = implode('|', $aMessagesID);
 
         $clReponseXML = $this->m_clSOAPProxy->getMessagesFromListID($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
@@ -698,6 +732,38 @@ class NOUTClientMessagerie extends NOUTClientBase
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
+    /**
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetUndoListID(array $requestParams, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl(($requestHeaders ?? [])+[SOAPProxy::HEADER_ActionContext=>self::DM_UndoList]);
+
+        $clParam = new GetUndoListID();
+        $clParam->StartDate = $requestParams[self::PARAMMESS_StartDate];
+        $clParam->EndDate = $requestParams[self::PARAMMESS_EndDate];
+        $clParam->ActionType = $requestParams[self::PARAMMESS_ActionType];
+        $clParam->DoneBy = $requestParams[self::PARAMMESS_DoneBy];
+        $clParam->Form = $requestParams[self::PARAMMESS_Form];
+        $clParam->OtherCriteria = $requestParams[self::PARAMMESS_OtherCriteria];
+
+        //le tri
+        $clSpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
+        /** @var SpecialParamListType $clSpecialParamList */
+        if ($clSpecialParamList)
+        {
+            $clParam->Sort1 = $clSpecialParamList->Sort1;
+            $clParam->Sort2 = $clSpecialParamList->Sort2;
+            $clParam->Sort3 = $clSpecialParamList->Sort3;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->getUndoListID($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
 
     /**
      * @param array      $requestParams
@@ -719,6 +785,38 @@ class NOUTClientMessagerie extends NOUTClientBase
         $getRedoListParam->OtherCriteria = $requestParams[self::PARAMMESS_OtherCriteria];
 
         $clReponseXML = $this->m_clSOAPProxy->getRedoList($getRedoListParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
+    /**
+     * @param array      $requestParams
+     * @param array|null $requestHeaders
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetRedoListID(array $requestParams, ?array $requestHeaders=[]) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $clParam = new GetRedoListID();
+        $clParam->StartDate = $requestParams[self::PARAMMESS_StartDate];
+        $clParam->EndDate = $requestParams[self::PARAMMESS_EndDate];
+        $clParam->ActionType = $requestParams[self::PARAMMESS_ActionType];
+        $clParam->DoneBy = $requestParams[self::PARAMMESS_DoneBy];
+        $clParam->Form = $requestParams[self::PARAMMESS_Form];
+        $clParam->OtherCriteria = $requestParams[self::PARAMMESS_OtherCriteria];
+
+        //le tri
+        $clSpecialParamList = $requestParams[self::PARAM_SPECIALPARAMLIST];
+        /** @var SpecialParamListType $clSpecialParamList */
+        if ($clSpecialParamList)
+        {
+            $clParam->Sort1 = $clSpecialParamList->Sort1;
+            $clParam->Sort2 = $clSpecialParamList->Sort2;
+            $clParam->Sort3 = $clSpecialParamList->Sort3;
+        }
+
+        $clReponseXML = $this->m_clSOAPProxy->getRedoListID($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
 
