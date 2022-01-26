@@ -18,12 +18,12 @@ class SSOUsernameToken extends UsernameToken
      * @param string $id
      * @param string $sPassPhrase
      */
-    public function __construct(string $email='', string $id='', string $sPassPhrase='')
+    public function __construct(?string $email='', ?string $id='', ?string $sPassPhrase='')
     {
-        $this->m_sEmail = $email;
-        $this->m_sId = $id;
+        $this->m_sEmail = $email ?? '';
+        $this->m_sId = $id ?? '';
         $this->_setEncryptionMode('sso');
-        $this->_setPassPhrase($sPassPhrase);
+        $this->_setPassPhrase($sPassPhrase ?? '');
         parent::__construct();
     }
 
