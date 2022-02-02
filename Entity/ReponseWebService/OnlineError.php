@@ -141,9 +141,11 @@ class OnlineError implements \JsonSerializable
 
 	//constante pour les codes d'erreurs
 
+    //----
     const ERR_MAX_ANALYSEMEASSAGE_PASDROITACTION = 403;
+    const ERR_MAX_ANALYSEMEASSAGE_ACTIONAMBIGUE = 404;
 
-
+    //----
 	const ERR_WS_AUTRE                         = 1000;
 	const ERR_WS_LANGOBJECT_GETVALCOL          = 1001;
 	const ERR_WS_LANGOBJECT_NULL               = 1002;

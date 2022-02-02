@@ -9,6 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
+use phpDocumentor\Reflection\Types\Self_;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -30,10 +31,10 @@ abstract class NOUTWebException extends SOAPException implements NOUTExceptionIn
     }
 
     public function getStatus(){
-        return static::STATUS;
+        return self::STATUS;
     }
 
     public function getLevel(){
-        return static::LEVEL;
+        return self::LEVEL;
     }
 }
