@@ -340,6 +340,14 @@ abstract class StructureColonne
     }
 
     /**
+     * @return bool
+     */
+    public function needH100() : bool
+    {
+        return $this->isMultilineText();
+    }
+
+    /**
      * @param $eTypeElement string
      * @return $this
      */
