@@ -135,6 +135,29 @@ class StructureSection extends StructureColonne
     }
 
 
+    /**
+     * @return bool
+     */
+    public function needH100() : bool
+    {
+        $canGrow = false;
+        $allH100 = true;
+        foreach($this->m_MapIDColonne2Colonne as $column)
+        {
+            /** @var StructureColonne $column */
+            if ($column->canGrow())
+            {
+                $canGrow = true;
+                if (!$column->needH100()){
+                    $allH100 = false;
+                    break;
+                }
+            }
+        }
+        return $canGrow && $allH100;
+    }
+
+
     const LEVEL_FICHE   = 0;
     const LEVEL_PRINCIPAL = 1;
     const LEVEL_SECONDAIRE = 2;
