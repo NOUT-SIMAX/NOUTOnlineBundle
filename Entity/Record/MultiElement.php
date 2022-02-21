@@ -22,6 +22,9 @@ class MultiElement extends IHMWindows
     /** @var string mode d'affichage par défaut */
     protected $m_eDefaultDisplayMode='';
 
+    /** @var string type de graphe par defauts  */
+    protected $m_eDefaultGraphType='';
+
 
     /** @var Count|null */
     protected $m_clCount = null;
@@ -123,12 +126,12 @@ class MultiElement extends IHMWindows
     }
 
     /**
-     * @param string $eDefaultDisplayMode
+     * @param string|null $eDefaultDisplayMode
      * @return $this
      */
-    public function setDefaultDisplayMode(string $eDefaultDisplayMode): MultiElement
+    public function setDefaultDisplayMode(?string $eDefaultDisplayMode): MultiElement
     {
-        $this->m_eDefaultDisplayMode = $eDefaultDisplayMode;
+        $this->m_eDefaultDisplayMode = $eDefaultDisplayMode ?? '';
         return $this;
     }
 
@@ -138,7 +141,7 @@ class MultiElement extends IHMWindows
      */
     public function setTabPossibleDisplayMode(array $tabPossibleDisplayMode=null): MultiElement
     {
-        $this->m_TabPossibleDisplayMode = $tabPossibleDisplayMode;
+        $this->m_TabPossibleDisplayMode = $tabPossibleDisplayMode ?? [];
         return $this;
     }
 
@@ -159,6 +162,24 @@ class MultiElement extends IHMWindows
     public function getTabPossibleDisplayMode(): array
     {
         return $this->m_TabPossibleDisplayMode;
+    }
+
+    /**
+     * @param string|null $defaultGraphType
+     * @return $this
+     */
+    public function setDefaultGraphType(?string $defaultGraphType) :  MultiElement
+    {
+        $this->m_eDefaultGraphType = $defaultGraphType ?? '';
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultGraphType() : string
+    {
+        return $this->m_eDefaultGraphType;
     }
 
     /**

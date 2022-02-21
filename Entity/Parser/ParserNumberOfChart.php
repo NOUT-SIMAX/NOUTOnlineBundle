@@ -56,6 +56,7 @@ class ParserNumberOfChart extends ParserWithParam
         $this->m_clNbOfChart = new NumberOfChart($sTitre, $sIDAction, $sIDForm, $clStructElem, $withGhost, $withBtnOrder, $withOrderActive, $exports, $imports, $tabSort);
         $this->m_clNbOfChart->setDefaultDisplayMode($clXMLReponseWS->sGetDefaultDisplayMode());
         $this->m_clNbOfChart->setTabPossibleDisplayMode($clXMLReponseWS->GetTabPossibleDisplayMode());
+        $this->m_clNbOfChart->setDefaultGraphType($clXMLReponseWS->sGetDefaultGraphType());
 
         // Paramètres
         $this->m_clNbOfChart->setParam($this->m_clParserParam->getRecordFromID($sIDFormAction, $sIDAction));

@@ -455,6 +455,20 @@ class XMLResponseWS
 		return explode('|', (string) $ndPossibleDM);
 	}
 
+    /**
+     * @return string|null
+     */
+	public function sGetDefaultGraphType() : ?string
+    {
+        $ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
+        if (!isset($ndPossibleDM))
+        {
+            return null;
+        }
+
+        return (string)$ndPossibleDM->attributes()['defaultGraphType'] ?? '';
+    }
+
 	/**
 	 * @return null|string
 	 */
