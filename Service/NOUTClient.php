@@ -335,18 +335,18 @@ class NOUTClient extends NOUTClientBase
 
     /**
      * @param string     $contextID
-     * @param string     $tableId
-     * @param string     $actionId
-     * @param string     $exportId
-     * @param string     $format
-     * @param string     $module
-     * @param string     $colType
-     * @param string     $items
+     * @param string|null     $tableId
+     * @param string|null     $actionId
+     * @param string|null     $exportId
+     * @param string|null     $format
+     * @param string|null     $module
+     * @param string|null     $colType
+     * @param string|null     $items
      * @param array|null $aTabHeaderQuery
      * @return ActionResult
      * @throws \Exception
      */
-    public function oExport(string $contextID, string $tableId, string $actionId, string $exportId, string $format, string $module, string $colType, string $items, ?array $aTabHeaderQuery=null) : ActionResult
+    public function oExport(string $contextID, ?string $tableId, ?string $actionId, ?string $exportId, ?string $format, ?string $module, ?string $colType, ?string $items, ?array $aTabHeaderQuery=null) : ActionResult
     {
         //--------------------------------------------------------------------------------------------
         // Headers
