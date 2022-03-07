@@ -587,6 +587,14 @@ abstract class StructureColonne
                 }
 				else
 				{
+				    if ($this->isOption(self::OPTION_Modele_Formula)){
+				        return 'simax_formula';
+                    }
+
+                    if ($this->isOption(self::OPTION_Modele_LineNumber) || $this->isOption(self::OPTION_Modele_SyntaxColor)){
+                        return 'simax_richmultilinestring';
+                    }
+
 					return str_replace(array(':', '-'), array('_', '_'), self::TM_TexteMultiLigne);
 				}
 			}
@@ -788,6 +796,10 @@ abstract class StructureColonne
 	const OPTION_Modele_Longitude		= "longitude";
     const OPTION_Modele_Search  		= "search";
     const OPTION_Modele_ComboBox  		= "comboBox";
+    const OPTION_Modele_SyntaxColor		= "syntaxColor";
+    const OPTION_Modele_Formula 		= "formula";
+    const OPTION_Modele_LineNumber 		= "lineNumber";
+    const OPTION_Modele_Multilanguage	= "multiLanguage";
 	//Si ajout au dessus, rajouter dans la méthode s_GetModeleOption
 
 	// Attributs de transformation
