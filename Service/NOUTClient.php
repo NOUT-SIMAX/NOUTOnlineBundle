@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
+use http\Client\Curl\User;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConnexionExtranetHashPassword;
@@ -23,8 +24,10 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Factory\CondListTypeFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UserExists\UserExists;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
+use NOUT\Bundle\NOUTOnlineBundle\Security\EncryptionType;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
@@ -151,31 +154,79 @@ class NOUTClient extends NOUTClientBase
     }
 
     /**
-     * @param string $sLoginExtranet
-     * @param string $sPassword
-     * @param string $sTypeEncodage
-     * @param int    $codeLangue
-     * @param string $sLoginSIMAX
-     * @param string $sPassworSIMAX
-     * @param string $sFormulaireExtranet
-     * @param bool   $bFromLogin
+     * @param $login
+     * @return UserExists
+     * @throws \Exception
+     */
+    public function clUserExists($login) : UserExists
+    {
+        return $this->m_clRESTProxy->clGetUserExists($login);
+    }
+
+    /**
+     * @param $login
+     * @param $form
+     * @param $defaultEncryption
+     * @return UserExists
+     * @throws \Exception
+     */
+    public function clExtranetUserExists($login, $form, $defaultEncryption) : UserExists
+    {
+        return $this->m_clRESTProxy->clGetExtranetUserExists($login, $form, $defaultEncryption);
+    }
+
+    /**
+     * @param $loginIntra
+     * @param $loginExtra
+     * @param $formExtra
+     * @param $defaultExtraEncrypt
+     * @return array
+     */
+    public function aGetInfoForCnxExtraAction($loginIntra, $loginExtra, $formExtra, $defaultExtraEncrypt) : array
+    {
+        //il faut commencer par vérifier si l'utilisateur extranet existe
+        try{
+            $clExtraExists = $this->clExtranetUserExists($loginExtra, $formExtra, $defaultExtraEncrypt);
+        }
+        catch (\Exception $e){
+            $clExtraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, $defaultExtraEncrypt);
+        }
+        try{
+            $clIntraExists = $this->clUserExists($loginIntra);
+        }
+        catch (\Exception $e){
+            $clIntraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null);
+        }
+        return [$clExtraExists, $clIntraExists];
+    }
+
+    /**
+     * @param string         $sLoginExtranet
+     * @param string         $sPasswordExtranet
+     * @param EncryptionType $clEncodageExtranet
+     * @param int            $codeLangue
+     * @param string         $sLoginIntranet
+     * @param string         $sPasswordIntraet
+     * @param EncryptionType $clEncodageIntranet
+     * @param string         $sFormulaireExtranet
+     * @param bool           $bFromLogin
      * @return ActionResult
      * @throws \Exception
      */
-    public function oConnexionExtranet(string $sLoginExtranet, string $sPassword, string $sTypeEncodage, int $codeLangue, string $sLoginSIMAX, string $sPassworSIMAX, string $sFormulaireExtranet, bool $bFromLogin) : ActionResult
+    public function oConnexionExtranet(string $sLoginExtranet, string $sPasswordExtranet, EncryptionType $clEncodageExtranet, int $codeLangue, string $sLoginIntranet, string $sPasswordIntraet, EncryptionType $clEncodageIntranet, string $sFormulaireExtranet, bool $bFromLogin) : ActionResult
     {
         $clParam = new Execute();
         $clParam->ID = Langage::ACTION_ConnexionExtranet;
 
         //il faut encoder le mot de passe simax
-        $sEncodedSIMAX = ConnexionExtranetHashPassword::s_sHashPasswordSIMAX($sPassworSIMAX);
+        $sEncodedSIMAX = ConnexionExtranetHashPassword::s_sHashPasswordSIMAX($sPasswordIntraet);
         //et le mot de passe extranet
         $sEncodedExtranet = ConnexionExtranetHashPassword::s_sHashPassword($sPassword, $sTypeEncodage);
 
         $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
             Langage::PA_ConnexionExtranet_Extranet_Pseudo => $sLoginExtranet,
             Langage::PA_ConnexionExtranet_Extranet_Mdp    => $sEncodedExtranet,
-            Langage::PA_ConnexionExtranet_Intranet_Pseudo => $sLoginSIMAX,
+            Langage::PA_ConnexionExtranet_Intranet_Pseudo => $sLoginIntranet,
             Langage::PA_ConnexionExtranet_Intranet_Mdp    => $sEncodedSIMAX,
             Langage::PA_ConnexionExtranet_Formulaire      => $sFormulaireExtranet,
             Langage::PA_ConnexionExtranet_CodeLangue      => $codeLangue,

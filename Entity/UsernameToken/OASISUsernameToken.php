@@ -4,19 +4,21 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Security\EncryptionType;
+
 class OASISUsernameToken extends LoginPasswordUsernameToken
 {
-    protected $m_sTypeEncryption;
+    /** @var EncryptionType|null  */
+    protected $m_clEncryptionType;
     /**
      * LoginPasswordUsernameToken constructor.
      * @param string $sUsername
      * @param string $sPassword
-     * @param string $sType (custom_md5 désigne aussi bien la méthode pour les mots de passe classique que la gestion pour
-     *                      les mots de passe plaintext pour l'extranet)
+     * @param EncryptionType|null $clEncryption le système d'encryption du mot de passe dans SIMAXs
      */
-    public function __construct(string $sUsername='', string $sPassword='', string $sType='custom_md5')
+    public function __construct(string $sUsername='', string $sPassword='', EncryptionType $clEncryption=null)
     {
-        $this->m_sTypeEncryption=$sType;
+        $this->m_clEncryptionType=$clEncryption;
         parent::__construct($sUsername, $sPassword);
     }
 
@@ -25,29 +27,7 @@ class OASISUsernameToken extends LoginPasswordUsernameToken
      */
     public function _Compute() : void
     {
-        switch ($this->m_sTypeEncryption)
-        {
-            default:
-            case 'plaintext':
-            case 'custom_md5':
-                //la méthode d'encryption pour les mots de passe classique et la gestion pour les mots de passe plaintext pour l'extranet
-                if (!empty($this->m_sSecretPassword)){
-                    $sSecurePassword = base64_encode(md5($this->m_sSecretPassword, true));
-                }
-                else{
-                    $sSecurePassword = 'AAAAAAAAAAAAAAAAAAAAAA==';
-                }
-                break;
-            case 'md5':
-                $sSecurePassword = base64_encode(hash('md5', $this->m_sSecretPassword, true));
-                break;
-            case 'sha-1':
-                $sSecurePassword = base64_encode(hash('sha1', $this->m_sSecretPassword, true));
-                break;
-            case 'sha-256':
-                $sSecurePassword = base64_encode(hash('sha256', $this->m_sSecretPassword, true));
-                break;
-        }
+        $sSecurePassword = $this->m_clEncryptionType->sGetPassword($this->m_sSecretPassword);
         $this->Password = base64_encode(sha1($this->Nonce.$this->Created.$sSecurePassword, true));
     }
 
@@ -56,7 +36,11 @@ class OASISUsernameToken extends LoginPasswordUsernameToken
      */
     public function forSerialization(): array
     {
-        return [$this->Username, $this->m_sSecretPassword];
+        return [
+            $this->Username,
+            $this->m_sSecretPassword,
+            $this->m_clEncryptionType ? $this->m_clEncryptionType->forSerialization() : null,
+        ];
     }
 
     /**
@@ -64,6 +48,15 @@ class OASISUsernameToken extends LoginPasswordUsernameToken
      */
     public function fromSerialization(array $data): void
     {
-        list($this->Username, $this->m_sSecretPassword) = $data;
+        if (count($data) > 2){
+            list($this->Username, $this->m_sSecretPassword, $dataForEncrytion) = $data;
+            $this->m_clEncryptionType = new EncryptionType(EncryptionType::MD5, EncryptionType::OPT_EmptyNoHash);
+            if (!is_null($dataForEncrytion)){
+                $this->m_clEncryptionType->fromSerialization($dataForEncrytion);
+            }
+        }
+        else {
+            list($this->Username, $this->m_sSecretPassword) = $data;
+        }
     }
 }
