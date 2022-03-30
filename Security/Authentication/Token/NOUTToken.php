@@ -11,11 +11,13 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
-class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, TokenWithNOUTOnlineVersionInterface
+//class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, TokenWithNOUTOnlineVersionInterface
+class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWithNOUTOnlineVersionInterface
 {
     use TraitTokenWithNOUTOnlineVersion;
 
@@ -65,21 +67,37 @@ class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, To
     /**
      * {@inheritdoc}
      */
-    public function __construct($user, $credentials, $providerKey, array $roles = array())
+    public function __construct($user/*, $credentials*/,  $providerKey, array $roles = array())
     {
-        parent::__construct($user, $credentials, $providerKey, $roles);
+        parent::__construct($user/*, $credentials*/, $providerKey, $roles);
+    }
+
+    /**
+     * @return \Symfony\Component\Security\Core\User\UserInterface|null
+     */
+    public function getUser()
+    {
+        if (!empty($this->m_sSessionToken)){
+            return parent::getUser();
+        }
+        return null;
+    }
+
+    public function getUsername()
+    {
+        return $this->getUserIdentifier();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getUsername()
+    public function getUserIdentifier() : string
     {
         if ($this->m_oUsernameToken instanceof UsernameToken){
             return $this->m_oUsernameToken->Username;
         }
 
-        return parent::getUsername();
+        return parent::getUserIdentifier();
     }
 
     /**
