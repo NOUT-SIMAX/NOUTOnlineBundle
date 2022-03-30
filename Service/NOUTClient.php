@@ -155,24 +155,26 @@ class NOUTClient extends NOUTClientBase
 
     /**
      * @param $login
+     * @param int $dwAuthOpts
      * @return UserExists
      * @throws \Exception
      */
-    public function clUserExists($login) : UserExists
+    public function clUserExists($login, int $dwAuthOpts=0) : UserExists
     {
-        return $this->m_clRESTProxy->clGetUserExists($login);
+        return $this->m_clRESTProxy->clGetUserExists($login, $dwAuthOpts);
     }
 
     /**
      * @param $login
      * @param $form
      * @param $defaultEncryption
+     * @param int $dwAuthOpts
      * @return UserExists
      * @throws \Exception
      */
-    public function clExtranetUserExists($login, $form, $defaultEncryption) : UserExists
+    public function clExtranetUserExists($login, $form, $defaultEncryption, int $dwAuthOpts=0) : UserExists
     {
-        return $this->m_clRESTProxy->clGetExtranetUserExists($login, $form, $defaultEncryption);
+        return $this->m_clRESTProxy->clGetExtranetUserExists($login, $form, $defaultEncryption, $dwAuthOpts);
     }
 
     /**
@@ -186,16 +188,16 @@ class NOUTClient extends NOUTClientBase
     {
         //il faut commencer par vérifier si l'utilisateur extranet existe
         try{
-            $clExtraExists = $this->clExtranetUserExists($loginExtra, $formExtra, $defaultExtraEncrypt);
+            $clExtraExists = $this->clExtranetUserExists($loginExtra, $formExtra, $defaultExtraEncrypt, EncryptionType::AUTH_FCTCNXEXTRANET);
         }
         catch (\Exception $e){
-            $clExtraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, $defaultExtraEncrypt);
+            $clExtraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, $defaultExtraEncrypt, EncryptionType::AUTH_FCTCNXEXTRANET);
         }
         try{
             $clIntraExists = $this->clUserExists($loginIntra);
         }
         catch (\Exception $e){
-            $clIntraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null);
+            $clIntraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, null, EncryptionType::AUTH_FCTCNXEXTRANET);
         }
         return [$clExtraExists, $clIntraExists];
     }

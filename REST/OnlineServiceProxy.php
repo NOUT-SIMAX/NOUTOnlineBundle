@@ -338,10 +338,11 @@ class OnlineServiceProxy
 	/**
 	 * recherche un utilisateur par son pseudo
 	 * @param $login
-     * @throws \Exception
-	 * @return UserExists
+     * @param int $dwAuthOpts
+     * @return UserExists
+	 *@throws \Exception
 	 */
-	public function clGetUserExists($login) : UserExists
+	public function clGetUserExists($login, int $dwAuthOpts=0) : UserExists
 	{
 		$sURI = $this->_sCreateRequest(['GetUserExists'], ['login' => $login], []);
 
@@ -350,17 +351,18 @@ class OnlineServiceProxy
 		$sInfoEncryption = $clHttpResponse->getXNOUTOnlineInfoCnx();
         $sIV = $clHttpResponse->getIVForInfoCnx();
 
-		return new UserExists($sContent, $sInfoEncryption, $sIV);
+		return new UserExists($sContent, $sInfoEncryption, $sIV, null, $dwAuthOpts);
 	}
 
     /**
      * @param $login
      * @param $form
      * @param $defaultEncryption
+     * @param int $dwAuthOpts
      * @return UserExists
      * @throws \Exception
      */
-	public function clGetExtranetUserExists($login, $form, $defaultEncryption) : UserExists
+	public function clGetExtranetUserExists($login, $form, $defaultEncryption, int $dwAuthOpts=0) : UserExists
     {
         $sURI = $this->_sCreateRequest([$form, 'GetExtranetUserExists'], ['login' => $login], []);
 
@@ -369,7 +371,7 @@ class OnlineServiceProxy
         $sInfoEncryption = $clHttpResponse->getXNOUTOnlineInfoCnx();
         $sIV = $clHttpResponse->getIVForInfoCnx();
 
-        return new UserExists($sContent, $sInfoEncryption, $sIV, $defaultEncryption);
+        return new UserExists($sContent, $sInfoEncryption, $sIV, $defaultEncryption, $dwAuthOpts);
     }
 
     /**

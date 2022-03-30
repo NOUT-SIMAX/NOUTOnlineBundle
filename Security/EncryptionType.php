@@ -146,7 +146,7 @@ class EncryptionType
      */
     protected function _sGetPassword_GetTokenSession(string $plaintextSalted) : ?string
     {
-        if ($this->m_sTypeEncryption == self::PLAINTEXT){
+        if (($this->m_sTypeEncryption == self::PLAINTEXT) &&  (($this->m_dwAuthOptions & self::AUTH_Extranet)==0)){
             return $plaintextSalted;
         }
 
@@ -157,6 +157,7 @@ class EncryptionType
         switch ($this->m_sTypeEncryption)
         {
             default:
+            case self::PLAINTEXT:
             case self::MD5:
                 return base64_encode(hash('md5', $plaintextSalted, true));
             case self::SHA_1:
@@ -215,7 +216,9 @@ class EncryptionType
     const SHA_256 = 'sha-2-256';
 
     const AUTH_FCTCNXEXTRANET = 0x01;
-    const AUTH_Intranet = 0x02;
+    const AUTH_Intranet = 0x10;
+    const AUTH_Extranet = 0x20;
+
 
 
     protected const BLOWFISHKEY = 'c215ffb8f826dcc77f162350d89622b328653fab43fb4776c33a6be5171af3270f8420609fa2f4eb4d50d7b23c1232c28b59e244c7cc7357e50314254fd7cd3cd9d3329cefbd8cf7f820f9b1d8ddd746f4de6580104a34c9ccbf56ae76982821b4bf6a459ccedff0447f0f6a06a3f2d4bad3354d114b9531f7d20ac2b5d93e21';
