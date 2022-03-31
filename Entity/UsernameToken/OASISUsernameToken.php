@@ -50,7 +50,7 @@ class OASISUsernameToken extends LoginPasswordUsernameToken
     {
         if (count($data) > 2){
             list($this->Username, $this->m_sSecretPassword, $dataForEncrytion) = $data;
-            $this->m_clEncryptionType = new EncryptionType(EncryptionType::MD5, EncryptionType::OPT_EmptyNoHash);
+            $this->m_clEncryptionType = new EncryptionType(EncryptionType::MD5, EncryptionType::OPT_EmptyNoHash, false);
             if (!is_null($dataForEncrytion)){
                 $this->m_clEncryptionType->fromSerialization($dataForEncrytion);
             }

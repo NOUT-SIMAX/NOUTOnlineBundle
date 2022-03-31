@@ -1148,22 +1148,24 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTokenSession
      *
-     * @param GetTokenSession $clWsdlType_GetTokenSession
-     * @param array $aHeaders tableau d'headers a ajouter a la requete
+     * @param GetTokenSession $clParam
+     * @param array           $aHeaders tableau d'headers a ajouter a la requete
      * @return XMLResponseWS
      * @access public
      * @throws \Exception
      */
-    public function getTokenSession(GetTokenSession $clWsdlType_GetTokenSession, $aHeaders = array())
+    public function getTokenSession(GetTokenSession $clParam, $aHeaders = array())
     {
-        if (isset($clWsdlType_GetTokenSession->UsernameToken) && $clWsdlType_GetTokenSession->UsernameToken instanceof UsernameToken){
-            $clWsdlType_GetTokenSession->UsernameToken->Compute();
+        if (isset($clParam->UsernameToken) && $clParam->UsernameToken instanceof UsernameToken){
+            $clParam->UsernameToken->Compute();
         }
-        if ($clWsdlType_GetTokenSession->ExtranetUser && $clWsdlType_GetTokenSession->ExtranetUser->UsernameToken instanceof UsernameToken){
-            $clWsdlType_GetTokenSession->ExtranetUser->UsernameToken->Compute();
+        if ($clParam->ExtranetUser
+            && isset($clParam->ExtranetUser->UsernameToken)
+            && $clParam->ExtranetUser->UsernameToken instanceof UsernameToken){
+            $clParam->ExtranetUser->UsernameToken->Compute();
         }
 
-	    return $this->call('GetTokenSession', array($clWsdlType_GetTokenSession) , null, null , $aHeaders);
+	    return $this->call('GetTokenSession', array($clParam) , null, null , $aHeaders);
     }
 
     /**

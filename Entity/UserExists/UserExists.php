@@ -20,15 +20,15 @@ class UserExists
      * @param string|null $sIV
      * @param string|null $sDefaultEncryption
      */
-    public function __construct(string $sType, ?string $sEncodedBlowfish, ?string $sIV, ?string $sDefaultEncryption, int $dwAuthOpt)
+    public function __construct(string $sType, ?string $sEncodedBlowfish, ?string $sIV, ?string $sDefaultEncryption)
     {
         $this->nTypeUser=(int)$sType;
         //par défaut
         if (is_null($sDefaultEncryption)){
-            $this->clEncryptionType=new EncryptionType(EncryptionType::MD5, EncryptionType::OPT_EmptyNoHash, EncryptionType::AUTH_Intranet|$dwAuthOpt);
+            $this->clEncryptionType=new EncryptionType(EncryptionType::MD5, EncryptionType::OPT_EmptyNoHash, false);
         }
         else {
-            $this->clEncryptionType=new EncryptionType($sDefaultEncryption, 0, EncryptionType::AUTH_Extranet|$dwAuthOpt);
+            $this->clEncryptionType=new EncryptionType($sDefaultEncryption, 0, true);
         }
         //init
         $this->clEncryptionType->initFromBlowfish($sEncodedBlowfish, $sIV);

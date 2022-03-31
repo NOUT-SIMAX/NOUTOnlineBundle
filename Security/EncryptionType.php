@@ -12,14 +12,14 @@ class EncryptionType
     private $m_sUuidLicence = '';
     private $m_id = '';
 
-    private $m_dwAuthOptions;
+    private $m_bForExtranet=false;
     private $m_dwPassOptions;
     private $m_sTypeEncryption;
 
-    public function __construct(string $sTypeEncryption, int $dwPassOptions, int $dwAuthOptions = 0)
+    public function __construct(string $sTypeEncryption, int $dwPassOptions, bool $bForExtranet)
     {
         $this->m_sTypeEncryption = $sTypeEncryption;
-        $this->m_dwAuthOptions = $dwAuthOptions;
+        $this->m_bForExtranet = $bForExtranet;
         $this->m_dwPassOptions = $dwPassOptions;
     }
 
@@ -32,7 +32,7 @@ class EncryptionType
         return [
             $this->m_sTypeEncryption,
             $this->m_dwPassOptions,
-            $this->m_dwAuthOptions,
+            $this->m_bForExtranet,
             $this->m_sUuidLicence,
             $this->m_id,
         ];
@@ -44,7 +44,7 @@ class EncryptionType
      */
     public function fromSerialization(array $data) : void
     {
-        list($this->m_sTypeEncryption, $this->m_dwPassOptions, $this->m_dwAuthOptions, $this->m_sUuidLicence, $this->m_id) = $data;
+        list($this->m_sTypeEncryption, $this->m_dwPassOptions, $this->m_bForExtranet, $this->m_sUuidLicence, $this->m_id) = $data;
     }
 
     /**
@@ -146,7 +146,7 @@ class EncryptionType
      */
     protected function _sGetPassword_GetTokenSession(string $plaintextSalted) : ?string
     {
-        if (($this->m_sTypeEncryption == self::PLAINTEXT) &&  (($this->m_dwAuthOptions & self::AUTH_Extranet)==0)){
+        if (($this->m_sTypeEncryption == self::PLAINTEXT) && !$this->m_bForExtranet){
             return $plaintextSalted;
         }
 
@@ -189,7 +189,7 @@ class EncryptionType
             }
         }
 
-        if ($this->m_dwAuthOptions & self::AUTH_Intranet){
+        if (!$this->m_bForExtranet){
             //on a une couche supplémentaire sur l'encodage pour le mot de passe utilisateur SIMAXs
             $ret = bin2hex(sha1($ret, true));
         }
@@ -199,12 +199,13 @@ class EncryptionType
 
     /**
      * @param string|null $plaintext
+     * @param bool        $bForFctCnxExtranet
      * @return string
      */
-    public function sGetPassword(?string $plaintext) : string
+    public function sGetPassword(?string $plaintext, bool $bForFctCnxExtranet=false) : string
     {
         $salted = $this->_sGetSaltedPassword($plaintext);
-        if ($this->m_dwAuthOptions & self::AUTH_FCTCNXEXTRANET){
+        if ($bForFctCnxExtranet){
             return $this->_sGetPassword_FctCnxExtranet($salted);
         }
         return $this->_sGetPassword_GetTokenSession($salted);
@@ -214,12 +215,6 @@ class EncryptionType
     const MD5 = 'md5';
     const SHA_1 = 'sha-1';
     const SHA_256 = 'sha-2-256';
-
-    const AUTH_FCTCNXEXTRANET = 0x01;
-    const AUTH_Intranet = 0x10;
-    const AUTH_Extranet = 0x20;
-
-
 
     protected const BLOWFISHKEY = 'c215ffb8f826dcc77f162350d89622b328653fab43fb4776c33a6be5171af3270f8420609fa2f4eb4d50d7b23c1232c28b59e244c7cc7357e50314254fd7cd3cd9d3329cefbd8cf7f820f9b1d8ddd746f4de6580104a34c9ccbf56ae76982821b4bf6a459ccedff0447f0f6a06a3f2d4bad3354d114b9531f7d20ac2b5d93e21';
 
