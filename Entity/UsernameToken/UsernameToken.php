@@ -50,7 +50,7 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
 
     final public function transformForSOAP()
     {
-        if (!is_null($this->Encryption) && ($this->Encryption instanceof Encryption))
+        if ($this->Encryption instanceof Encryption)
         {
             $encryption = $this->Encryption;
             $this->Encryption = [
@@ -59,6 +59,13 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
                 'ks' => $encryption->ks,
                 'iv' => $encryption->iv
             ];
+        }
+    }
+
+    public function __clone()
+    {
+        if (is_object($this->Encryption)){
+            $this->Encryption = clone $this->Encryption;
         }
     }
 

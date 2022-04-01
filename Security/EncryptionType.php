@@ -94,13 +94,13 @@ class EncryptionType
     protected function _sGetSaltedPassword(?string $plaintext) : string
     {
         $plaintextSalted='';
-        if ($this->m_dwPassOptions & self::OPT_SALT_ID){
-            $plaintextSalted.=$this->m_id;
-        }
-        if ($this->m_dwPassOptions & self::OPT_SALT_UUID){
-            $plaintextSalted.=$this->m_sUuidLicence;
-        }
-        if (!is_null($plaintext)){
+        if (!empty($plaintext)){
+            if ($this->m_dwPassOptions & self::OPT_SALT_ID){
+                $plaintextSalted.=$this->m_id;
+            }
+            if ($this->m_dwPassOptions & self::OPT_SALT_UUID){
+                $plaintextSalted.=$this->m_sUuidLicence;
+            }
             $plaintextSalted.=$plaintext;
         }
         return $plaintextSalted;
