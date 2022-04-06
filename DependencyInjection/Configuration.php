@@ -3,6 +3,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\DependencyInjection;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Security\EncryptionType;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -83,7 +84,7 @@ class Configuration implements ConfigurationInterface
             ->children()
             ->enumNode('mode')
                 ->info("mode d'authentification pour NOUTOnline")
-                ->values(array('OASIS', 'base64'))
+                ->values(array('OASIS', 'base64', 'blowfish'))
                 ->defaultValue('OASIS')
             ->end()
             ->scalarNode('secret')
@@ -107,7 +108,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('user')->defaultValue('')->end()
             ->scalarNode('password')->defaultValue('')->end()
             ->scalarNode('form')->defaultValue('')->end()
-            ->enumNode('password_encryption')->values([Langage::PASSWORD_ENCODAGE_plaintext, Langage::PASSWORD_ENCODAGE_md5, Langage::PASSWORD_ENCODAGE_sha1, Langage::PASSWORD_ENCODAGE_sha256])->defaultValue('plaintext')->end()
+            ->enumNode('password_encryption')->values([EncryptionType::PLAINTEXT, EncryptionType::MD5, EncryptionType::SHA_1, EncryptionType::SHA_256])->defaultValue(EncryptionType::PLAINTEXT)->end()
             ->end()
         ;
 

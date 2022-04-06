@@ -138,24 +138,24 @@ class HTTPResponse
 
     public function setLastModifiedIfNotExists()
     {
-        if (!array_key_exists('Last-Modified', $this->headers))
+        if (!array_key_exists(self::HEADER_LastModified, $this->headers))
         {
             //on ajoute le last modified à aujourd'hui
-            $this->headers['Last-Modified']=new \stdClass();
-            $this->headers['Last-Modified']->value = gmdate('D, d M Y H:i:s T');
-            $this->headers['Last-Modified']->options = array();
+            $this->headers[self::HEADER_LastModified]=new \stdClass();
+            $this->headers[self::HEADER_LastModified]->value = gmdate('D, d M Y H:i:s T');
+            $this->headers[self::HEADER_LastModified]->options = array();
         }
     }
 
     public function resetLastModified()
     {
-        if (!array_key_exists('Last-Modified', $this->headers))
+        if (!array_key_exists(self::HEADER_LastModified, $this->headers))
         {
             //on ajoute le last modified à aujourd'hui
-            $this->headers['Last-Modified']=new \stdClass();
-            $this->headers['Last-Modified']->options = array();
+            $this->headers[self::HEADER_LastModified]=new \stdClass();
+            $this->headers[self::HEADER_LastModified]->options = array();
         }
-        $this->headers['Last-Modified']->value = gmdate('D, d M Y H:i:s T');
+        $this->headers[self::HEADER_LastModified]->value = gmdate('D, d M Y H:i:s T');
     }
 
     /**
@@ -163,9 +163,9 @@ class HTTPResponse
      */
     public function getLastModified()
     {
-        if (array_key_exists('Last-Modified', $this->headers))
+        if (array_key_exists(self::HEADER_LastModified, $this->headers))
         {
-            return $this->headers['Last-Modified']->value;
+            return $this->headers[self::HEADER_LastModified]->value;
         }
 
         return null;
@@ -173,9 +173,9 @@ class HTTPResponse
 
     public function getDTLastModified()
     {
-        if (array_key_exists('Last-Modified', $this->headers))
+        if (array_key_exists(self::HEADER_LastModified, $this->headers))
         {
-            $sLastModified = $this->headers['Last-Modified']->value;
+            $sLastModified = $this->headers[self::HEADER_LastModified]->value;
             $sLastModified = str_replace(' GMT', '', $sLastModified);
             return \DateTime::createFromFormat('D, d M Y H:i:s', $sLastModified, new \DateTimeZone("UTC"));
         }
@@ -185,12 +185,12 @@ class HTTPResponse
 
     public function getFilename()
     {
-        if (array_key_exists('Content-Disposition', $this->headers))
+        if (array_key_exists(self::HEADER_ContentDisposition, $this->headers))
         {
-            $contentDisposition = $this->headers['Content-Disposition'];
-            if (array_key_exists('filename', $contentDisposition->options))
+            $header = $this->headers[self::HEADER_ContentDisposition];
+            if (array_key_exists(self::OPTION_filename, $header->options))
             {
-                return $contentDisposition->options['filename'];
+                return $header->options[self::OPTION_filename];
             }
         }
 
@@ -199,9 +199,9 @@ class HTTPResponse
 
     public function getStatus()
     {
-        if(array_key_exists ('status', $this->headers))
+        if(array_key_exists (self::HEADER_Status, $this->headers))
         {
-            return (int)$this->headers['status']->value;
+            return (int)$this->headers[self::HEADER_Status]->value;
         }
 
         return 200;
@@ -209,18 +209,47 @@ class HTTPResponse
 
     public function getContentType()
     {
-        if(array_key_exists ('Content-Type', $this->headers))
+        if(array_key_exists (self::HEADER_ContentType, $this->headers))
         {
-            return $this->headers['Content-Type']->value;
+            return $this->headers[self::HEADER_ContentType]->value;
         }
     }
 
     public function getContentLength()
     {
-        if(array_key_exists ('Content-Length', $this->headers))
+        if(array_key_exists (self::HEADER_ContentLength, $this->headers))
         {
-            return $this->headers['Content-Length']->value;
+            return $this->headers[self::HEADER_ContentLength]->value;
         }
-
     }
+
+    public function getXNOUTOnlineInfoCnx()
+    {
+        if(array_key_exists (self::HEADER_XNOUTOnlineInfoCnx, $this->headers))
+        {
+            return $this->headers[self::HEADER_XNOUTOnlineInfoCnx]->value;
+        }
+    }
+
+    public function getIVForInfoCnx()
+    {
+        if (array_key_exists(self::HEADER_XNOUTOnlineInfoCnx, $this->headers))
+        {
+            $header = $this->headers[self::HEADER_XNOUTOnlineInfoCnx];
+            if (array_key_exists(self::OPTION_iv, $header->options))
+            {
+                return $header->options[self::OPTION_iv];
+            }
+        }
+    }
+
+    protected const HEADER_LastModified = 'Last-Modified';
+    protected const HEADER_ContentDisposition = 'Content-Disposition';
+    protected const HEADER_ContentType = 'Content-Type';
+    protected const HEADER_ContentLength = 'Content-Length';
+    protected const HEADER_Status = 'status';
+    protected const HEADER_XNOUTOnlineInfoCnx = 'X-NOUTOnline-InfoCnx';
+
+    protected const OPTION_filename = 'filename';
+    protected const OPTION_iv = 'iv';
 }

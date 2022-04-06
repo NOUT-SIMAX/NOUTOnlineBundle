@@ -1823,12 +1823,6 @@ class Langage
     const ICONCENTRAL_OverlayMiddle = 4;
     const ICONCENTRAL_OverlayBottom = 5;
 
-    const PASSWORD_ENCODAGE_plaintext = 'plaintext';
-    const PASSWORD_ENCODAGE_sha1 = 'sha-1';
-    const PASSWORD_ENCODAGE_sha256 = 'sha-2-256';
-    const PASSWORD_ENCODAGE_md5 = 'md5';
-
-
     //-------------------------------------------------
     const TABL_Messagerie_Message		= 16510;
     const TABL_Messagerie_Dossier		= 16511;
