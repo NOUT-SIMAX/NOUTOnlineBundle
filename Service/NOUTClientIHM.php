@@ -26,6 +26,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\NonceCreatedSecretUsernamePassword;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondColumn;
@@ -511,4 +512,24 @@ class NOUTClientIHM extends NOUTClientBase
 
         return $oNOUTFileInfo;
     }
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getFunctionList()
+    {
+        $clIdentification = new Identification();
+        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_clUsernameToken = null;
+
+        $ret = $this->m_clRESTProxy->oGetFunctionsList($clIdentification);
+
+
+        return $ret;
+    }
+
+
 }

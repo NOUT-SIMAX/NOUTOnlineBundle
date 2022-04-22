@@ -22,6 +22,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\NonceCreatedSecretUsernamePassword;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
@@ -585,6 +586,14 @@ abstract class NOUTClientBase
     protected function _oGetUsernameToken(NOUTToken $oToken) :?UsernameToken
     {
         return $oToken->getUsernameToken();
+    }
+
+    /**
+     * @return NonceCreatedSecretUsernamePassword
+     */
+    protected function _oGetNCSUsernameToken() : NonceCreatedSecretUsernamePassword
+    {
+        return new NonceCreatedSecretUsernamePassword($this->m_clConfigurationDialogue->getSecret());
     }
 
     /**

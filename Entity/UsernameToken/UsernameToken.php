@@ -62,6 +62,34 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
         }
     }
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function sToRest() : string
+    {
+        $this->Compute(); //on fait le compute
+
+        $sBottom = 'Username='.urlencode(utf8_decode($this->Username));
+        $sBottom .= '&Password='.urlencode($this->Password);
+        $sBottom .= '&nonce='.urlencode(utf8_decode($this->Nonce));
+        $sBottom .= '&created='.urlencode(utf8_decode($this->Created));
+
+        if (!empty($this->Encryption))
+        {
+            $sBottom .= '&encryption=' . urlencode($this->Encryption->_);
+            $sBottom .= '&md5=' . urlencode($this->Encryption->md5);
+            if (!empty($this->Encryption->iv)){
+                $sBottom .= '&iv=' . urlencode($this->Encryption->iv);
+            }
+            if (!empty($this->Encryption->ks)){
+                $sBottom .= '&ks=' . urlencode($this->Encryption->ks);
+            }
+        }
+        return $sBottom;
+    }
+
+
     public function __clone()
     {
         if (is_object($this->Encryption)){
