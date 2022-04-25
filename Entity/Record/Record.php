@@ -288,6 +288,20 @@ class Record extends IHMWindows
 		return $this->m_TabColumnsValues[$idColonne];
 	}
 
+    /**
+     * @param $idColonne
+     * @return array
+     */
+	public function getMultilangValue($idColonne) : array
+    {
+        if (!isset($this->m_TabMultilangueValues[$idColonne]))
+        {
+            return [];
+        }
+
+        return $this->m_TabMultilangueValues[$idColonne];
+    }
+
 
     /**
      * retourne le titre d'un Enreg Lié
@@ -375,15 +389,16 @@ class Record extends IHMWindows
 	 * @param $value
 	 * @param bool   $modifiedByUser
      * @param int    $codelangue
+     * @param bool   $bCurrentLanguage
 	 * @return $this
 	 */
-	public function setValCol(string $idcolonne, $value, bool $modifiedByUser = true, int $codelangue = 0): Record
+	public function setValCol(string $idcolonne, $value, bool $modifiedByUser = true, int $codelangue = 0, bool $bCurrentLanguage=true): Record
     {
 		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
 
 		if ($codelangue == 0)
         {
-            $this->m_TabColumnsValues[$idcolonne]   = $value;
+            $this->m_TabColumnsValues[$idcolonne] = $value;
         }
 		else
         {
@@ -392,6 +407,9 @@ class Record extends IHMWindows
                 $this->m_TabMultilangueValues[$idcolonne]=[];
             }
             $this->m_TabMultilangueValues[$idcolonne][$codelangue]=$value;
+            if ($bCurrentLanguage){
+                $this->m_TabColumnsValues[$idcolonne] = $value;
+            }
         }
 
 		return $this;

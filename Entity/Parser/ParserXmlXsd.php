@@ -372,6 +372,7 @@ class ParserXmlXsd extends AbstractParser
             {
                 $ref = (string)$TabAttribNOUT['ref'];
                 $codelangue = ((int) $TabAttribNOUT['languageCode'] ?? 0);
+                $bCurrentLanguage = (boolval($TabAttribNOUT['currentLanguage'] ?? false));
                 if (!empty($ref) && isset($this->m_MapRef2Data[$ref]))
                 {
                     $Valeur = $this->m_MapRef2Data[$ref];
@@ -380,7 +381,7 @@ class ParserXmlXsd extends AbstractParser
                 {
                     $Valeur = (string) $ndColonne;
                 }
-                $clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false, $codelangue); //false car pas modifier par l'utilisateur ici
+                $clRecord->setValCol($clInfoColonne->getIDColonne(), $Valeur, false, $codelangue, $bCurrentLanguage); //false car pas modifier par l'utilisateur ici
                 break;
             }
         }
