@@ -636,6 +636,17 @@ class OnlineServiceProxy
         $result = $this->_oExecute('GetFunctionList', $sURI, __FUNCTION__, $clIdentification);
         return json_decode($result->content);
     }
+    /**
+     * @param Identification $clIdentification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetColumnsList(Identification  $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetColumnList'], [], [], $clIdentification);
+        $result = $this->_oExecute('GetColumnList', $sURI, __FUNCTION__, $clIdentification);
+        return json_decode($result->content);
+    }
 
 
 	const PARAM_TestRestart     = 'TestRestart';

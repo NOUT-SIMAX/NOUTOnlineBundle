@@ -530,6 +530,25 @@ class NOUTClientIHM extends NOUTClientBase
 
         return $ret;
     }
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getColumnsList()
+    {
+        $clIdentification = new Identification();
+        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_clUsernameToken = null;
+
+        $ret = $this->m_clRESTProxy->oGetColumnsList($clIdentification);
+
+
+        return $ret;
+    }
+
+
 
 
 }
