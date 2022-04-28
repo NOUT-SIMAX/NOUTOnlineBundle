@@ -83,9 +83,9 @@ abstract class NOUTClientBase
     private $m_clOptionDialogue;
 
     /**
-     * @var string
+     * @var array
      */
-    private $m_sVersionMin;
+    private $m_aVersionMin;
 
     /**
      * @var Stopwatch
@@ -120,7 +120,8 @@ abstract class NOUTClientBase
         $this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
 
         $this->m_clConfigurationDialogue = $configurationDialogue;
-        $this->m_sVersionMin = $aVersionsMin['site'];
+        $this->m_aVersionMin = $aVersionsMin;
+
 
         //création du gestionnaire de cache
         if ($oSecurityToken instanceof NOUTToken)
@@ -489,9 +490,19 @@ abstract class NOUTClientBase
      * @return bool
      * @throws \Exception
      */
-    public function isVersionMin() : bool
+    public function isVersionMinSite() : bool
     {
-        return $this->clGetVersion()->isVersionSup($this->m_sVersionMin, true);
+        return $this->clGetVersion()->isVersionSup($this->m_aVersionMin['site'], true);
+    }
+
+    /**
+     * teste le client pour savoir s'il correspond à la version minimale
+     * @return bool
+     * @throws \Exception
+     */
+    public function isVersionMinLanguage() : bool
+    {
+        return $this->clGetVersion()->isVersionSup($this->m_aVersionMin['language'], true);
     }
 
     /**
