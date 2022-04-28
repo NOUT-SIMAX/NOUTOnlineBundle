@@ -13,91 +13,23 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConnexionExtranetHashPassword;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
-use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\NonceCreatedSecretUsernamePassword;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondColumn;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondType;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondValue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\CondListType;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Factory\CondListTypeFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXmlXsd;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserScheduler;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\AddPJ;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ButtonAction;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Cancel;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ConfirmResponse;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Create;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataType;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Export;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetChart;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetContentFolder;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetPJ;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetStartAutomatism;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetSubListContent;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Import;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ListParams;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Merge;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Modify;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ModifyMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Search;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectChoice;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectForm;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SendMessage;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
-
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
-use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
-use NOUT\Bundle\NOUTOnlineBundle\NOUTException\NOUTValidationException;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Stopwatch\Stopwatch;
-
 
 /**
  * Class NOUTClient
@@ -514,38 +446,372 @@ class NOUTClientIHM extends NOUTClientBase
     }
 
     /**
+     * @param string   $typecache
+     * @param string   $key
+     * @param callable $fctIfNotInCache
+     * @return mixed
+     */
+    protected function _getFromCache(string $typecache, string $key, callable $fctIfNotInCache)
+    {
+        $ret = $this->fetchFromCache($typecache, $key);
+        if (!isset($ret) || ($ret === false)){
+            //pas dans le cache
+            $ret = $fctIfNotInCache();
+            $this->_saveInCache($typecache, $key, $ret);
+        }
+        return $ret;
+    }
+
+
+    /**
+     * @return ActionResult
+     * @throws \Exception
+     */
+    protected function _getWeekSchedule() : ActionResult
+    {
+        $TabHeaderQuery = array(
+            SOAPProxy::HEADER_APIUser => 1,
+            SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,
+        );
+
+        //--------------------------------------------------------------------------------------------
+        // Paramètres
+        $clParam = $this->_oGetParam(Execute::class, []);
+        $clParam->ID = Langage::ACTION_Horaires_Ouverture;             // identifiant de l'action (String)
+        $clParam->Final = 0;
+
+        //--------------------------------------------------------------------------------------------
+        // Headers
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($TabHeaderQuery, '');
+        $clReponseXML = $this->m_clSOAPProxy->execute($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
+
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML);
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function getWeekSchedule() : array
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_Session, "info_week_schedule", function(){
+            $oRet = $this->_getWeekSchedule();
+
+            /** @var RecordCache $records */
+            $records = $oRet->getData()->getRecordCache()->getMapIDTableauIDEnreg2Record();
+            $days = array(
+                Langage::JS_Dimanche,
+                Langage::JS_Lundi,
+                Langage::JS_Mardi,
+                Langage::JS_Mercredi,
+                Langage::JS_Jeudi,
+                Langage::JS_Vendredi,
+                Langage::JS_Samedi,
+            );
+            $week = array();
+            foreach($records as $record) {
+                /** @var Record $record */
+                if(($dayNumber = array_search($record->getValCol(Langage::COL_HORAIREOUVERTURE_JourSemaine), $days)) !== false) {
+                    $day = new \stdClass();
+                    $day->openingTime = $record->getValCol(Langage::COL_HORAIREOUVERTURE_HeureDeb);
+                    $day->closingTime = $record->getValCol(Langage::COL_HORAIREOUVERTURE_HeureFin);
+                    $week[$dayNumber] = $day;
+                }
+            }
+            return $week;
+        });
+    }
+
+    /**
      * @return mixed
      * @throws \Exception
      */
-    public function getFunctionList()
+    protected function _getFunctionList()
     {
         $clIdentification = new Identification();
         $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
 
         $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_bAPIUser = true;
         $clIdentification->m_clUsernameToken = null;
 
-        $ret = $this->m_clRESTProxy->oGetFunctionsList($clIdentification);
-
-
-        return $ret;
+        return $this->m_clRESTProxy->oGetFunctionsList($clIdentification);
     }
     /**
      * @return mixed
      * @throws \Exception
      */
-    public function getColumnsList()
+    public function getFunctionList()
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "function_list", function(){
+            return $this->_getFunctionList();
+        });
+    }
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function _getModelList()
     {
         $clIdentification = new Identification();
         $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
 
         $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_bAPIUser = true;
         $clIdentification->m_clUsernameToken = null;
 
-        $ret = $this->m_clRESTProxy->oGetColumnsList($clIdentification);
+        return $this->m_clRESTProxy->oGetModelList($clIdentification);
+    }
+
+    /**
+     * @param \stdClass $info
+     * @return \stdClass
+     */
+    protected function __initFromJson(\stdClass $info) : \stdClass
+    {
+        $obj = new \stdClass();
+        $obj->id = $info->id;
+        $obj->title = $info->title;
+
+        if (property_exists($info->columns, Langage::COL_GENERIQUE_TYPEFORMULAIRE)){
+            $info_typecol = $info->columns->{Langage::COL_GENERIQUE_TYPEFORMULAIRE};
+            $obj->type = new \stdClass();
+            $obj->type->id = $info_typecol->value;
+            $obj->type->title = $info_typecol->displayValue;
+        }
+
+        return $obj;
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function getModelList() : array
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "model_list", function(){
+            $oRestResponse = $this->_getModelList();
+            $aReturnFinal=[];
+            foreach($oRestResponse->result as $idObg)
+            {
+                $info = $oRestResponse->values->elements->$idObg;
+
+                $obj = $this->__initFromJson($info);
+
+                //le type bdd si pertinant
+                if (property_exists($info->columns, Langage::COL_MODELECLASSIQUE_TypeModele)) {
+                    $obj->type->bdd = new \stdClass();
+                    $obj->type->bdd->title = $info->columns->{Langage::COL_MODELECLASSIQUE_TypeModele}->displayValue;
+                    $obj->type->bdd->id = $info->columns->{Langage::COL_MODELECLASSIQUE_TypeModele}->value;
+                }
+
+                $aReturnFinal[$obj->id]=$obj;
+            }
+            return $aReturnFinal;
+        });
+    }
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function _getColumnList()
+    {
+        $clIdentification = new Identification();
+        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_bAPIUser = true;
+        $clIdentification->m_clUsernameToken = null;
+
+        return $this->m_clRESTProxy->oGetColumnList($clIdentification);
+    }
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getColumnList()
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "column_list", function(){
+            $aModeles = $this->getModelList();
+            $oRestResponse = $this->_getColumnList();
+
+            //il faut que je fasse un truc du retour,
+            $aReturnFinal=[];
+            foreach($oRestResponse->result as $idObj)
+            {
+                $info = $oRestResponse->values->elements->$idObj;
+
+                $obj = $this->__initFromJson($info);
+                $obj->title = $info->columns->{Langage::COL_COLONNE_Libelle}->displayValue;
+
+                if (property_exists($info->columns, Langage::COL_COLLIBELLE_IDNiveau)) {
+                    $obj->type->niveau = $info->columns->{Langage::COL_COLLIBELLE_IDNiveau}->value;
+                }
+
+                $info_tableau = $info->columns->{Langage::COL_COLONNE_IDTableau};
+                $obj->form = new \stdClass();
+                $obj->form->id = $info_tableau->value;
+                $obj->form->title = $info_tableau->displayValue;
+
+                $info_modele = $info->columns->{Langage::COL_COLONNE_IDModele};
+                if (!empty($info_modele->value)){
+                    if (array_key_exists($info_modele->value, $aModeles)){
+                        //on connait le modèle
+                        $obj->modele = $aModeles[$info_modele->value];
+                    }
+                    else {
+                        //on prend ce qu'on a dans la description de la colonne
+                        $obj->modele = new \stdClass();
+                        $obj->modele->title = $info_modele->displayValue;
+                        $obj->modele->id = $info_modele->value;
+                    }
+                }
+
+                $obj->ordre = $info->columns->{Langage::COL_COLONNE_Ordre}->value;
+                $aReturnFinal[$obj->id]=$obj;
+            }
+            return $aReturnFinal;
+        });
+    }
 
 
-        return $ret;
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function __getBaseTableList()
+    {
+        $clIdentification = new Identification();
+        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_bAPIUser = true;
+        $clIdentification->m_clUsernameToken = null;
+
+        return $this->m_clRESTProxy->oGetBaseTableList($clIdentification);
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function _getBaseTableListWithoutColumns() : array
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "base_table_list_without_columns", function(){
+            $oRestResponse = $this->__getBaseTableList();
+            $aReturnFinal = [];
+
+            foreach($oRestResponse->result as $idObj)
+            {
+                $info = $oRestResponse->values->elements->$idObj;
+
+                $obj = $this->__initFromJson($info);
+
+                $aReturnFinal[$obj->id]=$obj;
+            }
+            return $aReturnFinal;
+        });
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function _getBaseTableListWithColumns() : array
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "base_table_list_with_columns", function(){
+
+            $aReturnFinal = $this->_getBaseTableListWithoutColumns();
+            array_walk($aReturnFinal, function($form){
+                $form->columns=[];
+            });
+
+            $aColonnes = $this->getColumnList();
+            foreach($aColonnes as $colonne)
+            {
+                if (array_key_exists($colonne->form->id, $aReturnFinal)){
+                    $form = $aReturnFinal[$colonne->form->id];
+                }
+                else {
+                    $form = new \stdClass();
+                    $aReturnFinal[$colonne->form->id] = $form;
+
+                    $form->title = $colonne->form->title;
+                    $form->id = $colonne->form->id;
+                    $form->columns = [];
+                }
+                $form->columns[$colonne->ordre]=$colonne;
+            }
+            array_walk($aReturnFinal, function($form){
+                ksort($form->columns);
+            });
+
+            return $aReturnFinal;
+
+        });
+    }
+
+
+    /**
+     * @param bool $bWithColumns
+     * @return array
+     * @throws \Exception
+     */
+    public function getBaseTableList(bool $bWithColumns=true) : array
+    {
+        if ($bWithColumns){
+            return $this->_getBaseTableListWithColumns();
+        }
+
+        return $this->_getBaseTableListWithoutColumns();
+    }
+
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function _getFormTableListWithoutColumns() : array
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "form_table_list_without_columns", function(){
+            $aReturnFinal = $this->_getBaseTableListWithoutColumns();
+            $aReturnFinal = array_filter($aReturnFinal, function($form){
+                return property_exists($form, 'type') && ($form->type->id==Langage::TABL_Tableau);
+            });
+            return $aReturnFinal;
+        });
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function _getFormTableListWithColumns() : array
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "form_table_list_with_columns", function(){
+            $aReturnFinal = $this->_getBaseTableListWithColumns();
+            $aReturnFinal = array_filter($aReturnFinal, function($form){
+                return property_exists($form, 'type') && ($form->type->id==Langage::TABL_Tableau);
+            });
+            return $aReturnFinal;
+        });
+    }
+
+    /**
+     * @param bool $bWithColumns
+     * @return array
+     * @throws \Exception
+     */
+    public function getFormTableList(bool $bWithColumns=true) : array
+    {
+        if ($bWithColumns){
+            return $this->_getFormTableListWithColumns();
+        }
+
+        return $this->_getFormTableListWithoutColumns();
     }
 
 
