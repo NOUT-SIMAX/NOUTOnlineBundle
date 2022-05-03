@@ -13,27 +13,26 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 class Identification
 {
 	/**
-	 * @var UsernameToken
+	 * @var UsernameToken|null
 	 */
-	public $m_clUsernameToken;
+	public $m_clUsernameToken = null;
+
+    /**
+     * @var string|null
+     */
+    public $m_sAuthToken = null;
+
 	/**
 	 * @var string
 	 */
-	public $m_sTokenSession;
+	public $m_sTokenSession='';
 	/**
 	 * @var string
 	 */
-	public $m_sIDContexteAction;
+	public $m_sIDContexteAction='';
 	/**
 	 * @var bool
 	 */
-	public $m_bAPIUser;
+	public $m_bAPIUser=false;
 
-	public function __construct()
-	{
-		$this->m_clUsernameToken   = null;
-		$this->m_sTokenSession     = '';
-		$this->m_sIDContexteAction = '';
-		$this->m_bAPIUser          = false;
-	}
 }

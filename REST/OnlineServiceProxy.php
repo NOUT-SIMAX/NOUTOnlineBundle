@@ -16,7 +16,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineState;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UserExists\UserExists;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
@@ -70,69 +69,49 @@ class OnlineServiceProxy
 	 */
 	private function _sCreateIdentification(Identification $clIdentification=null) : string
 	{
-		if (is_null($clIdentification) || empty($clIdentification->m_clUsernameToken) || !$clIdentification->m_clUsernameToken->bIsValid())
+	    $sBottom='';
+		if (!is_null($clIdentification) )
 		{
-            if (!empty($this->__ConfigurationDialogue->getAPIUUID()))
+            if (!empty($clIdentification->m_clUsernameToken) && $clIdentification->m_clUsernameToken->bIsValid())
             {
-                return '!APIUUID='.urlencode($this->__ConfigurationDialogue->getAPIUUID());
+                $sBottom = '!'.$clIdentification->m_clUsernameToken->sToRest();
+            }
+            elseif(!empty($clIdentification->m_sAuthToken)){
+                $sBottom = '!Token='.urlencode($clIdentification->m_sAuthToken);
             }
 
-			return '';
+            if (!empty($sBottom))
+            {
+                if (!empty($clIdentification->m_sTokenSession))
+                {
+                    $sBottom .= '&SessionToken='.urlencode($clIdentification->m_sTokenSession);
+                }
+
+                if (!empty($clIdentification->m_sIDContexteAction))
+                {
+                    $sBottom .= '&ActionContext='.urlencode($clIdentification->m_sIDContexteAction);
+                }
+
+                if (!empty($this->__ConfigurationDialogue->getAPIUUID()))
+                {
+                    $sBottom .= '&APIUUID='.urlencode($this->__ConfigurationDialogue->getAPIUUID());
+                }
+
+                if (!empty($clIdentification->m_bAPIUser))
+                {
+                    $sBottom .= '&APIUser=1';
+                }
+            }
 		}
 
-		$sBottom = '!'.$this->__sGetUsernameToken($clIdentification->m_clUsernameToken);
+        if (empty($sBottom) && !empty($this->__ConfigurationDialogue->getAPIUUID()))
+        {
+            $sBottom = '!APIUUID='.urlencode($this->__ConfigurationDialogue->getAPIUUID());
+        }
 
-		if (!empty($clIdentification->m_sTokenSession))
-		{
-			$sBottom .= '&SessionToken='.urlencode($clIdentification->m_sTokenSession);
-		}
-
-		if (!empty($clIdentification->m_sIDContexteAction))
-		{
-			$sBottom .= '&ActionContext='.urlencode($clIdentification->m_sIDContexteAction);
-		}
-
-		if (!empty($this->__ConfigurationDialogue->getAPIUUID()))
-		{
-			$sBottom .= '&APIUUID='.urlencode($this->__ConfigurationDialogue->getAPIUUID());
-		}
-
-
-		if (!empty($clIdentification->m_bAPIUser))
-		{
-			$sBottom .= '&APIUser=1';
-		}
 
 		return $sBottom;
 	}
-
-    /**
-     * @param UsernameToken $usernameToken
-     * @return string la partie username token
-     * @throws \Exception
-     */
-    private function __sGetUsernameToken(UsernameToken $usernameToken) : string
-    {
-        $usernameToken->Compute(); //on fait le compute
-        $sBottom = 'Username='.urlencode(utf8_decode($usernameToken->Username));
-        $sBottom .= '&Password='.urlencode($usernameToken->Password);
-        $sBottom .= '&nonce='.urlencode(utf8_decode($usernameToken->Nonce));
-        $sBottom .= '&created='.urlencode(utf8_decode($usernameToken->Created));
-
-        if (!empty($usernameToken->Encryption))
-        {
-            $sBottom .= '&encryption=' . urlencode($usernameToken->Encryption->_);
-            $sBottom .= '&md5=' . urlencode($usernameToken->Encryption->md5);
-            if (!empty($usernameToken->Encryption->iv)){
-                $sBottom .= '&iv=' . urlencode($usernameToken->Encryption->iv);
-            }
-            if (!empty($usernameToken->Encryption->ks)){
-                $sBottom .= '&ks=' . urlencode($usernameToken->Encryption->ks);
-            }
-        }
-
-        return $sBottom;
-    }
 
 
 	/**
@@ -211,10 +190,11 @@ class OnlineServiceProxy
      * @param Identification|null $clIdentification
      * @param $function
      * @param null $timeout
+     * @param bool $bForceJson
      * @return HTTPResponse
      * @throws \Exception
      */
-	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null) : HTTPResponse
+	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null, bool $bForceJson=false) : HTTPResponse
 	{
 	    //demarre le log si necessaire
 		$this->__startLogQuery($function);
@@ -222,11 +202,14 @@ class OnlineServiceProxy
         //initialisation de curl
         $curl = curl_init($sURI);
 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+        $aHttpHeaders = [
             ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP     . ': '  . $this->__clInfoClient->getIP(),
             ConfigurationDialogue::HTTP_SIMAX_CLIENT        . ': '  . $this->__ConfigurationDialogue->getSociete(),
             ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version. ': '  . $this->__ConfigurationDialogue->getVersion(),
-        ));
+            'Accept: '. ($bForceJson ? 'application/json' : '*/*'),
+        ];
+
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $aHttpHeaders);
 
         if (!is_null($timeout))
         {
@@ -334,6 +317,26 @@ class OnlineServiceProxy
         }
     }
 
+    /**
+     * Parse les entêtes pour fournir une sortie au format natif
+     *
+     * @param $response
+     * @return array
+     * @throws \Exception
+     */
+    protected function _aGetHeadersFromCurlResponse($response) : array
+    {
+        $headers = [];
+
+        $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
+
+        foreach (explode("\r\n", $header_text) as /*$i =>*/ $line)
+        {
+            array_push($headers, $line);
+        }
+
+        return $headers;
+    }
 
 	/**
 	 * recherche un utilisateur par son pseudo
@@ -530,8 +533,6 @@ class OnlineServiceProxy
 		return $this->_oExecute('GetChecksum', $sURI, __FUNCTION__, $clIdentification);
 	}
 
-	// IdTableau est IDForm
-
 	/**
 	 * @param $sIDTableau
 	 * @param $sIDEnreg
@@ -594,11 +595,11 @@ class OnlineServiceProxy
 
     /**
      * @param $messageId
-     * @param $clIdentification
+     * @param Identification $clIdentification
      * @return HTTPResponse
      * @throws \Exception
      */
-	public function oPrintMessage($messageId, $clIdentification) : HTTPResponse
+	public function oPrintMessage($messageId, Identification $clIdentification) : HTTPResponse
     {
 	    $identification = $this->_sCreateIdentification($clIdentification);
 
@@ -615,26 +616,77 @@ class OnlineServiceProxy
     }
 
     /**
-     * Parse les entêtes pour fournir une sortie au format natif
-     *
-     * @param $response
-     * @return array
+     * @param Identification $clIdentification
+     * @return string
      * @throws \Exception
      */
-    protected function _aGetHeadersFromCurlResponse($response) : array
+    public function sGenerateAuthTokenForApp(Identification $clIdentification) : string
     {
-        $headers = [];
+        $sURI = $this->_sCreateRequest(['GenereAuthTokenForApp'], [], [], $clIdentification);
+        $result = $this->_oExecute('GenereAuthTokenForApp', $sURI, __FUNCTION__, $clIdentification);
 
-        $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
-
-        foreach (explode("\r\n", $header_text) as /*$i =>*/ $line)
-        {
-            array_push($headers, $line);
-        }
-
-        return $headers;
+        return $result->content;
     }
 
+    /**
+     * @param Identification $clIdentification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetFunctionsList(Identification  $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetFunctionList'], [], [], $clIdentification);
+        $result = $this->_oExecute('GetFunctionList', $sURI, __FUNCTION__, $clIdentification);
+        return json_decode($result->content);
+    }
+
+    /**
+     * @param Identification $clIdentification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetColumnList(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetColumnList'], [], [], $clIdentification);
+        $result = $this->_oExecute('GetColumnList', $sURI, __FUNCTION__, $clIdentification, null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
+
+    /**
+     * @param Identification $clIdentification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetModelList(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetModelList'], [], [], $clIdentification);
+        $result = $this->_oExecute('GetModelList', $sURI, __FUNCTION__, $clIdentification, null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
+
+    /**
+     * @param Identification $clIdentification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetBaseTableList(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetBaseTableList'], [], [], $clIdentification);
+        $result = $this->_oExecute('GetBaseTableList', $sURI, __FUNCTION__, $clIdentification,null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
+
+    /**
+     * @param Identification $clIdentification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetTableList(Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetTableList'], [], [], $clIdentification);
+        $result = $this->_oExecute('GetTableList', $sURI, __FUNCTION__, $clIdentification, null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
 
 	const PARAM_TestRestart     = 'TestRestart';
 	const PARAM_Login           = 'Login';

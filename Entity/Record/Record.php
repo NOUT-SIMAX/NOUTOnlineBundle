@@ -25,22 +25,25 @@ class Record extends IHMWindows
 	protected $m_nIDEnreg='';
 
     /** @var array */
-    protected $m_TabOptionsRecord;
+    protected $m_TabOptionsRecord = [];
 
     /** @var array */
-    protected $m_TabOptionsLayout;
+    protected $m_TabOptionsLayout = [];
 
 	/** @var InfoColonne[] : tableau avec les informations variables des colonnes (mise en forme ...) */
-	protected $m_TabColumnsInfo;
+	protected $m_TabColumnsInfo = [];
 
 	/** @var array : tableau avec les valeurs des colonnes */
-	protected $m_TabColumnsValues;
+	protected $m_TabColumnsValues = [];
+
+	/** @var array : tableau avec les valeurs des autres langues */
+	protected $m_TabMultilangueValues = [];
 
 	/** @var array : tableau de booleen pour indiquer que la valeur à changée */
-	protected $m_TabColumnsModified;
+	protected $m_TabColumnsModified = [];
 
 	/** @var RecordCache */
-	protected $m_TabRecordLie;
+	protected $m_clCacheRecordLie;
 
 	/** @var int */
 	protected $m_nXSDNiv=0;
@@ -79,14 +82,8 @@ class Record extends IHMWindows
 		$this->m_nIDEnreg     = $sIDEnreg;
 		$this->m_nXSDNiv      = (int)$nNiv;
 
-		$this->m_TabColumnsInfo     = array();
-		$this->m_TabColumnsModified = array();
-		$this->m_TabColumnsValues   = array();
-        $this->m_TabOptionsRecord   = array();
-        $this->m_TabOptionsLayout   = array();
-
 		//tableau des éléments liés
-		$this->m_TabRecordLie = new RecordCache();
+		$this->m_clCacheRecordLie = new RecordCache();
 	}
 
 	/**
@@ -203,7 +200,7 @@ class Record extends IHMWindows
      */
     public function getRecordLie(): RecordCache
     {
-        return $this->m_TabRecordLie;
+        return $this->m_clCacheRecordLie;
     }
 
 
@@ -291,6 +288,20 @@ class Record extends IHMWindows
 		return $this->m_TabColumnsValues[$idColonne];
 	}
 
+    /**
+     * @param $idColonne
+     * @return array
+     */
+	public function getMultilangValue($idColonne) : array
+    {
+        if (!isset($this->m_TabMultilangueValues[$idColonne]))
+        {
+            return [];
+        }
+
+        return $this->m_TabMultilangueValues[$idColonne];
+    }
+
 
     /**
      * retourne le titre d'un Enreg Lié
@@ -300,13 +311,13 @@ class Record extends IHMWindows
      */
     public function getTitleFromIDRecordLie($idRecordLie, $idColonne): string
     {
-        if (!isset($this->m_TabRecordLie) || !isset($this->m_clStructElem))
+        if (!isset($this->m_clCacheRecordLie) || !isset($this->m_clStructElem))
         {
             return "";
         }
 
         $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
-        $record = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
+        $record = $this->m_clCacheRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
         if (!isset($record)){
             return '';
         }
@@ -339,7 +350,7 @@ class Record extends IHMWindows
                     return '';
                 }
 
-                $clRecordLie = $this->m_TabRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $valStockee);
+                $clRecordLie = $this->m_clCacheRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $valStockee);
                 /** @var Record|null $clRecordLie */
                 if (is_null($clRecordLie))
                 {
@@ -376,13 +387,30 @@ class Record extends IHMWindows
 	/**
 	 * @param string $idcolonne
 	 * @param $value
-	 * @param bool $modifiedByUser
+	 * @param bool   $modifiedByUser
+     * @param int    $codelangue
+     * @param bool   $bCurrentLanguage
 	 * @return $this
 	 */
-	public function setValCol(string $idcolonne, $value, $modifiedByUser = true): Record
+	public function setValCol(string $idcolonne, $value, bool $modifiedByUser = true, int $codelangue = 0, bool $bCurrentLanguage=true): Record
     {
-		$this->m_TabColumnsValues[$idcolonne]   = $value;
 		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
+
+		if ($codelangue == 0)
+        {
+            $this->m_TabColumnsValues[$idcolonne] = $value;
+        }
+		else
+        {
+            if (!array_key_exists($idcolonne, $this->m_TabMultilangueValues))
+            {
+                $this->m_TabMultilangueValues[$idcolonne]=[];
+            }
+            $this->m_TabMultilangueValues[$idcolonne][$codelangue]=$value;
+            if ($bCurrentLanguage){
+                $this->m_TabColumnsValues[$idcolonne] = $value;
+            }
+        }
 
 		return $this;
 	}
@@ -394,7 +422,7 @@ class Record extends IHMWindows
 	 */
 	public function addRecordLie($nNiv, Record $clRecordLie): Record
     {
-        $this->m_TabRecordLie->SetRecord($nNiv, $clRecordLie);
+        $this->m_clCacheRecordLie->SetRecord($nNiv, $clRecordLie);
 		return $this;
 	}
 
@@ -498,7 +526,7 @@ class Record extends IHMWindows
 
     public function updateRecordLie(RecordCache $src): Record
     {
-        $this->m_TabRecordLie->update($src);
+        $this->m_clCacheRecordLie->update($src);
         return $this;
     }
 
@@ -513,7 +541,7 @@ class Record extends IHMWindows
 
         //mise à jour du titre
         $this->m_sTitle = $clRecordSrc->getTitle();
-        $this->m_TabRecordLie->update($clRecordSrc->m_TabRecordLie);
+        $this->m_clCacheRecordLie->update($clRecordSrc->m_clCacheRecordLie);
 
         //mise à jour des valeurs
         foreach($clRecordSrc->m_TabColumnsValues as $idcolonne=>$value)
