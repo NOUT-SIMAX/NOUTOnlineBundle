@@ -126,7 +126,7 @@ abstract class NOUTClientBase
         //création du gestionnaire de cache
         if ($oSecurityToken instanceof NOUTToken)
         {
-            $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
+            $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
             $this->m_clRecordSerializer = new RecordSerializer($tokenStorage, $cacheFactory);
         }
 

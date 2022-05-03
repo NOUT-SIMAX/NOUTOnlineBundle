@@ -543,7 +543,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     public function getFunctionList()
     {
-        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "function_list", function(){
+        return $this->_getFromCache(NOUTClientCache::CACHE_NOUTOnline, "function_list", function(){
             return $this->_getFunctionList();
         });
     }
@@ -590,7 +590,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     public function getModelList() : array
     {
-        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "model_list", function(){
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "model_list", function(){
             $oRestResponse = $this->_getModelList();
             $aReturnFinal=[];
             foreach($oRestResponse->result as $idObg)
@@ -634,7 +634,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     public function getColumnList()
     {
-        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "column_list", function(){
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "column_list", function(){
             $aModeles = $this->getModelList();
             $oRestResponse = $this->_getColumnList();
 
@@ -700,7 +700,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     protected function _getBaseTableListWithoutColumns() : array
     {
-        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "base_table_list_without_columns", function(){
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "base_table_list_without_columns", function(){
             $oRestResponse = $this->__getBaseTableList();
             $aReturnFinal = [];
 
@@ -722,7 +722,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     protected function _getBaseTableListWithColumns() : array
     {
-        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "base_table_list_with_columns", function(){
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "base_table_list_with_columns", function(){
 
             $aReturnFinal = $this->_getBaseTableListWithoutColumns();
             array_walk($aReturnFinal, function($form){
@@ -776,7 +776,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     protected function _getFormTableListWithoutColumns() : array
     {
-        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "form_table_list_without_columns", function(){
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "form_table_list_without_columns", function(){
             $aReturnFinal = $this->_getBaseTableListWithoutColumns();
             $aReturnFinal = array_filter($aReturnFinal, function($form){
                 return property_exists($form, 'type') && ($form->type->id==Langage::TABL_Tableau);
@@ -791,7 +791,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     protected function _getFormTableListWithColumns() : array
     {
-        return $this->_getFromCache(NOUTClientCache::CACHE_IHM, "form_table_list_with_columns", function(){
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "form_table_list_with_columns", function(){
             $aReturnFinal = $this->_getBaseTableListWithColumns();
             $aReturnFinal = array_filter($aReturnFinal, function($form){
                 return property_exists($form, 'type') && ($form->type->id==Langage::TABL_Tableau);

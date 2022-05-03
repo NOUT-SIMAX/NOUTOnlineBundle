@@ -28,7 +28,7 @@ class RecordSerializer
     public function __construct(TokenStorageInterface $tokenStorage, NOUTCacheFactory $cacheFactory)
     {
         $oSecurityToken = $tokenStorage->getToken();
-        $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage());
+        $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
     }
 
     /**

@@ -448,7 +448,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function oGetUndoRedoInitFilter() : \stdClass
     {
-        $oUndoRedoFilter = $this->fetchFromCache(NOUTClientCache::CACHE_IHM, "undoredo_filter");
+        $oUndoRedoFilter = $this->fetchFromCache(NOUTClientCache::CACHE_Session, "undoredo_filter");
         if (isset($oUndoRedoFilter) && ($oUndoRedoFilter !== false)){
             return $oUndoRedoFilter; //on a déjà les infos, elles sont fixe par rapport au langage
         }
@@ -487,7 +487,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $oRet->forms = $clListFormulaire->toIDTitleArray();
 
         //on sauve en cache
-        $this->_saveInCache(NOUTClientCache::CACHE_IHM, "undoredo_filter", $oRet);
+        $this->_saveInCache(NOUTClientCache::CACHE_Session, "undoredo_filter", $oRet);
 
         return $oRet;
     }

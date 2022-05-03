@@ -12,6 +12,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class NOUTClientCache
 {
@@ -23,7 +25,7 @@ class NOUTClientCache
     /**
      * @var NOUTCacheProvider
      */
-    private $m_clCacheIHM = null;
+    private $m_clCacheLanguage = null;
 
     /**
      * @var NOUTCacheProvider
@@ -31,14 +33,22 @@ class NOUTClientCache
     private $m_clCacheIcones = null;
 
     /**
-     * @param string $sCacheDir
-     * @param string $sSessionToken
+     * @var NOUTCacheProvider
      */
-    public function __construct(NOUTCacheFactory $cacheFactory, $sSessionToken, Langage $clLangage)
+    private $m_clCacheNOUTOnline = null;
+
+    /**
+     * @param string            $sSessionToken
+     * @param Langage           $clLangage
+     * @param NOUTOnlineVersion $clNOVersion
+     * @param NOUTCacheFactory  $cacheFactory
+     */
+    public function __construct(NOUTCacheFactory $cacheFactory, $sSessionToken, Langage $clLangage, NOUTOnlineVersion $clNOVersion )
     {
         $this->m_clCacheSession = $cacheFactory->getCache($sSessionToken, self::SOUSREPCACHE_SESSION, self::REPCACHE);
-        $this->m_clCacheIHM =  $cacheFactory->getCache($clLangage->getVersionLangage(), self::SOUSREPCACHE_IHM, self::REPCACHE);
+        $this->m_clCacheLanguage =  $cacheFactory->getCache($clLangage->getVersionLangage(), self::SOUSREPCACHE_LANGUAGE, self::REPCACHE);
         $this->m_clCacheIcones =  $cacheFactory->getCache($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON, self::REPCACHE);
+        $this->m_clCacheNOUTOnline =  $cacheFactory->getCache($clNOVersion->get(), self::SOUSREPCACHE_NOUTONLINE, self::REPCACHE);
     }
 
     /**
@@ -62,10 +72,12 @@ class NOUTClientCache
             return null;
         case self::CACHE_Session:
             return $this->m_clCacheSession->fetch($name);
-        case self::CACHE_IHM:
-            return $this->m_clCacheIHM->fetch($name);
+        case self::CACHE_Language:
+            return $this->m_clCacheLanguage->fetch($name);
         case self::CACHE_Icone:
             return $this->m_clCacheIcones->fetch($name);
+        case self::CACHE_NOUTOnline:
+            return $this->m_clCacheNOUTOnline->fetch($name);
         }
     }
 
@@ -83,10 +95,12 @@ class NOUTClientCache
             return null;
         case self::CACHE_Session:
             return $this->m_clCacheSession->save($name, $data, self::TIMEOUT_1J);
-        case self::CACHE_IHM:
-            return $this->m_clCacheIHM->save($name, $data, self::TIMEOUT_3J);
+        case self::CACHE_Language:
+            return $this->m_clCacheLanguage->save($name, $data, self::TIMEOUT_7J);
         case self::CACHE_Icone:
-            return $this->m_clCacheIcones->save($name, $data);
+            return $this->m_clCacheIcones->save($name, $data, self::TIMEOUT_3J);
+        case self::CACHE_NOUTOnline:
+            return $this->m_clCacheNOUTOnline->save($name, $data, self::TIMEOUT_14J);
         }
     }
 
@@ -106,7 +120,7 @@ class NOUTClientCache
         }
         else
         {
-            return $this->m_clCacheIHM->fetch($sName);
+            return $this->m_clCacheLanguage->fetch($sName);
         }
     }
 
@@ -126,7 +140,7 @@ class NOUTClientCache
         }
         else
         {
-            return $this->m_clCacheIHM->delete($sName);
+            return $this->m_clCacheLanguage->delete($sName);
         }
     }
 
@@ -143,11 +157,11 @@ class NOUTClientCache
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
         if ($sIDFormulaire == Langage::TABL_ImageCatalogue)
         {
-            return $this->m_clCacheIcones->save($sName, $data);
+            return $this->m_clCacheIcones->save($sName, $data, self::TIMEOUT_3J);
         }
         else
         {
-            return $this->m_clCacheIHM->save($sName, $data, self::TIMEOUT_3J);
+            return $this->m_clCacheLanguage->save($sName, $data, self::TIMEOUT_7J);
         }
     }
 
@@ -276,12 +290,14 @@ class NOUTClientCache
 
     const REPCACHE              = 'NOUTClient';
 
-    const SOUSREPCACHE_SESSION  = 'session';
-    const SOUSREPCACHE_IHM      = 'ihm';
-    const SOUSREPCACHE_ICON     = 'icons';
+    const SOUSREPCACHE_SESSION      = 'session';
+    const SOUSREPCACHE_LANGUAGE     = 'language';
+    const SOUSREPCACHE_NOUTONLINE   = 'noutonline';
+    const SOUSREPCACHE_ICON         = 'icons';
 
     const CACHE_Session     = 'session';
-    const CACHE_IHM         = 'ihm';
+    const CACHE_Language    = 'language';
+    const CACHE_NOUTOnline  = 'noutonline';
     const CACHE_Icone       = 'icone';
 
 
@@ -289,4 +305,6 @@ class NOUTClientCache
     const TIMEOUT_1J = 86400;
     const TIMEOUT_2J = 172800;
     const TIMEOUT_3J = 259200;
+    const TIMEOUT_7J = 604800;
+    const TIMEOUT_14J = 1209600;
 }
