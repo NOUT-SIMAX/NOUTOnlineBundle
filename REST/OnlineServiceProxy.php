@@ -640,6 +640,19 @@ class OnlineServiceProxy
         return json_decode($result->content);
     }
 
+
+    /**
+     * @param Identification $clIdentification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetFormuleHighlighter(Identification  $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetFormuleHighLighter'], [], [], $clIdentification);
+        $result = $this->_oExecute('GetFormuleHighLighter', $sURI, __FUNCTION__, $clIdentification);
+        return json_decode($result->content);
+    }
+
     /**
      * @param Identification $clIdentification
      * @return mixed

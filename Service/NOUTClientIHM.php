@@ -548,6 +548,33 @@ class NOUTClientIHM extends NOUTClientBase
         });
     }
 
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function _getFormuleHighlighter()
+    {
+        $clIdentification = new Identification();
+        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_bAPIUser = true;
+        $clIdentification->m_clUsernameToken = null;
+
+        return $this->m_clRESTProxy->oGetFormuleHighlighter($clIdentification);
+    }
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getFormuleHighlighter()
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_NOUTOnline, "formule_highlighter", function(){
+            return $this->_getFormuleHighlighter();
+        });
+    }
+
     /**
      * @return mixed
      * @throws \Exception
