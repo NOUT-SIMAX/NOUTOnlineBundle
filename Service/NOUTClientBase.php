@@ -92,6 +92,9 @@ abstract class NOUTClientBase
      */
     private $__stopwatch;
 
+    /** @var NOUTOnlineVersion|null  */
+    private $m_clNOVersion=null;
+
     /**
      * @param OnlineServiceFactory  $serviceFactory
      * @param ConfigurationDialogue $configurationDialogue
@@ -126,6 +129,7 @@ abstract class NOUTClientBase
         //création du gestionnaire de cache
         if ($oSecurityToken instanceof NOUTToken)
         {
+            $this->m_clNOVersion = $oSecurityToken->clGetNOUTOnlineVersion();
             $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
             $this->m_clRecordSerializer = new RecordSerializer($tokenStorage, $cacheFactory);
         }
@@ -482,6 +486,10 @@ abstract class NOUTClientBase
      */
     public function clGetVersion() : NOUTOnlineVersion
     {
+        if ($this->m_clNOVersion instanceof NOUTOnlineVersion){
+            return $this->m_clNOVersion;
+        }
+
         return $this->m_clRESTProxy->clGetVersion();
     }
 
@@ -493,6 +501,18 @@ abstract class NOUTClientBase
     public function isVersionMinSite() : bool
     {
         return $this->clGetVersion()->isVersionSup($this->m_aVersionMin['site'], true);
+    }
+
+    public function bGereWSDL($opt) : bool
+    {
+        switch($opt)
+        {
+            case self::OPT_MenuVisible:
+            {
+                return $this->clGetVersion()->isVersionSup('1550.01', true);
+            }
+        }
+        return false;
     }
 
     /**
@@ -898,4 +918,5 @@ abstract class NOUTClientBase
     const PARAM_CALLINGINFO         = 'CallingInfo';
     const PARAM_BTN_LISTMODE        = 'BtnListMode';
 
+    const OPT_MenuVisible = 'menu_visible';
 }

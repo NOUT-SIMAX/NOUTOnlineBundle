@@ -9,35 +9,38 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
+use NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientCache;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GestionWSDL
 {
-    /**
-     * @var NOUTCacheProvider
-     */
-    protected $__cache;
+    /** @var NOUTCacheProvider|null */
+    protected $m_clCacheNOUTOnline=null;
 
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var NOUTCacheFactory  */
+    protected $__cacheFactory;
+
+    /** @var TranslatorInterface */
     protected $__translator;
 
-    /** @var double */
+    /** @var string */
     protected $m_sNOVersion = '';
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(TranslatorInterface $translator, NOUTCacheFactory $cacheFactory, TokenStorageInterface $tokenStorage)
     {
         $this->__translator = $translator;
+        $this->__cacheFactory = $cacheFactory;
 
-    }
-
-    public function initCache(NOUTCacheProvider $cache)
-    {
-        $this->__cache = $cache;
+        $oSecurityToken = $tokenStorage->getToken();
+        if ($oSecurityToken instanceof NOUTToken){
+            $this->m_sNOVersion = $oSecurityToken->getVersionNO();
+            $this->m_clCacheNOUTOnline =  $cacheFactory->getCache($this->m_sNOVersion, NOUTClientCache::SOUSREPCACHE_NOUTONLINE, NOUTClientCache::REPCACHE);
+        }
     }
 
     /**
@@ -46,6 +49,10 @@ class GestionWSDL
      */
     public function init($sNOVersionUri)
     {
+        if (!empty($this->m_sNOVersion)){
+            return ;
+        }
+
         //initialisation de curl
         $curl = curl_init($sNOVersionUri);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , 2);
@@ -59,7 +66,6 @@ class GestionWSDL
         $this->m_sNOVersion = curl_exec($curl);
         $curl_errno = curl_errno($curl);
         if($curl_errno){
-
             switch ($curl_errno)
             {
                 case CURLE_OPERATION_TIMEDOUT:
@@ -78,6 +84,8 @@ class GestionWSDL
                 }
             }
         }
+
+        $this->m_clCacheNOUTOnline = $this->__cacheFactory->getCache($this->m_sNOVersion, NOUTClientCache::SOUSREPCACHE_NOUTONLINE, NOUTClientCache::REPCACHE);
         curl_close($curl);
     }
 
@@ -86,14 +94,13 @@ class GestionWSDL
      */
     public function load()
     {
-        if (!isset($this->__cache) || empty($this->m_sNOVersion)) {
+        if (!isset($this->m_clCacheNOUTOnline)) {
             return false;
         }
 
-
-        if ($this->__cache->contains(array('wsdl', $this->m_sNOVersion)))
+        if ($this->m_clCacheNOUTOnline->contains(array('wsdl')))
         {
-            return $this->__cache->fetch(array('wsdl', $this->m_sNOVersion));
+            return $this->m_clCacheNOUTOnline->fetch(array('wsdl'));
         }
 
         return false;
@@ -106,25 +113,11 @@ class GestionWSDL
      */
     public function save($wsdl, $dureeVie)
     {
-        if (!isset($this->__cache) || empty($this->m_sNOVersion))
+        if (!isset($this->m_clCacheNOUTOnline))
         {
             return ;
         }
 
-        $this->__cache->save(array('wsdl', $this->m_sNOVersion), $wsdl, $dureeVie);
+        $this->m_clCacheNOUTOnline->save(array('wsdl'), $wsdl, $dureeVie);
     }
-
-    public function bGere($options)
-    {
-        switch($options)
-        {
-            case self::OPT_MenuVisible:
-            {
-                return floatval($this->m_sNOVersion) >= 1550.01;
-            }
-        }
-        return false;
-    }
-
-    const OPT_MenuVisible = 'menu_visible';
 }

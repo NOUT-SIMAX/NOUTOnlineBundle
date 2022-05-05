@@ -103,10 +103,11 @@ class NOUTClientIHM extends NOUTClientBase
         $clFileNPI->EmpileOperateur(Operator::OP_AND);
 
         //les options de menu sur lesquelles les droits sont accordés
-        if ($this->m_clSOAPProxy->getGestionWSDL()->bGere(GestionWSDL::OPT_MenuVisible))
+        if ($this->bGereWSDL(self::OPT_MenuVisible))
         {
             $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, CondType::COND_MENUVISIBLE, 1);
-        } else
+        }
+        else
         {
             $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_WITHRIGHT, 1);
         }

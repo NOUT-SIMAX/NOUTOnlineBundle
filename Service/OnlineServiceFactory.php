@@ -29,11 +29,6 @@ class OnlineServiceFactory
 	protected $m_clLogger;
 
 	/**
-	 * @var NOUTCacheProvider
-	 */
-	protected $m_clCache;
-
-	/**
 	 * @var ClientInformation
 	 */
 	protected $m_clClientInformation;
@@ -50,7 +45,6 @@ class OnlineServiceFactory
 	public function __construct(ClientInformation $clientInfo,
                                 NOUTOnlineLogger $logger,
                                 GestionWSDL $clGestionWSDL,
-                                NOUTCacheFactory $cacheFactory,
                                 DynamicConfigurationLoader $configLoader,
                                 Stopwatch $stopwatch=null)
 	{
@@ -59,10 +53,7 @@ class OnlineServiceFactory
 		$this->__stopwatch = $stopwatch;
 
 		$this->m_clClientInformation=$clientInfo;
-        $this->m_clCache = $cacheFactory->getCache('noutonline', '', '');
-
         $this->__clGestionWSDL = $clGestionWSDL;
-        $this->__clGestionWSDL->initCache($this->m_clCache);
 	}
 
 	/**
