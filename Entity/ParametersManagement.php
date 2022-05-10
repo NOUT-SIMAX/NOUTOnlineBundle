@@ -219,7 +219,7 @@ class ParametersManagement
                                 $sXML.="<$sIDColonne_w_id>".htmlspecialchars($valeur)."</$sIDColonne_w_id>\n";
                             }
                             else {
-                                $sXML.="<$sIDColonne_w_id simax:codeLangue=\"$key\">".htmlspecialchars($valeur)."</$sIDColonne_w_id>\n";
+                                $sXML.="<$sIDColonne_w_id simax:languageCode=\"$key\">".htmlspecialchars($valeur)."</$sIDColonne_w_id>\n";
                             }
                         }
                     }
