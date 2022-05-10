@@ -1064,7 +1064,8 @@ class NOUTClient extends NOUTClientBase
         $clParamModify->ParamXML .= ParametersManagement::s_sStringifyParamXML([$idformulaire=>$idenreg]);
 
         if(!is_null($updateData)) {
-            $clParamModify->UpdateData = ParametersManagement::s_sStringifyUpdateData($idformulaire, [$updateData->idColumn=>$updateData->val]);
+            $aColMultiLangue = (isset($updateData->isMultiLanguage) && boolval($updateData->isMultiLanguage)) ? [$updateData->idColumn] : null;
+            $clParamModify->UpdateData = ParametersManagement::s_sStringifyUpdateData($idformulaire, [$updateData->idColumn=>$updateData->val], $aColMultiLangue);
         }
 
         $clReponseXML = $this->m_clSOAPProxy->modify($clParamModify, $this->_aGetTabHeader($aTabHeaderSuppl));

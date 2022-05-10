@@ -241,6 +241,18 @@ class StructureElement
 	}
 
     /**
+     * @param string $option
+     * @return array
+     */
+	public function filterStructureColonne(string $option) : array
+    {
+        return array_filter($this->m_MapIDColonne2Structure, function($clStructureColonne) use($option){
+            return $clStructureColonne->isOption($option);
+        });
+    }
+
+
+    /**
      * @param $sIDColonne   string
      * @param $eTypeElement string
      */

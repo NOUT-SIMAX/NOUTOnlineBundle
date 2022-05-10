@@ -130,7 +130,7 @@ abstract class NOUTClientBase
         if ($oSecurityToken instanceof NOUTToken)
         {
             $this->m_clNOVersion = $oSecurityToken->clGetNOUTOnlineVersion();
-            $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
+            $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getInfoLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
             $this->m_clRecordSerializer = new RecordSerializer($tokenStorage, $cacheFactory);
         }
 

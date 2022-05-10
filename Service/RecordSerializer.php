@@ -31,7 +31,7 @@ class RecordSerializer
     {
         /** @var NOUTToken|TokenInterface $oSecurityToken */
         $oSecurityToken = $tokenStorage->getToken();
-        $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
+        $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getInfoLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
     }
 
     /**

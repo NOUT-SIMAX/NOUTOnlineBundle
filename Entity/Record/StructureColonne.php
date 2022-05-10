@@ -459,7 +459,7 @@ abstract class StructureColonne
      * vrai si le champ est un texte monoligne
      * @return bool
      */
-    protected function _isMonolineText(): bool
+    public function isMonolineText(): bool
     {
         if (!$this->_isText() || ($this->m_eTypeElement == self::TM_HTML)){
             return false;
@@ -505,123 +505,6 @@ abstract class StructureColonne
 	//////////////////////////////////////////
 	// POUR LE MOTEUR DE FORMULAIRE PAR DEFAUT
 	//////////////////////////////////////////
-
-
-
-	/**
-     * @param bool $bForParam
-	 * @return string
-	 *
-	 * Retourne le type de formulaire Symfony correspondant
-	 *
-	 * Gestion des cas particuliers avec options (par ex les Directory ou Couleurs ou Password)
-	 */
-	public function getFormType(bool $bForParam=false): string
-    {
-		switch ($this->m_eTypeElement)
-		{
-			case self::TM_Entier :
-			{
-				if ($this->getOption(self::OPTION_Transform) == self::OPTION_Transform_Color)
-				{
-					return 'simax_color';
-				}
-				else
-				{
-					return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
-				}
-
-			}
-			case self::TM_Texte :
-			{
-                if ($this->_isMonolineText())
-                {
-
-                    $MonolineTransform2Type = [
-                        self::OPTION_Transform_Secret       => 'simax_password',
-                        self::OPTION_Transform_Email        => 'simax_email',
-                        self::OPTION_Transform_Url          => 'simax_url',
-                    ];
-
-                    $transformOption = $this->getOption(self::OPTION_Transform);
-
-                    if(array_key_exists($transformOption, $MonolineTransform2Type))
-                    {
-                        return $MonolineTransform2Type[$transformOption];
-                    }
-
-                    // --------- Cas particulier --------
-
-					if ($this->isOption(self::OPTION_Modele_Directory))
-                    {
-                        return 'xs_base64Binary';
-                    }
-
-                    if ($this->isOption(self::OPTION_Modele_CreditCard))
-                    {
-                        return 'simax_creditCard';
-                    }
-
-
-                    if ($this->isOption(self::OPTION_Modele_Barcode))
-                    {
-                        return 'simax_barcode';
-                    }
-
-                    if ($this->isOption(self::OPTION_Modele_SocialSecurity))
-                    {
-                        return 'simax_socialSecurityNumber';
-                    }
-
-                    if ($this->isOption(self::OPTION_Modele_PhoneNumber))
-                    {
-                        return 'simax_phoneNumber';
-                    }
-
-                    if ($this->isOption(self::OPTION_Modele_IpAddress))
-                    {
-                        return 'simax_IpV' . $this->getOption(self::OPTION_Modele_IpAddress) . 'Address';
-                    }
-
-                    return str_replace(array(':', '-'), array('_', '_'), self::TM_Texte);
-                }
-				else
-				{
-				    if ($this->isOption(self::OPTION_Modele_Formula)){
-				        return 'simax_formula';
-                    }
-
-                    if ($this->isOption(self::OPTION_Modele_LineNumber) || $this->isOption(self::OPTION_Modele_SyntaxColor)){
-                        return 'simax_richmultilinestring';
-                    }
-
-					return str_replace(array(':', '-'), array('_', '_'), self::TM_TexteMultiLigne);
-				}
-			}
-            case self::TM_Combo :
-            {
-                if (/*!$bForParam && */isset($this->m_clRestriction) && (count($this->m_clRestriction->getRestriction(ColonneRestriction::R_ENUMERATION)) <= 3)) {
-                    return 'simax_radio';
-                }
-                else {
-                    return 'simax_choice';
-                }
-            }
-            case self::TM_Tableau :
-            {
-                if ($this->isOption(StructureColonne::OPTION_Relation11)){
-                    return 'simax_element11';
-                }
-
-                return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
-            }
-
-			default : // Correspond au != self::TM_Texte
-			{
-				return str_replace(array(':', '-'), array('_', '_'), $this->m_eTypeElement);
-			}
-		}
-	}
 
     /**
      * @return string
