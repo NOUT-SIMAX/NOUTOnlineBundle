@@ -64,6 +64,12 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     /** @var string  */
     protected $m_nIDUser='';
 
+    /** @var array  */
+    protected $m_aMultiLanguage= [];
+
+    /** @var int  */
+    protected $m_nCodeLangue = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -186,7 +192,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      * @param Langage $clLangage
      * @return $this
      */
-    public function setLangage(Langage $clLangage): NOUTToken
+    public function setInfoLangage(Langage $clLangage): NOUTToken
     {
         $this->m_clLangage = $clLangage;
         return $this;
@@ -195,9 +201,45 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     /**
      * @return Langage
      */
-    public function getLangage() : ?Langage
+    public function getInfoLangage() : ?Langage
     {
         return $this->m_clLangage;
+    }
+
+    /**
+     * @param array $aLang
+     * @return $this
+     */
+    public function setMultiLanguage(array $aLang) : NOUTToken
+    {
+        $this->m_aMultiLanguage = $aLang;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMultiLanguage(): array
+    {
+        return $this->m_aMultiLanguage;
+    }
+
+    /**
+     * @param int $nCodeLangue
+     * @return $this
+     */
+    public function setSessionCodeLangue(int $nCodeLangue) : NOUTToken
+    {
+        $this->m_nCodeLangue = $nCodeLangue;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSessionCodeLangue() : int
+    {
+        return $this->m_nCodeLangue;
     }
 
     /**
@@ -323,6 +365,8 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
             'userID' => $this->m_nIDUser,
             'version' => $this->getVersionNO(),
             'language' => is_null($this->m_clLangage) ? null : $this->m_clLangage->forSerialization(),
+            'multilangue' => $this->m_aMultiLanguage,
+            'sessioncodelangue' => $this->m_nCodeLangue,
             'parent_data' => parent::__serialize()
         ];
     }
@@ -361,6 +405,12 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
         }
         if (isset($aUnserialised['userID'])){
             $this->m_nIDUser = $aUnserialised['userID'];
+        }
+        if (isset($aUnserialised['multilangue'])){
+            $this->m_aMultiLanguage = $aUnserialised['multilangue'];
+        }
+        if (isset($aUnserialised['sessioncodelangue'])){
+            $this->m_nCodeLangue = $aUnserialised['sessioncodelangue'];
         }
 
         $this->m_sNameToDisplay=$aUnserialised['name'];

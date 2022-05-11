@@ -642,6 +642,19 @@ class XMLResponseWS
 		return '';
 	}
 
+    /**
+     * @return int
+     */
+	public function nGetSessionLanguageCode():int
+    {
+        try{
+            return (int) $this->m_ndHeader->children()->SessionLanguageCode;
+        }
+        catch(\Exception $e){
+            return 0;
+        }
+    }
+
 	/**
 	 * @return int
 	 */

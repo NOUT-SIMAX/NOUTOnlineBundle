@@ -176,13 +176,14 @@ class ParametersManagement
     /**
      * @param string     $sIDForm
      * @param array      $aTabColumnsValues
+     * @param array|null $aTabColMultilangue
      * @param array|null $aFilesToSend
      * @return string
      */
-    public static function s_sStringifyUpdateData(string $sIDForm, array $aTabColumnsValues, array $aFilesToSend = null) : string
+    public static function s_sStringifyUpdateData(string $sIDForm, array $aTabColumnsValues, ?array $aTabColMultilangue, array $aFilesToSend = null) : string
     {
         $sUpdateData = "<xml><id_$sIDForm>\n";
-        $sUpdateData.= self::s_sStringifyXMLColonne($aTabColumnsValues, $aFilesToSend);
+        $sUpdateData.= self::s_sStringifyXMLColonne($aTabColumnsValues, $aTabColMultilangue, $aFilesToSend);
         $sUpdateData.= "\n</id_$sIDForm></xml>";
 
         return $sUpdateData;
@@ -191,30 +192,50 @@ class ParametersManagement
     /**
      * @param null|array $aFilesToSend
      * @param array      $aTabColumnsValues
+     * @param array|null $aTabColMultilangue
      * @return string
      */
-    public static function s_sStringifyXMLColonne(array $aTabColumnsValues, array $aFilesToSend = null): string
+    public static function s_sStringifyXMLColonne(array $aTabColumnsValues, ?array $aTabColMultilangue, array $aFilesToSend = null): string
     {
         $sXML = '';
 
         foreach($aTabColumnsValues as $sIDColonne=>$sValue)
         {
-            if(!is_null($aFilesToSend) && array_key_exists($sIDColonne, $aFilesToSend)) // La colonne est un fichier et a été modifiée
+            $sIDColonne_w_id = (strncmp('id_', $sIDColonne, 3) !== 0) ? 'id_'.$sIDColonne : $sIDColonne;
+            $sIDColonne = (strncmp('id_', $sIDColonne, 3) === 0) ? substr($sIDColonne, 3) : $sIDColonne;
+
+            if(!is_null($aFilesToSend) && (array_key_exists($sIDColonne, $aFilesToSend) || array_key_exists($sIDColonne_w_id, $aFilesToSend))) // La colonne est un fichier et a été modifiée
             {
                 $sXML.= self::_s_sGetFileXML($sIDColonne, $aFilesToSend[$sIDColonne])."\n";
             }
             else
             {
-                if(is_array($sValue))
-                {
-                    $sValue=implode('|', array_values($sValue));
-                }
-                //on preprend par id_ si nécessaire
-                if (strncmp('id_', $sIDColonne, 3) !== 0){
-                    $sIDColonne='id_'.$sIDColonne;
+                if (!is_null($aTabColMultilangue) && array_key_exists($sIDColonne, $aTabColMultilangue)){
+                    //colonne multilangue
+                    if (is_array($sValue)){
+                        foreach($sValue as $key=>$valeur){
+
+                            if ($key=='display'){
+                                $sXML.="<$sIDColonne_w_id>".htmlspecialchars($valeur)."</$sIDColonne_w_id>\n";
+                            }
+                            else {
+                                $sXML.="<$sIDColonne_w_id simax:languageCode=\"$key\">".htmlspecialchars($valeur)."</$sIDColonne_w_id>\n";
+                            }
+                        }
+                    }
+                    else {
+                        $sXML.="<$sIDColonne_w_id>".htmlspecialchars($sValue)."</$sIDColonne_w_id>\n";
+                    }
+                    continue;
                 }
 
-                $sXML.="<$sIDColonne>".htmlspecialchars($sValue)."</$sIDColonne>\n";
+                if(is_array($sValue))
+                {
+                    //c'est une liste d'idauto
+                    $sValue=implode('|', array_values($sValue));
+                }
+
+                $sXML.="<$sIDColonne_w_id>".htmlspecialchars($sValue)."</$sIDColonne_w_id>\n";
             }
         }
 

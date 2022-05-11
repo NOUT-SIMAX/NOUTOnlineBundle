@@ -36,9 +36,6 @@ class Record extends IHMWindows
 	/** @var array : tableau avec les valeurs des colonnes */
 	protected $m_TabColumnsValues = [];
 
-	/** @var array : tableau avec les valeurs des autres langues */
-	protected $m_TabMultilangueValues = [];
-
 	/** @var array : tableau de booleen pour indiquer que la valeur à changée */
 	protected $m_TabColumnsModified = [];
 
@@ -395,23 +392,29 @@ class Record extends IHMWindows
 	public function setValCol(string $idcolonne, $value, bool $modifiedByUser = true, int $codelangue = 0, bool $bCurrentLanguage=true): Record
     {
 		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
-
-		if ($codelangue == 0)
-        {
-            $this->m_TabColumnsValues[$idcolonne] = $value;
-        }
-		else
-        {
-            if (!array_key_exists($idcolonne, $this->m_TabMultilangueValues))
-            {
-                $this->m_TabMultilangueValues[$idcolonne]=[];
-            }
-            $this->m_TabMultilangueValues[$idcolonne][$codelangue]=$value;
-            if ($bCurrentLanguage){
+		$clStructColonne = $this->getStructColonne($idcolonne);
+		if ($clStructColonne->isOption(StructureColonne::OPTION_Modele_Multilanguage)){
+            if (is_array($value)){
                 $this->m_TabColumnsValues[$idcolonne] = $value;
             }
+            else {
+                if (!array_key_exists($idcolonne, $this->m_TabColumnsValues)){
+                    $this->m_TabColumnsValues[$idcolonne]=['display' => ''];
+                }
+                if ($codelangue == 0){
+                    $this->m_TabColumnsValues[$idcolonne]['display']=$value;
+                }
+                else {
+                    $this->m_TabColumnsValues[$idcolonne][$codelangue]=$value;
+                    if ($bCurrentLanguage){
+                        $this->m_TabColumnsValues[$idcolonne]['display'] = $value;
+                    }
+                }
+            }
         }
-
+		else {
+            $this->m_TabColumnsValues[$idcolonne] = $value;
+        }
 		return $this;
 	}
 
@@ -671,7 +674,9 @@ class Record extends IHMWindows
     public function getXMLColonne(array $aFilesToSend = null, $onlyModified=false): string
     {
         $aTabColumnsValues = $this->_filterTabColumnsValues($aFilesToSend, $onlyModified);
-        return ParametersManagement::s_sStringifyXMLColonne($aTabColumnsValues, $aFilesToSend);
+        $aTabColumnsMultilangue = $this->_aGetColMultilangue();
+
+        return ParametersManagement::s_sStringifyXMLColonne($aTabColumnsValues, $aTabColumnsMultilangue, $aFilesToSend);
     }
 
     /**
@@ -683,9 +688,22 @@ class Record extends IHMWindows
         $sIDForm                    = $this->m_clStructElem->getID();
 
         $aTabColumnsValues = $this->_filterTabColumnsValues($aFilesToSend, true);
+        $aTabColumnsMultilangue = $this->_aGetColMultilangue();
 
-        $sUpdateData = ParametersManagement::s_sStringifyUpdateData($sIDForm, $aTabColumnsValues, $aFilesToSend);
+        $sUpdateData = ParametersManagement::s_sStringifyUpdateData($sIDForm, $aTabColumnsValues, $aTabColumnsMultilangue, $aFilesToSend);
         return $sUpdateData;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _aGetColMultilangue() : array
+    {
+        $aRet = $this->m_clStructElem->filterStructureColonne(StructureColonne::OPTION_Modele_Multilanguage);
+        array_walk($aRet, function(StructureColonne $clStructureColonne){
+            return $clStructureColonne->getIDColonne();
+        });
+        return $aRet;
     }
 
 

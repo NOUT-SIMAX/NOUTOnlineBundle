@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Twig;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineState;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\TokenWithNOUTOnlineVersionInterface;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -28,19 +29,20 @@ class NOUTOnlineExtension extends AbstractExtension
 {
 
 	/**
-	 * @var OnlineServiceFactory $m_clServiceFactory
+	 * @var OnlineServiceFactory 
 	 */
 	protected $m_clServiceFactory;
 
 	/**
-	 * @var ConfigurationDialogue $m_clConfiguration
+	 * @var ConfigurationDialogue
 	 */
 	protected $m_clConfiguration;
 
-    /**
-     * @var string $m_sVersionMin
-     */
+    /** @var string  */
 	protected $m_sVersionMin;
+
+	/** @var string */
+	protected $m_sVersionMultilanguage;
 
     /**
      * @var TokenInterface|null
@@ -57,6 +59,7 @@ class NOUTOnlineExtension extends AbstractExtension
 		$this->m_clServiceFactory = $factory;
 		$this->m_clConfiguration = $configuration;
 		$this->m_sVersionMin = $aVersionsMin['site'];
+		$this->m_sVersionMultilanguage = $aVersionsMin['multilanguage'];
 		$this->m_oToken = $tokenStorage->getToken();
 	}
 
@@ -151,6 +154,8 @@ class NOUTOnlineExtension extends AbstractExtension
 			 new TwigFunction('noutonline_version', array($this, 'version')),
 			 new TwigFunction('noutonline_is_started', array($this, 'isStarted')),
              new TwigFunction('noutonline_is_versionmin', array($this, 'isVersionMin')),
+             new TwigFunction('noutonline_is_versionsup', array($this, 'isVersionSup')),
+             new TwigFunction('noutonline_support', array($this, 'support')),
              new TwigFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
              new TwigFunction('noutonline_beautify_xml', array($this, 'beautifyXML')),
              new TwigFunction('noutonline_beautify_json', array($this, 'beautifyJSON')),
@@ -176,12 +181,43 @@ class NOUTOnlineExtension extends AbstractExtension
         return $ret;
     }
 
-	/**
+    /**
+     * @param $version
+     * @return bool
+     */
+    public function isVersionSup($version) : bool
+    {
+        if (!$this->m_oToken instanceof NOUTToken){
+            return false;
+        }
+        return $this->m_oToken->isVersionSup($version, true);
+    }
+
+    /**
+     * @param string $property
+     * @return bool
+     */
+    public function support(string $property) : bool
+    {
+        if (!$this->m_oToken instanceof NOUTToken){
+            return false;
+        }
+        switch ($property)
+        {
+            case 'multilanguage':
+            {
+                return $this->m_oToken->isVersionSup($this->m_sVersionMultilanguage, true);
+            }
+        }
+        return false;
+    }
+
+    /**
 	 * Get NOUTOnline Version
 	 *
 	 * @return string
 	 */
-	public function version()
+	public function version() : string
 	{
 	    $state = $this->state();
 	    return $state->version;
@@ -190,7 +226,7 @@ class NOUTOnlineExtension extends AbstractExtension
     /**
      * @return bool
      */
-	public function isVersionMin()
+	public function isVersionMin() : bool
     {
         $state = $this->state();
         return $state->isRecent;
@@ -200,7 +236,7 @@ class NOUTOnlineExtension extends AbstractExtension
 	 * Test si NOUTOnline est démarré
 	 * @return bool
 	 */
-	public function isStarted()
+	public function isStarted() : string
 	{
         $state = $this->state();
         return $state->isStarted;

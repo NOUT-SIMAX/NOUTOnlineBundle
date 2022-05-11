@@ -103,10 +103,11 @@ class NOUTClientIHM extends NOUTClientBase
         $clFileNPI->EmpileOperateur(Operator::OP_AND);
 
         //les options de menu sur lesquelles les droits sont accordés
-        if ($this->m_clSOAPProxy->getGestionWSDL()->bGere(GestionWSDL::OPT_MenuVisible))
+        if ($this->bGereWSDL(self::OPT_MenuVisible))
         {
             $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, CondType::COND_MENUVISIBLE, 1);
-        } else
+        }
+        else
         {
             $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_WITHRIGHT, 1);
         }
@@ -545,6 +546,33 @@ class NOUTClientIHM extends NOUTClientBase
     {
         return $this->_getFromCache(NOUTClientCache::CACHE_NOUTOnline, "function_list", function(){
             return $this->_getFunctionList();
+        });
+    }
+
+
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function _getFormuleHighlighter()
+    {
+        $clIdentification = new Identification();
+        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_bAPIUser = true;
+        $clIdentification->m_clUsernameToken = null;
+
+        return $this->m_clRESTProxy->oGetFormuleHighlighter($clIdentification);
+    }
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getFormuleHighlighter()
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_NOUTOnline, "formule_highlighter", function(){
+            return $this->_getFormuleHighlighter();
         });
     }
 
