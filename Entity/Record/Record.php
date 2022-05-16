@@ -393,7 +393,7 @@ class Record extends IHMWindows
     {
 		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
 		$clStructColonne = $this->getStructColonne($idcolonne);
-		if ($clStructColonne->isOption(StructureColonne::OPTION_Modele_Multilanguage)){
+		if (isset($clStructColonne) && $clStructColonne->isOption(StructureColonne::OPTION_Modele_Multilanguage)){
             if (is_array($value)){
                 $this->m_TabColumnsValues[$idcolonne] = $value;
             }
