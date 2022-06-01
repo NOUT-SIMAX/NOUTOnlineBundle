@@ -71,7 +71,7 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
         $this->Compute(); //on fait le compute
 
         $sBottom = 'Username='.urlencode(utf8_decode($this->Username));
-        $sBottom .= '&Password='.urlencode($this->Password);
+        $sBottom .= '&Password='.urlencode($this->Password); //pas la peine de décoder à cause des caractère utilisé
         $sBottom .= '&nonce='.urlencode(utf8_decode($this->Nonce));
         $sBottom .= '&created='.urlencode(utf8_decode($this->Created));
 
