@@ -265,7 +265,9 @@ class NOUTClientIHM extends NOUTClientBase
             ->setHomeDesc($objSrc->home_desc)
             ->setHomeTitle($objSrc->home_title)
             ->setHomeWidth(intval($objSrc->home_width))
-            ->setHomeHeight(intval($objSrc->home_height));
+            ->setHomeHeight(intval($objSrc->home_height))
+            ->setHomeWithAlpha(boolval($objSrc->home_withalpha ?? false))
+        ;
 
         if (count($objSrc->tab_options) > 0)
         {
