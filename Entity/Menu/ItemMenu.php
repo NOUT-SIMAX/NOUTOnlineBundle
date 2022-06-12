@@ -116,6 +116,9 @@ class ItemMenu
      */
     public $homeHeight=0;
 
+    /** @var bool  */
+    public $homeWithAlpha = false;
+
 
 
 	/**
@@ -433,6 +436,24 @@ class ItemMenu
     public function setHomeHeight(int $homeHeight): ItemMenu
     {
         $this->homeHeight = $homeHeight;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHomeWithAlpha(): bool
+    {
+        return $this->homeWithAlpha;
+    }
+
+    /**
+     * @param bool $homeWithAlpha
+     * @return $this
+     */
+    public function setHomeWithAlpha(bool $homeWithAlpha): ItemMenu
+    {
+        $this->homeWithAlpha = $homeWithAlpha;
         return $this;
     }
 
