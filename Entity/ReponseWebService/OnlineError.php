@@ -10,11 +10,11 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class OnlineError implements \JsonSerializable
 {
-	protected $m_nCode;
-	protected $m_nErreur;
-	protected $m_nCategorie;
-	protected $m_sMessage;
-	protected $m_TabParametres;
+	protected $m_nCode = 0;
+	protected $m_nErreur = 0;
+	protected $m_nCategorie = 0;
+	protected $m_sMessage = '';
+	protected $m_TabParametres = [];
 
 	public function __construct($nCode, $nErreur, $nCategorie, $sMessage)
 	{
@@ -42,17 +42,17 @@ class OnlineError implements \JsonSerializable
 	}
 
 	/**
-	 * @param mixed $TabParametres
+	 * @param array $TabParametres
 	 */
-	public function setTabParametres($TabParametres)
+	public function setTabParametres(array $TabParametres)
 	{
 		$this->m_TabParametres = $TabParametres;
 	}
 
 	/**
-	 * @return mixed
+	 * @return array
 	 */
-	public function getTabParametres()
+	public function getTabParametres() : array
 	{
 		return $this->m_TabParametres;
 	}
@@ -68,7 +68,7 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return int
 	 */
-	public function getCategorie(): int
+	public function getCategorie(): ?int
     {
 		return $this->m_nCategorie;
 	}
@@ -84,7 +84,7 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return string
 	 */
-	public function getCode(): string
+	public function getCode(): ?string
     {
 		return $this->m_nCode;
 	}
@@ -100,7 +100,7 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return int
 	 */
-	public function getErreur(): int
+	public function getErreur(): ?int
     {
 		return $this->m_nErreur;
 	}
@@ -116,7 +116,7 @@ class OnlineError implements \JsonSerializable
 	/**
 	 * @return string
 	 */
-	public function getMessage(): string
+	public function getMessage(): ?string
     {
 		return $this->m_sMessage;
 	}
