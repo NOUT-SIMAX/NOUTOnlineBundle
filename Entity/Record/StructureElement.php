@@ -163,6 +163,11 @@ class StructureElement
         $nIDColonne = $clStructBouton->getIDColonne();
         if (!empty($nIDColonne))
         {
+            if ($clStructBouton->isOption(StructureColonne::OPTION_DisplayOnLine))
+            {
+                $this->m_TabBoutonSurLigne[] = $clStructBouton;
+            }
+
             //c'est un bouton colonne, il faut voir si c'est un bouton de substitution
             if ($clStructBouton->isOption(StructureColonne::OPTION_Substitution))
             {
@@ -187,11 +192,8 @@ class StructureElement
                 return false;
             }
 
-            if ($clStructBouton->isOption(StructureColonne::OPTION_DisplayOnLine))
-            {
-                $this->m_TabBoutonSurLigne[] = $clStructBouton;
-            }
-            elseif (!$clStructBouton->isOption(StructureColonne::OPTION_Detail))
+            if (!$clStructBouton->isOption(StructureColonne::OPTION_DisplayOnLine)
+                && !$clStructBouton->isOption(StructureColonne::OPTION_Detail))
             {
                 $this->m_TabBoutonColNonDetail[] = $clStructBouton;
             }
