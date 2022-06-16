@@ -8,6 +8,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
+use App\Service\IconManipulation;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
@@ -366,6 +367,31 @@ class NOUTClientIHM extends NOUTClientBase
     }
 
     /**
+     * @param array  $aTabPHPManipulation
+     * @param string $prefix
+     * @return array
+     */
+    protected function _aTabPHPManipulationToOptions(array $aTabPHPManipulation, string $prefix='') : array
+    {
+        $aRet = [];
+        foreach($aTabPHPManipulation as $name=>$option)
+        {
+            if (empty($prefix)){
+                $option = $option['params'];
+            }
+            if (is_array($option))
+            {
+                $aRet += $this->_aTabPHPManipulationToOptions($option, "$name-");
+            }
+            else
+            {
+                $aRet[$prefix.$name]=$option;
+            }
+        }
+        return $aRet;
+    }
+
+    /**
      * récupère une image du langage
      * @param array  $aTabOptions
      * @param string $sIDColonne
@@ -377,20 +403,22 @@ class NOUTClientIHM extends NOUTClientBase
      */
     protected function _getImageFromLangage(string $sIDFormulaire, string $sIDColonne, string $sIDEnreg, array $aTabOptions, array $aTabPHPManipulation=array()) : NOUTFileInfo
     {
+        $clIdentification = $this->_clGetIdentificationREST('', true);
         //on veut le contenu
         $aTabOptions[RESTProxy::OPTION_WantContent] = 1;
 
-        $clIdentification = $this->_clGetIdentificationREST('', true);
-
+        if (array_key_exists(RESTProxy::OPTION_Height, $aTabOptions)
+            && array_key_exists(IconManipulation::PHPMANIP_NAME, $aTabPHPManipulation)
+            && IconManipulation::s_bCanBeInvoked()
+        ){
+            $aTabPHPManipulation[IconManipulation::PHPMANIP_NAME]['params'] = IconManipulation::s_SurchargeSize($aTabOptions[RESTProxy::OPTION_Height], $aTabPHPManipulation[IconManipulation::PHPMANIP_NAME]['params']);
+            unset($aTabOptions[RESTProxy::OPTION_Height]);
+        }
 
         $aTabOptionsForName = $aTabOptions;
         if (count($aTabPHPManipulation)>0)
         {
-            foreach($aTabPHPManipulation as $name=>$option)
-            {
-                $aTabOptionsForName[$name]=$option['value'];
-            }
-
+            $aTabOptionsForName += $this->_aTabPHPManipulationToOptions($aTabPHPManipulation);
             if (!is_null($this->m_clCache)){
                 $oNOUTFileInfo = $this->m_clCache->fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName);
                 if (isset($oNOUTFileInfo) && ($oNOUTFileInfo !== false)){
@@ -426,18 +454,24 @@ class NOUTClientIHM extends NOUTClientBase
         //on applique les modifications
         if (count($aTabPHPManipulation)>0)
         {
+            $bOnManipIsOk = false;
             foreach($aTabPHPManipulation as $name=>$option)
             {
-                if (!call_user_func($option['callback'], $option['value'], $oNOUTFileInfo))
+                if (empty($option['params'])){
+                    continue;
+                }
+
+                if (!call_user_func($option['callback'], $option['params'], $oNOUTFileInfo))
                 {
-                    $this->m_clCache->deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptions);
+                    //on supprime l'image manipulée si elle existait déjà
                     $this->m_clCache->deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName);
                     $oNOUTFileInfo->setNoCache(true);
                     return $oNOUTFileInfo;
                 }
+                $bOnManipIsOk = true;
             }
 
-            if (!is_null($this->m_clCache))
+            if ($bOnManipIsOk && !is_null($this->m_clCache))
             {
                 //on sauve l'image modifiée
                 $this->m_clCache->saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOptionsForName, $oNOUTFileInfo);
