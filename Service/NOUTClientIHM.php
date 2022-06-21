@@ -743,6 +743,31 @@ class NOUTClientIHM extends NOUTClientBase
 
 
     /**
+     * @param $idtableau
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getTableColumnList($idtableau)
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "column_list_$idtableau", function() use ($idtableau) {
+
+            $column_list = $this->getColumnList();
+            $filtered = array_filter($column_list, function($item) use ($idtableau) {
+                return $item->form->id == $idtableau;
+            });
+
+            usort($filtered, function($item1, $item2){
+                if ($item1->ordre == $item2->ordre) {
+                    return 0;
+                }
+                return ($item1->ordre < $item2->ordre) ? -1 : 1;
+            });
+            return $filtered;
+        });
+    }
+
+
+    /**
      * @return mixed
      * @throws \Exception
      */
