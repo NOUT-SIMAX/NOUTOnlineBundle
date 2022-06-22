@@ -712,7 +712,7 @@ class NOUTClientIHM extends NOUTClientBase
                 $obj->title = $info->columns->{Langage::COL_COLONNE_Libelle}->displayValue;
 
                 if (property_exists($info->columns, Langage::COL_COLLIBELLE_IDNiveau)) {
-                    $obj->type->niveau = $info->columns->{Langage::COL_COLLIBELLE_IDNiveau}->value;
+                    $obj->type->level = $info->columns->{Langage::COL_COLLIBELLE_IDNiveau}->value;
                 }
 
                 $info_tableau = $info->columns->{Langage::COL_COLONNE_IDTableau};
@@ -734,10 +734,35 @@ class NOUTClientIHM extends NOUTClientBase
                     }
                 }
 
-                $obj->ordre = $info->columns->{Langage::COL_COLONNE_Ordre}->value;
+                $obj->order = $info->columns->{Langage::COL_COLONNE_Ordre}->value;
                 $aReturnFinal[$obj->id]=$obj;
             }
             return $aReturnFinal;
+        });
+    }
+
+
+    /**
+     * @param $idtableau
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getTableColumnList($idtableau)
+    {
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, "column_list_$idtableau", function() use ($idtableau) {
+
+            $column_list = $this->getColumnList();
+            $filtered = array_filter($column_list, function($item) use ($idtableau) {
+                return $item->form->id == $idtableau;
+            });
+
+            usort($filtered, function($item1, $item2){
+                if ($item1->ordre == $item2->ordre) {
+                    return 0;
+                }
+                return ($item1->ordre < $item2->ordre) ? -1 : 1;
+            });
+            return $filtered;
         });
     }
 
@@ -877,7 +902,6 @@ class NOUTClientIHM extends NOUTClientBase
 
         return $this->_getFormTableListWithoutColumns();
     }
-
 
 
 
