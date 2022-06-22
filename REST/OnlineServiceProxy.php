@@ -194,10 +194,41 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-	protected function _oExecute($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null, bool $bForceJson=false) : HTTPResponse
+	protected function _oExecuteGET($sAction, $sURI, $function, Identification $clIdentification=null, $timeout=null, bool $bForceJson=false) : HTTPResponse
 	{
-	    //demarre le log si necessaire
-		$this->__startLogQuery($function);
+	    return $this->__oExecute($sAction, $sURI, null, $function, $clIdentification, $timeout, $bForceJson);
+	}
+
+    /**
+     * @param $sAction
+     * @param $sURI
+     * @param Identification|null $clIdentification
+     * @param $function
+     * @param null $timeout
+     * @param bool $bForceJson
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    protected function _oExecutePOST($sAction, $sURI, $content, $function, Identification $clIdentification=null, $timeout=null) : HTTPResponse
+    {
+        return $this->__oExecute($sAction, $sURI, $content, $function, $clIdentification, $timeout, true);
+    }
+
+
+    /**
+     * @param $sAction
+     * @param $sURI
+     * @param Identification|null $clIdentification
+     * @param $function
+     * @param null $timeout
+     * @param bool $bForceJson
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    protected function __oExecute($sAction, $sURI, $content, $function, Identification $clIdentification, $timeout, bool $bForceJson) : HTTPResponse
+    {
+        //demarre le log si necessaire
+        $this->__startLogQuery($function);
 
         //initialisation de curl
         $curl = curl_init($sURI);
@@ -209,7 +240,6 @@ class OnlineServiceProxy
             'Accept: '. ($bForceJson ? 'application/json' : '*/*'),
         ];
 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $aHttpHeaders);
 
         if (!is_null($timeout))
         {
@@ -224,6 +254,16 @@ class OnlineServiceProxy
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); //Demande du contenu du fichier
         curl_setopt($curl, CURLOPT_HEADER, 1); // Demande des headers
         curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+
+        if (isset($content) && !empty($content)){
+            $payload = json_encode( $content );
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt( $curl, CURLOPT_POSTFIELDS, $payload );
+
+            $aHttpHeaders[]='Content-Type: application/json';
+        }
+
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $aHttpHeaders);
 
         //---------------------------
         //execution
@@ -280,7 +320,8 @@ class OnlineServiceProxy
 
         $this->__stopLogQuery($sURI, $header_request, $ret->content, $sAction, $ret->headers, $function, $clIdentification);
         return $ret;
-	}
+    }
+
 
 	private function __startLogQuery($function)
     {
@@ -348,7 +389,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest(['GetUserExists'], ['login' => $login], []);
 
-		$clHttpResponse = $this->_oExecute('GetUserExists', $sURI, __FUNCTION__);
+		$clHttpResponse = $this->_oExecuteGET('GetUserExists', $sURI, __FUNCTION__);
 		$sContent = $clHttpResponse->content;
 		$sInfoEncryption = $clHttpResponse->getXNOUTOnlineInfoCnx();
         $sIV = $clHttpResponse->getIVForInfoCnx();
@@ -367,7 +408,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest([$form, 'GetExtranetUserExists'], ['login' => $login], []);
 
-        $clHttpResponse = $this->_oExecute('GetExtranetUserExists', $sURI, __FUNCTION__);
+        $clHttpResponse = $this->_oExecuteGET('GetExtranetUserExists', $sURI, __FUNCTION__);
         $sContent = $clHttpResponse->content;
         $sInfoEncryption = $clHttpResponse->getXNOUTOnlineInfoCnx();
         $sIV = $clHttpResponse->getIVForInfoCnx();
@@ -384,7 +425,7 @@ class OnlineServiceProxy
 	public function nGetUserSSOExists($email, $id) : int
     {
         $sURI = $this->_sCreateRequest(['GetUserSSOExists'], ['login' => $email, 'id' => $id], []);
-        return (int) $this->_oExecute('GetUserSSOExists', $sURI, __FUNCTION__)->content;
+        return (int) $this->_oExecuteGET('GetUserSSOExists', $sURI, __FUNCTION__)->content;
     }
 
 	/**
@@ -396,7 +437,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest(['GetVersion'], [], []);
 
-		return new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
+		return new NOUTOnlineVersion($this->_oExecuteGET('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
 	}
 
     /**
@@ -410,7 +451,7 @@ class OnlineServiceProxy
 
         $ret = new NOUTOnlineState();
         try {
-            $clVersion = new NOUTOnlineVersion($this->_oExecute('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
+            $clVersion = new NOUTOnlineVersion($this->_oExecuteGET('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
             $ret->setVersionNO($clVersion, $versionMin);
         }
         catch(\Exception $e)
@@ -429,7 +470,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest(['GetHelp'], [], [], $clIdentification);
 
-        return $this->_oExecute('GetHelp', $sURI, __FUNCTION__, $clIdentification);
+        return $this->_oExecuteGET('GetHelp', $sURI, __FUNCTION__, $clIdentification);
     }
 
     /**
@@ -443,7 +484,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest(['GetSchedulerInfo'], $aTabParam, [], $clIdentification);
 
-        return $this->_oExecute('GetSchedulerInfo', $sURI, __FUNCTION__, $clIdentification);
+        return $this->_oExecuteGET('GetSchedulerInfo', $sURI, __FUNCTION__, $clIdentification);
     }
 
     /**
@@ -460,7 +501,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest([$idForm, $idEnreg, $idColumn, 'GetSchedulerInfo'], $aTabParam, [], $clIdentification);
 
-        return $this->_oExecute('GetSchedulerInfo', $sURI, __FUNCTION__, $clIdentification);
+        return $this->_oExecuteGET('GetSchedulerInfo', $sURI, __FUNCTION__, $clIdentification);
     }
 
 
@@ -475,7 +516,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest(['GetMenu'], [], [], $clIdentification);
 
-        return $this->_oExecute('GetMenu', $sURI, __FUNCTION__, $clIdentification);
+        return $this->_oExecuteGET('GetMenu', $sURI, __FUNCTION__, $clIdentification);
     }
 
     /**
@@ -489,7 +530,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest(['GetToolbar'], [], [], $clIdentification);
 
-        return $this->_oExecute('GetToolbar', $sURI, __FUNCTION__, $clIdentification);
+        return $this->_oExecuteGET('GetToolbar', $sURI, __FUNCTION__, $clIdentification);
     }
 
     /**
@@ -503,7 +544,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest(['GetCentralIcon'], [], [], $clIdentification);
 
-        return $this->_oExecute('GetCentralIcon', $sURI, __FUNCTION__, $clIdentification);
+        return $this->_oExecuteGET('GetCentralIcon', $sURI, __FUNCTION__, $clIdentification);
     }
 
 	/**
@@ -516,7 +557,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest(['GetLangageVersion'], [], [], $clIdentification);
 
-		return $this->_oExecute('GetLangageVersion', $sURI, __FUNCTION__, $clIdentification);
+		return $this->_oExecuteGET('GetLangageVersion', $sURI, __FUNCTION__, $clIdentification);
 	}
 
 	/**
@@ -530,7 +571,7 @@ class OnlineServiceProxy
 	{
 		$sURI = $this->_sCreateRequest([$idTableau, 'GetChecksum'], [], [], $clIdentification);
 
-		return $this->_oExecute('GetChecksum', $sURI, __FUNCTION__, $clIdentification);
+		return $this->_oExecuteGET('GetChecksum', $sURI, __FUNCTION__, $clIdentification);
 	}
 
 	/**
@@ -547,7 +588,7 @@ class OnlineServiceProxy
 	{
 	    //on met la chaine vide à la fin du tableau pour avoir le trailing /
 		$sURI = $this->_sCreateRequest([$sIDTableau, $sIDEnreg, $sIDColonne, ''], $aTabParam, $aTabOption, $clIdentification);
-        return $this->_oExecute('GetColInRecord', $sURI, __FUNCTION__, $clIdentification);
+        return $this->_oExecuteGET('GetColInRecord', $sURI, __FUNCTION__, $clIdentification);
 	}
 
     /**
@@ -564,7 +605,7 @@ class OnlineServiceProxy
     {
         $sURI = $this->_sCreateRequest([$sIDTableau, $sIDEnreg, $sIDColonne, ''], $aTabParam, $aTabOption, $clIdentification);
 
-        $oHTTPResponse = $this->_oExecute('GetColInRecord', $sURI, __FUNCTION__, $clIdentification);
+        $oHTTPResponse = $this->_oExecuteGET('GetColInRecord', $sURI, __FUNCTION__, $clIdentification);
         $oHTTPResponse->setLastModifiedIfNotExists();
 
         $oNOUTFileInfo = new NOUTFileInfo();
@@ -588,10 +629,27 @@ class OnlineServiceProxy
 
 		$sURI = $this->_sCreateRequest([$sIDForm, $sQuery, $sEndPart], $aTabParam, $aTabOption, $clIdentification);
 
-		$result = $this->_oExecute('GetSuggestFromQuery', $sURI, __FUNCTION__, $clIdentification); // On veut la réponse complète ici
+		$result = $this->_oExecuteGET('GetSuggestFromQuery', $sURI, __FUNCTION__, $clIdentification); // On veut la réponse complète ici
 
 		return $result;
 	}
+
+    /**
+     * @param string         $idForm
+     * @param string         $idEnreg
+     * @param string         $idColumn
+     * @param string         $formula
+     * @param array          $aTabParam
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oVerifyFormula(string $idForm, string $idEnreg, string $idColumn, string $formula, Identification $clIdentification): HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest([$idForm, $idEnreg, $idColumn, 'VerifyFormula'], [], [], $clIdentification);
+
+        return $this->_oExecutePOST('VerifyFormula', $sURI, $formula,__FUNCTION__, $clIdentification);
+    }
 
     /**
      * @param $messageId
@@ -610,7 +668,7 @@ class OnlineServiceProxy
 
         $sURI = $printMessage->generateRoute();
 
-        $result = $this->_oExecute('printMessage', $sURI, __FUNCTION__);
+        $result = $this->_oExecuteGET('printMessage', $sURI, __FUNCTION__);
 
 	    return $result;
     }
@@ -623,7 +681,7 @@ class OnlineServiceProxy
     public function sGenerateAuthTokenForApp(Identification $clIdentification) : string
     {
         $sURI = $this->_sCreateRequest(['GenereAuthTokenForApp'], [], [], $clIdentification);
-        $result = $this->_oExecute('GenereAuthTokenForApp', $sURI, __FUNCTION__, $clIdentification);
+        $result = $this->_oExecuteGET('GenereAuthTokenForApp', $sURI, __FUNCTION__, $clIdentification);
 
         return $result->content;
     }
@@ -636,7 +694,7 @@ class OnlineServiceProxy
     public function oGetFunctionsList(Identification  $clIdentification)
     {
         $sURI = $this->_sCreateRequest(['GetFunctionList'], [], [], $clIdentification);
-        $result = $this->_oExecute('GetFunctionList', $sURI, __FUNCTION__, $clIdentification);
+        $result = $this->_oExecuteGET('GetFunctionList', $sURI, __FUNCTION__, $clIdentification);
         return json_decode($result->content);
     }
 
@@ -649,7 +707,7 @@ class OnlineServiceProxy
     public function oGetFormuleHighlighter(Identification  $clIdentification)
     {
         $sURI = $this->_sCreateRequest(['GetFormuleHighLighter'], [], [], $clIdentification);
-        $result = $this->_oExecute('GetFormuleHighLighter', $sURI, __FUNCTION__, $clIdentification);
+        $result = $this->_oExecuteGET('GetFormuleHighLighter', $sURI, __FUNCTION__, $clIdentification);
         return json_decode($result->content);
     }
 
@@ -661,7 +719,7 @@ class OnlineServiceProxy
     public function oGetColumnList(Identification $clIdentification)
     {
         $sURI = $this->_sCreateRequest(['GetColumnList'], [], [], $clIdentification);
-        $result = $this->_oExecute('GetColumnList', $sURI, __FUNCTION__, $clIdentification, null, true);
+        $result = $this->_oExecuteGET('GetColumnList', $sURI, __FUNCTION__, $clIdentification, null, true);
         return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
     }
 
@@ -673,7 +731,7 @@ class OnlineServiceProxy
     public function oGetModelList(Identification $clIdentification)
     {
         $sURI = $this->_sCreateRequest(['GetModelList'], [], [], $clIdentification);
-        $result = $this->_oExecute('GetModelList', $sURI, __FUNCTION__, $clIdentification, null, true);
+        $result = $this->_oExecuteGET('GetModelList', $sURI, __FUNCTION__, $clIdentification, null, true);
         return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
     }
 
@@ -685,7 +743,7 @@ class OnlineServiceProxy
     public function oGetBaseTableList(Identification $clIdentification)
     {
         $sURI = $this->_sCreateRequest(['GetBaseTableList'], [], [], $clIdentification);
-        $result = $this->_oExecute('GetBaseTableList', $sURI, __FUNCTION__, $clIdentification,null, true);
+        $result = $this->_oExecuteGET('GetBaseTableList', $sURI, __FUNCTION__, $clIdentification,null, true);
         return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
     }
 
@@ -697,7 +755,7 @@ class OnlineServiceProxy
     public function oGetTableList(Identification $clIdentification)
     {
         $sURI = $this->_sCreateRequest(['GetTableList'], [], [], $clIdentification);
-        $result = $this->_oExecute('GetTableList', $sURI, __FUNCTION__, $clIdentification, null, true);
+        $result = $this->_oExecuteGET('GetTableList', $sURI, __FUNCTION__, $clIdentification, null, true);
         return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
     }
 

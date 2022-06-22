@@ -1283,4 +1283,32 @@ class NOUTClient extends NOUTClientBase
             $clIdentification
         );
     }
+
+    /**
+     * @param string $idcontext
+     * @param string $idformulaire
+     * @param string $idenreg
+     * @param string $idcallingcolumn
+     * @param string $formula
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oVerifyFormula(string $idcontext, string $idformulaire, string $idenreg, string $idcallingcolumn, string $formula) : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+
+        $httpresponse = $this->m_clRESTProxy->oVerifyFormula(
+            $idformulaire,
+            $idenreg,
+            $idcallingcolumn,
+            $formula,
+            $clIdentification
+        );
+
+        $clActionResult = new ActionResult(null);
+        $clActionResult->setData($httpresponse);
+
+        return $clActionResult;
+    }
+
 }

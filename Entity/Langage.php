@@ -356,7 +356,9 @@ class Langage
 	const TABL_ModeAffichageListe           = 16895;
 	const TABL_PersonnalisationTable        = 16949;
 	const TABL_TableauAvecModeAffichage     = 17115;
-
+    const TABL_ModeAffichageNumerique       = 17656;
+    const TABL_CategorieModele              = 17761;
+    const TABL_ColTexteImage                = 17928;
 
 	/*************************************************************
 	 * IDENTIFIANT DE COLONNE

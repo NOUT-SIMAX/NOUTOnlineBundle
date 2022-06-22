@@ -712,7 +712,7 @@ class NOUTClientIHM extends NOUTClientBase
                 $obj->title = $info->columns->{Langage::COL_COLONNE_Libelle}->displayValue;
 
                 if (property_exists($info->columns, Langage::COL_COLLIBELLE_IDNiveau)) {
-                    $obj->type->niveau = $info->columns->{Langage::COL_COLLIBELLE_IDNiveau}->value;
+                    $obj->type->level = $info->columns->{Langage::COL_COLLIBELLE_IDNiveau}->value;
                 }
 
                 $info_tableau = $info->columns->{Langage::COL_COLONNE_IDTableau};
@@ -734,7 +734,7 @@ class NOUTClientIHM extends NOUTClientBase
                     }
                 }
 
-                $obj->ordre = $info->columns->{Langage::COL_COLONNE_Ordre}->value;
+                $obj->order = $info->columns->{Langage::COL_COLONNE_Ordre}->value;
                 $aReturnFinal[$obj->id]=$obj;
             }
             return $aReturnFinal;
@@ -902,7 +902,6 @@ class NOUTClientIHM extends NOUTClientBase
 
         return $this->_getFormTableListWithoutColumns();
     }
-
 
 
 
