@@ -225,7 +225,7 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-    protected function __oExecute($sAction, $sURI, $content, $function, Identification $clIdentification, $timeout, bool $bForceJson) : HTTPResponse
+    protected function __oExecute($sAction, $sURI, $content, $function, ?Identification $clIdentification, $timeout, bool $bForceJson) : HTTPResponse
     {
         //demarre le log si necessaire
         $this->__startLogQuery($function);
