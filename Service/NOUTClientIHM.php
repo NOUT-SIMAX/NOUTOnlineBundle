@@ -757,10 +757,10 @@ class NOUTClientIHM extends NOUTClientBase
             });
 
             usort($filtered, function($item1, $item2){
-                if ($item1->ordre == $item2->ordre) {
+                if ($item1->order == $item2->order) {
                     return 0;
                 }
-                return ($item1->ordre < $item2->ordre) ? -1 : 1;
+                return ($item1->order < $item2->order) ? -1 : 1;
             });
             return $filtered;
         });
@@ -832,7 +832,7 @@ class NOUTClientIHM extends NOUTClientBase
                     $form->id = $colonne->form->id;
                     $form->columns = [];
                 }
-                $form->columns[$colonne->ordre]=$colonne;
+                $form->columns[$colonne->order]=$colonne;
             }
             array_walk($aReturnFinal, function($form){
                 ksort($form->columns);
