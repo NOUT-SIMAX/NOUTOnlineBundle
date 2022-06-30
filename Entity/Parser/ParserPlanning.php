@@ -54,7 +54,7 @@ class ParserPlanning extends Parser
     /**
      * @param XMLResponseWS $clXMLReponseWS
      */
-	public function Parse(XMLResponseWS $clXMLReponseWS)
+	public function Parse(XMLResponseWS $clXMLReponseWS, $idForm)
 	{
         $ndSchema    = $clXMLReponseWS->getNodeSchema();
         $this->_TypeEvent2Color($ndSchema);
