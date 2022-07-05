@@ -49,6 +49,9 @@ class GetTokenSession
      */
 	public $DefaultClientLanguageCode;
 
+	/** @var int  */
+	public $ForConfiguration=0;
+
     /**
      * Constructor method for GetTokenSession
      * @param string|null $token
@@ -118,6 +121,7 @@ class GetTokenSession
         }
         return $this;
     }
+
 
     /**
      * This method is responsible for validating the value passed to the setUsernameToken method
@@ -191,6 +195,25 @@ class GetTokenSession
             throw new \InvalidArgumentException(sprintf('Invalid value %s, please provide an integer value, %s given', var_export($defaultClientLanguageCode, true), gettype($defaultClientLanguageCode)), __LINE__);
         }
         $this->DefaultClientLanguageCode = $defaultClientLanguageCode;
+        return $this;
+    }
+
+    /**
+     * Set Token value
+     * This property belongs to a choice that allows only one property to exist. It is
+     * therefore removable from the request, consequently if the value assigned to this
+     * property is null, the property is removed from this object
+     * @param int $forConfiguration
+     * @return GetTokenSession
+     * @throws \InvalidArgumentException
+     */
+    public function setForConfiguration($forConfiguration = 0) : GetTokenSession
+    {
+        // validation for constraint: string
+        if (!is_null($forConfiguration) && !is_integer($forConfiguration)) {
+            throw new \InvalidArgumentException(sprintf('Invalid value %s, please provide a integer, %s given', var_export($forConfiguration, true), gettype($forConfiguration)), __LINE__);
+        }
+        $this->ForConfiguration = $forConfiguration;
         return $this;
     }
 

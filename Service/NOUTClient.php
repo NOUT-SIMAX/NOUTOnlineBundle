@@ -1306,7 +1306,10 @@ class NOUTClient extends NOUTClientBase
         );
 
         $clActionResult = new ActionResult(null);
-        $clActionResult->setData($httpresponse);
+
+        $oInfo = json_decode($httpresponse->content);
+
+        $clActionResult->setData($oInfo);
 
         return $clActionResult;
     }
