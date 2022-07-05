@@ -60,6 +60,13 @@ class NOUTClientCache
     }
 
     /**
+     * @return NOUTCacheProvider
+     */
+    public function getCacheLanguage()
+    {
+        return $this->m_clCacheLanguage;
+    }
+    /**
      * @param $cache
      * @param $name
      * @return mixed

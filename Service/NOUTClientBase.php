@@ -538,6 +538,16 @@ abstract class NOUTClientBase
         return null;
     }
 
+    public function getCacheLanguage() : ?NOUTCacheProvider
+    {
+        if (!is_null($this->m_clCache))
+        {
+            return $this->m_clCache->getCacheLanguage();
+        }
+
+        return null;
+    }
+
     /**
      * @param $cache
      * @param $name
