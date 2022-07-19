@@ -567,6 +567,7 @@ abstract class StructureColonne
 
 	const OPTION_Required = "required";
 	const OPTION_Transform = "transform";
+	const OPTION_Crypted = "crypted";
     const OPTION_Help = "help";
 
     // Attributs pour element d'un tableau et sous-liste
