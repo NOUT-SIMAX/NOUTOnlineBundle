@@ -40,6 +40,9 @@ class CurrentAction
      */
     protected $m_userConfirmation;
 
+    /** @var bool  */
+    protected $m_isConfiguration = false;
+
     /**
      * CurrentAction constructor.
      * @param \SimpleXMLElement $clAction
@@ -51,6 +54,7 @@ class CurrentAction
 		$this->m_nTypeAction        = (int) $clAction['typeAction'];
         $this->m_nIDForm            = (string) $clAction['actionForm'];
         $this->m_userConfirmation   = (string) $clAction['userConfirmation'];
+        $this->m_isConfiguration   = ((int) ($clAction['isConfiguration'] ?? 0)) != 0;
 	}
 
 	/**
@@ -92,6 +96,14 @@ class CurrentAction
 	public function getUserConfirmation(): string
     {
         return $this->m_userConfirmation;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isConfiguration(): bool
+    {
+        return $this->m_isConfiguration;
     }
 
 }
