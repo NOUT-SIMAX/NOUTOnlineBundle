@@ -43,6 +43,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
 /**
  * Class NOUTClient
  * @package NOUT\Bundle\NOUTOnlineBundle\Service
+ * @property \Exception m_eProxyException
  */
 abstract class NOUTClientBase
 {
@@ -54,12 +55,12 @@ abstract class NOUTClientBase
     /**
      * @var SOAPProxy
      */
-    protected $m_clSOAPProxy;
+    protected $m_clSOAPProxy = null;
 
     /**
      * @Var RESTProxy
      */
-    protected $m_clRESTProxy;
+    protected $m_clRESTProxy = null;
 
 
     /**
@@ -119,8 +120,15 @@ abstract class NOUTClientBase
 
         $oSecurityToken = $this->_oGetToken();
 
-        $this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
-        $this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+        try {
+            $this->m_clSOAPProxy = $serviceFactory->clGetSOAPProxy($configurationDialogue);
+            $this->m_clRESTProxy = $serviceFactory->clGetRESTProxy($configurationDialogue);
+        }
+        catch (\Exception $e)
+        {
+            //on fait rien, c'est juste pour éviter l'exception au chargement du service Symfony
+            $this->m_eProxyException = $e;
+        }
 
         $this->m_clConfigurationDialogue = $configurationDialogue;
         $this->m_aVersionMin = $aVersionsMin;
@@ -349,7 +357,7 @@ abstract class NOUTClientBase
     /**
      * @param XMLResponseWS $clReponseXML
      * @param ActionResult  $clActionResult
-     * @param string        $idForm
+     * @param string|null   $idForm
      * @throws \Exception
      */
     protected function _oGetList(XMLResponseWS $clReponseXML, ActionResult $clActionResult, ?string $idForm)
