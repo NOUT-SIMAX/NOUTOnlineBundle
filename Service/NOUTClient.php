@@ -158,6 +158,10 @@ class NOUTClient extends NOUTClientBase
      */
     public function clUserExists($login) : UserExists
     {
+        if (is_null($this->m_clRESTProxy)){
+            throw $this->m_eProxyException;
+        }
+
         return $this->m_clRESTProxy->clGetUserExists($login);
     }
 
