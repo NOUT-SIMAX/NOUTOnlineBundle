@@ -660,6 +660,9 @@ class NOUTClientIHM extends NOUTClientBase
             foreach($oRestResponse->result as $idObg)
             {
                 $info = $oRestResponse->values->elements->$idObg;
+                if (is_null($info)){
+                    continue;
+                }
 
                 $obj = $this->__initFromJson($info);
 
@@ -707,6 +710,9 @@ class NOUTClientIHM extends NOUTClientBase
             foreach($oRestResponse->result as $idObj)
             {
                 $info = $oRestResponse->values->elements->$idObj;
+                if (is_null($info)){
+                    continue;
+                }
 
                 $obj = $this->__initFromJson($info);
                 $obj->title = $info->columns->{Langage::COL_COLONNE_Libelle}->displayValue;
@@ -796,6 +802,9 @@ class NOUTClientIHM extends NOUTClientBase
             foreach($oRestResponse->result as $idObj)
             {
                 $info = $oRestResponse->values->elements->$idObj;
+                if (is_null($info)){
+                    continue;
+                }
 
                 $obj = $this->__initFromJson($info);
 

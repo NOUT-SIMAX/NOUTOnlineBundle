@@ -43,6 +43,11 @@ class OptionDialogue extends WSDLOptionDialogue
     const GHOST_INVALID             = 0x2;
     const GHOST_ALL                 = 0x3;
 
+    const FLAG_ChoixElement          = 0x01;
+    const FLAG_CHoixElement_Action   = 0x10;
+    const FLAG_Session_Param         = 0x0100;
+    const FLAG_Session_SansCacheXSD  = 0x0200;
+    const FLAG_NomFichierRepEditable = 0x80000000;
 
 	public function __construct()
 	{
@@ -53,6 +58,7 @@ class OptionDialogue extends WSDLOptionDialogue
 		$this->HTTPForceReturn = 0; // integer
         $this->VersionMin = 0; // integer
         $this->VersionPref = 0; // integer
+        $this->Others = 0; // integer
 		//----------------------------------
 
 		$this->ReturnValue           = null; // integer
