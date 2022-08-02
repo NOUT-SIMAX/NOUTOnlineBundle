@@ -134,16 +134,20 @@ abstract class NOUTClientBase
         $this->m_aVersionMin = $aVersionsMin;
 
 
+
+
         //création du gestionnaire de cache
+        $bSessionDeParametrage = false;
         if ($oSecurityToken instanceof NOUTToken)
         {
             $this->m_clNOVersion = $oSecurityToken->clGetNOUTOnlineVersion();
             $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getInfoLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
             $this->m_clRecordSerializer = new RecordSerializer($tokenStorage, $cacheFactory);
+            $bSessionDeParametrage = $oSecurityToken->isWithConfiguration();
         }
 
         $this->m_clOptionDialogue = new OptionDialogue();
-        $this->_initOptionDialogue($nVersionDialPref);
+        $this->_initOptionDialogue($nVersionDialPref, $bSessionDeParametrage);
     }
 
     /**
@@ -599,11 +603,14 @@ abstract class NOUTClientBase
      * initialise les options de dialogue
      * @param $nVersionPref
      */
-    protected function _initOptionDialogue($nVersionPref)
+    protected function _initOptionDialogue($nVersionPref, $bSessionDeParametrage)
     {
         $this->m_clOptionDialogue->InitDefault($nVersionPref);
         $this->m_clOptionDialogue->DisplayValue = OptionDialogue::DISPLAY_None;
         $this->m_clOptionDialogue->LanguageCode = $this->m_clConfigurationDialogue->getLangCode();
+        if ($bSessionDeParametrage){
+            $this->m_clOptionDialogue->Others |= OptionDialogue::FLAG_Session_Param;
+        }
     }
 
     /**

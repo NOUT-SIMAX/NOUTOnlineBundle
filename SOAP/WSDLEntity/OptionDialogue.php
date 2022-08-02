@@ -29,5 +29,6 @@ class OptionDialogue
 	public $ListContentAsync; 		// integer
 	public $VersionMin; 		    // integer
 	public $VersionPref; 		    // integer
+	public $Others;      		    // integer
 }
 //***
