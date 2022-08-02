@@ -1289,6 +1289,18 @@ class NOUTClient extends NOUTClientBase
     }
 
     /**
+     * @param HTTPResponse $HTTPResponse
+     * @return ActionResult
+     */
+    private function _oGetJSONActionResultFromHTTPResponse(HTTPResponse $HTTPResponse) : ActionResult
+    {
+        $clActionResult = new ActionResult(null);
+        $oInfo = json_decode($HTTPResponse->content);
+        $clActionResult->setData($oInfo);
+        return $clActionResult;
+    }
+
+    /**
      * @param string $idcontext
      * @param string $idformulaire
      * @param string $idenreg
@@ -1300,7 +1312,6 @@ class NOUTClient extends NOUTClientBase
     public function oVerifyFormula(string $idcontext, string $idformulaire, string $idenreg, string $idcallingcolumn, string $formula) : ActionResult
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
-
         $httpresponse = $this->m_clRESTProxy->oVerifyFormula(
             $idformulaire,
             $idenreg,
@@ -1308,14 +1319,33 @@ class NOUTClient extends NOUTClientBase
             $formula,
             $clIdentification
         );
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
+    }
 
-        $clActionResult = new ActionResult(null);
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownParams(string $idcontext) : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
 
-        $oInfo = json_decode($httpresponse->content);
+        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownParams($clIdentification);
 
-        $clActionResult->setData($oInfo);
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
+    }
 
-        return $clActionResult;
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownColumns(string $idcontext) : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+
+        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownColumns($clIdentification);
+
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
     }
 
 }
