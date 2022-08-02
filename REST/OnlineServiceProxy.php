@@ -651,6 +651,30 @@ class OnlineServiceProxy
         return $this->_oExecutePOST('VerifyFormula', $sURI, $formula,__FUNCTION__, $clIdentification);
     }
 
+
+    /**
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownParams(Identification $clIdentification): HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest(['GetConfigurationDropdownParams'], [], [], $clIdentification);
+        return $this->_oExecuteGET('GetConfigurationDropdownParams', $sURI, __FUNCTION__, $clIdentification, null, true);
+    }
+
+
+    /**
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownColumns(Identification $clIdentification): HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest(['GetConfigurationDropdownColumns'], [], [], $clIdentification);
+        return $this->_oExecuteGET('GetConfigurationDropdownColumns', $sURI, __FUNCTION__, $clIdentification, null, true);
+    }
+
     /**
      * @param $messageId
      * @param Identification $clIdentification
@@ -758,6 +782,8 @@ class OnlineServiceProxy
         $result = $this->_oExecuteGET('GetTableList', $sURI, __FUNCTION__, $clIdentification, null, true);
         return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
     }
+
+
 
 	const PARAM_TestRestart     = 'TestRestart';
 	const PARAM_Login           = 'Login';
