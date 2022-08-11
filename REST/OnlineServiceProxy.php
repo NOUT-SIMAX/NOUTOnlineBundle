@@ -676,6 +676,17 @@ class OnlineServiceProxy
     }
 
     /**
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oApplyConfiguration(Identification $clIdentification): HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest(['ApplyConfiguration'], [], [], $clIdentification);
+        return $this->_oExecuteGET('ApplyConfiguration', $sURI, __FUNCTION__, $clIdentification, null, true);
+    }
+
+    /**
      * @param $messageId
      * @param Identification $clIdentification
      * @return HTTPResponse

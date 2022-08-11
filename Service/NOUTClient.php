@@ -1348,4 +1348,17 @@ class NOUTClient extends NOUTClientBase
         return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
     }
 
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oApplyConfiguration() : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST('', true);
+
+        $httpresponse = $this->m_clRESTProxy->oApplyConfiguration($clIdentification);
+
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
+    }
+
 }
