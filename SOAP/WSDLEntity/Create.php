@@ -17,8 +17,14 @@ class Create
 {
 	public $Table; // string
 	public $ParamXML; // string
-	public $IDMessage; // string
-	public $CallingColumn; // string
-    public $CallingInfo; // CallingInfoType
+    /** @var string */
+	public $IDMessage;
+    /** @var string */
+	public $CallingColumn;
+    /** @var null|CallingInfoType */
+    public $CallingInfo;
+
+    /** @var null|SelectedItemsType|SelectedItemsType[] */
+    public $SelectedItems;
 }
 //***
