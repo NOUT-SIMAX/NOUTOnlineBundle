@@ -23,8 +23,11 @@ class Execute implements SerializableEntity
     public $CallingColumn; 		// string
     public $CallingInfo; 		// CallingInfoType
 	public $DisplayMode; 		// DisplayModeParamEnum
-    public $BtnListMode;        // List action
-    public $Final;
+    public $BtnListMode;        // integer
+    public $Final;              // integer
+
+    /** @var null|SelectedItemsType|SelectedItemsType[] */
+    public $SelectedItems;      // SelectedItems
 
     static function getAttributes() {
         return array();
@@ -37,7 +40,9 @@ class Execute implements SerializableEntity
             'ParamXML'          => 'string',
             'CallingColumn'     => 'string',
             'ID'                => 'string',
-            'SpecialParamList'  => SpecialParamListType::getEntityDefinition()
+            'Final'             => 'integer',
+            'SpecialParamList'  => SpecialParamListType::getEntityDefinition(),
+            'SelectedItems'     => SelectedItemsType::getEntityDefinition(),
         );
     }
 
