@@ -559,6 +559,15 @@ abstract class NOUTClientBase
 
         return null;
     }
+    public function emptyCacheLanguage()
+    {
+        if (!is_null($this->m_clCache))
+        {
+            $clCacheLanguage = $this->m_clCache->getCacheLanguage();
+            $clCacheLanguage->deletePrefix();
+        }
+    }
+
 
     /**
      * @param $cache
