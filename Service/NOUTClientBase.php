@@ -655,22 +655,24 @@ abstract class NOUTClientBase
     /**
      * @param string $sIDContexteAction
      * @param bool $bAPIUser
-     * @return Identification
+     * @return Identification|null
      * @throws \Exception
      */
-    protected function _clGetIdentificationREST(string $sIDContexteAction, bool $bAPIUser) : Identification
+    protected function _clGetIdentificationREST(string $sIDContexteAction, bool $bAPIUser) : ?Identification
     {
-        $clIdentification = new Identification();
-
         // récupération de l'utilisateur connecté
         $oToken = $this->_oGetToken();
+        if ($oToken instanceof NOUTToken)
+        {
+            $clIdentification = new Identification();
+            $clIdentification->m_clUsernameToken = $this->_oGetUsernameToken($oToken);
+            $clIdentification->m_sTokenSession = $oToken->getSessionToken();
+            $clIdentification->m_sIDContexteAction = $sIDContexteAction;
+            $clIdentification->m_bAPIUser = $bAPIUser;
 
-        $clIdentification->m_clUsernameToken = $this->_oGetUsernameToken($oToken);
-        $clIdentification->m_sTokenSession = $oToken->getSessionToken();
-        $clIdentification->m_sIDContexteAction = $sIDContexteAction;
-        $clIdentification->m_bAPIUser = $bAPIUser;
-
-        return $clIdentification;
+            return $clIdentification;
+        }
+        return null;
     }
 
     /**
