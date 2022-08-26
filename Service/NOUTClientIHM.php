@@ -31,6 +31,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use function PHPUnit\Framework\isNull;
 
 /**
  * Class NOUTClient
@@ -613,18 +614,31 @@ class NOUTClientIHM extends NOUTClientBase
     }
 
     /**
+     * @return Identification
+     * @throws \Exception
+     */
+    protected function _clGetIdentificationRESTForLanguage(): Identification
+    {
+        $clIdentification = parent::_clGetIdentificationREST('', true);
+        if (is_null($clIdentification))
+        {
+            $clIdentification = new Identification();
+            $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+            $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+            $clIdentification->m_bAPIUser = true;
+            $clIdentification->m_clUsernameToken = null;
+        }
+        return $clIdentification;
+    }
+
+    /**
      * @return mixed
      * @throws \Exception
      */
     protected function _getModelList()
     {
-        $clIdentification = new Identification();
-        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
-
-        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
-        $clIdentification->m_bAPIUser = true;
-        $clIdentification->m_clUsernameToken = null;
-
+        $clIdentification = $this->_clGetIdentificationRESTForLanguage();
         return $this->m_clRESTProxy->oGetModelList($clIdentification);
     }
 
@@ -685,13 +699,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     protected function _getColumnList()
     {
-        $clIdentification = new Identification();
-        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
-
-        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
-        $clIdentification->m_bAPIUser = true;
-        $clIdentification->m_clUsernameToken = null;
-
+        $clIdentification = $this->_clGetIdentificationRESTForLanguage();
         return $this->m_clRESTProxy->oGetColumnList($clIdentification);
     }
 
@@ -779,13 +787,7 @@ class NOUTClientIHM extends NOUTClientBase
      */
     protected function __getBaseTableList()
     {
-        $clIdentification = new Identification();
-        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
-
-        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
-        $clIdentification->m_bAPIUser = true;
-        $clIdentification->m_clUsernameToken = null;
-
+        $clIdentification = $this->_clGetIdentificationRESTForLanguage();
         return $this->m_clRESTProxy->oGetBaseTableList($clIdentification);
     }
 
