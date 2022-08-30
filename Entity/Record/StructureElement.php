@@ -28,35 +28,35 @@ class StructureElement
 
 	/**
      * les boutons qu'on affiche dans la fiche ou en bas des listes
-	 * @var array
+	 * @var StructureBouton[]
 	 */
 	protected $m_TabBouton=[];
 
     /**
-     * @var array
+     * @var StructureBouton[]
      */
 	protected $m_TabBoutonSurLigne=[];
 
     /**
-     * @var array
+     * @var StructureBouton[]
      */
     protected $m_TabBoutonColNonDetail=[];
 
     /**
      * les boutons qu'on affiche dans la fiche ou en bas des listes qui sont en lecture seule
-	 * @var array
+	 * @var StructureBouton[]
 	 */
 	protected $m_TabBoutonReadOnly=[];
 
     /**
      * les boutons de remplacement qui remplace enregistrer et annuler
-     * @var array
+     * @var StructureBouton[]
      */
     protected $m_TabBoutonRemplacementValidation=[];
 
     /**
      * les autres boutons de remplacement
-     * @var array
+     * @var StructureBouton[]
      */
     protected $m_TabBoutonRemplacementAutre=[];
 
