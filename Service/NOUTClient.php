@@ -421,13 +421,13 @@ class NOUTClient extends NOUTClientBase
     /**
      * @param string            $tableId
      * @param string            $actionId
-     * @param string            $importId
+     * @param string|null       $importId
      * @param UploadedFile|null $file
      * @param array|null        $aTabHeaderQuery
      * @return ActionResult
      * @throws \Exception
      */
-    public function oImport(string $tableId, string $actionId, string $importId, ?UploadedFile $file = null, ?array $aTabHeaderQuery=null) : ActionResult
+    public function oImport(string $tableId, string $actionId, ?string $importId, ?UploadedFile $file = null, ?array $aTabHeaderQuery=null) : ActionResult
     {
         //--------------------------------------------------------------------------------------------
         // Headers
