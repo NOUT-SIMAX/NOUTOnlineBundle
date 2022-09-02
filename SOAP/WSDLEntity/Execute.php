@@ -27,7 +27,7 @@ class Execute implements SerializableEntity
     public $Final;              // integer
 
     /** @var null|SelectedItemsType|SelectedItemsType[] */
-    public $SelectedItems;      // SelectedItems
+    //public $SelectedItems;      // SelectedItems
 
     static function getAttributes() {
         return array();
@@ -42,7 +42,7 @@ class Execute implements SerializableEntity
             'ID'                => 'string',
             'Final'             => 'integer',
             'SpecialParamList'  => SpecialParamListType::getEntityDefinition(),
-            'SelectedItems'     => SelectedItemsType::getEntityDefinition(),
+            //'SelectedItems'     => SelectedItemsType::getEntityDefinition(),
         );
     }
 

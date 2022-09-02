@@ -16,9 +16,16 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 
 class CallingInfoType
 {
-	public $Column; // string
-	public $Context; // string
-    public $Record; //string
-    public $Value; //string
+    /** @var string */
+	public $Column;
+    /** @var string */
+	public $Context;
+    /** @var string */
+    public $Record;
+    /** @var string */
+    public $Value;
+
+    /** @var null|SelectedItemsType|SelectedItemsType[] */
+    public $SelectedItems;
 }
 //***

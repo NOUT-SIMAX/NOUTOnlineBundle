@@ -782,7 +782,7 @@ abstract class NOUTClientBase
 
         if (property_exists($oParam, self::PARAM_PARAMXML) && is_null($oParam->{self::PARAM_PARAMXML}))
         {
-            $oParam->{self::PARAM_PARAMXML} = '';
+            $oParam->{self:: PARAM_PARAMXML} = '';
         }
         return $oParam;
     }
