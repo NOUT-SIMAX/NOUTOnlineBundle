@@ -25,6 +25,6 @@ class Create
     public $CallingInfo;
 
     /** @var null|SelectedItemsType|SelectedItemsType[] */
-    public $SelectedItems;
+    //public $SelectedItems;
 }
 //***
