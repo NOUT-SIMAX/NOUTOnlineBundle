@@ -333,7 +333,7 @@ abstract class StructureColonne
         if ($this->m_eTypeElement == self::TM_ListeElem){
             $canGrow |= 0x10;
         }
-        if ($this->isMultilineText()){
+        if ($this->isMultilineText() && !$this->isOption(StructureColonne::OPTION_LineAff)){
             $canGrow |= 0x01;
         }
         return $canGrow;
@@ -590,6 +590,7 @@ abstract class StructureColonne
 
 	// Attributs pour les textes
 	const OPTION_TextBoxSize   = "textBoxSize";
+	const OPTION_LineAff       = "lineAff";
 
 	// Attributs pour les listes en général
 	const OPTION_WithPlanning = "withPlanning";
