@@ -11,5 +11,6 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP;
 /**
  * Backward compatibility
  */
-class SOAPFault extends NUSOAPFault {
+class SOAPFault extends NUSOAPFault
+{
 }
