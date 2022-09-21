@@ -501,6 +501,36 @@ class NUSOAPClient extends NUSOAPBase
         }
     }
 
+
+    protected function _parseData($data)
+    {
+
+        $this->debug('Use encoding: ' . $this->xml_encoding . ' when creating nusoap_parser');
+        $parser = new NUSOAPParser($data, $this->xml_encoding, $this->operations, $this->decode_utf8);
+        // add parser debug data to our debug
+        $this->appendDebug($parser->getDebug());
+        // if parse errors
+        if ($errstr = $parser->getError()) {
+            $this->setError($errstr);
+            // destroy the parser object
+            unset($parser);
+            return false;
+        } else {
+            // get SOAP headers
+            $this->responseHeaders = $parser->getHeaders();
+            // get SOAP headers
+            $this->responseHeader = $parser->get_soapheader();
+            // get decoded message
+            $return = $parser->get_soapbody();
+            // add document for doclit support
+            $this->document = $parser->document;
+            // destroy the parser object
+            unset($parser);
+            // return decode message
+            return $return;
+        }
+    }
+
     /**
      * processes SOAP message returned from server
      *
@@ -533,30 +563,7 @@ class NUSOAPClient extends NUSOAPBase
             // should be US-ASCII for HTTP 1.0 or ISO-8859-1 for HTTP 1.1
             $this->xml_encoding = 'ISO-8859-1';
         }
-        $this->debug('Use encoding: ' . $this->xml_encoding . ' when creating nusoap_parser');
-        $parser = new NUSOAPParser($data, $this->xml_encoding, $this->operations, $this->decode_utf8);
-        // add parser debug data to our debug
-        $this->appendDebug($parser->getDebug());
-        // if parse errors
-        if ($errstr = $parser->getError()) {
-            $this->setError($errstr);
-            // destroy the parser object
-            unset($parser);
-            return false;
-        } else {
-            // get SOAP headers
-            $this->responseHeaders = $parser->getHeaders();
-            // get SOAP headers
-            $this->responseHeader = $parser->get_soapheader();
-            // get decoded message
-            $return = $parser->get_soapbody();
-            // add document for doclit support
-            $this->document = $parser->document;
-            // destroy the parser object
-            unset($parser);
-            // return decode message
-            return $return;
-        }
+        return $this->_parseData($data);
     }
 
     /**
