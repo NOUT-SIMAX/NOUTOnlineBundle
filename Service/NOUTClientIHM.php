@@ -717,6 +717,9 @@ class NOUTClientIHM extends NOUTClientBase
             $aReturnFinal=[];
             foreach($oRestResponse->result as $idObj)
             {
+                if (!property_exists($oRestResponse->values->elements, $idObj)){
+                    continue;
+                }
                 $info = $oRestResponse->values->elements->$idObj;
                 if (is_null($info)){
                     continue;
