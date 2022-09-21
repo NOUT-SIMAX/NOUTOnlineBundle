@@ -463,10 +463,10 @@ class Record extends IHMWindows
      * méthode magique pour les formulaires - Met à jour les valeurs des colonnes depuis les formulaires Symfony
      * @param $idColonne
      * @param $value
-     * @return $this
+     * @return Record
      * @throws \Exception
      */
-	public function __set($idColonne, $value): Record
+	public function __set($idColonne, $value)
     {
 		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
 		{
