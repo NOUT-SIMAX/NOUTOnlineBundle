@@ -189,7 +189,7 @@ class ModifiedNusoapClient extends SOAPClient
 			$this->xml_encoding = 'ISO-8859-1';
 		}
 
-		return $this->parseData($data);
+		return $this->_parseData($data);
 	}
 	//---
 }
