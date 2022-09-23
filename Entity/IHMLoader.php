@@ -98,7 +98,7 @@ class IHMLoader
             $oInfoIHM->aMenu[]=$clMenu;
         }
 
-        if (count($oInfoIHM->aMenu[])==1)
+        if (count($oInfoIHM->aMenu)==1)
         {
             //il y a qu'1 seul menu, il faut le remonter
             /** @var ItemMenu $clMenu */
@@ -132,7 +132,11 @@ class IHMLoader
         }
 
         //on construit un menu
-        $clMenu = new ItemMenu($sIDMenu, $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle), false);
+        $libelle = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle);
+        if (is_array($libelle)){
+            $libelle = $libelle['display'];
+        }
+        $clMenu = new ItemMenu($sIDMenu, $libelle, false);
         $clMenu->setIdMenuParent($sIDMenuPere);
         $clMenu->setRootMenu(empty($sIDMenuPere));
 
@@ -154,7 +158,12 @@ class IHMLoader
 
             $clRecordOption = $this->m_clParserOption->getRecordFromID(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
 
-            $clOptionMenu = new ItemMenu($sIDOptionMenu, $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle), true);
+            $libelle = $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle);
+            if (is_array($libelle)){
+                $libelle = $libelle['display'];
+            }
+
+            $clOptionMenu = new ItemMenu($sIDOptionMenu, $libelle, true);
             $clOptionMenu
                 ->setIdMenuParent($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent))
                 ->setIdAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction))
