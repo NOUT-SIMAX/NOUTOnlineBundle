@@ -31,10 +31,10 @@ abstract class NOUTWebException extends SOAPException implements NOUTExceptionIn
     }
 
     public function getStatus(){
-        return self::STATUS;
+        return $this::STATUS;
     }
 
     public function getLevel(){
-        return self::LEVEL;
+        return $this::LEVEL;
     }
 }
