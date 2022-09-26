@@ -150,6 +150,36 @@ class Langage
         return $isReadOnlyButton[$eTYPEACTION];
 	}
 
+	public static function s_needResetLanguageCache($idTableau)
+    {
+        $aTab = [
+            self::TABL_Tableau,
+            self::TABL_TableauBase,
+            self::TABL_TableauCroise,
+            self::TABL_Vue,
+            self::TABL_Colonne,
+            self::TABL_ColInfo,
+            self::TABL_Calcul,
+            self::TABL_ColLibelle,
+            self::TABL_CalculCompteur,
+            self::TABL_CalculFormule,
+            self::TABL_CalculMax,
+            self::TABL_CalculMin,
+            self::TABL_CalculMoyenne,
+            self::TABL_CalculSomme,
+            self::TABL_ColReference,
+            self::TABL_Modele,
+            self::TABL_ModeleClassique,
+            self::TABL_ModeleElem,
+            self::TABL_ModeleListeElem,
+            self::TABL_ModeleFichier,
+            self::TABL_ModeleChoixMult,
+            self::TABL_Choix
+        ];
+        return in_array($idTableau, $aTab);
+    }
+
+
 	//typeAction
 	const eTYPEACTION_Unknown               = 0;		//Action inconnue (ne manipule pas un objet de façon générique)
 	const eTYPEACTION_DescEnreg             = 1;		//Description d'un enreg
