@@ -108,10 +108,10 @@ class ModifiedNusoapClient extends SOAPClient
 			{
 				$sErrCode = $mReturn['Detail']['ListErr']['Error']['Code']['Numero'];
                 $nErrCategorie = $mReturn['Detail']['ListErr']['Error']['Code']['Category'];
-				$sErrMsg = htmlspecialchars($mReturn['Detail']['ListErr']['Error']['Message']);
+				$sErrMsg = htmlspecialchars(htmlspecialchars_decode($mReturn['Detail']['ListErr']['Error']['Message']));
 			}
 			
-			$this->setError(htmlspecialchars($sErrMsg));
+			$this->setError(htmlspecialchars(htmlspecialchars_decode($sErrMsg)));
 		}
 
 		if ($mReturn === '')
