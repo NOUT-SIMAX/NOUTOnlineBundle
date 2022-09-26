@@ -128,9 +128,10 @@ class RecordSerializer
 
             $bModeleFichier = ($typeElement == StructureColonne::TM_Fichier);
             $bModeleCheminDeFichier = $colonne->isOption(StructureColonne::OPTION_Modele_Directory);
+            $bReadOnly = $colonne->isOption(StructureColonne::OPTION_ReadOnly);
             $bColModified = $clRecord->isModified($idColonne, true);
 
-            if ( ($bModeleFichier || ($bModeleCheminDeFichier && $bIsParam)) && $bColModified)
+            if ( ($bModeleFichier || ($bModeleCheminDeFichier && ($bIsParam || !$bReadOnly))) && $bColModified)
             {
                 // On a un fichier modifié, on doit le récupérer
                 $fullPath = $clRecord->getValCol($idColonne);
