@@ -1519,7 +1519,12 @@ class WSDL extends NUSOAPBase
                     if (isset($value['!'])) {
                         $xml .= $value['!'];
                         $this->debug("in serializeType: serialized simpleContent for type $type");
-                    } else {
+                    }
+                    elseif (isset($value['_'])){
+                        $xml .= $value['_'];
+                        $this->debug("in serializeType: serialized simpleContent for type $type");
+                    }
+                    else {
                         $this->debug("in serializeType: no simpleContent to serialize for type $type");
                     }
                 } else {
