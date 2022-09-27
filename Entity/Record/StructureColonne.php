@@ -574,6 +574,7 @@ abstract class StructureColonne
     const OPTION_LinkedTableXml = "linkedTableXml";
     const OPTION_LinkedTableID  = "linkedTableID";
 	// Attributs pour element d'un tableau
+    const OPTION_NoGroupList    = "notGroupList";
 	const OPTION_WithBtnOrdre   = "withBtnOrder";
 	const OPTION_WithoutDetail  = "withoutDetail";
     const OPTION_WithoutEdit    = "withoutEdit";
