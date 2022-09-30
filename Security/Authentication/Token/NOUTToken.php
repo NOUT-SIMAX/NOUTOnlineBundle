@@ -385,6 +385,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
             'superviseur' => $this->m_bSuperviseur,
             'userID' => $this->m_nIDUser,
             'version' => $this->getVersionNO(),
+            'isStarter' => $this->isSIMAXStarter(),
             'language' => is_null($this->m_clLangage) ? null : $this->m_clLangage->forSerialization(),
             'multilangue' => $this->m_aMultiLanguage,
             'sessioncodelangue' => $this->m_nCodeLangue,
@@ -436,6 +437,9 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
         }
         if (isset($aUnserialised['withconfiguration'])){
             $this->m_bWithConfiguration = $aUnserialised['withconfiguration'];
+        }
+        if (isset($aUnserialised['isStarter'])){
+            $this->m_bIsSIMAXStarter = $aUnserialised['isStarter'];
         }
 
         $this->m_sNameToDisplay=$aUnserialised['name'];

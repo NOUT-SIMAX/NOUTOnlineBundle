@@ -11,9 +11,12 @@ trait TraitTokenWithNOUTOnlineVersion
 {
     /**
      * version du noutonline
-     * @var NOUTOnlineVersion m_clVersionNO
+     * @var NOUTOnlineVersion|string m_clVersionNO
      */
     protected $m_clVersionNO = null;
+
+    /** @var bool  */
+    protected $m_bIsSIMAXStarter = false;
 
     /**
      * @return bool
@@ -94,6 +97,25 @@ trait TraitTokenWithNOUTOnlineVersion
         $clVersion = new NOUTOnlineVersion($this->m_clVersionNO);
         return $clVersion->isVersionSup($sVersionMin, $bInclu);
     }
+
+    /**
+     * @return bool
+     */
+    public function isSIMAXStarter(): bool
+    {
+        return $this->m_bIsSIMAXStarter;
+    }
+
+    /**
+     * @param bool $bIsSIMAXStarter
+     * @return TraitTokenWithNOUTOnlineVersion
+     */
+    public function setIsSIMAXStarter(bool $bIsSIMAXStarter)
+    {
+        $this->m_bIsSIMAXStarter = $bIsSIMAXStarter;
+        return $this;
+    }
+
 
 
     /**

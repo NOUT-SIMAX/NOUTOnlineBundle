@@ -506,6 +506,15 @@ abstract class NOUTClientBase
     }
 
     /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function isSIMAXStarter() : bool
+    {
+        return $this->m_clRESTProxy->isSIMAXStarter();
+    }
+
+    /**
      * teste le client pour savoir s'il correspond à la version minimale
      * @return bool
      * @throws \Exception

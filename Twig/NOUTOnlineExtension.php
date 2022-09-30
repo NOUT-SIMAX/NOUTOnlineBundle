@@ -159,26 +159,36 @@ class NOUTOnlineExtension extends AbstractExtension
              new TwigFunction('noutonline_get_language_query', array($this, 'getLanguageQuery')),
              new TwigFunction('noutonline_beautify_xml', array($this, 'beautifyXML')),
              new TwigFunction('noutonline_beautify_json', array($this, 'beautifyJSON')),
+             new TwigFunction('noutonline_is_simaxstarter', array($this, 'isSIMAXStarter')),
 		);
 	}
 
     /**
      * Get NOUTOnline State
      * @return NOUTOnlineState
+     * @throws \Exception
      */
 	public function state() : NOUTOnlineState
     {
-
-        if (!is_null($this->m_oToken) && ($this->m_oToken instanceof TokenWithNOUTOnlineVersionInterface)){
+        if ($this->m_oToken instanceof TokenWithNOUTOnlineVersionInterface){
             $ret = $this->m_oToken->clGetNOUTOnlineState($this->m_sVersionMin);
         }
         else{
-            /** @var OnlineServiceProxy $clRest */
             $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
             $ret = $clRest->clGetNOUTOnlineState($this->m_sVersionMin);
         }
 
         return $ret;
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function isSIMAXStarter() : bool
+    {
+        $state = $this->state();
+        return $state->isSIMAXStarter;
     }
 
     /**
@@ -216,6 +226,7 @@ class NOUTOnlineExtension extends AbstractExtension
 	 * Get NOUTOnline Version
 	 *
 	 * @return string
+     * @throws \Exception
 	 */
 	public function version() : string
 	{
@@ -225,6 +236,7 @@ class NOUTOnlineExtension extends AbstractExtension
 
     /**
      * @return bool
+     * @throws \Exception
      */
 	public function isVersionMin() : bool
     {
@@ -235,6 +247,7 @@ class NOUTOnlineExtension extends AbstractExtension
 	/**
 	 * Test si NOUTOnline est démarré
 	 * @return bool
+     * @throws \Exception
 	 */
 	public function isStarted() : string
 	{
