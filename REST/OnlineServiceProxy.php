@@ -447,7 +447,13 @@ class OnlineServiceProxy
     public function isSIMAXStarter() : bool
     {
         $sURI = $this->_sCreateRequest(['IsSIMAXStarter'], [], []);
-        return ((int) $this->_oExecuteGET('IsSIMAXStarter', $sURI, __FUNCTION__)->content) != 0;
+        try{
+            return ((int) $this->_oExecuteGET('IsSIMAXStarter', $sURI, __FUNCTION__)->content) != 0;
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
     }
 
     /**
