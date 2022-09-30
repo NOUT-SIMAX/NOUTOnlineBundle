@@ -43,4 +43,15 @@ interface TokenWithNOUTOnlineVersionInterface
      * @return NOUTOnlineState
      */
     public function clGetNOUTOnlineState(string $sVersionMin, bool $bInclu=true) : NOUTOnlineState;
+
+    /**
+     * @return bool
+     */
+    public function isSIMAXStarter(): bool;
+
+    /**
+     * @param bool $bIsSIMAXStarter
+     * @return mixed
+     */
+    public function setIsSIMAXStarter(bool $bIsSIMAXStarter);
 }

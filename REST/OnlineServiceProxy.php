@@ -441,6 +441,16 @@ class OnlineServiceProxy
 	}
 
     /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function isSIMAXStarter() : bool
+    {
+        $sURI = $this->_sCreateRequest(['IsSIMAXStarter'], [], []);
+        return ((int) $this->_oExecuteGET('IsSIMAXStarter', $sURI, __FUNCTION__)->content) != 0;
+    }
+
+    /**
      * @param string $versionMin
      * @return NOUTOnlineState
      * @throws \Exception
@@ -452,7 +462,8 @@ class OnlineServiceProxy
         $ret = new NOUTOnlineState();
         try {
             $clVersion = new NOUTOnlineVersion($this->_oExecuteGET('GetVersion', $sURI, __FUNCTION__, null, 1)->content);
-            $ret->setVersionNO($clVersion, $versionMin);
+            $bIsStarter = $this->isSIMAXStarter();
+            $ret->setVersionNO($clVersion, $versionMin, $bIsStarter);
         }
         catch(\Exception $e)
         {

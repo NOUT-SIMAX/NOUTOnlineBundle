@@ -15,6 +15,9 @@ class NOUTOnlineState
     /** @var bool  */
     public $isRecent=false;
 
+    /** @var bool  */
+    public $isSIMAXStarter=false;
+
     /** @var  */
     protected $_versionNO;
 
@@ -22,11 +25,12 @@ class NOUTOnlineState
      * @param NOUTOnlineVersion $clVersion
      * @param string            $sVersionMin
      */
-    public function setVersionNO(NOUTOnlineVersion $clVersion, string $sVersionMin)
+    public function setVersionNO(NOUTOnlineVersion $clVersion, string $sVersionMin, bool $bIsSIMAXStarter)
     {
         $this->isStarted = true;
         $this->_versionNO=$clVersion;
         $this->version = $clVersion->get();
         $this->isRecent = $clVersion->isVersionSup($sVersionMin);
+        $this->isSIMAXStarter = $bIsSIMAXStarter;
     }
 }
