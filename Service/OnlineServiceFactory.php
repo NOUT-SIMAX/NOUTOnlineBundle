@@ -48,7 +48,7 @@ class OnlineServiceFactory
                                 DynamicConfigurationLoader $configLoader,
                                 Stopwatch $stopwatch=null)
 	{
-	    $this->__soap_socket_timeout = $configLoader->getParameter('soap_socket_timeout');
+	    $this->__soap_socket_timeout = $configLoader->getParameter('soap_socket_timeout', -1);
 		$this->m_clLogger = $logger;
 		$this->__stopwatch = $stopwatch;
 

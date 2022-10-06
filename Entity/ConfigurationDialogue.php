@@ -92,11 +92,12 @@ class ConfigurationDialogue
         $this->m_sVersion=$sVersion;
         $this->m_sSociete=$sSociete;
 
-        $sAPIUUID = $loader->getParameter('apiuuid');
-        $sHost = $loader->getParameter('address');
-        $sPort = $loader->getParameter('port');
-        $sProtocolPrefix = $loader->getParameter('protocole');
-        $aAuth = $loader->getParameter('auth');
+
+        $sAPIUUID = $loader->getParameter('apiuuid', '');
+        $sHost = $loader->getParameter('address', '127.0.0.1');
+        $sPort = $loader->getParameter('port', 0);
+        $sProtocolPrefix = $loader->getParameter('protocole', 'http://');
+        $aAuth = $loader->getParameter('auth', []);
         
         $this->m_sAPIUUID     = trim($sAPIUUID);
 		$this->m_sServiceAddress = $sProtocolPrefix.$sHost.':'.$sPort.'/';
@@ -110,7 +111,7 @@ class ConfigurationDialogue
 		$this->m_nPort          = $sPort;
 		$this->m_sProtocolPrefix = $sProtocolPrefix;
 
-        $this->m_sModeAuth = isset($aAuth['mode']) ? $aAuth['mode'] : '';
+        $this->m_sModeAuth = $aAuth['mode'] ?? '';
         $this->m_sSecret = isset($aAuth['secret']) ? trim($aAuth['secret']) : '';
 	}
 

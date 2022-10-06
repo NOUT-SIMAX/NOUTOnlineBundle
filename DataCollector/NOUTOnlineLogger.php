@@ -55,7 +55,7 @@ class NOUTOnlineLogger
 	public function __construct(LoggerInterface $logger, DynamicConfigurationLoader $loader, bool $debug)
 	{
 		$this->m_clMonolog = $logger;
-		$this->m_bEnabled  = $loader->getParameter('log') || $debug;
+		$this->m_bEnabled  = $loader->getParameter('log', false) || $debug;
 	}
 
 	public function getEnabled()
