@@ -26,7 +26,7 @@ services:
         
     NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader:
         arguments:
-            $bMultitenant: '%site.multitenant%'
+            $aMultitenant: '%site.multitenant%'
             $sConfigDir: '%kernel.project_dir%/config/byhost'
             $defaultConfig: '%noutonline.config%'
             $sHostname: '%router.request_context.host%'
