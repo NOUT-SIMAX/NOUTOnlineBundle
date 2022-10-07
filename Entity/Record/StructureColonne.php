@@ -342,7 +342,7 @@ abstract class StructureColonne
     /**
      * @return bool
      */
-    public function needH100() : bool
+    public function needH() : bool
     {
         return $this->isMultilineText();
     }
