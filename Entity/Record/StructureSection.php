@@ -138,7 +138,7 @@ class StructureSection extends StructureColonne
     /**
      * @return bool
      */
-    public function needH100() : bool
+    public function needH() : bool
     {
         $canGrow = false;
         $allH100 = true;
@@ -148,7 +148,7 @@ class StructureSection extends StructureColonne
             if ($column->canGrow())
             {
                 $canGrow = true;
-                if (!$column->needH100()){
+                if (!$column->needH()){
                     $allH100 = false;
                     break;
                 }
