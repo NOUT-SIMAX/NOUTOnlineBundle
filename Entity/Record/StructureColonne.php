@@ -617,6 +617,8 @@ abstract class StructureColonne
 	const OPTION_IDColSelection     = "columnSelection";
 	const OPTION_ColumnAssignation  = "columnAssignation";
 	const OPTION_DisplayOnLine      = "displayOnLine";
+    const OPTION_ListMode           = 'listMode';
+    const OPTION_IDButtonAction     = 'idButtonAction';
 
 	// Attributs des separateurs
 	const OPTION_ModeMultiC      = "multiColumnMode";

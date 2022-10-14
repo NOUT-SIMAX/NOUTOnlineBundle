@@ -205,6 +205,18 @@ class Langage
 	const eTYPEACTION_DeclencherAuto        = 15702;
 	// Si ajout de boutons, penser à modifier méthode s_isActionReadOnly pour préciser si le bouton est visible
 
+    const idBUTTONTYPE_AjouterA = 1;
+    const idBUTTONTYPE_Creer = 2;
+    const idBUTTONTYPE_Consulter = 3;
+    const idBUTTONTYPE_Modifier = 4;
+    const idBUTTONTYPE_Supprimer = 5;
+    const idBUTTONTYPE_EnleverDe = 6;
+    const idBUTTONTYPE_Imprimer = 7;
+    const idBUTTONTYPE_ImprimerListe = 8;
+    const idBUTTONTYPE_Fusionner = 9;
+    const idBUTTONTYPE_Exporter = 10;
+    const idBUTTONTYPE_Importer = 11;
+    const idBUTTONTYPE_Dupliquer = 12;
 
 	/*************************************************************
 	 * IDENTIFIANT DE FORMULAIRE
