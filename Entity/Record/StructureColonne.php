@@ -559,6 +559,7 @@ abstract class StructureColonne
 	const OPTION_Link        = 'link';
 	const OPTION_LinkControl = 'linkControl';    // pour les colonnes (controles de validité)
     const OPTION_DisplayMode = 'displayMode';
+    const OPTION_LevelCol    = 'levelCol';
 
     const OPTION_Hidden = "hidden"; // Namespace déjà géré
     const OPTION_ContainerCol = "containerCol"; // Namespace déjà géré
@@ -616,6 +617,8 @@ abstract class StructureColonne
 	const OPTION_IDColSelection     = "columnSelection";
 	const OPTION_ColumnAssignation  = "columnAssignation";
 	const OPTION_DisplayOnLine      = "displayOnLine";
+    const OPTION_ListMode           = 'listMode';
+    const OPTION_IDButtonAction     = 'idButtonAction';
 
 	// Attributs des separateurs
 	const OPTION_ModeMultiC      = "multiColumnMode";
