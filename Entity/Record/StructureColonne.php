@@ -365,6 +365,25 @@ abstract class StructureColonne
      */
 	public function isOption($sOption): bool
     {
+        //quelque cas particulier ou on force le retour
+        switch ($sOption)
+        {
+            case self::OPTION_ReadOnly:
+                $isDirectory = $this->m_TabOptions[self::OPTION_Modele_Directory] ?? false;
+                if ($isDirectory)
+                {
+                    return true; //dans le cas d'un modèle directory, on force en readonly
+                }
+                break;
+            case self::OPTION_Modele_ComboBox:
+                $isPredefRequest = $this->m_TabOptions[self::OPTION_PredefinedRequest] ?? false;
+                if ($isPredefRequest)
+                {
+                    return true;
+                }
+                break;
+        }
+
 		if (!isset($this->m_TabOptions[$sOption]))
 		{
 			return false;
@@ -382,13 +401,6 @@ abstract class StructureColonne
             }
 
             return true;
-        }
-
-        if (    ($sOption==self::OPTION_ReadOnly)
-            &&  isset($this->m_TabOptions[self::OPTION_Modele_Directory])
-            && !empty($this->m_TabOptions[self::OPTION_Modele_Directory]))
-        {
-            return true; //dans le cas d'un modèle directory, on force en readonly
         }
 
         return false;
@@ -575,14 +587,15 @@ abstract class StructureColonne
     const OPTION_LinkedTableXml = "linkedTableXml";
     const OPTION_LinkedTableID  = "linkedTableID";
 	// Attributs pour element d'un tableau
-    const OPTION_NoGroupList    = "notGroupList";
-	const OPTION_WithBtnOrdre   = "withBtnOrder";
-	const OPTION_WithoutDetail  = "withoutDetail";
-    const OPTION_WithoutEdit    = "withoutEdit";
-	const OPTION_WithoutSearch  = "withoutSearch";
-	const OPTION_WithoutCreate  = "withoutCreate";
-	const OPTION_Resource       = "resource";
-	const OPTION_MultiResource  = "resourceMulti";
+    const OPTION_NoGroupList        = "notGroupList";
+    const OPTION_WithBtnOrdre       = "withBtnOrder";
+    const OPTION_WithoutDetail      = "withoutDetail";
+    const OPTION_WithoutEdit        = "withoutEdit";
+    const OPTION_WithoutSearch      = "withoutSearch";
+    const OPTION_WithoutCreate      = "withoutCreate";
+    const OPTION_Resource           = "resource";
+    const OPTION_MultiResource      = "resourceMulti";
+    const OPTION_PredefinedRequest  = 'predefinedRequest';
 
 	// Attributs pour les sous-listes
 	const OPTION_Relation      = "withAddAndRemove";    // bestGroupeRelation
