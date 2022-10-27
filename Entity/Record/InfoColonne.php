@@ -59,7 +59,7 @@ class InfoColonne
                 case StructureColonne::OPTION_WithWatermark:
                     $this->m_TabOptions[$sAttribName] = (string) $ndAttrib;
                     break;
-
+                case Record::OPTION_Filename:
                 default:
                     $this->m_TabOptions[$sAttribName] = (int) $ndAttrib;
                     break;

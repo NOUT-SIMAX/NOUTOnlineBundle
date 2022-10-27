@@ -45,6 +45,11 @@ abstract class StructureColonne
      */
 	protected $m_clRestriction;
 
+	/** @var bool */
+	protected $m_bFixed = false;
+
+	/** @var string  */
+	protected $m_sDefaultVal = '';
 
 	/**
 	 * retourne le type de l'élément
@@ -83,6 +88,8 @@ abstract class StructureColonne
 	{
 		$this->m_sLibelle     = (string) $clAttribNOUT[self::OPTION_Name];
 		$this->m_eTypeElement = (string) $clAttribNOUT[self::OPTION_TypeElement];
+		$this->m_bFixed       = (isset($clAttribXS['fixed']) && ((string) $clAttribXS['fixed'] == 'true')); //xs:fixed="true"
+		$this->m_sDefaultVal  = isset($clAttribXS['default']) ? (string) $clAttribXS['default']  : '';
 
 		foreach ($clAttribNOUT as $sAttribName => $ndAttrib)
 		{
@@ -514,24 +521,21 @@ abstract class StructureColonne
         return ($this->m_eTypeElement == self::TM_Texte) || ($this->m_eTypeElement == self::TM_HTML);
     }
 
-	//////////////////////////////////////////
-	// POUR LE MOTEUR DE FORMULAIRE PAR DEFAUT
-	//////////////////////////////////////////
+    /**
+     * @return bool
+     */
+    public function isFixed(): bool
+    {
+        return $this->m_bFixed;
+    }
 
     /**
      * @return string
-     *
-     * Retourne une liste de classe en fonction des options du modèle
      */
-    public function getFormClass(): string
+    public function getDefaultVal(): string
     {
-        if ($this->isOption(self::OPTION_Modele_PostalCode)){
-            return 'codepostal ';
-        }
-
-        return '';
+        return $this->m_sDefaultVal;
     }
-
 
 	const TM_Invalide = null;
 
@@ -557,6 +561,7 @@ abstract class StructureColonne
 	const TM_Combo      = 'simax-choice';
     const TM_HTML       = 'simax-html';
     const TM_CalculAuto = 'simax-autoComputed';
+    const TM_TextImage  = 'simax-text-image';
 
 
     const OPTION_Name       = 'name';
@@ -582,6 +587,7 @@ abstract class StructureColonne
 	const OPTION_Transform = "transform";
 	const OPTION_Crypted = "crypted";
     const OPTION_Help = "help";
+    const OPTION_Type = "type";
 
     // Attributs pour element d'un tableau et sous-liste
     const OPTION_LinkedTableXml = "linkedTableXml";

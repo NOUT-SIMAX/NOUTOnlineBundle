@@ -717,4 +717,5 @@ class Record extends IHMWindows
     const OPTION_DisplayMode    = 'displayMode';
     const OPTION_DisplayDefault = 'displayDefault';
     const OPTION_Unit           = 'unit';
+    const OPTION_Filename       = 'filename';
 }
