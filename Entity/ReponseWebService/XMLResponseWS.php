@@ -278,6 +278,18 @@ class XMLResponseWS
 	}
 
     /**
+     * @return CurrentRequest : action en cours
+     */
+    public function clGetRequest(): ?CurrentRequest
+    {
+        $clRequest = $this->m_ndHeader->children()->Request;
+        if(!$clRequest){
+            return null;
+        }
+        return new CurrentRequest($clRequest);
+    }
+
+    /**
      * @return String title of the document
      */
     public function clGetTitle(): string

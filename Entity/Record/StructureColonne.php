@@ -45,6 +45,11 @@ abstract class StructureColonne
      */
 	protected $m_clRestriction;
 
+	/** @var bool */
+	protected $m_bFixed = false;
+
+	/** @var string  */
+	protected $m_sDefaultVal = '';
 
 	/**
 	 * retourne le type de l'élément
@@ -83,6 +88,8 @@ abstract class StructureColonne
 	{
 		$this->m_sLibelle     = (string) $clAttribNOUT[self::OPTION_Name];
 		$this->m_eTypeElement = (string) $clAttribNOUT[self::OPTION_TypeElement];
+		$this->m_bFixed       = (isset($clAttribXS['fixed']) && ((string) $clAttribXS['fixed'] == 'true')); //xs:fixed="true"
+		$this->m_sDefaultVal  = isset($clAttribXS['default']) ? (string) $clAttribXS['default']  : '';
 
 		foreach ($clAttribNOUT as $sAttribName => $ndAttrib)
 		{
@@ -365,6 +372,25 @@ abstract class StructureColonne
      */
 	public function isOption($sOption): bool
     {
+        //quelque cas particulier ou on force le retour
+        switch ($sOption)
+        {
+            case self::OPTION_ReadOnly:
+                $isDirectory = $this->m_TabOptions[self::OPTION_Modele_Directory] ?? false;
+                if ($isDirectory)
+                {
+                    return true; //dans le cas d'un modèle directory, on force en readonly
+                }
+                break;
+            case self::OPTION_Modele_ComboBox:
+                $isPredefRequest = $this->m_TabOptions[self::OPTION_PredefinedRequest] ?? false;
+                if ($isPredefRequest)
+                {
+                    return true;
+                }
+                break;
+        }
+
 		if (!isset($this->m_TabOptions[$sOption]))
 		{
 			return false;
@@ -382,13 +408,6 @@ abstract class StructureColonne
             }
 
             return true;
-        }
-
-        if (    ($sOption==self::OPTION_ReadOnly)
-            &&  isset($this->m_TabOptions[self::OPTION_Modele_Directory])
-            && !empty($this->m_TabOptions[self::OPTION_Modele_Directory]))
-        {
-            return true; //dans le cas d'un modèle directory, on force en readonly
         }
 
         return false;
@@ -502,24 +521,21 @@ abstract class StructureColonne
         return ($this->m_eTypeElement == self::TM_Texte) || ($this->m_eTypeElement == self::TM_HTML);
     }
 
-	//////////////////////////////////////////
-	// POUR LE MOTEUR DE FORMULAIRE PAR DEFAUT
-	//////////////////////////////////////////
+    /**
+     * @return bool
+     */
+    public function isFixed(): bool
+    {
+        return $this->m_bFixed;
+    }
 
     /**
      * @return string
-     *
-     * Retourne une liste de classe en fonction des options du modèle
      */
-    public function getFormClass(): string
+    public function getDefaultVal(): string
     {
-        if ($this->isOption(self::OPTION_Modele_PostalCode)){
-            return 'codepostal ';
-        }
-
-        return '';
+        return $this->m_sDefaultVal;
     }
-
 
 	const TM_Invalide = null;
 
@@ -545,6 +561,7 @@ abstract class StructureColonne
 	const TM_Combo      = 'simax-choice';
     const TM_HTML       = 'simax-html';
     const TM_CalculAuto = 'simax-autoComputed';
+    const TM_TextImage  = 'simax-text-image';
 
 
     const OPTION_Name       = 'name';
@@ -570,19 +587,21 @@ abstract class StructureColonne
 	const OPTION_Transform = "transform";
 	const OPTION_Crypted = "crypted";
     const OPTION_Help = "help";
+    const OPTION_Type = "type";
 
     // Attributs pour element d'un tableau et sous-liste
     const OPTION_LinkedTableXml = "linkedTableXml";
     const OPTION_LinkedTableID  = "linkedTableID";
 	// Attributs pour element d'un tableau
-    const OPTION_NoGroupList    = "notGroupList";
-	const OPTION_WithBtnOrdre   = "withBtnOrder";
-	const OPTION_WithoutDetail  = "withoutDetail";
-    const OPTION_WithoutEdit    = "withoutEdit";
-	const OPTION_WithoutSearch  = "withoutSearch";
-	const OPTION_WithoutCreate  = "withoutCreate";
-	const OPTION_Resource       = "resource";
-	const OPTION_MultiResource  = "resourceMulti";
+    const OPTION_NoGroupList        = "notGroupList";
+    const OPTION_WithBtnOrdre       = "withBtnOrder";
+    const OPTION_WithoutDetail      = "withoutDetail";
+    const OPTION_WithoutEdit        = "withoutEdit";
+    const OPTION_WithoutSearch      = "withoutSearch";
+    const OPTION_WithoutCreate      = "withoutCreate";
+    const OPTION_Resource           = "resource";
+    const OPTION_MultiResource      = "resourceMulti";
+    const OPTION_PredefinedRequest  = 'predefinedRequest';
 
 	// Attributs pour les sous-listes
 	const OPTION_Relation      = "withAddAndRemove";    // bestGroupeRelation

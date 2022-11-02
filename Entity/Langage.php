@@ -512,6 +512,7 @@ class Langage
 
 	const COL_IMAGECATALOGUE_Image       = 11513;
 	const COL_IMAGECATALOGUE_ImageGrande = 17295;
+
      //-------------//
 
 	const COL_PUBLIPOSTAGE_IDPubli       = 10345;
@@ -1035,6 +1036,8 @@ class Langage
 	const COL_COLLIBELLE_IDSensMultiC  = 16309;
 	const COL_COLLIBELLE_IDModeMultiC  = 16310;
 	const COL_COLLIBELLE_CouleurFond   = 16312;
+
+    const COL_COLTEXTEIMAGE_Image	   = 17968;
 
 	const COL_CREAAUTO_IDCreation  = 2033;
 	const COL_CREAAUTO_IDTableau   = 2036;

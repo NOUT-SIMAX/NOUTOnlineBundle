@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ConnectedUser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentRequest;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\FolderCount;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
@@ -58,10 +59,11 @@ class ActionResult
      */
     private $m_aContexteToClose=array();
 
-    /**
-     * @var CurrentAction
-     */
+    /** @var CurrentAction */
 	private $m_clAction=null;
+
+    /** @var CurrentRequest */
+    private $m_clRequest=null;
 
 	/**
 	 * @var ActionResultCache
@@ -105,6 +107,7 @@ class ActionResult
             $this->IDIHM         = $clReponseXML->sGetIDIHM();
 			$this->m_sIDContexte = $clReponseXML->sGetActionContext();
 			$this->m_clAction    = $clReponseXML->clGetAction();
+			$this->m_clRequest   = $clReponseXML->clGetRequest();
             $this->m_sIDContexteToValidateOnClose = $clReponseXML->sGetContextToValidateOnClose();
             $this->m_aContexteToClose = $clReponseXML->aGetActionContextToClose();
             $this->m_clConnectedUser = $clReponseXML->clGetConnectedUser();
@@ -242,6 +245,14 @@ class ActionResult
     {
 		return $this->m_clAction;
 	}
+
+    /**
+     * @return CurrentRequest|null
+     */
+    public function getRequest(): ?CurrentRequest
+    {
+        return $this->m_clRequest;
+    }
 
 
 	/**
