@@ -117,8 +117,7 @@ class Record extends IHMWindows
     public function addOptions(\SimpleXMLElement $tabAttribut): Record
     {
         foreach($tabAttribut as $name=>$attr) {
-            $nCmp = strncasecmp($name, 'record', strlen('record'));
-            if ($nCmp==0) {
+            if (in_array($name, ['type', 'record'])){
                 $this->addOption($name, (string)$attr);
             }
         }
@@ -135,15 +134,12 @@ class Record extends IHMWindows
 
     /**
      * @param $option
+     * @param mixed|null $default
      * @return mixed
      */
-    public function getOption($option)
+    public function getOption($option, $default=null)
     {
-        if (isset($this->m_TabOptionsRecord[$option]))
-        {
-            return $this->m_TabOptionsRecord[$option];
-        }
-        return null;
+        return $this->m_TabOptionsRecord[$option] ?? $default;
     }
 
 

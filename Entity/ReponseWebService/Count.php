@@ -32,4 +32,9 @@ class Count
 		$this->m_nNbTotal      = 0;
 		$this->m_nNbDisplay    = 0;
 	}
+
+	public function getNbEnregEtRupture() : int
+    {
+        return $this->m_nNbLine-$this->m_nNbCalculation;
+    }
 }
