@@ -290,6 +290,10 @@ class ParserXSDSchema extends AbstractParser
 		$ndSimpleType = $ndNoeud->children(self::NAMESPACE_XSD)->simpleType
 			->children(self::NAMESPACE_XSD)->restriction;
 
+		if (is_null($ndSimpleType)){
+		    return ;
+        }
+
 		if ($replaceTypeElement){
             $clStructColonne->setTypeElement((string) $ndSimpleType->attributes(self::NAMESPACE_XSD)['base']);
         }
