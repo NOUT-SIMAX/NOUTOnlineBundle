@@ -168,15 +168,16 @@ class Record extends IHMWindows
 
     /**
      * @param $option
+     * @param mixed|null $default
      * @return mixed
      */
-    public function getOptionLayout($option)
+    public function getOptionLayout($option, $default=null)
     {
         if (isset($this->m_TabOptionsLayout[$option]))
         {
             return $this->m_TabOptionsLayout[$option];
         }
-        return null;
+        return $default;
     }
 
     /**
