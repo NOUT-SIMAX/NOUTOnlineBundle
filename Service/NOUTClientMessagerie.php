@@ -10,11 +10,10 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\MailServiceStatus;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
@@ -43,7 +42,6 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Redo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\RequestMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SendMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
-
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Undo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
@@ -635,7 +633,7 @@ class NOUTClientMessagerie extends NOUTClientBase
      */
     public function sGetSignature(string $compteID) : string
     {
-        $clIdentification = $this->_clGetIdentificationREST('', false);
+        $clIdentification = $this->_clGetIdentificationREST('', true);
 
         $aTabParam=[];
         $aTabOption=[];
