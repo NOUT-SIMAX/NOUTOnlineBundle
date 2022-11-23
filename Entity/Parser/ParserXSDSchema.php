@@ -287,24 +287,28 @@ class ParserXSDSchema extends AbstractParser
 	 */
 	protected function _ParseXSDRestriction(StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud, $replaceTypeElement)
 	{
-		$ndSimpleType = $ndNoeud->children(self::NAMESPACE_XSD)->simpleType
-			->children(self::NAMESPACE_XSD)->restriction;
+	    $ndSimpleType = $ndNoeud->children(self::NAMESPACE_XSD)->simpleType;
+	    if (is_null($ndSimpleType) || (count($ndSimpleType)==0)) {
+            return ;
+        }
 
-		if (is_null($ndSimpleType)){
+		$ndRestriction = $ndSimpleType->children(self::NAMESPACE_XSD)->restriction;
+
+		if (is_null($ndRestriction) || (count($ndRestriction)==0)){
 		    return ;
         }
 
 		if ($replaceTypeElement){
-            $clStructColonne->setTypeElement((string) $ndSimpleType->attributes(self::NAMESPACE_XSD)['base']);
+            $clStructColonne->setTypeElement((string) $ndRestriction->attributes(self::NAMESPACE_XSD)['base']);
         }
 
         $clRestriction = null;
 
 		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
-		if (count($ndSimpleType->children(self::NAMESPACE_XSD))>0)
+		if (count($ndRestriction->children(self::NAMESPACE_XSD))>0)
 		{
 			$clRestriction = new ColonneRestriction();
-			foreach ($ndSimpleType->children(self::NAMESPACE_XSD) as $ndFils)
+			foreach ($ndRestriction->children(self::NAMESPACE_XSD) as $ndFils)
 			{
 				switch ($ndFils->getName())
 				{
@@ -322,11 +326,11 @@ class ParserXSDSchema extends AbstractParser
 			}
 		}
 
-        if ($ndSimpleType->children(self::NAMESPACE_NOUT_XSD)->count()>0)
+        if ($ndRestriction->children(self::NAMESPACE_NOUT_XSD)->count()>0)
         {
             $clRestriction = $clRestriction ? $clRestriction : new ColonneRestriction();
 
-            foreach ($ndSimpleType->children(self::NAMESPACE_NOUT_XSD) as $ndFils)
+            foreach ($ndRestriction->children(self::NAMESPACE_NOUT_XSD) as $ndFils)
             {
                 switch ($ndFils->getName())
                 {

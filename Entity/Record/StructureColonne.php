@@ -473,6 +473,23 @@ abstract class StructureColonne
         return null;
     }
 
+    /**
+     * @return array|mixed|string|null
+     */
+    public function getLength()
+    {
+        if (!$this->_isText()) {
+            return null;
+        }
+
+        if (!is_null($this->m_clRestriction) && $this->m_clRestriction->hasTypeRestriction(ColonneRestriction::R_LENGTH)){
+            //texte avec restriction => n'est PAS texte multiligne
+            return $this->m_clRestriction->getRestriction(ColonneRestriction::R_LENGTH);
+        }
+
+        return null;
+    }
+
 
     /**
      * vrai si le champ est un texte monoligne
