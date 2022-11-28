@@ -13,7 +13,7 @@ class DynamicConfigurationLoader
     /** @var array|null  */
     protected $_config = null;
 
-    /** @var bool  */
+    /** @var bool|array  */
     protected $_multitenantNotFound = false;
 
     /** @var string  */
@@ -35,15 +35,21 @@ class DynamicConfigurationLoader
             $this->_hostname = $sHostname;
 
             //il faut faire en fonction du hostname
-            if (($sHostname=='localhost') && array_key_exists('SERVER_NAME', $_SERVER)){
-                $sHostname=str_replace('www.', '', $_SERVER['SERVER_NAME']);
+            if (($sHostname=='localhost') && array_key_exists('HTTP_HOST', $_SERVER)){
+                $sHostname=str_replace('www.', '', explode(':',$_SERVER['HTTP_HOST'])[0] );
             }
 
-            $filepath = $sConfigDir.'/'.$sHostname.'.yaml';
-            if (!file_exists($filepath)){
-                $filepath = $sConfigDir.'/'.$sHostname.'.yml';
+            $filepath = '';
+            $filepathyaml = $sConfigDir.'/'.$sHostname.'.yaml';
+            $filepathyml = $sConfigDir.'/'.$sHostname.'.yml';
+            if (file_exists($filepathyaml)){
+                $filepath = $filepathyaml;
             }
-            if (file_exists($filepath)){
+            elseif(file_exists($filepathyml)){
+                $filepath = $filepathyml;
+            }
+
+            if (!empty($filepath)){
                 $config_readed = Yaml::parseFile($filepath);
 
                 $configuration = new Configuration();
@@ -53,7 +59,10 @@ class DynamicConfigurationLoader
                 $this->_config = $processor->process($tree_builder->buildTree(), $config_readed);
             }
             else {
-                $this->_multitenantNotFound = true;
+                $this->_multitenantNotFound = [
+                    'yaml' => [ 'path'=>$filepathyaml, 'exists' => file_exists($filepathyaml)],
+                    'yml' => [ 'path'=>$filepathyml, 'exists' => file_exists($filepathyml)],
+                ];
             }
 
         }
@@ -76,6 +85,14 @@ class DynamicConfigurationLoader
      * @return bool
      */
     public function isMultitenantNotFound(): bool
+    {
+        return $this->_multitenantNotFound!==false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMultitenantNotFound(): array
     {
         return $this->_multitenantNotFound;
     }
