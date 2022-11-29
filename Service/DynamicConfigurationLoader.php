@@ -16,9 +16,6 @@ class DynamicConfigurationLoader
     /** @var bool|array  */
     protected $_multitenantNotFound = false;
 
-    /** @var string  */
-    protected $_hostname = '';
-
     /**
      * ConfigurationLoader constructor.
      * @param array  $aMultitenant
@@ -32,10 +29,8 @@ class DynamicConfigurationLoader
             $this->_config = $defaultConfig;
         }
         else {
-            $this->_hostname = $sHostname;
-
             //il faut faire en fonction du hostname
-            if (($sHostname=='localhost') && array_key_exists('HTTP_HOST', $_SERVER)){
+            if (array_key_exists('HTTP_HOST', $_SERVER)){
                 $sHostname=str_replace('www.', '', explode(':',$_SERVER['HTTP_HOST'])[0] );
             }
 
@@ -95,14 +90,6 @@ class DynamicConfigurationLoader
     public function getMultitenantNotFound(): array
     {
         return $this->_multitenantNotFound;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHostname(): string
-    {
-        return $this->_hostname;
     }
 
 }
