@@ -48,8 +48,8 @@ class NOUTCacheFactory
      */
     public function getCache(string $namespace, string $prefix, string $dirprefix) : NOUTCacheProvider
     {
-        if (isset($_SERVER) && isset($_SERVER['SERVER_NAME'])){
-            $server_name = $_SERVER['SERVER_NAME'];
+        if (isset($_SERVER) && isset($_SERVER['HTTP_HOST'])){
+            $server_name = explode(':', $_SERVER['HTTP_HOST'])[0];
             $server_path = substr(str_replace(dirname($_SERVER['PHP_SELF']), '\\', '/'),0,-1);
 
         }
