@@ -4,8 +4,8 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\WSDL;
@@ -520,12 +520,13 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 	    try
 	    {
             $old_time = ini_get('max_execution_time');
+            ini_set('max_execution_time', 0);
             set_time_limit(0);
 
 		    //on fait l'appel a la methode mere
 		    /*$mResult =  */parent::call($sOperation, $mParams, $sNamespace, $sSoapAction, $this->__aListHeaders, $mRpcParams , null, null);
 
-            set_time_limit($old_time);
+            //set_time_limit($old_time);
 	    }
 	    catch(SOAPException $e)
 	    {
