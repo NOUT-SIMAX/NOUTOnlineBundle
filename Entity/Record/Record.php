@@ -117,7 +117,7 @@ class Record extends IHMWindows
     public function addOptions(\SimpleXMLElement $tabAttribut): Record
     {
         foreach($tabAttribut as $name=>$attr) {
-            if (in_array($name, ['type', 'record'])){
+            if (in_array($name, [self::OPTION_Type, self::OPTION_Record, self::OPTION_RecorWithChildren])){
                 $this->addOption($name, (string)$attr);
             }
         }
@@ -704,15 +704,19 @@ class Record extends IHMWindows
     }
 
 
-    const OPTION_Icon           = 'recordIconID';
-    const OPTION_RColor         = 'recordColor';
+    const OPTION_Icon = 'recordIconID';
+    const OPTION_RColor = 'recordColor';
 
-    const OPTION_Bold           = 'bold';
-    const OPTION_Color          = 'color';
-    const OPTION_BGColor        = 'bgcolor';
-    const OPTION_Italic         = 'italic';
-    const OPTION_DisplayMode    = 'displayMode';
+    const OPTION_Bold = 'bold';
+    const OPTION_Color = 'color';
+    const OPTION_BGColor = 'bgcolor';
+    const OPTION_Italic = 'italic';
+    const OPTION_DisplayMode = 'displayMode';
     const OPTION_DisplayDefault = 'displayDefault';
-    const OPTION_Unit           = 'unit';
-    const OPTION_Filename       = 'filename';
+    const OPTION_Unit = 'unit';
+    const OPTION_Filename = 'filename';
+
+    const OPTION_Type = 'type';
+    const OPTION_Record = 'record';
+    const OPTION_RecorWithChildren = 'recordWithChildren';
 }
