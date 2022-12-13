@@ -80,6 +80,14 @@ class StructureElement
      */
     protected $m_sBackgroundColor = '';
 
+    /** @var string  */
+    protected $m_nIDIcon = '';
+
+    /** @var bool  */
+    protected $m_bDeleteAudit = false;
+
+    /** @var bool  */
+    protected $m_bIsConfiguration = false;
 
 	/**
 	 * @param $sID
@@ -134,6 +142,51 @@ class StructureElement
         return $this->m_sBackgroundColor;
     }
 
+    /**
+     * @return string
+     */
+    public function getIDIcon(): string
+    {
+        return $this->m_nIDIcon;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeleteAudit(): bool
+    {
+        return $this->m_bDeleteAudit;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsConfiguration(): bool
+    {
+        return $this->m_bIsConfiguration;
+    }
+
+    /**
+     * @param \SimpleXMLElement $TabAttribSIMAX
+     */
+    public function initOptions(\SimpleXMLElement $TabAttribSIMAX)
+    {
+        foreach($TabAttribSIMAX as $name => $clNoeud)
+        {
+            switch ($name)
+            {
+                case self::OPTION_deleteAudit:
+                    $this->m_bDeleteAudit = boolval((int)$clNoeud);
+                    break;
+                case self::OPTION_isConfiguration:
+                    $this->m_bIsConfiguration = boolval((int)$clNoeud);
+                    break;
+                case self::OPTION_tableIconID:
+                    $this->m_nIDIcon = (string)$clNoeud;
+                    break;
+            }
+        }
+    }
 
 
     /**
@@ -408,4 +461,8 @@ class StructureElement
 	const NV_XSD_Enreg                  = 0;
 	const NV_XSD_List                   = 1;
 	const NV_XSD_LienElement            = 2;
+
+	const OPTION_isConfiguration        = 'isConfiguration';
+	const OPTION_deleteAudit            = 'deleteAudit';
+	const OPTION_tableIconID            = 'tableIconID';
 }
