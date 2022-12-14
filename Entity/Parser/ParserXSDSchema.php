@@ -91,6 +91,7 @@ class ParserXSDSchema extends AbstractParser
 
 		$TabAttribSIMAX = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
 		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name']);
+		$clStructureElement->initOptions($TabAttribSIMAX);
 
 		if (isset($TabAttribSIMAX[StructureSection::OPTION_ModeMultiC]) && isset($TabAttribSIMAX[StructureSection::OPTION_SensMultiC])){
             $clStructureElement->setMultiColonneInfo((int)$TabAttribSIMAX[StructureSection::OPTION_ModeMultiC], (int)$TabAttribSIMAX[StructureSection::OPTION_SensMultiC], (string)$TabAttribSIMAX[StructureSection::OPTION_BackgroundColor]);
