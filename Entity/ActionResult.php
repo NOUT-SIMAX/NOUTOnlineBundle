@@ -373,6 +373,16 @@ class ActionResult
         return $this->getAction()->getTypeAction();
     }
 
+
+    /**
+     * @return string
+     */
+    public function getIDAction(): string
+    {
+        return $this->getAction()->getID();
+    }
+
+
     /**
      * @return ConnectedUser|null
      */

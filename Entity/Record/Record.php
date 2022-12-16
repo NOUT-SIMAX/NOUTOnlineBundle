@@ -503,11 +503,11 @@ class Record extends IHMWindows
      * Appelé dans transformViewRecord2JSON
      * @return array
      */
-    public function getLinkedElems(): array
+    public function getTabColonne2IDTableauLie(): array
     {
-        // Récupère un tableau associatif [Id Colonne] -> [Id TmTab] pour tout le formulaire
+        // Récupère un tableau associatif [Id Colonne] -> [Id TabLie] pour tout le formulaire
         if ($this->m_clStructElem instanceof StructureElement) {
-            return $this->m_clStructElem->getTabColonneTmTab();
+            return $this->m_clStructElem->getTabColonne2IDTableauLie();
         }
         return array();
     }

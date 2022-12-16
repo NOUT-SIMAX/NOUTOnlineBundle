@@ -438,14 +438,13 @@ class StructureElement
 	/**
 	 * @return array
 	 */
-	public function getTabColonneTmTab(): array
+	public function getTabColonne2IDTableauLie(): array
     {
         // OPTION_LinkedTableID // Ne marche pas
         // On cherche les éléments avec l'ID StructureColonne::TM_Tableau
 
         // Tableau de retour
 		$aRet = array();
-
 		foreach($this->m_MapIDColonne2Structure as $clStructureColonne)
 		{
             /** @var StructureColonne $clStructureColonne */
