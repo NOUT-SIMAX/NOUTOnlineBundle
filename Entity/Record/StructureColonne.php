@@ -599,6 +599,7 @@ abstract class StructureColonne
     const OPTION_ContainerCol = "containerCol"; // Namespace déjà géré
     const OPTION_ReadOnly = "readOnly";
     const OPTION_Disabled = "disabled";
+    const OPTION_ReadWithModify = "readWithModify";
 
 	const OPTION_Required = "required";
 	const OPTION_Transform = "transform";
@@ -655,6 +656,7 @@ abstract class StructureColonne
 	const OPTION_DisplayOnLine      = "displayOnLine";
     const OPTION_ListMode           = 'listMode';
     const OPTION_IDButtonAction     = 'idButtonAction';
+    const OPTION_StateMin           = 'stateMin';
 
 	// Attributs des separateurs
 	const OPTION_ModeMultiC      = "multiColumnMode";
