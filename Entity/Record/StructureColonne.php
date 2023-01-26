@@ -671,6 +671,7 @@ abstract class StructureColonne
 	// Attributs pour les textes
 	const OPTION_TextBoxSize   = "textBoxSize";
 	const OPTION_LineAff       = "lineAff";
+	const OPTION_LineAffMax    = "lineAffMax";
 
 	// Attributs pour les listes en général
 	const OPTION_WithPlanning = "withPlanning";
