@@ -36,4 +36,14 @@ class ChartSerie
     {
         return $this->m_TabTuples;
     }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->m_sTitle;
+    }
+
+
 }
