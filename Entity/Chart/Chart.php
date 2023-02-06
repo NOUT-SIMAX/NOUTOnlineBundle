@@ -122,12 +122,4 @@ class Chart
         return $this->m_TabSeries;
     }
 
-    /**
-     * @return int
-     */
-    public function getNbSeries() : int
-    {
-        return count($this->m_TabSeries);
-    }
-
 }

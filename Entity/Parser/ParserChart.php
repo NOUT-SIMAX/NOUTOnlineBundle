@@ -59,7 +59,7 @@ class ParserChart extends Parser
             //plusieurs series
             foreach($ndChart->series->serie as $ndSerie)
             {
-                $TabAttributes = $ndSerie->attributes(self::NAMESPACE_NOUT_XML);
+                $TabAttributes = $ndSerie->attributes();
                 $clSerie = new ChartSerie( (string) $TabAttributes['label']);
 
                 $this->_parseTuple($clSerie, $ndSerie);
