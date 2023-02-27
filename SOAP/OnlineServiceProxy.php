@@ -111,7 +111,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
 	/**
 	 * classe de configuration
-	 * @var \NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue
+	 * @var ConfigurationDialogue
 	 */
 	private $__ConfigurationDialogue ;
 
