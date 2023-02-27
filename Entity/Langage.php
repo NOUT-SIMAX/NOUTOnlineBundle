@@ -1873,4 +1873,13 @@ class Langage
     //-------------------------------------------------
     const TABL_Messagerie_Message		= 16510;
     const TABL_Messagerie_Dossier		= 16511;
+
+
+
+    //-------------------------------------------------
+    const eSTATE_Editable = 0;
+    const eSTATE_LectureSeuleAvecModifie = 1;
+    const eSTATE_LectureSeuleSansModifie = 2;
+    const eSTATE_Grise = 3;
+    const eSTATE_Invisible = 4;
 }

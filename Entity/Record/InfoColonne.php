@@ -78,14 +78,28 @@ class InfoColonne
 
     /**
      * @param $dwOption
+     * @param bool $bDefault
      * @return bool
      */
-    public function isOption($dwOption): bool
+    public function isOption($dwOption, bool $bDefault=false): bool
     {
         if (!isset($this->m_TabOptions[$dwOption]))
-            return false;
+            return $bDefault;
 
         return !empty($this->m_TabOptions[$dwOption]);
+    }
+
+    /**
+     * @return int
+     */
+    public function getState() : int
+    {
+        return StructureColonne::s_nGetState(
+            $this->isOption(StructureColonne::OPTION_Hidden),
+            $this->isOption(StructureColonne::OPTION_Disabled),
+            $this->isOption(StructureColonne::OPTION_ReadOnly),
+            $this->isOption(StructureColonne::OPTION_ReadWithoutModify)
+        );
     }
 
     /**

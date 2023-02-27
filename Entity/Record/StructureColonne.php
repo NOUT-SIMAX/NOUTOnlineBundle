@@ -413,6 +413,47 @@ abstract class StructureColonne
         return false;
 	}
 
+
+    /**
+     * @return int
+     */
+    public function getState() : int
+    {
+        return self::s_nGetState(
+            $this->isOption(StructureColonne::OPTION_Hidden),
+            $this->isOption(StructureColonne::OPTION_Disabled),
+            $this->isOption(StructureColonne::OPTION_ReadOnly),
+            $this->isOption(StructureColonne::OPTION_ReadWithoutModify)
+        );
+    }
+
+    /**
+     * @param bool $bHidden
+     * @param bool $bDisabled
+     * @param bool $bReadOnly
+     * @param bool $bReadWithoutModify
+     * @return int
+     */
+    static public function s_nGetState(bool $bHidden, bool $bDisabled, bool $bReadOnly, bool $bReadWithoutModify) : int
+    {
+        if ($bHidden){
+            return Langage::eSTATE_Invisible;
+        }
+
+        if ($bDisabled)
+        {
+            return Langage::eSTATE_Grise;
+        }
+
+        if ($bReadOnly)
+        {
+            return $bReadWithoutModify ? Langage::eSTATE_LectureSeuleSansModifie : Langage::eSTATE_LectureSeuleAvecModifie;
+        }
+        return Langage::eSTATE_Editable;
+    }
+
+
+
 	/**
 	 * @param $sOption
      * @param $default
@@ -599,6 +640,7 @@ abstract class StructureColonne
     const OPTION_ContainerCol = "containerCol"; // Namespace déjà géré
     const OPTION_ReadOnly = "readOnly";
     const OPTION_Disabled = "disabled";
+    const OPTION_ReadWithoutModify = "readWithoutModify";
 
 	const OPTION_Required = "required";
 	const OPTION_Transform = "transform";
@@ -629,6 +671,7 @@ abstract class StructureColonne
 	// Attributs pour les textes
 	const OPTION_TextBoxSize   = "textBoxSize";
 	const OPTION_LineAff       = "lineAff";
+	const OPTION_LineAffMax    = "lineAffMax";
 
 	// Attributs pour les listes en général
 	const OPTION_WithPlanning = "withPlanning";
@@ -655,6 +698,7 @@ abstract class StructureColonne
 	const OPTION_DisplayOnLine      = "displayOnLine";
     const OPTION_ListMode           = 'listMode';
     const OPTION_IDButtonAction     = 'idButtonAction';
+    const OPTION_StateMin           = 'stateMin';
 
 	// Attributs des separateurs
 	const OPTION_ModeMultiC      = "multiColumnMode";
