@@ -3,7 +3,7 @@
 	"type": "symfony-bundle",
 	"version": "1.0.1",
     "require": {
-            "php": ">=5.3.0"
+            "php": ">=7.4"
     },
 	"description": "dialogue avec le webservice NOUTOnline de l'ERP de NOUT",
 	"license": "MIT",
