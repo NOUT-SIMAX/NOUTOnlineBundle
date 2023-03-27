@@ -38,6 +38,13 @@ services:
             $debug: '%kernel.debug%'
         tags:
             - { name: monolog.logger, channel: noutonline }
+            
+    NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineRedirectionLogger:
+        arguments:
+            $debug: '%kernel.debug%'
+            $redirConfig: '%site.redir_no%'
+        tags:
+            - { name: monolog.logger, channel: redirection }
 
     NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineDataCollector:
         tags:
