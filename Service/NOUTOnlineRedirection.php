@@ -7,7 +7,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
-use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
+use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineRedirectionLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class NOUTOnlineRedirection
 {
     /**
-     * @var NOUTOnlineLogger
+     * @var NOUTOnlineRedirectionLogger
      */
     protected $m_clLogger;
 
@@ -31,13 +31,13 @@ class NOUTOnlineRedirection
     private $m_clConfigurationDialogue;
 
     /**
-     * @param ClientInformation     $clientInfo
-     * @param NOUTOnlineLogger      $logger
-     * @param ConfigurationDialogue $clConfig
+     * @param ClientInformation           $clientInfo
+     * @param NOUTOnlineRedirectionLogger $logger
+     * @param ConfigurationDialogue       $clConfig
      */
-    public function __construct(ClientInformation $clientInfo,
-                                NOUTOnlineLogger $logger,
-                                ConfigurationDialogue $clConfig)
+    public function __construct(ClientInformation           $clientInfo,
+                                NOUTOnlineRedirectionLogger $logger,
+                                ConfigurationDialogue       $clConfig)
     {
         $this->m_clClientInformation = $clientInfo;
         $this->m_clConfigurationDialogue = $clConfig;
@@ -51,19 +51,19 @@ class NOUTOnlineRedirection
      */
     public function TraiteRequest(Request $request, string $action) : Response
     {
-        try{
+        try {
             ini_set("memory_limit",'16M');
+        } catch (\Exception $e) {
+            //error memory_limit
         }
-        catch (\Exception $e)
-        {
 
-        }
+        $this->__startLogQuery();
 
         $requesturi = $request->getRequestUri();
         $decoupe = explode('?', $requesturi);
         $sURI= $this->m_clConfigurationDialogue->getServiceAddress().$action;
-        if (count($decoupe) > 1){
-            list($dummy, $querystring) = $decoupe;
+        if (count($decoupe) > 1) {
+            list(, $querystring) = $decoupe;
             $sURI.='?'.$querystring;
         }
 
@@ -74,7 +74,7 @@ class NOUTOnlineRedirection
             'Accept' => '*/*',
         ];
 
-        array_walk($aHttpHeadersObl, function(&$value, $header) use($request) {
+        array_walk($aHttpHeadersObl, function (&$value, $header) use ($request) {
             $value = $header.': '.$request->headers->get($header, $value);
         });
 
@@ -83,14 +83,14 @@ class NOUTOnlineRedirection
             'SOAPAction',
             'Content-Length',
             'Content-Type',
-        ], function($value) use($request) {
+        ], function ($value) use ($request) {
             return $request->headers->has($value);
         });
-        array_walk($aHttpHeadersOpt, function(&$value) use($request) {
+        array_walk($aHttpHeadersOpt, function (&$value) use ($request) {
             $value = $value.': '.$request->headers->get($value, '');
         });
 
-        $aHttpHeaders = array_merge(array_values($aHttpHeadersObl) , $aHttpHeadersOpt , ['Connection: close']);
+        $aHttpHeaders = array_merge(array_values($aHttpHeadersObl), $aHttpHeadersOpt, ['Connection: close']);
 
         //initialisation de curl
         $curl = curl_init($sURI);
@@ -106,10 +106,9 @@ class NOUTOnlineRedirection
         if ($content_length)
         {
             $raw_data = file_get_contents("php://input");
-
         }
 
-        if (isset($content) && !empty($content)){
+        if (isset($raw_data) && !empty($raw_data)){
             curl_setopt( $curl, CURLOPT_POSTFIELDS, $raw_data );
         }
 
@@ -123,6 +122,7 @@ class NOUTOnlineRedirection
         $curl_errno = curl_errno($curl);
         if (!$curl_errno)
         {
+
             //on a pas d'erreur
             $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             $header_request = curl_getinfo($curl, CURLINFO_HEADER_OUT);
@@ -132,11 +132,15 @@ class NOUTOnlineRedirection
             $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
             $output = substr($output, $header_size);
 
+            $this->__stopLogQuery($sURI, $header_request, $output, 'noutonline_redirection', $parsedHeaders);
+
             return new Response($output, $http_code, $parsedHeaders);
         }
 
         $curl_errmess = curl_error($curl);
         curl_close($curl);
+
+        $this->__stopLogQuery($sURI, $curl_errmess, 'noutonline_redirection', null, '');
         return new Response('', 503); //service unavailable
 
     }
@@ -160,6 +164,28 @@ class NOUTOnlineRedirection
         }
 
         return $headers;
+    }
+
+
+    private function __startLogQuery()
+    {
+        if (isset($this->m_clLogger))
+        {
+            //log des requetes
+            $this->m_clLogger->startQuery();
+        }
+    }
+    private function __stopLogQuery($uri, $request, $reponse, $action, $header, $bError=false)
+    {
+        if (isset($this->m_clLogger))
+        {
+            $extra = [];
+            if (!empty($header)){
+                $extra[$this->m_clLogger::EXTRA_Http_Headers]=$header;
+            }
+
+            $this->m_clLogger->stopQuery($request, $reponse, (empty($action) ? substr($uri, 0, 50) : $action), false, $extra, $bError);
+        }
     }
 
 }
