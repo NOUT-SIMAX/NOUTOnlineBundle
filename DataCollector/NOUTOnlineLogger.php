@@ -162,7 +162,7 @@ class NOUTOnlineLogger
 
     public function stopSOAPQueryError($sTo, $sFrom, $sOperation, $extra)
     {
-        if ($this->m_bEnabled){
+        if (!$this->m_bEnabled){
             return ;
         }
 
@@ -177,7 +177,7 @@ class NOUTOnlineLogger
      */
     public function stopSOAPQuery($sTo, $sFrom, $sOperation, $extra)
     {
-        if ($this->m_bEnabled) {
+        if (!$this->m_bEnabled) {
             return ;
         }
 
