@@ -89,12 +89,11 @@ abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenI
         return $sBottom;
     }
 
-
     public function __clone()
     {
         if (is_object($this->Encryption)){
             $this->Encryption = clone $this->Encryption;
         }
     }
-
 }
+
