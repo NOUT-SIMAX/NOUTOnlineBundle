@@ -73,6 +73,9 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     /** @var bool  */
     protected $m_bWithConfiguration = false;
 
+    /** @var string  */
+    protected $m_googleApiKey = '';
+
     /**
      * {@inheritdoc}
      */
@@ -95,6 +98,24 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     public function getUsername()
     {
         return $this->getUserIdentifier();
+    }
+
+    /**
+     * @param  string $googleApiKey
+     * @return $this
+     */
+    public function setGoogleApiKey(string $googleApiKey) : NOUTToken
+    {
+        $this->m_googleApiKey = $googleApiKey;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGoogleApiKey() : string
+    {
+        return $this->m_googleApiKey;
     }
 
     /**
@@ -372,6 +393,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
             'token' => $this->m_sSessionToken,
             'timezone' => $this->m_sTimeZone,
             'locale' => $this->m_sLocale,
+            'googleApiKey' => $this->m_googleApiKey,
             'name' => $this->m_sNameToDisplay,
             'user' => [
                 'class' => get_class($this->m_oUsernameToken),
@@ -408,6 +430,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
         $this->m_sSessionToken = $aUnserialised['token'];
         $this->m_sTimeZone = $aUnserialised['timezone'];
         $this->m_sLocale = $aUnserialised['locale'];
+        $this->m_googleApiKey = $aUnserialised['googleApiKey'];
 
         $this->m_clLangage = new Langage();
         $this->m_clLangage->fromSerialization($aUnserialised['language']);
@@ -419,6 +442,9 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
         if (!is_null($aUnserialised['extranet'])){
             $this->m_oExtranetUsernameToken = new $aUnserialised['extranet']['class']();
             $this->m_oExtranetUsernameToken->fromSerialization($aUnserialised['extranet']['data']);
+        }
+        if(isset($aUnserialised['googleApiKey'])) {
+            $this->m_googleApiKey = $aUnserialised['googleApiKey'];
         }
         if (isset($aUnserialised['anonyme'])){
             $this->m_bAnonyme = boolval($aUnserialised['anonyme']);
