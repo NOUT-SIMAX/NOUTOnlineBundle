@@ -269,6 +269,18 @@ class OnlineServiceProxy
     }
 
     /**
+     * @return HTTPResponse
+     * @param Identification $clIdentification
+     * @throws \Exception
+     */
+    public function oGetGoogleApiKey(Identification $clIdentification) : HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest(['GoogleApiKey'], [], [], $clIdentification);
+
+        return $this->_oExecuteGET('GoogleApiKey', $sURI, __FUNCTION__, $clIdentification);
+    }
+
+    /**
      * récupère des évènements
      * @param array          $aTabParam
      * @param Identification $clIdentification
