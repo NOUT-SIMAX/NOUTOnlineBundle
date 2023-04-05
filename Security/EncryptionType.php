@@ -67,6 +67,7 @@ class EncryptionType
                 if ($json){
                     $this->m_sUuidLicence = $json->uuidlicence;
                     $this->m_id = $json->id;
+                    $this->m_dwPassOptions = $json->options;
                     switch ((int)$json->security)
                     {
                         case -1:
