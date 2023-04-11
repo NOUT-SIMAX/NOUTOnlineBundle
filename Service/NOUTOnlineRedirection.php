@@ -7,41 +7,27 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
-use NOUT\Bundle\NOUTOnlineBundle\DataCollector\NOUTOnlineLogger;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class NOUTOnlineRedirection
 {
-    /**
-     * @var NOUTOnlineLogger
-     */
-    protected $m_clLogger;
+
+    /** @var CURLRedirectionProxy */
+    private CURLRedirectionProxy $clCurl;
+
+    /** @var ConfigurationDialogue  */
+    private ConfigurationDialogue $clConfigurationDialogue;
 
     /**
-     * @var ClientInformation
-     */
-    protected $m_clClientInformation;
-
-    /**
-     * classe de configuration
-     * @var ConfigurationDialogue
-     */
-    private $m_clConfigurationDialogue;
-
-    /**
-     * @param ClientInformation     $clientInfo
-     * @param NOUTOnlineLogger      $logger
+     * @param CURLRedirectionProxy  $clCurl
      * @param ConfigurationDialogue $clConfig
      */
-    public function __construct(ClientInformation $clientInfo,
-                                NOUTOnlineLogger $logger,
-                                ConfigurationDialogue $clConfig)
+    public function __construct(CURLRedirectionProxy $clCurl, ConfigurationDialogue $clConfig)
     {
-        $this->m_clClientInformation = $clientInfo;
-        $this->m_clConfigurationDialogue = $clConfig;
-        $this->m_clLogger = $logger;
+        $this->clCurl = $clCurl;
+        $this->clConfigurationDialogue = $clConfig;
     }
 
     /**
@@ -51,115 +37,52 @@ class NOUTOnlineRedirection
      */
     public function TraiteRequest(Request $request, string $action) : Response
     {
-        try{
+        try {
             ini_set("memory_limit",'16M');
+        } catch (\Exception $e) {
+            //error memory_limit
         }
-        catch (\Exception $e)
-        {
 
-        }
+        $this->clCurl->setRequest($request);
 
         $requesturi = $request->getRequestUri();
         $decoupe = explode('?', $requesturi);
-        $sURI= $this->m_clConfigurationDialogue->getServiceAddress().$action;
-        if (count($decoupe) > 1){
-            list($dummy, $querystring) = $decoupe;
-            $sURI.='?'.$querystring;
+        $toNOUTOnline = $action;
+        if (count($decoupe) > 1) {
+            list(, $querystring) = $decoupe;
+            $toNOUTOnline.='?'.$querystring;
         }
+        $sURI= $this->clConfigurationDialogue->getServiceAddress().$toNOUTOnline;
 
-        $aHttpHeadersObl = [
-            ConfigurationDialogue::HTTP_SIMAX_CLIENT_IP      => $this->m_clClientInformation->getIP() ,
-            ConfigurationDialogue::HTTP_SIMAX_CLIENT         => $this->m_clConfigurationDialogue->getSociete()." Proxy",
-            ConfigurationDialogue::HTTP_SIMAX_CLIENT_Version => $this->m_clConfigurationDialogue->getVersion(),
-            'Accept' => '*/*',
-        ];
+        $nContentSize = (int)$request->headers->get('Content-Length', 0);
 
-        array_walk($aHttpHeadersObl, function(&$value, $header) use($request) {
-            $value = $header.': '.$request->headers->get($header, $value);
-        });
-
-
-        $aHttpHeadersOpt = array_filter([
-            'SOAPAction',
-            'Content-Length',
-            'Content-Type',
-        ], function($value) use($request) {
-            return $request->headers->has($value);
-        });
-        array_walk($aHttpHeadersOpt, function(&$value) use($request) {
-            $value = $value.': '.$request->headers->get($value, '');
-        });
-
-        $aHttpHeaders = array_merge(array_values($aHttpHeadersObl) , $aHttpHeadersOpt , ['Connection: close']);
-
-        //initialisation de curl
-        $curl = curl_init($sURI);
-        //time out de connection
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT , 0);
-        //autres options
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); //Demande du contenu du fichier
-        curl_setopt($curl, CURLOPT_HEADER, 1); // Demande des headers
-        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $request->getMethod());
-
-        $content_length = (int)$request->headers->get('Content-Length', 0);
-        if ($content_length)
+        try
         {
-            $raw_data = file_get_contents("php://input");
+            if ($nContentSize) {
+                $sContentType = $request->headers->get('Content-Type');
 
+                //est-ce que c'est du SOAP
+                $bSoap = (empty($sURI) || ($sURI=='/')) && (strncasecmp($sContentType,'application/xml', strlen('application/xml'))==0);
+                $sSOAPAction = $request->headers->get('SOAPAction', '');
+                $this->clCurl->setIsSoap($bSoap, $sSOAPAction);
+
+                $ret = $this->clCurl->oExecutePOST($sURI, file_get_contents("php://input"), $sContentType);
+            }
+            else {
+                $this->clCurl->setIsSoap(false);
+
+                $ret = $this->clCurl->oExecuteGET($sURI);
+            }
+
+            return new Response($ret->content, $ret->httpCode, $ret->httpHeaders);
         }
-
-        if (isset($content) && !empty($content)){
-            curl_setopt( $curl, CURLOPT_POSTFIELDS, $raw_data );
-        }
-
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $aHttpHeaders);
-
-        //---------------------------
-        //execution
-        $output = curl_exec($curl);
-
-        // Vérifie si une erreur survient
-        $curl_errno = curl_errno($curl);
-        if (!$curl_errno)
+        catch (\Exception $e)
         {
-            //on a pas d'erreur
-            $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            $header_request = curl_getinfo($curl, CURLINFO_HEADER_OUT);
-            $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-            curl_close($curl);
-            $headers = substr($output, 0, $header_size);
-            $parsedHeaders = $this->_aGetHeadersFromCurlResponse($headers);
-            $output = substr($output, $header_size);
-
-            return new Response($output, $http_code, $parsedHeaders);
+            return new Response($e->getMessage(), 500); //service unavailable
         }
 
-        $curl_errmess = curl_error($curl);
-        curl_close($curl);
-        return new Response('', 503); //service unavailable
 
     }
 
-    /**
-     * Parse les entêtes pour fournir une sortie au format natif
-     *
-     * @param $response
-     * @return array
-     * @throws \Exception
-     */
-    protected function _aGetHeadersFromCurlResponse($response) : array
-    {
-        $headers = [];
-
-        $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
-
-        foreach (explode("\r\n", $header_text) as /*$i =>*/ $line)
-        {
-            array_push($headers, $line);
-        }
-
-        return $headers;
-    }
 
 }

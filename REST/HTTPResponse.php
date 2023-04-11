@@ -9,25 +9,30 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\REST;
 
 
-class HTTPResponse 
+class HTTPResponse
 {
+    public $httpCode;
     public $content;
-    public $headers;
-    public $no_cache;
+    public array $httpHeaders;
+    public array $aHeaders;
+    public bool $noCache = false;
 
-    public function __construct($content, $headers)
+    /**
+     * @param        $content
+     * @param string $sHeaders
+     */
+    public function __construct($httpCode, $content, string $sHeaders, bool $bEncode)
     {
+        $this->httpCode = $httpCode;
         $this->content = $content;
-        $this->headers = $headers;
-        $this->no_cache = false;
+        $this->httpHeaders = $this::s_aParseHTTPHeaders($sHeaders); //parse depuis string
 
-        if (!is_array($this->headers))
-        {
-            $this->headers = array();
+        if ($bEncode){
+            $this->_UTF8EncodeOptions();
         }
+        $this->aHeaders = $this->_aParseHeaders($this->httpHeaders); //reparse pour prendre les infos
 
-        $this->_UTF8EncodeOptions();
-        $this->headers = $this->_aParseHeaders($this->headers);
+        array_pop($this->httpHeaders); //on enlève la ligne de status
     }
 
     /**
@@ -35,15 +40,15 @@ class HTTPResponse
      */
     public function isNoCache()
     {
-        return $this->no_cache;
+        return $this->noCache;
     }
 
     /**
-     * @param boolean $no_cache
+     * @param boolean $noCache
      */
-    public function setNoCache($no_cache)
+    public function setNoCache($noCache)
     {
-        $this->no_cache = $no_cache;
+        $this->noCache = $noCache;
     }
 
 
@@ -54,9 +59,9 @@ class HTTPResponse
      */
     protected function _UTF8EncodeOptions()
     {
-        foreach($this->headers as $optionName => $option)
+        foreach($this->httpHeaders as $optionName => $option)
         {
-            $this->headers[$optionName] = utf8_encode($option);
+            $this->httpHeaders[$optionName] = utf8_encode($option);
         }
     }
 
@@ -138,24 +143,24 @@ class HTTPResponse
 
     public function setLastModifiedIfNotExists()
     {
-        if (!array_key_exists(self::HEADER_LastModified, $this->headers))
+        if (!array_key_exists(self::HEADER_LastModified, $this->aHeaders))
         {
             //on ajoute le last modified à aujourd'hui
-            $this->headers[self::HEADER_LastModified]=new \stdClass();
-            $this->headers[self::HEADER_LastModified]->value = gmdate('D, d M Y H:i:s T');
-            $this->headers[self::HEADER_LastModified]->options = array();
+            $this->aHeaders[self::HEADER_LastModified]=new \stdClass();
+            $this->aHeaders[self::HEADER_LastModified]->value = gmdate('D, d M Y H:i:s T');
+            $this->aHeaders[self::HEADER_LastModified]->options = array();
         }
     }
 
     public function resetLastModified()
     {
-        if (!array_key_exists(self::HEADER_LastModified, $this->headers))
+        if (!array_key_exists(self::HEADER_LastModified, $this->aHeaders))
         {
             //on ajoute le last modified à aujourd'hui
-            $this->headers[self::HEADER_LastModified]=new \stdClass();
-            $this->headers[self::HEADER_LastModified]->options = array();
+            $this->aHeaders[self::HEADER_LastModified]=new \stdClass();
+            $this->aHeaders[self::HEADER_LastModified]->options = array();
         }
-        $this->headers[self::HEADER_LastModified]->value = gmdate('D, d M Y H:i:s T');
+        $this->aHeaders[self::HEADER_LastModified]->value = gmdate('D, d M Y H:i:s T');
     }
 
     /**
@@ -163,9 +168,9 @@ class HTTPResponse
      */
     public function getLastModified()
     {
-        if (array_key_exists(self::HEADER_LastModified, $this->headers))
+        if (array_key_exists(self::HEADER_LastModified, $this->aHeaders))
         {
-            return $this->headers[self::HEADER_LastModified]->value;
+            return $this->aHeaders[self::HEADER_LastModified]->value;
         }
 
         return null;
@@ -173,9 +178,9 @@ class HTTPResponse
 
     public function getDTLastModified()
     {
-        if (array_key_exists(self::HEADER_LastModified, $this->headers))
+        if (array_key_exists(self::HEADER_LastModified, $this->aHeaders))
         {
-            $sLastModified = $this->headers[self::HEADER_LastModified]->value;
+            $sLastModified = $this->aHeaders[self::HEADER_LastModified]->value;
             $sLastModified = str_replace(' GMT', '', $sLastModified);
             return \DateTime::createFromFormat('D, d M Y H:i:s', $sLastModified, new \DateTimeZone("UTC"));
         }
@@ -185,9 +190,9 @@ class HTTPResponse
 
     public function getFilename()
     {
-        if (array_key_exists(self::HEADER_ContentDisposition, $this->headers))
+        if (array_key_exists(self::HEADER_ContentDisposition, $this->aHeaders))
         {
-            $header = $this->headers[self::HEADER_ContentDisposition];
+            $header = $this->aHeaders[self::HEADER_ContentDisposition];
             if (array_key_exists(self::OPTION_filename, $header->options))
             {
                 return $header->options[self::OPTION_filename];
@@ -199,9 +204,9 @@ class HTTPResponse
 
     public function getStatus()
     {
-        if(array_key_exists (self::HEADER_Status, $this->headers))
+        if(array_key_exists (self::HEADER_Status, $this->aHeaders))
         {
-            return (int)$this->headers[self::HEADER_Status]->value;
+            return (int)$this->aHeaders[self::HEADER_Status]->value;
         }
 
         return 200;
@@ -209,38 +214,58 @@ class HTTPResponse
 
     public function getContentType()
     {
-        if(array_key_exists (self::HEADER_ContentType, $this->headers))
+        if(array_key_exists (self::HEADER_ContentType, $this->aHeaders))
         {
-            return $this->headers[self::HEADER_ContentType]->value;
+            return $this->aHeaders[self::HEADER_ContentType]->value;
         }
     }
 
     public function getContentLength()
     {
-        if(array_key_exists (self::HEADER_ContentLength, $this->headers))
+        if(array_key_exists (self::HEADER_ContentLength, $this->aHeaders))
         {
-            return $this->headers[self::HEADER_ContentLength]->value;
+            return $this->aHeaders[self::HEADER_ContentLength]->value;
         }
     }
 
     public function getXNOUTOnlineInfoCnx()
     {
-        if(array_key_exists (self::HEADER_XNOUTOnlineInfoCnx, $this->headers))
+        if(array_key_exists (self::HEADER_XNOUTOnlineInfoCnx, $this->aHeaders))
         {
-            return $this->headers[self::HEADER_XNOUTOnlineInfoCnx]->value;
+            return $this->aHeaders[self::HEADER_XNOUTOnlineInfoCnx]->value;
         }
     }
 
     public function getIVForInfoCnx()
     {
-        if (array_key_exists(self::HEADER_XNOUTOnlineInfoCnx, $this->headers))
+        if (array_key_exists(self::HEADER_XNOUTOnlineInfoCnx, $this->aHeaders))
         {
-            $header = $this->headers[self::HEADER_XNOUTOnlineInfoCnx];
+            $header = $this->aHeaders[self::HEADER_XNOUTOnlineInfoCnx];
             if (array_key_exists(self::OPTION_iv, $header->options))
             {
                 return $header->options[self::OPTION_iv];
             }
         }
+    }
+
+    /**
+     * Parse les entêtes pour fournir une sortie au format natif
+     *
+     * @param string $response
+     * @return array
+     * @throws \Exception
+     */
+    public static function s_aParseHTTPHeaders(string $response): array
+    {
+        $headers = [];
+
+        $headerText = substr($response, 0, strpos($response, "\r\n\r\n"));
+
+        foreach (explode("\r\n", $headerText) as /*$i =>*/ $line) {
+            array_push($headers, $line);
+        }
+
+        return $headers;
     }
 
     protected const HEADER_LastModified = 'Last-Modified';
