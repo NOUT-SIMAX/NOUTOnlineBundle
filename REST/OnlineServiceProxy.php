@@ -458,6 +458,23 @@ class OnlineServiceProxy
         return $this->_oExecutePOST('', $sURI, $formula, __FUNCTION__, $clIdentification);
     }
 
+    /**
+     * @param string         $idForm
+     * @param string         $idEnreg
+     * @param string         $idColumn
+     * @param string         $formula
+     * @param array          $aTabParam
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oVerifyIndentation(string $idForm, string $idEnreg, string $idColumn, string $formula, Identification $clIdentification): HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest([$idForm, $idEnreg, $idColumn, 'VerifyFormula'], [], [], $clIdentification);
+
+        return $this->_oExecutePOST('', $sURI, $formula, __FUNCTION__, $clIdentification);
+    }
+
 
     /**
      * @param Identification $clIdentification
