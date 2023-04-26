@@ -18,18 +18,18 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureSection;
 
 class ParserXSDSchema extends AbstractParser
 {
-	/**
-	 * @var array
-	 * map qui contient la structure des formulaires
-	 */
-	protected $m_MapIDTableauNiv2StructureElement;
+    /**
+     * @var array
+     * map qui contient la structure des formulaires
+     */
+    protected $m_MapIDTableauNiv2StructureElement;
 
-	/**
-	 * @param $sIDTableau
+    /**
+     * @param $sIDTableau
      * @param $nNiv
-	 * @return StructureElement
-	 */
-	public function clGetStructureElement($sIDTableau, $nNiv=null): ?StructureElement
+     * @return StructureElement
+     */
+    public function clGetStructureElement($sIDTableau, $nNiv=null): ?StructureElement
     {
         if (!is_null($nNiv))
         {
@@ -41,113 +41,113 @@ class ParserXSDSchema extends AbstractParser
             return null;
         }
 
-		$aNiv = array(StructureElement::NV_XSD_Enreg, StructureElement::NV_XSD_List);
-		foreach($aNiv as $nNiv)
-		{
-			if (isset($this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]))
-			{
-				return $this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv];
-			}
-		}
+        $aNiv = array(StructureElement::NV_XSD_Enreg, StructureElement::NV_XSD_List);
+        foreach($aNiv as $nNiv)
+        {
+            if (isset($this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]))
+            {
+                return $this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv];
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
     /**
      * @param                   $nNiv
      * @param \SimpleXMLElement $clSchema
      * @throws \Exception
      */
-	public function Parse($nNiv, \SimpleXMLElement $clSchema)
-	{
-		$this->m_MapIDTableauNiv2StructureElement=array();
+    public function Parse($nNiv, \SimpleXMLElement $clSchema)
+    {
+        $this->m_MapIDTableauNiv2StructureElement=array();
 
-		//récupération du noeud element fils de schema
+        //récupération du noeud element fils de schema
         if (!$clSchema->count()==0)
         {
             $ndElement = $clSchema->children(self::NAMESPACE_XSD)->element;
             $this->_clParseXSDElementComplex($nNiv, $ndElement);
         }
-	}
+    }
 
-	/**
+    /**
      * @param $nNiv
-	 * @param \SimpleXMLElement $ndElement
-	 * @return StructureElement|null
+     * @param \SimpleXMLElement $ndElement
+     * @return StructureElement|null
      * @throws \Exception
-	 */
-	protected function _clParseXSDElementComplex($nNiv, \SimpleXMLElement $ndElement): ?StructureElement
+     */
+    protected function _clParseXSDElementComplex($nNiv, \SimpleXMLElement $ndElement): ?StructureElement
     {
-		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
-		if ($ndElement->children(self::NAMESPACE_XSD)->count()==0)
-		{
-			return null;
-		}
+        //ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+        if ($ndElement->children(self::NAMESPACE_XSD)->count()==0)
+        {
+            return null;
+        }
 
-		$TabAttribXS    = $ndElement->attributes(self::NAMESPACE_XSD);
+        $TabAttribXS    = $ndElement->attributes(self::NAMESPACE_XSD);
 
-		//on récupère l'id du formulaire, son libelle et le type
-		$sIDTableau = str_replace('id_', '', $TabAttribXS['name']);
+        //on récupère l'id du formulaire, son libelle et le type
+        $sIDTableau = str_replace('id_', '', $TabAttribXS['name']);
 
-		$TabAttribSIMAX = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
-		$clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name']);
-		$clStructureElement->initOptions($TabAttribSIMAX);
+        $TabAttribSIMAX = $ndElement->attributes(self::NAMESPACE_NOUT_XSD);
+        $clStructureElement = new StructureElement($sIDTableau, (string) $TabAttribSIMAX['name']);
+        $clStructureElement->initOptions($TabAttribSIMAX);
 
-		if (isset($TabAttribSIMAX[StructureSection::OPTION_ModeMultiC]) && isset($TabAttribSIMAX[StructureSection::OPTION_SensMultiC])){
+        if (isset($TabAttribSIMAX[StructureSection::OPTION_ModeMultiC]) && isset($TabAttribSIMAX[StructureSection::OPTION_SensMultiC])){
             $clStructureElement->setMultiColonneInfo((int)$TabAttribSIMAX[StructureSection::OPTION_ModeMultiC], (int)$TabAttribSIMAX[StructureSection::OPTION_SensMultiC], (string)$TabAttribSIMAX[StructureSection::OPTION_BackgroundColor]);
         }
 
-		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
-		if ($ndElement->children(self::NAMESPACE_XSD)->count()>0)
-		{
-			$ndSequence = $ndElement->children(self::NAMESPACE_XSD)->complexType
-									->children(self::NAMESPACE_XSD)->sequence;
-			$this->__ParseXSDSequence($nNiv, $clStructureElement, $clStructureElement->getFiche(), $ndSequence);
-		}
+        //ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+        if ($ndElement->children(self::NAMESPACE_XSD)->count()>0)
+        {
+            $ndSequence = $ndElement->children(self::NAMESPACE_XSD)->complexType
+                                    ->children(self::NAMESPACE_XSD)->sequence;
+            $this->__ParseXSDSequence($nNiv, $clStructureElement, $clStructureElement->getFiche(), $ndSequence);
+        }
 
 
-		$this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]=$clStructureElement;
-		return $clStructureElement;
-	}
+        $this->m_MapIDTableauNiv2StructureElement[$sIDTableau.'/'.$nNiv]=$clStructureElement;
+        return $clStructureElement;
+    }
 
 
 
-	/**
+    /**
      * @param $nNiv
      * @param StructureElement $clStructElem
-	 * @param StructureSection $clStructSection
-	 * @param \SimpleXMLElement $clSequence
+     * @param StructureSection $clStructSection
+     * @param \SimpleXMLElement $clSequence
      * @throws \Exception
-	 */
-	protected function __ParseXSDSequence($nNiv, StructureElement $clStructElem, StructureSection $clStructSection, \SimpleXMLElement $clSequence)
-	{
-		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
-		if ($clSequence->children(self::NAMESPACE_XSD)->count()==0)
-		{
-			//pas de fils, on sort
-			return;
-		}
+     */
+    protected function __ParseXSDSequence($nNiv, StructureElement $clStructElem, StructureSection $clStructSection, \SimpleXMLElement $clSequence)
+    {
+        //ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+        if ($clSequence->children(self::NAMESPACE_XSD)->count()==0)
+        {
+            //pas de fils, on sort
+            return;
+        }
 
-		foreach ($clSequence->children(self::NAMESPACE_XSD) as $ndNoeud)
-		{
-		    /** @var \SimpleXMLElement $ndNoeud */
-			if ($ndNoeud->getName() != 'element')
-			{
-				//je cherche quel les xs:element
-				continue;
-			}
-			$eTypeElement = (string)$ndNoeud->attributes(self::NAMESPACE_NOUT_XSD)['typeElement'];
+        foreach ($clSequence->children(self::NAMESPACE_XSD) as $ndNoeud)
+        {
+            /** @var \SimpleXMLElement $ndNoeud */
+            if ($ndNoeud->getName() != 'element')
+            {
+                //je cherche quel les xs:element
+                continue;
+            }
+            $eTypeElement = (string)$ndNoeud->attributes(self::NAMESPACE_NOUT_XSD)['typeElement'];
 
-			$clAttribXS   = $ndNoeud->attributes(self::NAMESPACE_XSD);
-			$clAttribNOUT = $ndNoeud->attributes(self::NAMESPACE_NOUT_XSD);
+            $clAttribXS   = $ndNoeud->attributes(self::NAMESPACE_XSD);
+            $clAttribNOUT = $ndNoeud->attributes(self::NAMESPACE_NOUT_XSD);
 
-			$sIDColonne = str_replace('id_', '', (string)$clAttribXS->name);
+            $sIDColonne = str_replace('id_', '', (string)$clAttribXS->name);
 
-			switch ($eTypeElement)
-			{
-				//c'est un bouton
-				case StructureColonne::TM_Bouton:
-				{
+            switch ($eTypeElement)
+            {
+                //c'est un bouton
+                case StructureColonne::TM_Bouton:
+                {
                     $ndSeqSousButtons = null;
                     try
                     {
@@ -164,30 +164,30 @@ class ParserXSDSchema extends AbstractParser
                         $ndSeqSousButtons = null;
                     }
 
-					$clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS, $ndSeqSousButtons);
+                    $clStructureBouton = new StructureBouton($clAttribNOUT, $clAttribXS, $ndSeqSousButtons);
                     $bIsCol = $clStructElem->addButton($clStructureBouton);
 
-					if ($bIsCol) //c'est un colonne bouton qui n'est pas un bouton de substitution, on l'ajoute à la section
-					{
+                    if ($bIsCol) //c'est un colonne bouton qui n'est pas un bouton de substitution, on l'ajoute à la section
+                    {
                         $clStructSection->addColonne($clStructureBouton);
-					}
-					break;
-				}
+                    }
+                    break;
+                }
 
-				//c'est un séparateur
-				case StructureColonne::TM_Separateur:
-				{
-					$clStructureSousSection = new StructureSection($sIDColonne, $clAttribNOUT, $clAttribXS);
+                //c'est un séparateur
+                case StructureColonne::TM_Separateur:
+                {
+                    $clStructureSousSection = new StructureSection($sIDColonne, $clAttribNOUT, $clAttribXS);
 
-					$ndSequence = $ndNoeud->children(self::NAMESPACE_XSD)->complexType
-						->children(self::NAMESPACE_XSD)->sequence;
+                    $ndSequence = $ndNoeud->children(self::NAMESPACE_XSD)->complexType
+                        ->children(self::NAMESPACE_XSD)->sequence;
 
-					$this->__ParseXSDSequence($nNiv, $clStructElem, $clStructureSousSection, $ndSequence);
+                    $this->__ParseXSDSequence($nNiv, $clStructElem, $clStructureSousSection, $ndSequence);
 
-					$clStructSection->addColonne($clStructureSousSection);
-					$clStructElem->addColonne($clStructureSousSection);
-					break;
-				}
+                    $clStructSection->addColonne($clStructureSousSection);
+                    $clStructElem->addColonne($clStructureSousSection);
+                    break;
+                }
 
                 case StructureColonne::TM_ListeElem:
                 {
@@ -201,32 +201,32 @@ class ParserXSDSchema extends AbstractParser
                     $clStructElem->addColonne($clStructColonne);
                     break;
                 }
-				default:
-				{
-					$clStructColonne = new StructureDonnee($sIDColonne, $clAttribNOUT, $clAttribXS);
+                default:
+                {
+                    $clStructColonne = new StructureDonnee($sIDColonne, $clAttribNOUT, $clAttribXS);
 
                     if ($ndNoeud->children(self::NAMESPACE_XSD)->count()>0){
                         $this->_ParseXSDRestriction($clStructColonne, $ndNoeud, empty($eTypeElement));
                     }
 
-					$clStructSection->addColonne($clStructColonne);
-					$clStructElem->addColonne($clStructColonne);
-					break;
-				}
-			} // \switch
-		}// \foreach fils de le séquence
-	}
+                    $clStructSection->addColonne($clStructColonne);
+                    $clStructElem->addColonne($clStructColonne);
+                    break;
+                }
+            } // \switch
+        }// \foreach fils de le séquence
+    }
 
-	/**
+    /**
      * @param $nNiv
-	 * @param StructureColonne  $clStructColonne
-	 * @param \SimpleXMLElement $ndElement
+     * @param StructureColonne  $clStructColonne
+     * @param \SimpleXMLElement $ndElement
      * @throws \Exception
-	 */
-	protected function _ParseXSDListeElem($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndElement)
-	{
-		$ndSequence = $ndElement->children(self::NAMESPACE_XSD)->complexType
-			->children(self::NAMESPACE_XSD)->sequence
+     */
+    protected function _ParseXSDListeElem($nNiv, StructureColonne $clStructColonne, \SimpleXMLElement $ndElement)
+    {
+        $ndSequence = $ndElement->children(self::NAMESPACE_XSD)->complexType
+            ->children(self::NAMESPACE_XSD)->sequence
         ;
 
         $nIndice = 0;
@@ -275,48 +275,51 @@ class ParserXSDSchema extends AbstractParser
         }
 
 
-		if (!is_null($clStructureElemLie))
-		{
-			$clStructColonne->setStructureElementLie($clStructureElemLie);
-		}
-	}
+        if (!is_null($clStructureElemLie))
+        {
+            $clStructColonne->setStructureElementLie($clStructureElemLie);
+        }
+    }
 
-	/**
+    /**
      * @param StructureColonne $clStructColonne
-	 * @param \SimpleXMLElement $ndNoeud
+     * @param \SimpleXMLElement $ndNoeud
      * @param $replaceTypeElement
-	 */
-	protected function _ParseXSDRestriction(StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud, $replaceTypeElement)
-	{
-	    $ndSimpleType = $ndNoeud->children(self::NAMESPACE_XSD)->simpleType;
-	    if (is_null($ndSimpleType) || (count($ndSimpleType)==0)) {
+     */
+    protected function _ParseXSDRestriction(StructureColonne $clStructColonne, \SimpleXMLElement $ndNoeud, $replaceTypeElement)
+    {
+        $ndSimpleType = $ndNoeud->children(self::NAMESPACE_XSD)->simpleType;
+        if (is_null($ndSimpleType) || (count($ndSimpleType)==0)) {
             return ;
         }
 
-		$ndRestriction = $ndSimpleType->children(self::NAMESPACE_XSD)->restriction;
+        $ndRestriction = $ndSimpleType->children(self::NAMESPACE_XSD)->restriction;
 
-		if (is_null($ndRestriction) || (count($ndRestriction)==0)){
-		    return ;
+        if (is_null($ndRestriction) || (count($ndRestriction)==0)){
+            return ;
         }
 
-		if ($replaceTypeElement){
+        if ($replaceTypeElement){
             $clStructColonne->setTypeElement((string) $ndRestriction->attributes(self::NAMESPACE_XSD)['base']);
         }
 
         $clRestriction = null;
 
-		//ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
-		if (count($ndRestriction->children(self::NAMESPACE_XSD))>0)
-		{
-			$clRestriction = new ColonneRestriction();
-			foreach ($ndRestriction->children(self::NAMESPACE_XSD) as $ndFils)
-			{
-				switch ($ndFils->getName())
-				{
+        //ne pas mettre empty car ce n'est pas un array mais un \SimpleXMLElement et empty ne marche pas dessus
+        if (count($ndRestriction->children(self::NAMESPACE_XSD))>0)
+        {
+            $clRestriction = new ColonneRestriction();
+            foreach ($ndRestriction->children(self::NAMESPACE_XSD) as $ndFils)
+            {
+                switch ($ndFils->getName())
+                {
+                    case ColonneRestriction::R_WHITESPACE:
+                        $clRestriction->addRestrictionSimple($ndFils->getName(), (string) $ndFils->attributes(self::NAMESPACE_XSD)['value']);
+                        break;
                     case ColonneRestriction::R_LENGTH:
-					case ColonneRestriction::R_MAXLENGTH:
-						$clRestriction->addRestrictionSimple($ndFils->getName(), (int) $ndFils->attributes(self::NAMESPACE_XSD)['value']);
-						break;
+                    case ColonneRestriction::R_MAXLENGTH:
+                        $clRestriction->addRestrictionSimple($ndFils->getName(), (int) $ndFils->attributes(self::NAMESPACE_XSD)['value']);
+                        break;
                     case ColonneRestriction::R_ENUMERATION:
                         $clRestriction->addRestrictionArray($ndFils->getName(),
                             (string) $ndFils->attributes(self::NAMESPACE_XSD)['id'],
@@ -324,8 +327,8 @@ class ParserXSDSchema extends AbstractParser
                             (string) $ndFils->attributes(self::NAMESPACE_NOUT_XSD)['icon']);
                         break;
                 }
-			}
-		}
+            }
+        }
 
         if ($ndRestriction->children(self::NAMESPACE_NOUT_XSD)->count()>0)
         {
@@ -359,8 +362,8 @@ class ParserXSDSchema extends AbstractParser
             }
         }
 
-		if ($clRestriction){
+        if ($clRestriction){
             $clStructColonne->setRestriction($clRestriction);
         }
-	}
+    }
 }
