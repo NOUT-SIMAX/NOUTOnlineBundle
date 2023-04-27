@@ -134,7 +134,7 @@ class NOUTOnlineLogger
     {
         $oCtxt = new \stdClass();
         $oCtxt->way = $way;
-        $oCtxt->sOperation = $sOperation;
+        $oCtxt->operation = $sOperation;
         $oCtxt->soap = true;
         $oCtxt->rest = false;
         $oCtxt->content_type = 'application/xml+soap';
@@ -152,7 +152,7 @@ class NOUTOnlineLogger
     {
         $oCtxt = new \stdClass();
         $oCtxt->way = $way;
-        $oCtxt->sOperation = $sOperation;
+        $oCtxt->operation = $sOperation;
         $oCtxt->soap = false;
         $oCtxt->rest = true;
         $oCtxt->content_type = $mimetype;
