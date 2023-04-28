@@ -9,12 +9,11 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
-use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
 //class NOUTToken extends UsernamePasswordToken implements GuardTokenInterface, TokenWithNOUTOnlineVersionInterface
 class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWithNOUTOnlineVersionInterface
@@ -430,7 +429,6 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
         $this->m_sSessionToken = $aUnserialised['token'];
         $this->m_sTimeZone = $aUnserialised['timezone'];
         $this->m_sLocale = $aUnserialised['locale'];
-        $this->m_googleApiKey = $aUnserialised['googleApiKey'];
 
         $this->m_clLangage = new Langage();
         $this->m_clLangage->fromSerialization($aUnserialised['language']);
@@ -473,4 +471,4 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     }
 
     const SESSION_LastTimeZone='LastTimeZone';
-} 
+}

@@ -67,4 +67,5 @@ class NOUTOnlineVersion
     }
 
     const SUPPORT_SSO_OPENID = '2048.01';
+    const SUPPORT_RESTRICTION_WHITESPACE = '2317.01';
 }
