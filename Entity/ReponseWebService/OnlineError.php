@@ -123,6 +123,15 @@ class OnlineError implements \JsonSerializable
 
     public function parseFromREST($output)
     {
+        if (strncmp($output, '<?xml', strlen('<?xml'))==0){
+            //patch pas beau pour contourner bug noutonline
+            //on a du xml, faut que je recupère la balise text
+            $ndXml = simplexml_load_string($output);
+            $text = (string)$ndXml->children('http://schemas.xmlsoap.org/soap/envelope/')->Body->Fault->Reason->Text;
+            $output = str_replace('<br/>', "\r\n", $text);
+        }
+
+
         $tabLines = explode("\r\n", $output);
 
         if (count($tabLines)>1){
