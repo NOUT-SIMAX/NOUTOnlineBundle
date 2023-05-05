@@ -1323,6 +1323,29 @@ class NOUTClient extends NOUTClientBase
     }
 
     /**
+     * @param string $idcontext
+     * @param string $idformulaire
+     * @param string $idenreg
+     * @param string $idcallingcolumn
+     * @param string $formula
+     * @return ActionResult
+     * @throws \Exception
+
+     */
+    public function oVerifyIndentation(string $idcontext, string $idformulaire, string $idenreg, string $idcallingcolumn, string $formula) : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+        $httpresponse = $this->m_clRESTProxy->oVerifyIndentation(
+            $idformulaire,
+            $idenreg,
+            $idcallingcolumn,
+            $formula,
+            $clIdentification
+        );
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
+    }
+
+    /**
      * @return mixed
      * @throws \Exception
      */
