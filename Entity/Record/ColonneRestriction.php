@@ -108,6 +108,10 @@ class ColonneRestriction
     const R_LENGTH      = 'length';
 
     const R_NumericDisplay              = 'numericDisplay';
+    const R_NumericEditType             = 'numericEditType';
+    const ROPTION_Min_Plus              = "Minus/Plus";
+    const ROPTION_Arrow                 = 'Arrow';
+    const ROPTION_None                  = 'None';
     const ROPTION_Shape                 = 'shape';
     const ROPTION_Size                  = 'size';
     const ROPTION_DisplayValue          = 'displayValue';

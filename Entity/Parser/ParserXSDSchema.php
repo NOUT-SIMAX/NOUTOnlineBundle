@@ -358,6 +358,9 @@ class ParserXSDSchema extends AbstractParser
                             $clRestriction->addRestrictionSimple(ColonneRestriction::R_NumericDisplay_Stage, $aStages);
                         }
                         break;
+                    case ColonneRestriction::R_NumericEditType:
+                        $clRestriction->addRestrictionSimple($ndFils->getName(), (string)$ndFils);
+                        break;
                 }
             }
         }
