@@ -1296,6 +1296,9 @@ class NOUTClient extends NOUTClientBase
     {
         $clActionResult = new ActionResult(null);
         $oInfo = json_decode($HTTPResponse->content);
+        if(json_last_error() != JSON_ERROR_NONE) {
+            $oInfo = $HTTPResponse->content;
+        }
         $clActionResult->setData($oInfo);
         return $clActionResult;
     }
@@ -1332,10 +1335,10 @@ class NOUTClient extends NOUTClientBase
      * @throws \Exception
 
      */
-    public function oVerifyIndentation(string $idcontext, string $idformulaire, string $idenreg, string $idcallingcolumn, string $formula) : ActionResult
+    public function oRefactorFormula(string $idcontext, string $idformulaire, string $idenreg, string $idcallingcolumn, string $formula) : ActionResult
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
-        $httpresponse = $this->m_clRESTProxy->oVerifyIndentation(
+        $httpresponse = $this->m_clRESTProxy->oRefactorFormula(
             $idformulaire,
             $idenreg,
             $idcallingcolumn,

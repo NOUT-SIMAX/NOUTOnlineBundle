@@ -468,9 +468,9 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-    public function oVerifyIndentation(string $idForm, string $idEnreg, string $idColumn, string $formula, Identification $clIdentification): HTTPResponse
+    public function oRefactorFormula(string $idForm, string $idEnreg, string $idColumn, string $formula, Identification $clIdentification): HTTPResponse
     {
-        $sURI = $this->_sCreateRequest([$idForm, $idEnreg, $idColumn, 'VerifyFormula'], [], [], $clIdentification);
+        $sURI = $this->_sCreateRequest([$idForm, $idEnreg, $idColumn, 'RefactorFormula'], [], [], $clIdentification);
 
         return $this->_oExecutePOST('', $sURI, $formula, __FUNCTION__, $clIdentification);
     }
