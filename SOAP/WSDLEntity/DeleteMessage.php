@@ -13,9 +13,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 // Note : les conventions de code peuvent semblé non respecté sur les nom de variables, mais elle corresponde en realite
 // au fichier WSDL
 //-------------------------------------------------------------------------------------------------------------------
-class UpdateColumnMessageValueInBatch
+class DeleteMessage
 {
     public $IDMessage; // string
-    public $Column; // string
-    public $Value; // string
 }
