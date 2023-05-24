@@ -24,6 +24,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CloseFolderList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CloseMessageList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DataPJType;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeleteMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayRedoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayUndoMessage;
@@ -380,6 +381,27 @@ class NOUTClientMessagerie extends NOUTClientBase
         $clReponseXML =  $this->m_clSOAPProxy->updateColumnMessageValueInBatch($updateMessages, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
     }
+
+    /**
+     * @param array|null $requestHeaders
+     * @param string     $messages
+     * @param string     $column
+     * @param string     $value
+     * @param int        $autovalidate
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oDeleteMessage(string $messages, ?array $requestHeaders=null) : ActionResult
+    {
+        $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
+
+        $deleteMessages = new DeleteMessage();
+        $deleteMessages->IDMessage = $messages;
+
+        $clReponseXML =  $this->m_clSOAPProxy->deleteMessage($deleteMessages, $this->_aGetTabHeader($aTabHeaderSuppl));
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+    }
+
 
     /**
      * @param array|null  $requestHeaders

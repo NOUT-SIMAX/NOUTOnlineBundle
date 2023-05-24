@@ -1296,6 +1296,9 @@ class NOUTClient extends NOUTClientBase
     {
         $clActionResult = new ActionResult(null);
         $oInfo = json_decode($HTTPResponse->content);
+        if(json_last_error() != JSON_ERROR_NONE) {
+            $oInfo = $HTTPResponse->content;
+        }
         $clActionResult->setData($oInfo);
         return $clActionResult;
     }
@@ -1313,6 +1316,29 @@ class NOUTClient extends NOUTClientBase
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
         $httpresponse = $this->m_clRESTProxy->oVerifyFormula(
+            $idformulaire,
+            $idenreg,
+            $idcallingcolumn,
+            $formula,
+            $clIdentification
+        );
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
+    }
+
+    /**
+     * @param string $idcontext
+     * @param string $idformulaire
+     * @param string $idenreg
+     * @param string $idcallingcolumn
+     * @param string $formula
+     * @return ActionResult
+     * @throws \Exception
+
+     */
+    public function oRefactorFormula(string $idcontext, string $idformulaire, string $idenreg, string $idcallingcolumn, string $formula) : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+        $httpresponse = $this->m_clRESTProxy->oRefactorFormula(
             $idformulaire,
             $idenreg,
             $idcallingcolumn,

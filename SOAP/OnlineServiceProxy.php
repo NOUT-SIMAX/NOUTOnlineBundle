@@ -25,6 +25,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateFrom;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\CreateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Delete;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeleteFolder;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeleteMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DeletePJ;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Display;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayRedoMessage;
@@ -76,6 +77,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\TransformInto;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Undo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateColumnMessageValueInBatch;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
@@ -1584,9 +1586,30 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
     //---
 
-    public function updateColumnMessageValueInBatch($updateColumnMessageValueInBatch, $aHeaders = array())
+    /**
+     * @param UpdateColumnMessageValueInBatch $updateColumnMessageValueInBatch
+     * @param array $aHeaders
+     *
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    public function updateColumnMessageValueInBatch(UpdateColumnMessageValueInBatch $updateColumnMessageValueInBatch, $aHeaders = array())
     {
         return $this->call('UpdateColumnMessageValueInBatch', array($updateColumnMessageValueInBatch), null, null, $aHeaders);
+    }
+
+    //---
+
+    /**
+     * @param DeleteMessage $deleteMessage
+     * @param array $aHeaders
+     *
+     * @return XMLResponseWS
+     * @throws \Exception
+     */
+    public function deleteMessage(DeleteMessage $deleteMessage, $aHeaders = array())
+    {
+        return $this->call('DeleteMessage', array($deleteMessage), null, null, $aHeaders);
     }
 
     /**
