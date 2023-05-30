@@ -19,42 +19,42 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
  */
 class XMLResponseWS
 {
-	/**
-	 * @var \SimpleXMLElement noeud du body
-	 */
-	protected $m_ndBody;
+    /**
+     * @var \SimpleXMLElement noeud du body
+     */
+    protected $m_ndBody;
 
-	/**
-	 * @var \SimpleXMLElement noeud du header
-	 */
-	protected $m_ndHeader;
+    /**
+     * @var \SimpleXMLElement noeud du header
+     */
+    protected $m_ndHeader;
 
-	/**
-	 * @var OnlineError[]  tableau des erreur
-	 */
-	protected $m_TabError;
+    /**
+     * @var OnlineError[]  tableau des erreur
+     */
+    protected $m_TabError;
 
-	/**
-	 * @var string contenu du XML
-	 */
-	protected $m_sXML;
+    /**
+     * @var string contenu du XML
+     */
+    protected $m_sXML;
 
-	/**
-	 * @var string namespace SOAP
-	 */
-	protected $m_sNamespaceSOAP;
+    /**
+     * @var string namespace SOAP
+     */
+    protected $m_sNamespaceSOAP;
 
-	public function __construct($sXML)
-	{
-		$this->m_sXML = $sXML;
-		$clEnvelope   = simplexml_load_string($sXML);
+    public function __construct($sXML)
+    {
+        $this->m_sXML = $sXML;
+        $clEnvelope   = simplexml_load_string($sXML);
 
-		//calcul du nom du namespace de l'enveloppe
-		$tabNamespaceDuXML    = $clEnvelope->getNamespaces();
-		// tableau associatif nom => url
+        //calcul du nom du namespace de l'enveloppe
+        $tabNamespaceDuXML    = $clEnvelope->getNamespaces();
+        // tableau associatif nom => url
 
-		// Il n'y a que ces 4 là qui sont possibles pour l'enveloppe SOAP (standard w3c)
-		// les deux mêmes avec / final ou nom pour compatibilité avec vieille version de NOUTOnline
+        // Il n'y a que ces 4 là qui sont possibles pour l'enveloppe SOAP (standard w3c)
+        // les deux mêmes avec / final ou nom pour compatibilité avec vieille version de NOUTOnline
         $aNamespacePossible = array(
             'http://www.w3.org/2003/05/soap-envelope/',
             'http://schemas.xmlsoap.org/soap/envelope/',
@@ -62,140 +62,140 @@ class XMLResponseWS
             'http://schemas.xmlsoap.org/soap/envelope',
         );
 
-		//recherche les namespaces possible dans les namespances du XML
+        //recherche les namespaces possible dans les namespances du XML
         foreach($aNamespacePossible as $sUrlNamespacePossible)
-		{
+        {
             $this->m_sNamespaceSOAP = array_search($sUrlNamespacePossible, $tabNamespaceDuXML); // false si ne trouve pas la valeur dans le tableau
-			//renvoi la clé si trouvé, donc le nom du namespace
+            //renvoi la clé si trouvé, donc le nom du namespace
 
-			if ($this->m_sNamespaceSOAP !== false) // Si le namespace de l'enveloppe est un de ceux autorisés
-			{
+            if ($this->m_sNamespaceSOAP !== false) // Si le namespace de l'enveloppe est un de ceux autorisés
+            {
                 break;
             }
         }
 
-		//on trouve le noeud header et le noeud body
-		$this->m_ndHeader = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Header;
-		$this->m_ndBody   = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Body;
+        //on trouve le noeud header et le noeud body
+        $this->m_ndHeader = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Header;
+        $this->m_ndBody   = $clEnvelope->children($this->m_sNamespaceSOAP, true)->Body;
 
-		//on parse les erreurs si c'en est une
-		$this->m_TabError = null;
+        //on parse les erreurs si c'en est une
+        $this->m_TabError = null;
 
-		/* @var $ndFault \SimpleXMLElement */
-		$ndFault = isset($this->m_ndBody) ? $this->m_ndBody->children($this->m_sNamespaceSOAP, true)->Fault : null;
+        /* @var $ndFault \SimpleXMLElement */
+        $ndFault = isset($this->m_ndBody) ? $this->m_ndBody->children($this->m_sNamespaceSOAP, true)->Fault : null;
 
-		if (!empty($ndFault))
-		{
-			//le noeud ListErr fils de  Detail
-			/* @var $ndListErr \SimpleXMLElement */
-			$ndListErr = $ndFault->children($this->m_sNamespaceSOAP, true)->Detail->children()->ListErr;
+        if (!empty($ndFault))
+        {
+            //le noeud ListErr fils de  Detail
+            /* @var $ndListErr \SimpleXMLElement */
+            $ndListErr = $ndFault->children($this->m_sNamespaceSOAP, true)->Detail->children()->ListErr;
 
-			//on recherche le namespace pour les erreurs SIMAX http://www.nout.fr/soap/error
-			foreach ($ndListErr->children('http://www.nout.fr/soap/error') as $ndError)
-			{
-				/* @var $ndError \SimpleXMLElement */
-				$clError = new OnlineError($ndError->children()->Code['Name'],
-					$ndError->children()->Code->Numero,
-					$ndError->children()->Code->Category,
-					$ndError->children()->Message
-				);
+            //on recherche le namespace pour les erreurs SIMAX http://www.nout.fr/soap/error
+            foreach ($ndListErr->children('http://www.nout.fr/soap/error') as $ndError)
+            {
+                /* @var $ndError \SimpleXMLElement */
+                $clError = new OnlineError($ndError->children()->Code['Name'],
+                    $ndError->children()->Code->Numero,
+                    $ndError->children()->Code->Category,
+                    $ndError->children()->Message
+                );
 
-				foreach ($ndError->children()->Parameter as $ndParam)
-				{
-					$clParam = new OnlineErrorParameter($ndParam['IDParam'], $ndParam['TitleParam'], $ndParam['TitleElem']);
-					$clError->AddParameter($clParam);
-				}
+                foreach ($ndError->children()->Parameter as $ndParam)
+                {
+                    $clParam = new OnlineErrorParameter($ndParam['IDParam'], $ndParam['TitleParam'], $ndParam['TitleElem']);
+                    $clError->AddParameter($clParam);
+                }
 
-				$this->m_TabError[] = $clError;
-			}
-		}
-	}
+                $this->m_TabError[] = $clError;
+            }
+        }
+    }
 
-	/**
-	 * @return string
-	 */
-	public function sGetXML(): string
+    /**
+     * @return string
+     */
+    public function sGetXML(): string
     {
-		return $this->m_sXML;
-	}
+        return $this->m_sXML;
+    }
 
-	/**
-	 * retourne vrai si le retour est une erreur
-	 */
-	public function bIsFault(): bool
+    /**
+     * retourne vrai si le retour est une erreur
+     */
+    public function bIsFault(): bool
     {
-		return isset($this->m_TabError);
-	}
+        return isset($this->m_TabError);
+    }
 
-	/**
-	 * @return mixed, false si pas une erreur, un tableau d'erreur SIMAX si c'est une erreur
-	 */
-	public function getTabError()
-	{
-		if (!isset($this->m_TabError))
-		{
-			return false;
-		}
-
-		return $this->m_TabError;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getNumError(): int
+    /**
+     * @return mixed, false si pas une erreur, un tableau d'erreur SIMAX si c'est une erreur
+     */
+    public function getTabError()
     {
-		if (!isset($this->m_TabError))
-		{
-			return 0;
-		}
+        if (!isset($this->m_TabError))
+        {
+            return false;
+        }
 
-		return $this->m_TabError[0]->getErreur();
-	}
+        return $this->m_TabError;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getCatError(): int
+    /**
+     * @return int
+     */
+    public function getNumError(): int
     {
-		if (!isset($this->m_TabError))
-		{
-			return 0;
-		}
+        if (!isset($this->m_TabError))
+        {
+            return 0;
+        }
 
-		return $this->m_TabError[0]->getCategorie();
-	}
+        return $this->m_TabError[0]->getErreur();
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getMessError(): string
+    /**
+     * @return int
+     */
+    public function getCatError(): int
     {
-		if (!isset($this->m_TabError))
-		{
-			return '';
-		}
+        if (!isset($this->m_TabError))
+        {
+            return 0;
+        }
 
-		return $this->m_TabError[0]->getMessage();
-	}
+        return $this->m_TabError[0]->getCategorie();
+    }
 
-	/**
-	 * renvoi le type de retour
-	 * @return string
-	 */
-	public function sGetReturnType(): string
+    /**
+     * @return string
+     */
+    public function getMessError(): string
     {
-		return (string) $this->m_ndHeader->children()->ReturnType;
-	}
+        if (!isset($this->m_TabError))
+        {
+            return '';
+        }
 
-	/**
-	 * renvoi l'identifiant du contexte d'action
-	 * @return string
-	 */
-	public function sGetActionContext(): string
+        return $this->m_TabError[0]->getMessage();
+    }
+
+    /**
+     * renvoi le type de retour
+     * @return string
+     */
+    public function sGetReturnType(): string
     {
-		return (string) $this->m_ndHeader->children()->ActionContext;
-	}
+        return (string) $this->m_ndHeader->children()->ReturnType;
+    }
+
+    /**
+     * renvoi l'identifiant du contexte d'action
+     * @return string
+     */
+    public function sGetActionContext(): string
+    {
+        return (string) $this->m_ndHeader->children()->ActionContext;
+    }
 
     /**
      * renvoi l'identifiant du contexte d'action
@@ -222,13 +222,13 @@ class XMLResponseWS
     }
 
 
-	/**
-	 * @return MessageBox
-	 */
-	public function clGetMessageBox(): MessageBox
+    /**
+     * @return MessageBox
+     */
+    public function clGetMessageBox(): MessageBox
     {
-		return new MessageBox($this->getNodeXML());
-	}
+        return new MessageBox($this->getNodeXML());
+    }
 
     /**
      * @return string
@@ -242,14 +242,14 @@ class XMLResponseWS
     /**
      * @return NOUTFileInfo
      */
-	public function getFile(): ?NOUTFileInfo
+    public function getFile(): ?NOUTFileInfo
     {
         $ndXML = $this->getNodeXML(); // Récupération du noeud xml
 
         if ($ndXML->count()>0)
         {
             /* @var $DataElement \SimpleXMLElement */
-            $DataElement 	= $ndXML->Data; // Récupération du noeud data fils du noeud xml
+            $DataElement     = $ndXML->Data; // Récupération du noeud data fils du noeud xml
             if ($DataElement->count()>0)
             {
                 /** @var \SimpleXMLElement[] $aAttributesXml */
@@ -265,17 +265,17 @@ class XMLResponseWS
         }
 
         return null;
-	}
+    }
 
-	/**
-	 * @return CurrentAction : action en cours
-	 */
-	public function clGetAction(): CurrentAction
+    /**
+     * @return CurrentAction : action en cours
+     */
+    public function clGetAction(): CurrentAction
     {
-		$clAction = $this->m_ndHeader->children()->Action;
+        $clAction = $this->m_ndHeader->children()->Action;
 
-		return new CurrentAction($clAction);
-	}
+        return new CurrentAction($clAction);
+    }
 
     /**
      * @return CurrentRequest : action en cours
@@ -335,24 +335,24 @@ class XMLResponseWS
         }
     }
 
-	/**
+    /**
      * utilisateur actuellement connecté
-	 * @return ConnectedUser
-	 */
-	public function clGetConnectedUser(): ConnectedUser
+     * @return ConnectedUser
+     */
+    public function clGetConnectedUser(): ConnectedUser
     {
-		/* @var $oXMLConnecterUser \SimpleXMLElement */
-		$oXMLConnecterUser = $this->m_ndHeader->children()->ConnectedUser;
+        /* @var $oXMLConnecterUser \SimpleXMLElement */
+        $oXMLConnecterUser = $this->m_ndHeader->children()->ConnectedUser;
 
-		$oUser = new ConnectedUser(
-			$oXMLConnecterUser->children()->Element,
-			$oXMLConnecterUser->children()->Element['title'],
-			$oXMLConnecterUser->children()->Form,
-			$oXMLConnecterUser->children()->Form['title']
-		);
+        $oUser = new ConnectedUser(
+            $oXMLConnecterUser->children()->Element,
+            $oXMLConnecterUser->children()->Element['title'],
+            $oXMLConnecterUser->children()->Form,
+            $oXMLConnecterUser->children()->Form['title']
+        );
 
-		if (isset($oXMLConnecterUser->children()->PwdInfo)){
-		    $oUser->setPwdInfo(new PwdInfo(
+        if (isset($oXMLConnecterUser->children()->PwdInfo)){
+            $oUser->setPwdInfo(new PwdInfo(
                 $oXMLConnecterUser->children()->PwdInfo,
                 $oXMLConnecterUser->children()->PwdInfo['iv'],
                 $oXMLConnecterUser->children()->PwdInfo['ks']
@@ -368,13 +368,13 @@ class XMLResponseWS
             ));
         }
 
-		return $oUser;
-	}
+        return $oUser;
+    }
 
-	/**
-	 * @return Form
-	 */
-	public function clGetForm(): Form
+    /**
+     * @return Form
+     */
+    public function clGetForm(): Form
     {
         $ndForm = $this->m_ndHeader->children()->Form;
 
@@ -390,56 +390,56 @@ class XMLResponseWS
 
         $clForm = new Form($ndForm, $ndForm['title'], $ndForm['withBtnOrderPossible'], $ndForm['withBtnOrderActive'], $bWithGhost);
 
-		for ($n = 1; $n <= 3; $n++)
-		{
-			if (isset($ndForm['sort'.$n]))
-			{
-				$clForm->m_TabSort[] = new ListSort($ndForm['sort'.$n], isset($ndForm['sort'.$n.'asc']) ? $ndForm['sort'.$n.'asc'] : 1);
-			}
-		}
+        for ($n = 1; $n <= 3; $n++)
+        {
+            if (isset($ndForm['sort'.$n]))
+            {
+                $clForm->m_TabSort[] = new ListSort($ndForm['sort'.$n], isset($ndForm['sort'.$n.'asc']) ? $ndForm['sort'.$n.'asc'] : 1);
+            }
+        }
 
-		return $clForm;
-	}
+        return $clForm;
+    }
 
-	/**
-	 * @return Element|null
-	 */
-	public function clGetElement(): ?Element
+    /**
+     * @return Element|null
+     */
+    public function clGetElement(): ?Element
     {
-		$clElem = $this->m_ndHeader->children()->Element;
-		if (isset($clElem))
-		{
-			return new Element($clElem, $clElem['title']);
-		}
+        $clElem = $this->m_ndHeader->children()->Element;
+        if (isset($clElem))
+        {
+            return new Element($clElem, $clElem['title']);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * @return Count
-	 */
-	public function clGetCount(): Count
+    /**
+     * @return Count
+     */
+    public function clGetCount(): Count
     {
-		$ndCount = $this->m_ndHeader->children()->Count;
-		if (!isset($ndCount) || empty($ndCount))
-		{
+        $ndCount = $this->m_ndHeader->children()->Count;
+        if (!isset($ndCount) || empty($ndCount))
+        {
             return new Count();
-		}
+        }
 
-		$clCount                    = new Count();
-		$clCount->m_nNbCalculation  = (int) $ndCount->children()->NbCalculation;
-		$clCount->m_nNbLine         = (int) $ndCount->children()->NbLine;
-		$clCount->m_nNbFiltered     = (int) $ndCount->children()->NbFiltered;
-		$clCount->m_nNbTotal        = (int) $ndCount->children()->NbTotal;
-		$clCount->m_nNbDisplay      = (int) $ndCount->children()->NbDisplay;
+        $clCount                    = new Count();
+        $clCount->m_nNbCalculation  = (int) $ndCount->children()->NbCalculation;
+        $clCount->m_nNbLine         = (int) $ndCount->children()->NbLine;
+        $clCount->m_nNbFiltered     = (int) $ndCount->children()->NbFiltered;
+        $clCount->m_nNbTotal        = (int) $ndCount->children()->NbTotal;
+        $clCount->m_nNbDisplay      = (int) $ndCount->children()->NbDisplay;
 
-		return $clCount;
-	}
+        return $clCount;
+    }
 
     /**
      * @return FolderCount
      */
-	public function clGetFolderCount(): FolderCount
+    public function clGetFolderCount(): FolderCount
     {
         $ndFolderCount = $this->m_ndHeader->children()->FolderCount;
         if (!isset($ndFolderCount) || empty($ndFolderCount)) {
@@ -453,24 +453,24 @@ class XMLResponseWS
         return $clFolderCount;
     }
 
-	/**
-	 * @return null|array
-	 */
-	public function GetTabPossibleDisplayMode(): ?array
+    /**
+     * @return null|array
+     */
+    public function GetTabPossibleDisplayMode(): ?array
     {
-		$ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
-		if (!isset($ndPossibleDM))
-		{
-			return null;
-		}
+        $ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
+        if (!isset($ndPossibleDM))
+        {
+            return null;
+        }
 
-		return explode('|', (string) $ndPossibleDM);
-	}
+        return explode('|', (string) $ndPossibleDM);
+    }
 
     /**
      * @return string|null
      */
-	public function sGetDefaultGraphType() : ?string
+    public function sGetDefaultGraphType() : ?string
     {
         $ndPossibleDM = $this->m_ndHeader->children()->PossibleDisplayMode;
         if (!isset($ndPossibleDM))
@@ -481,33 +481,33 @@ class XMLResponseWS
         return (string)$ndPossibleDM->attributes()['defaultGraphType'] ?? '';
     }
 
-	/**
-	 * @return null|string
-	 */
-	public function sGetDefaultDisplayMode(): ?string
+    /**
+     * @return null|string
+     */
+    public function sGetDefaultDisplayMode(): ?string
     {
-		$ndDefaultDM = $this->m_ndHeader->children()->DefaultDisplayMode;
-		if (!isset($ndDefaultDM))
-		{
-			return null;
-		}
+        $ndDefaultDM = $this->m_ndHeader->children()->DefaultDisplayMode;
+        if (!isset($ndDefaultDM))
+        {
+            return null;
+        }
 
-		return (string) $ndDefaultDM;
-	}
+        return (string) $ndDefaultDM;
+    }
 
 
-	/**
-	 * retourne le noeud reponse de l'operation
-	 * @return \SimpleXMLElement
-	 */
-	protected function _clGetNodeResponse(): \SimpleXMLElement
+    /**
+     * retourne le noeud reponse de l'operation
+     * @return \SimpleXMLElement
+     */
+    protected function _clGetNodeResponse(): \SimpleXMLElement
     {
         // Récupère les enfants de Body
         $children = $this->m_ndBody->children();
 
         // Renvoi le premier enfant
-		return $children[0];
-	}
+        return $children[0];
+    }
 
     /**
      * récupère le noeud xml des filtres
@@ -542,49 +542,49 @@ class XMLResponseWS
 
 
     /**
-	 * récupère le noeud xml dans la réponse
-	 * @return \SimpleXMLElement|null
-	 */
-	public function getNodeXML(): ?\SimpleXMLElement
+     * récupère le noeud xml dans la réponse
+     * @return \SimpleXMLElement|null
+     */
+    public function getNodeXML(): ?\SimpleXMLElement
     {
-		$clNodeResponse = $this->_clGetNodeResponse();
+        $clNodeResponse = $this->_clGetNodeResponse();
 
-		if (isset($clNodeResponse))
-		{
-			return $clNodeResponse->xml;
-		}
+        if (isset($clNodeResponse))
+        {
+            return $clNodeResponse->xml;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
     /**
      * @return string|null
      */
-	public function getValue(): ?string
+    public function getValue(): ?string
     {
-		$clNodeResponse = $this->_clGetNodeResponse();
-		if (isset($clNodeResponse))
-		{
-			return (string) $clNodeResponse->Value;
-		}
+        $clNodeResponse = $this->_clGetNodeResponse();
+        if (isset($clNodeResponse))
+        {
+            return (string) $clNodeResponse->Value;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * @return \SimpleXMLElement|null
-	 */
-	public function getNodeSchema(): ?\SimpleXMLElement
+    /**
+     * @return \SimpleXMLElement|null
+     */
+    public function getNodeSchema(): ?\SimpleXMLElement
     {
-		$clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
-		if (empty($clXSDSchema))
-		{
-			return null;
-		}
+        $clXSDSchema = $this->m_ndHeader->children()->XSDSchema;
+        if (empty($clXSDSchema))
+        {
+            return null;
+        }
 
-		//le noeud XSDSchema n'a qu'un fils
-		return $clXSDSchema->children('http://www.w3.org/2001/XMLSchema', false)->schema;
-	}
+        //le noeud XSDSchema n'a qu'un fils
+        return $clXSDSchema->children('http://www.w3.org/2001/XMLSchema', false)->schema;
+    }
 
     /**
      * récupère le noeud schema des filtres
@@ -592,14 +592,14 @@ class XMLResponseWS
      */
     public function getNodeXSDParam(): ?\SimpleXMLElement
     {
-		// Provoque l'erreur "Node no longer exists" avec ajax_ville
+        // Provoque l'erreur "Node no longer exists" avec ajax_ville
         /** @var \SimpleXMLElement $clNodeSchedulerResource */
-		$clNodeFilter = $this->m_ndHeader->children()->Filter;
+        $clNodeFilter = $this->m_ndHeader->children()->Filter;
 
         if (isset($clNodeFilter) && ($clNodeFilter->count()>0))
         {
-			// Erreur : "Node no longer exists" alors que dans le isSet
-			// Données mal parsées ?
+            // Erreur : "Node no longer exists" alors que dans le isSet
+            // Données mal parsées ?
             return $clNodeFilter->children('http://www.w3.org/2001/XMLSchema', false)->schema;
         }
         return null;
@@ -624,40 +624,40 @@ class XMLResponseWS
         return null;
     }
 
-	/**
-	 * @return ValidateError|null
-	 */
-	public function getValidateError(): ?ValidateError
+    /**
+     * @return ValidateError|null
+     */
+    public function getValidateError(): ?ValidateError
     {
-		$clValidateError = $this->m_ndHeader->children()->ValidateError;
-		if ($clValidateError->count()>0)
-		{
+        $clValidateError = $this->m_ndHeader->children()->ValidateError;
+        if ($clValidateError->count()>0)
+        {
             return new ValidateError($clValidateError);
-		}
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 
-	/**
-	 * récupère le token session dans la réponse XML
-	 * @return string
-	 */
-	public function sGetTokenSession(): string
+    /**
+     * récupère le token session dans la réponse XML
+     * @return string
+     */
+    public function sGetTokenSession(): string
     {
-		$clNodeResponse = $this->_clGetNodeResponse();
-		if (isset($clNodeResponse))
-		{
-			return (string) $clNodeResponse->SessionToken;
-		}
+        $clNodeResponse = $this->_clGetNodeResponse();
+        if (isset($clNodeResponse))
+        {
+            return (string) $clNodeResponse->SessionToken;
+        }
 
-		return '';
-	}
+        return '';
+    }
 
     /**
      * @return int
      */
-	public function nGetSessionLanguageCode():int
+    public function nGetSessionLanguageCode():int
     {
         try{
             return (int) $this->m_ndHeader->children()->SessionLanguageCode;
@@ -667,63 +667,63 @@ class XMLResponseWS
         }
     }
 
-	/**
-	 * @return int
-	 */
-	public function nGetNumberOfChart(): int
+    /**
+     * @return int
+     */
+    public function nGetNumberOfChart(): int
     {
-		$ndXML = $this->getNodeXML();
-		if (!isset($ndXML))
-		{
-			return 0;
-		}
+        $ndXML = $this->getNodeXML();
+        if (!isset($ndXML))
+        {
+            return 0;
+        }
 
-		return (int) $ndXML->numberOfChart;
-	}
+        return (int) $ndXML->numberOfChart;
+    }
 
 
-	/**
-	 * @return string
-	 */
-	public function sGetReport(): string
+    /**
+     * @return string
+     */
+    public function sGetReport(): string
     {
-		$ndXML = $this->getNodeXML();
+        $ndXML = $this->getNodeXML();
 
-		if (!isset($ndXML))
-		{
-			return '';
-		}
+        if (!isset($ndXML))
+        {
+            return '';
+        }
 
-		return (string) $ndXML->Report;
-	}
+        return (string) $ndXML->Report;
+    }
 
 
-	/**
-	 * returne le tableau des codes langues disponibles
-	 * @return array
-	 */
-	public function GetTabLanguages(): array
+    /**
+     * returne le tableau des codes langues disponibles
+     * @return array
+     */
+    public function GetTabLanguages(): array
     {
-		$ndXML = $this->getNodeXML();
-		if (!isset($ndXML))
-		{
-			return array();
-		}
+        $ndXML = $this->getNodeXML();
+        if (!isset($ndXML))
+        {
+            return array();
+        }
 /*
-		<xml>
-			<LanguageCode>12</LanguageCode>
-			<LanguageCode>9</LanguageCode>
-			<LanguageCode>10</LanguageCode>
-		</xml>
+        <xml>
+            <LanguageCode>12</LanguageCode>
+            <LanguageCode>9</LanguageCode>
+            <LanguageCode>10</LanguageCode>
+        </xml>
 */
-		$TabLanguages = array();
-		foreach ($ndXML->LanguageCode as $ndLanguageCode)
-		{
-			$TabLanguages[] = (int) $ndLanguageCode;
-		}
+        $TabLanguages = array();
+        foreach ($ndXML->LanguageCode as $ndLanguageCode)
+        {
+            $TabLanguages[] = (int) $ndLanguageCode;
+        }
 
-		return $TabLanguages;
-	}
+        return $TabLanguages;
+    }
 
     /**
      * @return \SimpleXMLElement
@@ -755,47 +755,47 @@ class XMLResponseWS
         return $imports->children();
     }
 
-	//réponse générique
+    //réponse générique
     const RETURNTYPE_ERROR          = 'Error';
-	const RETURNTYPE_EMPTY          = 'Empty';
+    const RETURNTYPE_EMPTY          = 'Empty';
     const RETURNTYPE_DONOTHING      = 'DoNothing';
-	const RETURNTYPE_REPORT         = 'Report';
-	const RETURNTYPE_VALUE          = 'Value';
-	const RETURNTYPE_REQUESTFILTER  = 'RequestFilter';
-	const RETURNTYPE_CHART          = 'Chart';
-	const RETURNTYPE_NUMBEROFCHART  = 'NumberOfChart';
+    const RETURNTYPE_REPORT         = 'Report';
+    const RETURNTYPE_VALUE          = 'Value';
+    const RETURNTYPE_REQUESTFILTER  = 'RequestFilter';
+    const RETURNTYPE_CHART          = 'Chart';
+    const RETURNTYPE_NUMBEROFCHART  = 'NumberOfChart';
 
-	//retourne des enregistrements
-	const RETURNTYPE_RECORD         = 'Record';
-	const RETURNTYPE_LIST           = 'List';
+    //retourne des enregistrements
+    const RETURNTYPE_RECORD         = 'Record';
+    const RETURNTYPE_LIST           = 'List';
     const RETURNTYPE_THUMBNAIL      = 'Thumbnail';
     const RETURNTYPE_DATATREE       = 'Datatree';
 
-	//réponse particulière
-	const RETURNTYPE_XSD                = 'XSD';
-	const RETURNTYPE_IDENTIFICATION     = 'Identification';
-	const RETURNTYPE_PLANNING           = 'Planning'; // Vieux planning
-	const RETURNTYPE_SCHEDULER          = 'Scheduler'; // Nouveau planning
-	const RETURNTYPE_GLOBALSEARCH   	= 'GlobalSearch';
-	const RETURNTYPE_LISTCALCULATION    = 'ListCalculation';
-	const RETURNTYPE_EXCEPTION          = 'Exception';
+    //réponse particulière
+    const RETURNTYPE_XSD                = 'XSD';
+    const RETURNTYPE_IDENTIFICATION     = 'Identification';
+    const RETURNTYPE_PLANNING           = 'Planning'; // Vieux planning
+    const RETURNTYPE_SCHEDULER          = 'Scheduler'; // Nouveau planning
+    const RETURNTYPE_GLOBALSEARCH       = 'GlobalSearch';
+    const RETURNTYPE_LISTCALCULATION    = 'ListCalculation';
+    const RETURNTYPE_EXCEPTION          = 'Exception';
 
-	//réponse intermédiaire
-	const RETURNTYPE_AMBIGUOUSCREATION  = 'AmbiguousAction';
-	const RETURNTYPE_MESSAGEBOX         = 'MessageBox';
-	const RETURNTYPE_VALIDATEACTION     = 'ValidateAction';
-	const RETURNTYPE_VALIDATERECORD     = 'ValidateEnreg';
-	const RETURNTYPE_PRINTTEMPLATE      = 'PrintTemplate';
-	const RETURNTYPE_CHOICE             = 'Choice';
+    //réponse intermédiaire
+    const RETURNTYPE_AMBIGUOUSCREATION  = 'AmbiguousAction';
+    const RETURNTYPE_MESSAGEBOX         = 'MessageBox';
+    const RETURNTYPE_VALIDATEACTION     = 'ValidateAction';
+    const RETURNTYPE_VALIDATERECORD     = 'ValidateEnreg';
+    const RETURNTYPE_PRINTTEMPLATE      = 'PrintTemplate';
+    const RETURNTYPE_CHOICE             = 'Choice';
 
-	//réponse de messagerie
-	const RETURNTYPE_MAILSERVICERECORD      = 'MailServiceRecord';
-	const RETURNTYPE_MAILSERVICELIST        = 'MailServiceList';
-	const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
-	const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
-	const RETURNTYPE_MAILSERVICEIDLIST      = 'MailServiceIDList';
+    //réponse de messagerie
+    const RETURNTYPE_MAILSERVICERECORD      = 'MailServiceRecord';
+    const RETURNTYPE_MAILSERVICELIST        = 'MailServiceList';
+    const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
+    const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
+    const RETURNTYPE_MAILSERVICEIDLIST      = 'MailServiceIDList';
 
-	//types virtuels pour traitement spéciaux
+    //types virtuels pour traitement spéciaux
     const VIRTUALRETURNTYPE_FILE = "File";
     const VIRTUALRETURNTYPE_FILE_PREVIEW = "FilePreview";
     const VIRTUALRETURNTYPE_CASCADE = 'Cascade';
