@@ -9,6 +9,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\NOUTException;
 
+use App\Exception\MissingExtensionException;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\SOAPException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -52,11 +53,19 @@ class NOUTExceptionFormatter
      */
     public function translate($translator)
     {
+        if('levels.' . $this->level != $translator->trans('levels.' . $this->level, array(), 'exceptions')) {
+            $this->level = $translator->trans('levels.' . $this->level, array(), 'exceptions');
+        }
+
         if('messages.' . $this->message != $translator->trans('messages.' . $this->message, array(), 'exceptions')) {
             $this->message = $translator->trans('messages.' . $this->message, array(), 'exceptions');
         }
-        if('levels.' . $this->level != $translator->trans('levels.' . $this->level, array(), 'exceptions')) {
-            $this->level = $translator->trans('levels.' . $this->level, array(), 'exceptions');
+
+        if ($this->exception instanceof MissingExtensionException)
+        {
+            $suppl = $translator->trans('messages.exception.php_extension.missing', array('%ext%' => $this->exception->getMessage()), 'exceptions');
+
+            $this->message .= '. '.$suppl;
         }
     }
 
@@ -81,20 +90,21 @@ class NOUTExceptionFormatter
             $aException['validate_error']  = $this->exception->getPrevious()->getValidateError();
         }
 
-
         return $aException;
     }
 
     /**
      * Look for a NOUTOnline message in stack trace, returns an empty string if not found
-     * @param \Exception $e
+     * @param \Throwable $e
      * @return string
      */
-    protected function getNOUTOnlineMessage(\Exception $e){
-        if($e instanceof SOAPException)
+    protected function getNOUTOnlineMessage(\Throwable $e){
+        if($e instanceof SOAPException){
             return $e->getMessageOrigine();
-        if(!is_null($e->getPrevious()))
+        }
+        if(!is_null($e->getPrevious())) {
             return $this->getNOUTOnlineMessage($e->getPrevious());
+        }
         return '';
     }
 }
