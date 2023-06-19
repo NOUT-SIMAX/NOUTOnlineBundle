@@ -10,27 +10,27 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP;
 
 class SOAPException extends \Exception
 {
-	/**
-	 * @var string
-	 */
-	protected $messageOrigine;
+    /**
+     * @var string
+     */
+    protected $messageOrigine;
 
-	protected $_category;
+    protected $_category;
 
-	public function __construct($message = "", $code = 0, $category = 0, \Exception $previous = null)
-	{
-		$this->messageOrigine = $message;
-		$this->_category = $category;
-		parent::__construct($code.' '.$message, $code, $previous);
-	}
+    public function __construct($message = "", $code = 0, $category = 0, \Exception $previous = null)
+    {
+        $this->messageOrigine = $message;
+        $this->_category = $category;
+        parent::__construct($code.' '.$message, $code, $previous);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getMessageOrigine()
-	{
-		return $this->messageOrigine;
-	}
+    /**
+     * @return string
+     */
+    public function getMessageOrigine()
+    {
+        return $this->messageOrigine;
+    }
 
     /**
      * @return int
