@@ -40,6 +40,14 @@ class IHMWindows
     }
 
     /**
+     * @return int
+     */
+    public function getIsConfiguration() : int
+    {
+        return is_null($this->m_clStructElem) ? 0 : $this->m_clStructElem->getIsConfiguration();
+    }
+
+    /**
      * @return StructureElement
      */
     public function getStructElem(): ?StructureElement
