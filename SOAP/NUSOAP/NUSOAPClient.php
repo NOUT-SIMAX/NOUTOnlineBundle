@@ -65,8 +65,8 @@ class NUSOAPClient extends NUSOAPBase
     var $use_curl = false;            // whether to always try to use cURL
 
     /*
-	 * fault related variables
-	 */
+     * fault related variables
+     */
     /**
      * @var      fault
      * @access   public
@@ -417,19 +417,19 @@ class NUSOAPClient extends NUSOAPBase
 
     /**
      * send the SOAP message
-     *
      * Note: if the operation has multiple return values
      * the return value of this method will be an array
      * of those values.
      *
-     * @param    string $msg a SOAPx4 soapmsg object
-     * @param    string $soapaction SOAPAction value
-     * @param    integer $timeout set connection timeout in seconds
-     * @param    integer $response_timeout set response timeout in seconds
+     * @param    string $msg              a SOAPx4 soapmsg object
+     * @param    string $soapaction       SOAPAction value
+     * @param    integer $timeout         set connection timeout in seconds
+     * @param    integer $responseTimeout set response timeout in seconds
+     *
      * @return    mixed native PHP types.
      * @access   private
      */
-    function send($msg, $soapaction = '', $timeout = 0, $response_timeout = 30)
+    function send($msg, $soapaction = '', $timeout = 0, $responseTimeout = 30)
     {
         $this->checkCookies();
         // detect transport
@@ -459,7 +459,7 @@ class NUSOAPClient extends NUSOAPBase
                 $this->debug('sending message, length=' . strlen($msg));
                 if (preg_match('/^http:/', $this->endpoint)) {
                     //if(strpos($this->endpoint,'http:')){
-                    $this->responseData = $http->send($msg, $timeout, $response_timeout, $this->cookies);
+                    $this->responseData = $http->send($msg, $timeout, $responseTimeout, $this->cookies);
                 } elseif (preg_match('/^https/', $this->endpoint)) {
                     //} elseif(strpos($this->endpoint,'https:')){
                     //if(phpversion() == '4.3.0-dev'){
@@ -467,7 +467,7 @@ class NUSOAPClient extends NUSOAPBase
                     //$this->request = $http->outgoing_payload;
                     //$this->response = $http->incoming_payload;
                     //} else
-                    $this->responseData = $http->sendHTTPS($msg, $timeout, $response_timeout, $this->cookies);
+                    $this->responseData = $http->sendHTTPS($msg, $timeout, $responseTimeout, $this->cookies);
                 } else {
                     $this->setError('no http/s in endpoint url');
                 }
@@ -826,17 +826,17 @@ class NUSOAPClient extends NUSOAPBase
                 }
                 $opData['namespace'] = !isset($opData['namespace']) ? 'http://testuri.com' : $opData['namespace'];
                 $evalStr .= "// $paramCommentStr
-	function " . str_replace('.', '__', $operation) . "($paramStr) {
-		\$params = array($paramArrayStr);
-		return \$this->call('$operation', \$params, '" . $opData['namespace'] . "', '" . (isset($opData['soapAction']) ? $opData['soapAction'] : '') . "');
-	}
-	";
+    function " . str_replace('.', '__', $operation) . "($paramStr) {
+        \$params = array($paramArrayStr);
+        return \$this->call('$operation', \$params, '" . $opData['namespace'] . "', '" . (isset($opData['soapAction']) ? $opData['soapAction'] : '') . "');
+    }
+    ";
                 unset($paramStr);
                 unset($paramCommentStr);
             }
         }
         $evalStr = 'class NUSOAPProxy_' . $r . ' extends NUSOAPClient {
-	' . $evalStr . '
+    ' . $evalStr . '
 }';
         return $evalStr;
     }
@@ -903,7 +903,7 @@ class NUSOAPClient extends NUSOAPBase
     }
 
     /*
-	* whether or not parser should decode utf8 element content
+    * whether or not parser should decode utf8 element content
     *
     * @return   always returns true
     * @access   public
