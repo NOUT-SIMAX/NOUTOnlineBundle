@@ -356,10 +356,10 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
 
         return parent::parseResponse($headers, $data);
     }
-    //---
+    
 
 
-    //---
+    
 
     //------------------------------------------------------------------------------------------
     // Fonctions de gestion des headers de requete :
@@ -375,7 +375,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         $this->bCleanHeadersBeforeRequest = false;
     }
-    //---
+    
 
     /**
      * Reactive le nettoyage automatique des headers avant requete.
@@ -384,7 +384,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         $this->bCleanHeadersBeforeRequest = true;
     }
-    //---
+    
 
     /**
      * Fonction permettant de remettre la liste des headers a vide
@@ -397,7 +397,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         $this->aListHeaders = array();
     }
-    //---
+    
 
     /**
      * Fonction permettant d'ajouter plusieur headers de requete à la fois, grace a un tableau
@@ -413,7 +413,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
             }
         }
     }
-    //---
+    
 
 
     /**
@@ -427,7 +427,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         $this->aListHeaders[$sName] = $mValue;
     }
-    //---
+    
 
     //------------------------------------------------------------------------------------------
     // Redefinition methode call
@@ -538,7 +538,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->getXMLResponseWS();
     }
 
-    //---
+    
 
     protected function __startLogQuery()
     {
@@ -609,7 +609,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('AddPJ', array($clWsdlTypeAddPJ), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline :Cancel
@@ -625,7 +625,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Cancel', array($clWsdlTypeCancel), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : CancelFolder
@@ -641,7 +641,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CancelFolder', array($clWsdlTypeCancelFolder), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : CancelMessage
@@ -656,7 +656,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CancelMessage', array($clWsdlTypeCancelMessage), null, null, $aHeaders);
     }
-    //----
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : CheckCreateElement
@@ -671,7 +671,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CheckCreateElement', array($clWsdlTypeCheckCreateElement), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : CheckRecipient
@@ -686,7 +686,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CheckRecipient', array($clWsdlTypeCheckRecipient), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : CloseFolderList
@@ -701,7 +701,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CloseFolderList', array($clWsdlTypeCloseFolderList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : CloseMessageList
@@ -716,7 +716,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CloseMessageList', array($clWsdlTypeCloseMessageList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : ConfirmResponse
@@ -731,7 +731,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('ConfirmResponse', array($clWsdlTypeConfirmResponse), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Create
@@ -746,7 +746,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Create', array($clWsdlTypeCreate), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateFolder
@@ -760,7 +760,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CreateFolder', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : CreateFrom
@@ -776,7 +776,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('CreateFrom', array($clWsdlTypeCreateFrom), null, null, $aHeaders);
     }
 
-    //---
+    
 
     /**
      * @param Merge $merge
@@ -803,7 +803,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('CreateMessage', array($clWsdlTypeCreateMessage), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Delete
@@ -818,7 +818,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Delete', array($clWsdlTypeDelete), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : DeleteFolder
@@ -833,7 +833,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('DeleteFolder', array($clWsdlTypeDeleteFolder), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : DeletePJ
@@ -848,7 +848,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('DeletePJ', array($clWsdlTypeDeletePJ), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Disconnect
@@ -862,7 +862,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Disconnect', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Display
@@ -877,7 +877,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Display', array($clWsdlTypeDisplay), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : DrillThrough
@@ -893,7 +893,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('DrillThrough', array($clWsdlTypeDrillThrough), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : EnterReorderListMode
@@ -907,7 +907,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('EnterReorderListMode', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Execute
@@ -937,7 +937,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetCalculation', array((array)$clWsdlTypeGetCalculation), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetChart
@@ -952,7 +952,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetChart', array($clWsdlTypeGetChart), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetColInRecord
@@ -967,7 +967,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetColInRecord', array($clWsdlTypeGetColInRecord), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetColInRecord
@@ -982,7 +982,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetSubListContent', array($clWsdlTypeGetSubListContent), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
@@ -997,7 +997,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetContentFolder', array($clWsdlTypeGetContentFolder), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
@@ -1012,7 +1012,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetListIDMessFromFolder', array($clWsdType), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
@@ -1027,7 +1027,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetListIDMessFromRequest', array($clWsdType), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetContentFolder
@@ -1042,7 +1042,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetMessagesFromListID', array($clWsdType), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      * @param RequestMessage $requestMessage
@@ -1068,7 +1068,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetEndAutomatism', array($clWsdlTypeGetEndAutomatism), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetFolderList
@@ -1082,7 +1082,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetFolderList', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetLanguages
@@ -1096,7 +1096,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetLanguages', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetListMessage
@@ -1111,7 +1111,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetListMessage', array($clWsdlTypeGetListMessage), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline :GetMailServiceStatus
@@ -1125,7 +1125,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetMailServiceStatus', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetPJ
@@ -1140,7 +1140,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetPJ', array($clWsdlTypeGetPJ), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetPlanningInfo
@@ -1155,7 +1155,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetPlanningInfo', array($clWsdlTypeGetPlanningInfo), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetStartAutomatism
@@ -1170,7 +1170,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetStartAutomatism', array($clWsdlTypeGetStartAutomatism), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTableChild
@@ -1185,7 +1185,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetTableChild', array($clWsdlTypeGetTableChild), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTemporalAutomatism
@@ -1199,7 +1199,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetTemporalAutomatism', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetTokenSession
@@ -1232,7 +1232,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->clGestionWSDL;
     }
 
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : HasChanged
@@ -1246,7 +1246,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('HasChanged', array(), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : InitRecordFromAddress
@@ -1261,7 +1261,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('InitRecordFromAddress', array($clWsdlTypeInitRecordFromAddress), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : InitRecordFromMessage
@@ -1276,7 +1276,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('InitRecordFromMessage', array($clWsdlTypeInitRecordFromMessage), null, null, $aHeaders);
     }
-    //----
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : List
@@ -1303,7 +1303,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetEndListCalculation', null, null, null, $aHeaders);
     }
-    //----
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Modify
@@ -1318,7 +1318,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Modify', array($clWsdlTypeModify), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ModifyFolder
@@ -1333,7 +1333,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('ModifyFolder', array($clWsdlTypeModifyFolder), null, null, $aHeaders);
     }
-    //---
+    
 
 
     /**
@@ -1349,7 +1349,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('ModifyMessage', array($clWsdlTypeModifyMessage), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Print
@@ -1364,7 +1364,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Print', array($clWsdlTypePrint), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : ReorderList
@@ -1379,7 +1379,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('ReorderList', array($clWsdlTypeReorderList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : ReorderList
@@ -1394,7 +1394,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('ReorderSubList', array($clWsdlTypeReorderSubList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Request
@@ -1421,7 +1421,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Request', '<Request>' . $requestParams . '</Request>', null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : RequestMessage
@@ -1436,7 +1436,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('RequestMessage', array($clWsdlTypeRequestMessage), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : RequestParam
@@ -1451,7 +1451,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('RequestParam', array($clWsdlTypeRequestParam), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : ResetPasswordFailed
@@ -1466,7 +1466,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('ResetPasswordFailed', array($clWsdlTypeResetPasswordFailed), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Search
@@ -1481,7 +1481,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Search', array($clWsdlTypeSearch), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectForm
@@ -1496,7 +1496,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('SelectForm', array($clWsdlTypeSelectForm), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectItems
@@ -1511,7 +1511,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('SelectItems', array($clWsdlTypeSelectItems), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectPrintTemplate
@@ -1526,7 +1526,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('SelectPrintTemplate', array($clWsdlTypeSelectPrintTemplate), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : SelectChoice
@@ -1555,7 +1555,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('SendMessage', array($clWsdlTypeSendMessage), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : SetOrderList
@@ -1570,7 +1570,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('SetOrderList', array($clWsdlTypeSetOrderList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : SetOrderSubList
@@ -1585,7 +1585,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('SetOrderSubList', array($clWsdlTypeSetOrderSubList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  fonction permettant l'appel de la fonction SOAP du service simaxOnline : TransformInto
@@ -1600,7 +1600,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('TransformInto', array($clWsdlTypeTransformInto), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Update
@@ -1631,7 +1631,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('UpdateFilter', array($clWsdlTypeUpdateFilter), null, null, $aHeaders);
     }
 
-    //----
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : ButtonAction
@@ -1647,7 +1647,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('ButtonAction', array($clWsdlTypeButtonAction), null, null, $aHeaders);
     }
 
-    //----
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : UpdateFolder
@@ -1662,7 +1662,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('UpdateFolder', array($clWsdlTypeUpdateFolder), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : UpdateMessage
@@ -1678,7 +1678,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('UpdateMessage', [$clWsdlTypeUpdateMessage], null, null, $aHeaders);
     }
 
-    //---
+    
 
     /**
      * @param UpdateColumnMessageValueInBatch $updateColumnMessageValueInBatch
@@ -1692,7 +1692,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('UpdateColumnMessageValueInBatch', array($updateColumnMessageValueInBatch), null, null, $aHeaders);
     }
 
-    //---
+    
 
     /**
      * @param DeleteMessage $deleteMessage
@@ -1718,7 +1718,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Validate', array(), null, null, $aHeaders);
     }
-    //---
+    
 
 
     /**
@@ -1734,7 +1734,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('ValidateFolder', array($clWsdlTypeValidateFolder), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : WithAutomaticResponse
@@ -1749,7 +1749,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('WithAutomaticResponse', array($clWsdlTypeWithAutomaticResponse), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : ZipPJ
@@ -1765,7 +1765,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('ZipPJ', array($clWsdlTypeZipPJ), null, null, $aHeaders);
     }
 
-    //---
+    
 
     /**
      * @param       $export
@@ -1790,7 +1790,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Import', array($import), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : getUndoList
@@ -1805,7 +1805,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetUndoList', array($clWsdlTypeGetUndoList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : getUndoList
@@ -1820,7 +1820,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetUndoListID', array($clWsdlType), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetRedoList
@@ -1835,7 +1835,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetRedoList', array($clWsdlTypeGetRedoList), null, null, $aHeaders);
     }
-    //---
+    
 
     /**
      *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : GetRedoList
@@ -1850,7 +1850,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('GetRedoListID', array($clWsdlType), null, null, $aHeaders);
     }
-    //---
+    
 
     /**  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : DisplayUndoMessage
      *
@@ -1864,7 +1864,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('DisplayUndoMessage', array($clWsdlTypeDisplayUndoMessage), null, null, $aHeaders);
     }
-    //---
+    
 
     /**  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : DisplayRedoMessage
      *
@@ -1878,7 +1878,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('DisplayRedoMessage', array($clWsdlTypeDisplayRedoMessage), null, null, $aHeaders);
     }
-    //---
+    
 
     /**  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Undo
      *
@@ -1892,7 +1892,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     {
         return $this->call('Undo', array($clWsdlTypeUndo), null, null, $aHeaders);
     }
-    //---
+    
 
     /**  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Redo
      *
@@ -1907,7 +1907,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         return $this->call('Redo', array($clWsdlTypeRedo), null, null, $aHeaders);
     }
 
-    //---
+    
 
 
     public static function s_isValidHeaderProp($sHeaderProp) : bool
