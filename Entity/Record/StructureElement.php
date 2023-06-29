@@ -14,77 +14,77 @@ class StructureElement
      * identifiant du formulaire
      * @var string
      */
-    protected $m_nID;
+    protected string $nID;
 
     /**
      * @var string
      */
-    protected $m_sLibelle;
+    protected string $sLibelle;
 
     /**
      * @var StructureSection
      */
-    protected $m_clFiche;
+    protected StructureSection $clFiche;
 
     /**
      * les boutons qu'on affiche dans la fiche ou en bas des listes
      * @var StructureBouton[]
      */
-    protected $m_TabBouton=[];
+    protected array $aTabBouton =[];
 
     /**
      * @var StructureBouton[]
      */
-    protected $m_TabBoutonSurLigne=[];
+    protected array $aTabBoutonSurLigne =[];
 
     /**
      * @var StructureBouton[]
      */
-    protected $m_TabBoutonColNonDetail=[];
+    protected array $aTabBoutonColNonDetail =[];
 
     /**
      * les boutons qu'on affiche dans la fiche ou en bas des listes qui sont en lecture seule
      * @var StructureBouton[]
      */
-    protected $m_TabBoutonReadOnly=[];
+    protected array $aTabBoutonReadOnly =[];
 
     /**
      * les boutons de remplacement qui remplace enregistrer et annuler
      * @var StructureBouton[]
      */
-    protected $m_TabBoutonRemplacementValidation=[];
+    protected array $aTabBoutonRemplacementValidation =[];
 
     /**
      * les autres boutons de remplacement
      * @var StructureBouton[]
      */
-    protected $m_TabBoutonRemplacementAutre=[];
+    protected array $aTabBoutonRemplacementAutre =[];
 
     /**
      * @var StructureColonne[]
      */
-    protected $m_MapIDColonne2Structure = [];
+    protected array $aMapIDColonne2Structure = [];
 
     /**
      * @var int
      */
-    protected $m_eMultiColMode;
+    protected int $eMultiColMode = StructureSection::MODE_1COlONNE;
 
     /**
      * @var int
      */
-    protected $m_eMultiColWay;
+    protected int $eMultiColWay = StructureSection::SENS_HORIZONTAL;
 
     /**
      * @var string
      */
-    protected $m_sBackgroundColor = '';
+    protected string $sBackgroundColor = '';
 
     /** @var string  */
-    protected $m_nIDIcon = '';
+    protected string $nIDIcon = '';
 
     /** @var int  */
-    protected $m_nTableInfoConfiguration = 0;
+    protected int $nTableInfoConfiguration = 0;
 
     /**
      * @param $sID
@@ -93,11 +93,9 @@ class StructureElement
      */
     public function __construct($sID, $sLibelle)
     {
-        $this->m_nID           = $sID;
-        $this->m_sLibelle      = $sLibelle;
-        $this->m_clFiche       = new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
-        $this->m_eMultiColMode = StructureSection::MODE_1COlONNE;
-        $this->m_eMultiColWay  = StructureSection::SENS_HORIZONTAL;
+        $this->nID       = $sID;
+        $this->sLibelle  = $sLibelle;
+        $this->clFiche = new StructureSection('1', new \SimpleXMLElement('<root/>'), new \SimpleXMLElement('<root/>'));
     }
 
     /**
@@ -108,9 +106,9 @@ class StructureElement
      */
     public function setMultiColonneInfo(int $eMode, int $eWay, string $bgColor): StructureElement
     {
-        $this->m_eMultiColMode = $eMode;
-        $this->m_eMultiColWay = $eWay;
-        $this->m_sBackgroundColor = $bgColor;
+        $this->eMultiColMode      = $eMode;
+        $this->eMultiColWay       = $eWay;
+        $this->sBackgroundColor = $bgColor;
         return $this;
     }
 
@@ -119,7 +117,7 @@ class StructureElement
      */
     public function eGetMultiColonneMode(): int
     {
-        return $this->m_eMultiColMode;
+        return $this->eMultiColMode;
     }
 
 
@@ -128,7 +126,7 @@ class StructureElement
      */
     public function eGetMultiColonneWay(): int
     {
-        return $this->m_eMultiColWay;
+        return $this->eMultiColWay;
     }
 
     /**
@@ -136,7 +134,7 @@ class StructureElement
      */
     public function getBackgroundColor(): string
     {
-        return $this->m_sBackgroundColor;
+        return $this->sBackgroundColor;
     }
 
     /**
@@ -144,7 +142,7 @@ class StructureElement
      */
     public function getIDIcon(): string
     {
-        return $this->m_nIDIcon;
+        return $this->nIDIcon;
     }
 
     /**
@@ -152,7 +150,7 @@ class StructureElement
      */
     public function getTableInfoConfiguration(): int
     {
-        return $this->m_nTableInfoConfiguration;
+        return $this->nTableInfoConfiguration;
     }
 
     /**
@@ -165,10 +163,10 @@ class StructureElement
             switch ($name)
             {
                 case self::OPTION_tableInfoConfiguration:
-                    $this->m_nTableInfoConfiguration = (int)$clNoeud;
+                    $this->nTableInfoConfiguration = (int)$clNoeud;
                     break;
                 case self::OPTION_tableIconID:
-                    $this->m_nIDIcon = (string)$clNoeud;
+                    $this->nIDIcon = (string)$clNoeud;
                     break;
             }
         }
@@ -187,7 +185,7 @@ class StructureElement
             throw new \Exception("StructureColonne::addColonne ne doit pas être utilisée pour ajouter des boutons, utiliser addButton à la place.");
         }
 
-        $this->m_MapIDColonne2Structure[$clStructColonne->getIDColonne()]=$clStructColonne;
+        $this->aMapIDColonne2Structure[$clStructColonne->getIDColonne()] =$clStructColonne;
         return $this;
     }
 
@@ -204,7 +202,7 @@ class StructureElement
         {
             if ($clStructBouton->isOption(StructureColonne::OPTION_DisplayOnLine))
             {
-                $this->m_TabBoutonSurLigne[] = $clStructBouton;
+                $this->aTabBoutonSurLigne[] = $clStructBouton;
             }
 
             //c'est un bouton colonne, il faut voir si c'est un bouton de substitution
@@ -215,14 +213,14 @@ class StructureElement
                 {
                 case StructureColonne::BTNSUB_Imprimer:
                 {
-                    $this->m_TabBoutonRemplacementAutre[]=$clStructBouton;
+                    $this->aTabBoutonRemplacementAutre[] =$clStructBouton;
                     break;
                 }
 
                 case StructureColonne::BTNSUB_Enregistrer:
                 case StructureColonne::BTNSUB_Annuler:
                 {
-                    $this->m_TabBoutonRemplacementValidation[]=$clStructBouton;
+                    $this->aTabBoutonRemplacementValidation[] =$clStructBouton;
                     break;
                 }
 
@@ -234,19 +232,19 @@ class StructureElement
             if (!$clStructBouton->isOption(StructureColonne::OPTION_DisplayOnLine)
                 && !$clStructBouton->isOption(StructureColonne::OPTION_Detail))
             {
-                $this->m_TabBoutonColNonDetail[] = $clStructBouton;
+                $this->aTabBoutonColNonDetail[] = $clStructBouton;
             }
 
             //sinon on le met avec les autres colonnes
-            $this->m_MapIDColonne2Structure[$clStructBouton->getIDColonne()]=$clStructBouton;
+            $this->aMapIDColonne2Structure[$clStructBouton->getIDColonne()] =$clStructBouton;
             return true;
         }
 
         //c'est pas un bouton colonne, on le mets avec les boutons d'action de fiche
-        $this->m_TabBouton[] = $clStructBouton;
+        $this->aTabBouton[] = $clStructBouton;
         if($clStructBouton->isReadOnly())
         {
-            $this->m_TabBoutonReadOnly[] = $clStructBouton;
+            $this->aTabBoutonReadOnly[] = $clStructBouton;
         }
 
         return false;
@@ -259,12 +257,12 @@ class StructureElement
      */
     public function getTypeElement(string $sIDColonne) :?string
     {
-        if (!isset($this->m_MapIDColonne2Structure[$sIDColonne]))
+        if (!isset($this->aMapIDColonne2Structure[$sIDColonne]))
         {
             return null;
         }
 
-        return $this->m_MapIDColonne2Structure[$sIDColonne]->getTypeElement();
+        return $this->aMapIDColonne2Structure[$sIDColonne]->getTypeElement();
     }
 
     /**
@@ -273,12 +271,12 @@ class StructureElement
      */
     public function getStructureColonne(string $sIDColonne) :?StructureColonne
     {
-        if (!isset($this->m_MapIDColonne2Structure[$sIDColonne]))
+        if (!isset($this->aMapIDColonne2Structure[$sIDColonne]))
         {
             return null;
         }
 
-        return $this->m_MapIDColonne2Structure[$sIDColonne];
+        return $this->aMapIDColonne2Structure[$sIDColonne];
     }
 
     /**
@@ -287,7 +285,7 @@ class StructureElement
      */
     public function filterStructureColonne(string $option) : array
     {
-        return array_filter($this->m_MapIDColonne2Structure, function($clStructureColonne) use($option){
+        return array_filter($this->aMapIDColonne2Structure, function($clStructureColonne) use($option){
             return $clStructureColonne->isOption($option);
         });
     }
@@ -299,9 +297,9 @@ class StructureElement
      */
     public function setTypeElement(string $sIDColonne, string $eTypeElement)
     {
-        if (isset($this->m_MapIDColonne2Structure[$sIDColonne]))
+        if (isset($this->aMapIDColonne2Structure[$sIDColonne]))
         {
-            $this->m_MapIDColonne2Structure[$sIDColonne]->setTypeElement($eTypeElement);
+            $this->aMapIDColonne2Structure[$sIDColonne]->setTypeElement($eTypeElement);
         }
     }
 
@@ -311,9 +309,9 @@ class StructureElement
      */
     public function setRestriction(string $sIDColonne, ColonneRestriction $clRestriction)
     {
-        if (isset($this->m_MapIDColonne2Structure[$sIDColonne]))
+        if (isset($this->aMapIDColonne2Structure[$sIDColonne]))
         {
-            $this->m_MapIDColonne2Structure[$sIDColonne]->setRestriction($clRestriction);
+            $this->aMapIDColonne2Structure[$sIDColonne]->setRestriction($clRestriction);
         }
     }
 
@@ -322,7 +320,7 @@ class StructureElement
      */
     public function getID(): string
     {
-        return $this->m_nID;
+        return $this->nID;
     }
 
     /**
@@ -330,7 +328,7 @@ class StructureElement
      */
     public function getFiche(): StructureSection
     {
-        return $this->m_clFiche;
+        return $this->clFiche;
     }
 
     /**
@@ -341,11 +339,11 @@ class StructureElement
     {
         if($isReadOnly)
         {
-            return $this->m_TabBoutonReadOnly;
+            return $this->aTabBoutonReadOnly;
         }
 
         // Sinon on récupère tous les boutons d'actions de liste par défaut
-        return $this->m_TabBouton;
+        return $this->aTabBouton;
     }
 
     /**
@@ -353,7 +351,7 @@ class StructureElement
      */
     public function getTabBtnColNonDetail() : array
     {
-        return $this->m_TabBoutonColNonDetail;
+        return $this->aTabBoutonColNonDetail;
     }
 
     /**
@@ -361,7 +359,7 @@ class StructureElement
      */
     public function getTabBtnSurLigne() : array
     {
-        return $this->m_TabBoutonSurLigne;
+        return $this->aTabBoutonSurLigne;
     }
 
     /**
@@ -369,7 +367,7 @@ class StructureElement
      */
     public function getTabBtnRemplacementValidation(): array
     {
-        return $this->m_TabBoutonRemplacementValidation;
+        return $this->aTabBoutonRemplacementValidation;
     }
 
     /**
@@ -377,7 +375,7 @@ class StructureElement
      */
     public function getTabBtnRemplacementAutre(): array
     {
-        return $this->m_TabBoutonRemplacementAutre;
+        return $this->aTabBoutonRemplacementAutre;
     }
 
     /**
@@ -385,7 +383,7 @@ class StructureElement
      */
     public function getLibelle(): string
     {
-        return $this->m_sLibelle;
+        return $this->sLibelle;
     }
 
     /**
@@ -393,7 +391,7 @@ class StructureElement
      */
     public function getTabIDColonne(): array
     {
-        return array_keys($this->m_MapIDColonne2Structure);
+        return array_keys($this->aMapIDColonne2Structure);
     }
 
     /**
@@ -401,7 +399,7 @@ class StructureElement
      */
     public function getMapIDColonne2Structure(): array
     {
-        return $this->m_MapIDColonne2Structure;
+        return $this->aMapIDColonne2Structure;
     }
 
     /**
@@ -411,7 +409,7 @@ class StructureElement
     public function getTabColonneAvecOption($option): array
     {
         $aRet = array();
-        foreach($this->m_MapIDColonne2Structure as $clStructureColonne)
+        foreach($this->aMapIDColonne2Structure as $clStructureColonne)
         {
             /** @var StructureColonne $clStructureColonne */
             if ($clStructureColonne->isOption($option))
@@ -431,7 +429,7 @@ class StructureElement
 
         // Tableau de retour
         $aRet = array();
-        foreach($this->m_MapIDColonne2Structure as $clStructureColonne)
+        foreach($this->aMapIDColonne2Structure as $clStructureColonne)
         {
             /** @var StructureColonne $clStructureColonne */
             if ($clStructureColonne->getTypeElement() == StructureColonne::TM_Tableau)
