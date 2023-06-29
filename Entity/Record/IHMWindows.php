@@ -42,9 +42,9 @@ class IHMWindows
     /**
      * @return int
      */
-    public function getIsConfiguration() : int
+    public function getTableInfoConfiguration() : int
     {
-        return is_null($this->m_clStructElem) ? 0 : $this->m_clStructElem->getIsConfiguration();
+        return is_null($this->m_clStructElem) ? 0 : $this->m_clStructElem->getTableInfoConfiguration();
     }
 
     /**
