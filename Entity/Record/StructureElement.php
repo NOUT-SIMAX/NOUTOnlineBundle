@@ -84,7 +84,7 @@ class StructureElement
     protected $m_nIDIcon = '';
 
     /** @var int  */
-    protected $m_nIsConfiguration = 0;
+    protected $m_nTableInfoConfiguration = 0;
 
     /**
      * @param $sID
@@ -150,9 +150,9 @@ class StructureElement
     /**
      * @return int
      */
-    public function getIsConfiguration(): int
+    public function getTableInfoConfiguration(): int
     {
-        return $this->m_nIsConfiguration;
+        return $this->m_nTableInfoConfiguration;
     }
 
     /**
@@ -164,8 +164,8 @@ class StructureElement
         {
             switch ($name)
             {
-                case self::OPTION_isConfiguration:
-                    $this->m_nIsConfiguration = (int)$clNoeud;
+                case self::OPTION_tableInfoConfiguration:
+                    $this->m_nTableInfoConfiguration = (int)$clNoeud;
                     break;
                 case self::OPTION_tableIconID:
                     $this->m_nIDIcon = (string)$clNoeud;
@@ -447,6 +447,6 @@ class StructureElement
     const NV_XSD_List                   = 1;
     const NV_XSD_LienElement            = 2;
 
-    const OPTION_isConfiguration        = 'isConfiguration';
+    const OPTION_tableInfoConfiguration = 'tableInfoConfiguration';
     const OPTION_tableIconID            = 'tableIconID';
 }
