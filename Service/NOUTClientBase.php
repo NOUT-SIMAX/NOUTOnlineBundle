@@ -29,6 +29,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\NonceCreatedSecretUsernamePassword;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
@@ -809,6 +810,21 @@ abstract class NOUTClientBase
         $clActionResult->setTypeCache($oRet->isNoCache() ? ActionResultCache::TYPECACHE_None : ActionResultCache::TYPECACHE_Private);
         $clActionResult->setLastModified($oRet->getDTLastModified());
 
+        return $clActionResult;
+    }
+
+    /**
+     * @param HTTPResponse $HTTPResponse
+     * @return ActionResult
+     */
+    protected function _oGetJSONActionResultFromHTTPResponse(HTTPResponse $HTTPResponse) : ActionResult
+    {
+        $clActionResult = new ActionResult(null);
+        $oInfo = json_decode($HTTPResponse->content);
+        if(json_last_error() != JSON_ERROR_NONE) {
+            $oInfo = $HTTPResponse->content;
+        }
+        $clActionResult->setData($oInfo);
         return $clActionResult;
     }
 

@@ -12,8 +12,8 @@ services:
         
     NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase:
         arguments:
-            $aVersionsMin:       '%noutonline.version.min%'
-            $nVersionDialPref:  '%noutonline.version.dialogue_pref%'
+            $aVersionsMin:     '%noutonline.version.min%'
+            $nVersionDialPref: '%noutonline.version.dialogue_pref%'
 
     NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientMessagerie:
         parent: NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase
@@ -22,6 +22,9 @@ services:
         parent: NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase
         
     NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientIHM:
+        parent: NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase
+        
+    NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientConfiguration:
         parent: NOUT\Bundle\NOUTOnlineBundle\Service\NOUTClientBase
         
     NOUT\Bundle\NOUTOnlineBundle\Service\DynamicConfigurationLoader:
