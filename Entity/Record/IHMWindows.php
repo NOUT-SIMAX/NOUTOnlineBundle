@@ -13,8 +13,8 @@ class IHMWindows
     /** @var string : identifiant du formulaire */
     protected string $nIDTableau ='';
 
-    /** @var StructureElement */
-    protected StructureElement $clStructElem;
+    /** @var StructureElement|null */
+    protected ?StructureElement $clStructElem;
 
     public function __construct(string $sTitle, string $sIDTableau, StructureElement $clStruct = null)
     {
