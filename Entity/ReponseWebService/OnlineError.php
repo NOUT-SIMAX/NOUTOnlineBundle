@@ -131,20 +131,17 @@ class OnlineError implements \JsonSerializable
             $output = str_replace('<br/>', "\r\n", $text);
         }
 
-
-        $tabLines = explode("\r\n", $output);
-
-        if (count($tabLines)>1){
-            $re = '/([0-9]+)\(([0-9]+)\|([0-9]+)\)(.*)/';
-            preg_match_all($re, $tabLines[0], $matches);
-
+        $re = '/^([0-9]+)\(([0-9]+)\|([0-9]+)\)(?:<br\/>)?\s{1,2}(.*)/s';
+        if (preg_match_all($re, $output, $matches))
+        {
             $this->m_nErreur = $matches[1][0];
             $this->m_nCategorie = $matches[2][0];
             $this->m_nCode = $matches[3][0];
 
-            $this->m_sMessage = strip_tags($tabLines[1]);
+            $this->m_sMessage = strip_tags($matches[4][0]);
         }
-        else {
+        else
+        {
             $this->m_sMessage = strip_tags($output);
         }
     }

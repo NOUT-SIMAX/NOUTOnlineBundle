@@ -12,9 +12,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\InfoColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Data;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
@@ -43,8 +43,8 @@ class ParserXmlXsd extends AbstractParser
 
     public function __construct()
     {
-        $this->m_clRecordCache 		= new RecordCache();
-        $this->m_TabEnregTableau 	= new EnregTableauArray();
+        $this->m_clRecordCache         = new RecordCache();
+        $this->m_TabEnregTableau     = new EnregTableauArray();
     }
 
 
@@ -397,57 +397,53 @@ class ParserXmlXsd extends AbstractParser
     {
         throw new \Exception('xml sans structure non géré');
 
-//		$sNom            = $ndColonne->getName();
-//		$TabAttribNOUT   = $ndColonne->attributes(self::NAMESPACE_NOUT_XML);
-//		$TabAttribLayout = $ndColonne->attributes(self::NAMESPACE_NOUT_LAYOUT);
+//        $sNom            = $ndColonne->getName();
+//        $TabAttribNOUT   = $ndColonne->attributes(self::NAMESPACE_NOUT_XML);
+//        $TabAttribLayout = $ndColonne->attributes(self::NAMESPACE_NOUT_LAYOUT);
 //
-//		$clInfoColonne = new InfoColonne(str_replace('id_', '', $sNom), $TabAttribNOUT, $TabAttribLayout);
+//        $clInfoColonne = new InfoColonne(str_replace('id_', '', $sNom), $TabAttribNOUT, $TabAttribLayout);
 //
-//		$ValeurColonne = null;
-//		if ($ndColonne->count()>0)
-//		{
-//			//on a des fils
-//			//on a pas la structure
-//			//on regarde si le fils est dans le tableau d'element premier niveau $TabFormPresent
-//			$bFormulaire = false;
-//			foreach ($ndColonne->children() as $ndFils)
-//			{
-//				$sID = str_replace('id_', '', $ndFils->getName());
-//				if (array_search($sID, $TabFormPresent) == false)
-//				{
-//					$bFormulaire = true;
-//				}
+//        $ValeurColonne = null;
+//        if ($ndColonne->count()>0)
+//        {
+//            //on a des fils
+//            //on a pas la structure
+//            //on regarde si le fils est dans le tableau d'element premier niveau $TabFormPresent
+//            $bFormulaire = false;
+//            foreach ($ndColonne->children() as $ndFils)
+//            {
+//                $sID = str_replace('id_', '', $ndFils->getName());
+//                if (array_search($sID, $TabFormPresent) == false)
+//                {
+//                    $bFormulaire = true;
+//                }
 //
-//				break;
-//			}
+//                break;
+//            }
 //
-//			if ($bFormulaire)
-//			{
-//				//c'est pas un separateur mais une colonne liste
-//				$ValeurColonne = array();
-//				foreach ($ndColonne->children() as $ndValeur)
-//				{
-//					$ValeurColonne[] = (string) $ndValeur;
-//				}
-//			}
-//			else
-//			{
-//				//c'est un séparateur, il faut faire les colonnes filles
-//				$this->__ParseColumnRecord($ndColonne, $TabFormPresent, $sIDTableau, $sIDEnreg);
-//			}
+//            if ($bFormulaire)
+//            {
+//                //c'est pas un separateur mais une colonne liste
+//                $ValeurColonne = array();
+//                foreach ($ndColonne->children() as $ndValeur)
+//                {
+//                    $ValeurColonne[] = (string) $ndValeur;
+//                }
+//            }
+//            else
+//            {
+//                //c'est un séparateur, il faut faire les colonnes filles
+//                $this->__ParseColumnRecord($ndColonne, $TabFormPresent, $sIDTableau, $sIDEnreg);
+//            }
 //
-//		}
-//		else
-//		{
-//			$ValeurColonne = (string) $ndColonne;
-//		}
+//        }
+//        else
+//        {
+//            $ValeurColonne = (string) $ndColonne;
+//        }
 //
-//		$this->m_MapIDTableauIDEnreg2Record[$sIDTableau][$sIDEnreg]
-//			->setInfoColonne($clInfoColonne)
-//			->setValCol($clInfoColonne->getIDColonne(), $ValeurColonne, false); //false car on parse le xml, donc par modifié utilisateur
+//        $this->m_MapIDTableauIDEnreg2Record[$sIDTableau][$sIDEnreg]
+//            ->setInfoColonne($clInfoColonne)
+//            ->setValCol($clInfoColonne->getIDColonne(), $ValeurColonne, false); //false car on parse le xml, donc par modifié utilisateur
     }
-
-
-
-
 }

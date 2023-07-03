@@ -28,7 +28,7 @@ class CurrentAction
 	/**
 	 * @var int
 	 */
-	protected $m_nTypeAction;
+	protected $m_nIDTypeAction;
 
     /**
      * @var string
@@ -51,7 +51,7 @@ class CurrentAction
 	{
 		$this->m_sID                = (string) $clAction;
 		$this->m_sTitle             = (string) $clAction['title'];
-		$this->m_nTypeAction        = (int) $clAction['typeAction'];
+		$this->m_nIDTypeAction      = (int)$clAction['typeAction'];
         $this->m_nIDForm            = (string) $clAction['actionForm'];
         $this->m_userConfirmation   = (string) $clAction['userConfirmation'];
         $this->m_isConfiguration   = ((int) ($clAction['isConfiguration'] ?? 0)) != 0;
@@ -60,9 +60,9 @@ class CurrentAction
 	/**
 	 * @return int
 	 */
-	public function getTypeAction(): int
+	public function getIDTypeAction(): int
     {
-		return $this->m_nTypeAction;
+		return $this->m_nIDTypeAction;
 	}
 
 	/**

@@ -9,20 +9,20 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondColumn;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\Condition;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondValue;
-
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\CondListType\CondListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Factory\CondListTypeFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UserExists\UserExists;
+use NOUT\Bundle\NOUTOnlineBundle\NOUTException\NOUTValidationException;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Security\EncryptionType;
@@ -53,10 +53,8 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectItems;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SelectPrintTemplate;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderList;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SetOrderSubList;
-
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Update;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateFilter;
-use NOUT\Bundle\NOUTOnlineBundle\NOUTException\NOUTValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
@@ -986,10 +984,10 @@ class NOUTClient extends NOUTClientBase
         //header
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl(null, $sIDContexte);
 
-//        public $ParamXML; 			// string
-//        public $SpecialParamList; 	// SpecialParamListType
-//        public $Checksum; 			// integer
-//        public $DisplayMode; 		    // DisplayModeParamEnum
+//        public $ParamXML;             // string
+//        public $SpecialParamList;     // SpecialParamListType
+//        public $Checksum;             // integer
+//        public $DisplayMode;             // DisplayModeParamEnum
         $clParam = $this->_oGetParam(Search::class, $tabParamQuery);
         // Ajout des paramètres
         $clParam->Table = $sIDFormulaire;
@@ -1288,20 +1286,6 @@ class NOUTClient extends NOUTClientBase
         );
     }
 
-    /**
-     * @param HTTPResponse $HTTPResponse
-     * @return ActionResult
-     */
-    private function _oGetJSONActionResultFromHTTPResponse(HTTPResponse $HTTPResponse) : ActionResult
-    {
-        $clActionResult = new ActionResult(null);
-        $oInfo = json_decode($HTTPResponse->content);
-        if(json_last_error() != JSON_ERROR_NONE) {
-            $oInfo = $HTTPResponse->content;
-        }
-        $clActionResult->setData($oInfo);
-        return $clActionResult;
-    }
 
     /**
      * @param string $idcontext
@@ -1345,45 +1329,6 @@ class NOUTClient extends NOUTClientBase
             $formula,
             $clIdentification
         );
-        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
-    }
-
-    /**
-     * @return mixed
-     * @throws \Exception
-     */
-    public function oGetConfigurationDropdownParams(string $idcontext) : ActionResult
-    {
-        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
-
-        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownParams($clIdentification);
-
-        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
-    }
-
-    /**
-     * @return mixed
-     * @throws \Exception
-     */
-    public function oGetConfigurationDropdownColumns(string $idcontext) : ActionResult
-    {
-        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
-
-        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownColumns($clIdentification);
-
-        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
-    }
-
-    /**
-     * @return mixed
-     * @throws \Exception
-     */
-    public function oApplyConfiguration() : ActionResult
-    {
-        $clIdentification = $this->_clGetIdentificationREST('', true);
-
-        $httpresponse = $this->m_clRESTProxy->oApplyConfiguration($clIdentification);
-
         return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
     }
 

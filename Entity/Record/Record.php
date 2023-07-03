@@ -305,12 +305,12 @@ class Record extends IHMWindows
      */
     public function getTitleFromIDRecordLie($idRecordLie, $idColonne): string
     {
-        if (!isset($this->m_clCacheRecordLie) || !isset($this->m_clStructElem))
+        if (!isset($this->m_clCacheRecordLie) || !isset($this->clStructElem))
         {
             return "";
         }
 
-        $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
+        $clStructureColonne = $this->clStructElem->getStructureColonne($idColonne);
         $record = $this->m_clCacheRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
         if (!isset($record)){
             return '';
@@ -332,7 +332,7 @@ class Record extends IHMWindows
             return null;
         }
 
-        $clStructureColonne = $this->m_clStructElem->getStructureColonne($idColonne);
+        $clStructureColonne = $this->clStructElem->getStructureColonne($idColonne);
 
         switch($clStructureColonne->getTypeElement())
         {
@@ -479,8 +479,8 @@ class Record extends IHMWindows
      */
     public function getLinkedColumns(): array
     {
-        if ($this->m_clStructElem instanceof StructureElement){
-            return $this->m_clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link) ;
+        if ($this->clStructElem instanceof StructureElement){
+            return $this->clStructElem->getTabColonneAvecOption(StructureColonne::OPTION_Link) ;
         }
         return array();
     }
@@ -492,8 +492,8 @@ class Record extends IHMWindows
      */
     public function getTabColonneAvecOption($option): array
     {
-        if ($this->m_clStructElem instanceof StructureElement) {
-            return $this->m_clStructElem->getTabColonneAvecOption($option);
+        if ($this->clStructElem instanceof StructureElement) {
+            return $this->clStructElem->getTabColonneAvecOption($option);
         }
         return array();
     }
@@ -503,11 +503,11 @@ class Record extends IHMWindows
      * Appelé dans transformViewRecord2JSON
      * @return array
      */
-    public function getLinkedElems(): array
+    public function getTabColonne2IDTableauLie(): array
     {
-        // Récupère un tableau associatif [Id Colonne] -> [Id TmTab] pour tout le formulaire
-        if ($this->m_clStructElem instanceof StructureElement) {
-            return $this->m_clStructElem->getTabColonneTmTab();
+        // Récupère un tableau associatif [Id Colonne] -> [Id TabLie] pour tout le formulaire
+        if ($this->clStructElem instanceof StructureElement) {
+            return $this->clStructElem->getTabColonne2IDTableauLie();
         }
         return array();
     }
@@ -540,7 +540,7 @@ class Record extends IHMWindows
         $this->resetLastModified();
 
         //mise à jour du titre
-        $this->m_sTitle = $clRecordSrc->getTitle();
+        $this->sTitle = $clRecordSrc->getTitle();
         $this->m_clCacheRecordLie->update($clRecordSrc->m_clCacheRecordLie);
 
         //mise à jour des valeurs
@@ -559,7 +559,7 @@ class Record extends IHMWindows
 
     public function emptyPassword()
     {
-        foreach($this->m_clStructElem->getMapIDColonne2Structure() as $idcolonne=>$clStructureColonne)
+        foreach($this->clStructElem->getMapIDColonne2Structure() as $idcolonne=> $clStructureColonne)
         {
             if (!$clStructureColonne->isOption(StructureColonne::OPTION_Hidden))
             {
@@ -682,7 +682,7 @@ class Record extends IHMWindows
      */
     public function getUpdateData(array $aFilesToSend): string
     {
-        $sIDForm                    = $this->m_clStructElem->getID();
+        $sIDForm                    = $this->clStructElem->getID();
 
         $aTabColumnsValues = $this->_filterTabColumnsValues($aFilesToSend, true);
         $aTabColumnsMultilangue = $this->_aGetColMultilangue();
@@ -696,7 +696,7 @@ class Record extends IHMWindows
      */
     protected function _aGetColMultilangue() : array
     {
-        $aRet = $this->m_clStructElem->filterStructureColonne(StructureColonne::OPTION_Modele_Multilanguage);
+        $aRet = $this->clStructElem->filterStructureColonne(StructureColonne::OPTION_Modele_Multilanguage);
         array_walk($aRet, function(StructureColonne $clStructureColonne){
             return $clStructureColonne->getIDColonne();
         });

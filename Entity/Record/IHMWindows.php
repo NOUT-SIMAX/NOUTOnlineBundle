@@ -8,19 +8,19 @@ class IHMWindows
 {
 
     /** @var string : contient la mini desc de l'enregistrement */
-    protected $m_sTitle='';
+    protected string $sTitle ='';
 
     /** @var string : identifiant du formulaire */
-    protected $m_nIDTableau='';
+    protected string $nIDTableau ='';
 
-    /** @var StructureElement */
-    protected $m_clStructElem;
+    /** @var StructureElement|null */
+    protected ?StructureElement $clStructElem;
 
     public function __construct(string $sTitle, string $sIDTableau, StructureElement $clStruct = null)
     {
-        $this->m_sTitle       = $sTitle;
-        $this->m_nIDTableau   = $sIDTableau;
-        $this->m_clStructElem = $clStruct;
+        $this->sTitle         = $sTitle;
+        $this->nIDTableau     = $sIDTableau;
+        $this->clStructElem = $clStruct;
     }
 
     /**
@@ -28,7 +28,7 @@ class IHMWindows
      */
     public function getTitle(): string
     {
-        return $this->m_sTitle;
+        return $this->sTitle;
     }
 
     /**
@@ -36,7 +36,20 @@ class IHMWindows
      */
     public function getIDTableau(): string
     {
-        return $this->m_nIDTableau;
+        return $this->nIDTableau;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTableInfoConfiguration() : int
+    {
+        return is_null($this->clStructElem) ? 0 : $this->clStructElem->getTableInfoConfiguration();
+    }
+
+    public function getIDIcon() : string
+    {
+        return is_null($this->clStructElem) ? '' : $this->clStructElem->getIDIcon();
     }
 
     /**
@@ -44,7 +57,7 @@ class IHMWindows
      */
     public function getStructElem(): ?StructureElement
     {
-        return $this->m_clStructElem;
+        return $this->clStructElem;
     }
 
     /**
@@ -53,8 +66,8 @@ class IHMWindows
      */
     public function getStructColonne($idColonne): ?StructureColonne
     {
-        if ($this->m_clStructElem instanceof StructureElement){
-            return $this->m_clStructElem->getStructureColonne($idColonne);
+        if ($this->clStructElem instanceof StructureElement){
+            return $this->clStructElem->getStructureColonne($idColonne);
         }
         return null;
     }

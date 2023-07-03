@@ -796,6 +796,7 @@ class XMLResponseWS
     const RETURNTYPE_MAILSERVICEIDLIST      = 'MailServiceIDList';
 
     //types virtuels pour traitement spéciaux
+    const VIRTUALRETURNTYPE_AFFICHEMESSAGE = 'MessageDisplay';
     const VIRTUALRETURNTYPE_FILE = "File";
     const VIRTUALRETURNTYPE_FILE_PREVIEW = "FilePreview";
     const VIRTUALRETURNTYPE_CASCADE = 'Cascade';

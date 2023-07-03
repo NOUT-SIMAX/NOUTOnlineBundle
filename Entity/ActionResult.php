@@ -12,10 +12,10 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ConnectedUser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Count;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\CurrentRequest;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\FolderCount;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ValidateError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\Element;
 
 class ActionResult
 {
@@ -370,8 +370,18 @@ class ActionResult
      */
     public function getTypeAction(): string
     {
-        return $this->getAction()->getTypeAction();
+        return $this->getAction()->getIDTypeAction();
     }
+
+
+    /**
+     * @return string
+     */
+    public function getIDAction(): string
+    {
+        return $this->getAction()->getID();
+    }
+
 
     /**
      * @return ConnectedUser|null

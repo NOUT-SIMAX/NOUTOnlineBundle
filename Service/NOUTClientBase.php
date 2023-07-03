@@ -8,31 +8,31 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\MailServiceStatus;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\NonceCreatedSecretUsernamePassword;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserNumberOfChart;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserRecord;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserScheduler;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\OnlineError;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\SelectorList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\NonceCreatedSecretUsernamePassword;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\SpecialParamListType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -810,6 +810,21 @@ abstract class NOUTClientBase
         $clActionResult->setTypeCache($oRet->isNoCache() ? ActionResultCache::TYPECACHE_None : ActionResultCache::TYPECACHE_Private);
         $clActionResult->setLastModified($oRet->getDTLastModified());
 
+        return $clActionResult;
+    }
+
+    /**
+     * @param HTTPResponse $HTTPResponse
+     * @return ActionResult
+     */
+    protected function _oGetJSONActionResultFromHTTPResponse(HTTPResponse $HTTPResponse) : ActionResult
+    {
+        $clActionResult = new ActionResult(null);
+        $oInfo = json_decode($HTTPResponse->content);
+        if(json_last_error() != JSON_ERROR_NONE) {
+            $oInfo = $HTTPResponse->content;
+        }
+        $clActionResult->setData($oInfo);
         return $clActionResult;
     }
 
