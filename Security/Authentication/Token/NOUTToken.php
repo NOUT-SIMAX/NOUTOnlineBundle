@@ -11,6 +11,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\FormElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -23,57 +24,60 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     /**
      * @var Langage|null
      */
-    protected $m_clLangage=null;
+    protected ?Langage $clLangage =null;
 
     /**
      * @var string
      */
-    protected $m_sTimeZone='';
+    protected string $sTimeZone ='';
 
     /**
      * @var string
      */
-    protected $m_sLocale='';
+    protected string $sLocale ='';
 
     /**
      * @var string
      */
-    protected $m_sSessionToken='';
+    protected string $sSessionToken ='';
 
     /**
      * @var string m_sIP
      */
-    protected $m_sIP='';
+    protected string $sIP ='';
 
     /** @var string */
-    protected $m_sNameToDisplay='';
+    protected string $sNameToDisplay ='';
 
     /** @var UsernameToken|null */
-    protected $m_oUsernameToken=null;
+    protected ?UsernameToken $oUsernameToken =null;
 
     /** @var UsernameToken|null */
-    protected $m_oExtranetUsernameToken=null;
+    protected ?UsernameToken $oExtranetUsernameToken =null;
 
     /** @var bool  */
-    protected $m_bAnonyme=false;
+    protected bool $bAnonyme =false;
 
     /** @var bool  */
-    protected $m_bSuperviseur=false;
+    protected bool $bSuperviseur =false;
 
     /** @var string  */
-    protected $m_nIDUser='';
+    protected string $nIDUser ='';
 
     /** @var array  */
-    protected $m_aMultiLanguage= [];
+    protected array $aMultiLanguage = [];
 
     /** @var int  */
-    protected $m_nCodeLangue = 0;
+    protected int $nCodeLangue = 0;
 
     /** @var bool  */
-    protected $m_bWithConfiguration = false;
+    protected bool $bWithConfiguration = false;
 
     /** @var string  */
-    protected $m_googleApiKey = '';
+    protected string $googleApiKey = '';
+
+    /** @var FormElement|null  */
+    protected ?FormElement $oResource = null;
 
     /**
      * {@inheritdoc}
@@ -88,7 +92,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getUser()
     {
-        if (!empty($this->m_sSessionToken)){
+        if (!empty($this->sSessionToken)){
             return parent::getUser();
         }
         return null;
@@ -105,7 +109,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setGoogleApiKey(string $googleApiKey) : NOUTToken
     {
-        $this->m_googleApiKey = $googleApiKey;
+        $this->googleApiKey = $googleApiKey;
         return $this;
     }
 
@@ -114,7 +118,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getGoogleApiKey() : string
     {
-        return $this->m_googleApiKey;
+        return $this->googleApiKey;
     }
 
     /**
@@ -122,8 +126,8 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getUserIdentifier() : string
     {
-        if ($this->m_oUsernameToken instanceof UsernameToken){
-            return $this->m_oUsernameToken->Username;
+        if ($this->oUsernameToken instanceof UsernameToken){
+            return $this->oUsernameToken->Username;
         }
 
         return parent::getUserIdentifier();
@@ -134,7 +138,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getExtranetUsernameToken() : ?UsernameToken
     {
-        return $this->m_oExtranetUsernameToken;
+        return $this->oExtranetUsernameToken;
     }
 
     /**
@@ -143,7 +147,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setExtranetUsernameToken(UsernameToken $oUsernameToken): NOUTToken
     {
-        $this->m_oExtranetUsernameToken = $oUsernameToken;
+        $this->oExtranetUsernameToken = $oUsernameToken;
         return $this;
     }
 
@@ -152,7 +156,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function isExtranet() : bool
     {
-        return !is_null($this->m_oExtranetUsernameToken);
+        return !is_null($this->oExtranetUsernameToken);
     }
 
     /**
@@ -161,7 +165,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setNameToDisplay(string $name): NOUTToken
     {
-        $this->m_sNameToDisplay = $name;
+        $this->sNameToDisplay = $name;
         return $this;
     }
 
@@ -170,7 +174,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getNameToDisplay() : string
     {
-        return $this->m_sNameToDisplay;
+        return $this->sNameToDisplay;
     }
 
     /**
@@ -179,7 +183,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getUsernameToken() : ?UsernameToken
     {
-        return $this->m_oUsernameToken;
+        return $this->oUsernameToken;
     }
 
     /**
@@ -189,7 +193,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setUsernameToken(UsernameToken $oUsernameToken): NOUTToken
     {
-        $this->m_oUsernameToken = $oUsernameToken;
+        $this->oUsernameToken = $oUsernameToken;
         return $this;
     }
 
@@ -199,7 +203,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setSessionToken(string $sSessionToken): NOUTToken
     {
-        $this->m_sSessionToken = $sSessionToken;
+        $this->sSessionToken = $sSessionToken;
         return $this;
     }
 
@@ -208,7 +212,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getSessionToken() : string
     {
-        return $this->m_sSessionToken;
+        return $this->sSessionToken;
     }
 
     /**
@@ -217,7 +221,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setInfoLangage(Langage $clLangage): NOUTToken
     {
-        $this->m_clLangage = $clLangage;
+        $this->clLangage = $clLangage;
         return $this;
     }
 
@@ -226,7 +230,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getInfoLangage() : ?Langage
     {
-        return $this->m_clLangage;
+        return $this->clLangage;
     }
 
     /**
@@ -235,7 +239,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setMultiLanguage(array $aLang) : NOUTToken
     {
-        $this->m_aMultiLanguage = $aLang;
+        $this->aMultiLanguage = $aLang;
         return $this;
     }
 
@@ -244,7 +248,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getMultiLanguage(): array
     {
-        return $this->m_aMultiLanguage;
+        return $this->aMultiLanguage;
     }
 
     /**
@@ -253,7 +257,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setSessionCodeLangue(int $nCodeLangue) : NOUTToken
     {
-        $this->m_nCodeLangue = $nCodeLangue;
+        $this->nCodeLangue = $nCodeLangue;
         return $this;
     }
 
@@ -262,7 +266,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getSessionCodeLangue() : int
     {
-        return $this->m_nCodeLangue;
+        return $this->nCodeLangue;
     }
 
     /**
@@ -271,7 +275,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setTimeZone(string $sTimeZone) : NOUTToken
     {
-        $this->m_sTimeZone = $sTimeZone;
+        $this->sTimeZone = $sTimeZone;
         return $this;
     }
 
@@ -280,7 +284,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      * @return $this
      */
     public function setLocale(string $sLocale) : NOUTToken {
-        $this->m_sLocale = $sLocale;
+        $this->sLocale = $sLocale;
         return $this;
     }
 
@@ -288,7 +292,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      * @return string
      */
     public function getTimeZone() : string {
-        return $this->m_sTimeZone;
+        return $this->sTimeZone;
     }
 
     /**
@@ -296,7 +300,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getLocale() : string
     {
-        return $this->m_sLocale;
+        return $this->sLocale;
     }
 
     /**
@@ -304,7 +308,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function getIP() : string
     {
-        return $this->m_sIP;
+        return $this->sIP;
     }
 
     /**
@@ -313,7 +317,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setIP(string $sIP) : NOUTToken
     {
-        $this->m_sIP = $sIP;
+        $this->sIP = $sIP;
         return $this;
     }
 
@@ -322,7 +326,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function isAnonyme(): bool
     {
-        return $this->m_bAnonyme;
+        return $this->bAnonyme;
     }
 
     /**
@@ -331,7 +335,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setAnonyme(bool $bAnonyme): NOUTToken
     {
-        $this->m_bAnonyme = $bAnonyme;
+        $this->bAnonyme = $bAnonyme;
         return $this;
     }
 
@@ -342,8 +346,8 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setInfoUserConnected(string $nID, bool $bSuperviseur): NOUTToken
     {
-        $this->m_nIDUser = $nID;
-        $this->m_bSuperviseur = $bSuperviseur;
+        $this->nIDUser      = $nID;
+        $this->bSuperviseur = $bSuperviseur;
         return $this;
     }
 
@@ -352,7 +356,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function isSuperviseur() : bool
     {
-        return $this->m_bSuperviseur;
+        return $this->bSuperviseur;
     }
 
     /**
@@ -360,7 +364,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function nGetIDUser(): string
     {
-        return $this->m_nIDUser;
+        return $this->nIDUser;
     }
 
     /**
@@ -368,7 +372,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function isWithConfiguration(): bool
     {
-        return $this->m_bWithConfiguration;
+        return $this->bWithConfiguration;
     }
 
     /**
@@ -377,8 +381,25 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
      */
     public function setWithConfiguration(bool $bWithConfiguration): NOUTToken
     {
-        $this->m_bWithConfiguration = $bWithConfiguration;
+        $this->bWithConfiguration = $bWithConfiguration;
         return $this;
+    }
+
+    /**
+     * @param FormElement|null $oResource
+     */
+    public function setResource(?FormElement $oResource) : NOUTToken
+    {
+        $this->oResource = $oResource;
+        return $this;
+    }
+
+    /**
+     * @return FormElement|null
+     */
+    public function getResource() : ?FormElement
+    {
+        return $this->oResource;
     }
 
 
@@ -388,29 +409,30 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
     public function __serialize(): array
     {
         return [
-            'ip' => $this->m_sIP,
-            'token' => $this->m_sSessionToken,
-            'timezone' => $this->m_sTimeZone,
-            'locale' => $this->m_sLocale,
-            'googleApiKey' => $this->m_googleApiKey,
-            'name' => $this->m_sNameToDisplay,
+            'ip' => $this->sIP,
+            'token' => $this->sSessionToken,
+            'timezone' => $this->sTimeZone,
+            'locale' => $this->sLocale,
+            'googleApiKey' => $this->googleApiKey,
+            'name' => $this->sNameToDisplay,
             'user' => [
-                'class' => get_class($this->m_oUsernameToken),
-                'data' => $this->m_oUsernameToken->forSerialization()
+                'class' => get_class($this->oUsernameToken),
+                'data' => $this->oUsernameToken->forSerialization()
             ],
-            'extranet' => !$this->m_oExtranetUsernameToken ? null : [
-                'class' => get_class($this->m_oExtranetUsernameToken),
-                'data' => $this->m_oExtranetUsernameToken->forSerialization()
+            'extranet' => !$this->oExtranetUsernameToken ? null : [
+                'class' => get_class($this->oExtranetUsernameToken),
+                'data' => $this->oExtranetUsernameToken->forSerialization()
             ],
-            'anonyme' => $this->m_bAnonyme,
-            'superviseur' => $this->m_bSuperviseur,
-            'userID' => $this->m_nIDUser,
+            'anonyme' => $this->bAnonyme,
+            'superviseur' => $this->bSuperviseur,
+            'userID' => $this->nIDUser,
             'version' => $this->getVersionNO(),
             'isStarter' => $this->isSIMAXStarter(),
-            'language' => is_null($this->m_clLangage) ? null : $this->m_clLangage->forSerialization(),
-            'multilangue' => $this->m_aMultiLanguage,
-            'sessioncodelangue' => $this->m_nCodeLangue,
-            'withconfiguration' => $this->m_bWithConfiguration,
+            'language' => is_null($this->clLangage) ? null : $this->clLangage->forSerialization(),
+            'resource' => is_null($this->oResource) ? null : $this->oResource->forSerialization(),
+            'multilangue' => $this->aMultiLanguage,
+            'sessioncodelangue' => $this->nCodeLangue,
+            'withconfiguration' => $this->bWithConfiguration,
             'parent_data' => parent::__serialize()
         ];
     }
@@ -425,48 +447,52 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
             throw new UnserializeTokenException('Invalid Token');
         }
 
-        $this->m_sIP = $aUnserialised['ip'];
-        $this->m_sSessionToken = $aUnserialised['token'];
-        $this->m_sTimeZone = $aUnserialised['timezone'];
-        $this->m_sLocale = $aUnserialised['locale'];
+        $this->sIP           = $aUnserialised['ip'];
+        $this->sSessionToken = $aUnserialised['token'];
+        $this->sTimeZone     = $aUnserialised['timezone'];
+        $this->sLocale = $aUnserialised['locale'];
 
-        $this->m_clLangage = new Langage();
-        $this->m_clLangage->fromSerialization($aUnserialised['language']);
+        $this->clLangage = new Langage();
+        $this->clLangage->fromSerialization($aUnserialised['language']);
         $this->m_clVersionNO = new NOUTOnlineVersion($aUnserialised['version']);
 
-        $this->m_oUsernameToken = new $aUnserialised['user']['class']();
-        $this->m_oUsernameToken->fromSerialization($aUnserialised['user']['data']);
+        $this->oUsernameToken = new $aUnserialised['user']['class']();
+        $this->oUsernameToken->fromSerialization($aUnserialised['user']['data']);
 
         if (!is_null($aUnserialised['extranet'])){
-            $this->m_oExtranetUsernameToken = new $aUnserialised['extranet']['class']();
-            $this->m_oExtranetUsernameToken->fromSerialization($aUnserialised['extranet']['data']);
+            $this->oExtranetUsernameToken = new $aUnserialised['extranet']['class']();
+            $this->oExtranetUsernameToken->fromSerialization($aUnserialised['extranet']['data']);
+        }
+        if (!is_null($aUnserialised['resource'])){
+            $this->oResource = new FormElement('', '', '', '');
+            $this->oResource->fromSerialization($aUnserialised['resource']);
         }
         if(isset($aUnserialised['googleApiKey'])) {
-            $this->m_googleApiKey = $aUnserialised['googleApiKey'];
+            $this->googleApiKey = $aUnserialised['googleApiKey'];
         }
         if (isset($aUnserialised['anonyme'])){
-            $this->m_bAnonyme = boolval($aUnserialised['anonyme']);
+            $this->bAnonyme = boolval($aUnserialised['anonyme']);
         }
         if (isset($aUnserialised['superviseur'])){
-            $this->m_bSuperviseur = boolval($aUnserialised['superviseur']);
+            $this->bSuperviseur = boolval($aUnserialised['superviseur']);
         }
         if (isset($aUnserialised['userID'])){
-            $this->m_nIDUser = $aUnserialised['userID'];
+            $this->nIDUser = $aUnserialised['userID'];
         }
         if (isset($aUnserialised['multilangue'])){
-            $this->m_aMultiLanguage = $aUnserialised['multilangue'];
+            $this->aMultiLanguage = $aUnserialised['multilangue'];
         }
         if (isset($aUnserialised['sessioncodelangue'])){
-            $this->m_nCodeLangue = $aUnserialised['sessioncodelangue'];
+            $this->nCodeLangue = $aUnserialised['sessioncodelangue'];
         }
         if (isset($aUnserialised['withconfiguration'])){
-            $this->m_bWithConfiguration = $aUnserialised['withconfiguration'];
+            $this->bWithConfiguration = $aUnserialised['withconfiguration'];
         }
         if (isset($aUnserialised['isStarter'])){
             $this->m_bIsSIMAXStarter = $aUnserialised['isStarter'];
         }
 
-        $this->m_sNameToDisplay=$aUnserialised['name'];
+        $this->sNameToDisplay = $aUnserialised['name'];
         parent::__unserialize($aUnserialised['parent_data']);
     }
 
