@@ -359,13 +359,23 @@ class XMLResponseWS
             ));
         }
         if (isset($oXMLConnecterUser->children()->Extranet)){
-            $clXMLExtranet = $oXMLConnecterUser->children()->Extranet;
+            $clXMLEmployee = $oXMLConnecterUser->children()->Extranet;
             $oUser->setExtranet(new ConnectedUser(
-                $clXMLExtranet->children()->Element,
-                $clXMLExtranet->children()->Element['title'],
-                $clXMLExtranet->children()->Form,
-                $clXMLExtranet->children()->Form['title']
+                $clXMLEmployee->children()->Element,
+                $clXMLEmployee->children()->Element['title'],
+                $clXMLEmployee->children()->Form,
+                $clXMLEmployee->children()->Form['title']
             ));
+        }
+
+        if (isset($oXMLConnecterUser->children()->Employee)){
+            $clXMLEmployee = $oXMLConnecterUser->children()->Employee;
+            $oUser->setResource(new FormElement(
+                                    $clXMLEmployee->children()->Element,
+                                    $clXMLEmployee->children()->Element['title'],
+                                    $clXMLEmployee->children()->Form,
+                                    $clXMLEmployee->children()->Form['title']
+                                ));
         }
 
         return $oUser;

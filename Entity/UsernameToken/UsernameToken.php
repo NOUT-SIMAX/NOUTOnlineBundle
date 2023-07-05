@@ -12,28 +12,28 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UsernameToken as WSDLUsernameTo
 abstract class UsernameToken extends WSDLUsernameToken implements UsernameTokenInterface
 {
     public function __construct(string $sUsername='')
-	{
+    {
         $this->Username = $sUsername;
-	}
+    }
 
     /**
      * Crypte les différents éléments
      */
-	abstract protected function _Compute() : void;
+    abstract protected function _Compute() : void;
 
     /**
      * @param string $password
      */
-	abstract protected function _setClearPassword(string $password) : void;
+    abstract protected function _setClearPassword(string $password) : void;
 
     /**
      * @param string $password
      * @return $this
      */
-	final public function setClearPassword(string $password): UsernameToken
+    final public function setClearPassword(string $password): UsernameToken
     {
         $this->_setClearPassword($password);
-	    return $this;
+        return $this;
     }
 
     /**
