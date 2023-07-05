@@ -10,28 +10,28 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class Element
 {
-	protected $m_nID;
-	protected $m_sTitle;
+    protected $m_nID;
+    protected $m_sTitle;
 
-	public function __construct($nID, $sTitle)
-	{
-		$this->m_nID    = (string) $nID;
-		$this->m_sTitle = (string) $sTitle;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getTitle(): string
+    public function __construct($nID, $sTitle)
     {
-		return $this->m_sTitle;
-	}
+        $this->m_nID    = (string) $nID;
+        $this->m_sTitle = (string) $sTitle;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getID(): string
+    /**
+     * @return mixed
+     */
+    public function getTitle(): string
     {
-		return $this->m_nID;
-	}
+        return $this->m_sTitle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getID(): string
+    {
+        return $this->m_nID;
+    }
 }
