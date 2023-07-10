@@ -61,7 +61,7 @@ class HTTPResponse
     {
         foreach($this->httpHeaders as $optionName => $option)
         {
-            $this->httpHeaders[$optionName] = utf8_encode($option);
+            $this->httpHeaders[$optionName] = mb_convert_encoding($option, 'UTF-8', 'ISO-8859-1');
         }
     }
 

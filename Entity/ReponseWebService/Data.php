@@ -39,8 +39,11 @@ class Data
             //windows-1252 ou latin-1 => quoted-printable => utf-8
 
             //str_replace : hack pour problème encodage euro
-            $sToReturn = utf8_encode(quoted_printable_decode(str_replace('=80', '=E2=82=AC', $this->m_sContent)));
-            $sToReturn = str_replace('â¬', '€', $sToReturn);//hack pour problème encodage euro
+            $sToReturn = mb_convert_encoding(
+                quoted_printable_decode($this->m_sContent)
+                , 'UTF-8'
+                , 'ISO-8859-1'
+            );
             return $sToReturn;
         }
 
