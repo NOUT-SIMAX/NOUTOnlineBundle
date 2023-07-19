@@ -669,6 +669,8 @@ abstract class StructureColonne
     const OPTION_MultiResource      = "resourceMulti";
     const OPTION_PredefinedRequest  = 'predefinedRequest';
 
+    const OPTION_WithoutDownload    = "withoutDownload";
+
     // Attributs pour les sous-listes
     const OPTION_Relation      = "withAddAndRemove";    // bestGroupeRelation
     const OPTION_Relation11    = "withModifyAndRemove"; // bEstRelation11
