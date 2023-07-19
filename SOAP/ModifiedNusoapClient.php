@@ -7,13 +7,12 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPClient;
 
 /***
  * Classe qui surcharge la classe NUSOAPClient, afin de pouvoir lui apporté des modification mineur :
- * 	- gestions des content-type de retour "application/soap+xml"
- *  - gestion de l'encodage 
+ *  - gestions des content-type de retour "application/soap+xml"
+ *  - gestion de l'encodage
  *  - appel de call simplifié et forcé en document litteral
  *  - gestion des erreur soap 1.2 qui ne sont pas gérer par nuSoap
- * 
- * 
- * @version 1.0.1. last modification : 2011-10-29
+ *
+ * @version  1.0.1. last modification : 2011-10-29
  * @author   richard deguilhem <richard@nout.fr>
  */
 class ModifiedNusoapClient extends SOAPClient
@@ -46,23 +45,22 @@ class ModifiedNusoapClient extends SOAPClient
      *  - de gérer les retour d'erreur format soap 1.2
      *
      * @param string $sOperation SOAP server URL or path
-     * @param mixed $mParams An array, associative or simple, of the parameters
-     *			              for the method call, or a string that is the XML
-     *			              for the call.  For document
-     *			              style, this will only wrap with the Envelope and Body.
-     *			              IMPORTANT: when using an array with document style,
-     *			              in which case there
-     *                         is really one parameter, the root of the fragment
-     *                         used in the call, which encloses what programmers
-     *                         normally think of parameters.  A parameter array
-     *                         *must* include the wrapper.
-     * @param	mixed $headers optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or associative array
-     * @return	mixed	response from SOAP call, normally an associative array mirroring the structure of the XML response, false for certain fatal errors
+     * @param mixed  $mParams    An array, associative or simple, of the parameters
+     *                           for the method call, or a string that is the XML
+     *                           for the call.  For document
+     *                           style, this will only wrap with the Envelope and Body.
+     *                           IMPORTANT: when using an array with document style,
+     *                           in which case there
+     *                           is really one parameter, the root of the fragment
+     *                           used in the call, which encloses what programmers
+     *                           normally think of parameters.  A parameter array
+     *                           *must* include the wrapper.
+     * @param mixed  $mHeaders   optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or associative array
+     *
+     * @return    mixed    response from SOAP call, normally an associative array mirroring the structure of the XML response, false for certain fatal errors
      * @access   public
-     *
      * pour plus d'information :
-     * @see lib/NUSOAPClient#call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use)
-     *
+     * @see      lib/NUSOAPClient#call($operation, $params, $namespace, $soapAction, $headers, $rpcParams, $style, $use)
      * note : $sStyle et $sUse sont des parametre inutile reporter uniquement pour avoir la meme signature de methode.
      */
     public function call($sOperation, $mParams = array(), $sNamespace = null, $sSoapAction = null, $mHeaders = false, $mRpcParams = null, $sStyle = 'rpc', $sUse = 'encoded')
@@ -101,7 +99,7 @@ class ModifiedNusoapClient extends SOAPClient
                 {
                     $sErrCode = $tabError['Code']['Numero'];
                     $nErrCategorie = $tabError['Code']['Category'];
-                    $sErrMsg = utf8_encode($tabError['Message']);
+                    $sErrMsg = mb_convert_encoding($tabError['Message'], 'UTF-8', 'ISO-8859-1');
                 }
             }
             else
@@ -147,14 +145,13 @@ class ModifiedNusoapClient extends SOAPClient
 
     /**
      * Surchargé pour modification des content type de retour "application/soap+xml"
-     *
      * processes SOAP message returned from server
      *
-     * @param	array	$headers	The HTTP headers
-     * @param	string	$data		unprocessed response data from server
-     * @return	mixed	value of the message, decoded into a PHP type
-     * @access   public
+     * @param array  $headers The HTTP headers
+     * @param string $data    unprocessed response data from server
      *
+     * @return    mixed    value of the message, decoded into a PHP type
+     * @access   public
      * * @see lib/NUSOAPClient#parseResponse
      */
     public function parseResponse($headers, $data)
