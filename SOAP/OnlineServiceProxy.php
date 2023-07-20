@@ -7,6 +7,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\Service\ClientInformation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\SOAPTransportHTTP;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\NUSOAP\WSDL;
@@ -84,6 +85,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\UpdateMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ValidateFolder;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\WithAutomaticResponse;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ZipPJ;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
@@ -148,6 +150,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
      * @param Stopwatch|null        $stopwatch
      * @param GestionWSDL           $clGestionWSDL
      * @param int                   $soapSocketTimeout
+     * @param TokenStorageInterface $tokenStorage
      * @throws \Exception
      */
     public function __construct(
@@ -155,6 +158,7 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         ConfigurationDialogue $clConfig,
         NOUTOnlineLogger      $_clLogger,
         GestionWSDL           $clGestionWSDL,
+        TokenStorageInterface $tokenStorage,
         Stopwatch             $stopwatch = null,
                               $soapSocketTimeout = self::SOCKET_TIMEOUT
     )
@@ -172,8 +176,16 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         $this->clStopwatch = $stopwatch;
 
         //il faut lire le début de endpoint pour avoir la version de la wsdl
+        $token = $tokenStorage->getToken();
+        $clNOUTOnlineVersion = null;
+        if ($token instanceof NOUTToken && !empty($token->nGetIDUser()))
+        {
+            //uniquement si connecté
+            $clNOUTOnlineVersion = $token->clGetNOUTOnlineVersion();
+        }
+
         $this->clGestionWSDL = $clGestionWSDL;
-        $this->clGestionWSDL->init($clConfig->getNOVersionUri());
+        $this->clGestionWSDL->init($clConfig->getNOVersionUri(), $clNOUTOnlineVersion);
     }
 
 
