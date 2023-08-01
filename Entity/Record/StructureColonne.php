@@ -378,22 +378,13 @@ abstract class StructureColonne
     public function isOption($sOption): bool
     {
         //quelque cas particulier ou on force le retour
-        switch ($sOption)
+        if ($sOption == self::OPTION_Modele_ComboBox)
         {
-            case self::OPTION_ReadOnly:
-                $isDirectory = $this->m_aTabOptions[self::OPTION_Modele_Directory] ?? false;
-                if ($isDirectory)
-                {
-                    return true; //dans le cas d'un modèle directory, on force en readonly
-                }
-                break;
-            case self::OPTION_Modele_ComboBox:
-                $isPredefRequest = $this->m_aTabOptions[self::OPTION_PredefinedRequest] ?? false;
-                if ($isPredefRequest)
-                {
-                    return true;
-                }
-                break;
+            $isPredefRequest = $this->m_aTabOptions[self::OPTION_PredefinedRequest] ?? false;
+            if ($isPredefRequest)
+            {
+                return true;
+            }
         }
 
         if (!isset($this->m_aTabOptions[$sOption]))
