@@ -15,16 +15,17 @@ namespace NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity;
 
 class Execute implements SerializableEntity
 {
-	public $ID; 				// string
-	public $Sentence; 			// string
-	public $ParamXML; 			// string
-	public $SpecialParamList; 	// SpecialParamListType
-	public $Checksum; 			// integer
-    public $CallingColumn; 		// string
-    public $CallingInfo; 		// CallingInfoType
-	public $DisplayMode; 		// DisplayModeParamEnum
-    public $BtnListMode;        // integer
-    public $Final;              // integer
+    public $ID;                   // string
+    public $Sentence;             // string
+    public $ParamXML;             // string
+    public $SpecialParamList;     // SpecialParamListType
+    public $Checksum;             // integer
+    public $CallingColumn;        // string
+    public $CallingInfo;          // CallingInfoType
+    public $DisplayMode;          // DisplayModeParamEnum
+    public $BtnListMode;          // integer
+    public $Final;                // integer
+    public $UpdateData;           // string
 
     /** @var null|SelectedItemsType|SelectedItemsType[] */
     //public $SelectedItems;      // SelectedItems
@@ -38,6 +39,7 @@ class Execute implements SerializableEntity
             'DisplayMode'       => 'string',
             'Sentence'          => 'string',
             'ParamXML'          => 'string',
+            'UpdateData'        => 'string',
             'CallingColumn'     => 'string',
             'ID'                => 'string',
             'Final'             => 'integer',

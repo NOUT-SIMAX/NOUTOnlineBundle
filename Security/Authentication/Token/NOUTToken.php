@@ -9,7 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\FormElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken\UsernameToken;

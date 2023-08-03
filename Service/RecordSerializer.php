@@ -24,14 +24,14 @@ class RecordSerializer
     /**
      * @var NOUTClientCache
      */
-    private $m_clCache = null;
+    private NOUTClientCache $clCache;
 
 
     public function __construct(TokenStorageInterface $tokenStorage, NOUTCacheFactory $cacheFactory)
     {
         /** @var NOUTToken|TokenInterface $oSecurityToken */
         $oSecurityToken = $tokenStorage->getToken();
-        $this->m_clCache = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getInfoLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
+        $this->clCache  = new NOUTClientCache($cacheFactory, $oSecurityToken->getSessionToken(), $oSecurityToken->getInfoLangage(), $oSecurityToken->clGetNOUTOnlineVersion());
     }
 
     /**
@@ -139,7 +139,7 @@ class RecordSerializer
                 {
                     $name = explode('?', $fullPath); // Le nom du fichier se trouve après le path
                     /** @var NOUTFileInfo $data */
-                    $file = $this->m_clCache->fetchFileFromName($idcontexte, $idihm, $name[0]);
+                    $file = $this->clCache->fetchFileFromName($idcontexte, $idihm, $name[0]);
 
                     // Ajout du fichier dans le tableau
                     $aModifiedFiles[$idColonne] = $file;

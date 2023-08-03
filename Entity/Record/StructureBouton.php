@@ -9,35 +9,35 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXSDSchema;
 
 class StructureBouton extends StructureColonne
 {
 
-	/**
-	 * @var InfoButton information sur le bouton
-	 */
-	protected $m_clInfoBouton;
+    /**
+     * @var InfoButton information sur le bouton
+     */
+    protected InfoButton $clInfoBouton;
 
-	/** @var  string */
-	protected $m_ID;
+    /** @var  string */
+    protected string $ID;
 
-	/** @var StructureBouton[] */
-    protected $subButtons;
+    /** @var StructureBouton[] */
+    protected array $subButtons;
 
-	/**
-	 * @param \SimpleXMLElement $clAttribNOUT
-	 * @param \SimpleXMLElement $clAttribXS
+    /**
+     * @param \SimpleXMLElement $clAttribNOUT
+     * @param \SimpleXMLElement $clAttribXS
      * @param \SimpleXMLElement|null $subButtons
-	 */
-	public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS, \SimpleXMLElement $subButtons = null)
-	{
-		parent::__construct('', $clAttribNOUT, $clAttribXS);
-        $this->m_ID = spl_object_hash($clAttribNOUT);
+     */
+    public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS, \SimpleXMLElement $subButtons = null)
+    {
+        parent::__construct('', $clAttribNOUT, $clAttribXS);
+        $this->ID           = spl_object_hash($clAttribNOUT);
         $this->m_nIDColonne = (string)$clAttribNOUT['idButton'];
-		$this->m_clInfoBouton = new InfoButton($clAttribNOUT);
-		$this->subButtons = array();
+        $this->clInfoBouton = new InfoButton($clAttribNOUT);
+        $this->subButtons = array();
         if (!is_null($subButtons)) {
             foreach ($subButtons->children(ParserXSDSchema::NAMESPACE_XSD) as $subButton) {
                 /** @var \SimpleXMLElement $subButton */
@@ -64,39 +64,47 @@ class StructureBouton extends StructureColonne
                 array_push($this->subButtons, new StructureBouton($clAttribNOUT, $clAttribXS, $ndSeqSousButtons));
             }
         }
-	}
+    }
 
     /**
      * @return StructureBouton[]
      */
-	public function getSubButtons(): array
+    public function getSubButtons(): array
     {
-	    return $this->subButtons;
+        return $this->subButtons;
     }
 
     /**
      * @return string
      */
-	public function getID(): string
+    public function getID(): string
     {
-	    return $this->m_ID;
+        return $this->ID;
     }
 
-	/**
-	 * @return InfoButton
-	 */
-	public function getInfoBouton(): InfoButton
+    /**
+     * @return InfoButton
+     */
+    public function getInfoBouton(): InfoButton
     {
-		return $this->m_clInfoBouton;
-	}
+        return $this->clInfoBouton;
+    }
 
     /**
      * @return bool
      */
-	public function isReadOnly() : bool
-	{
+    public function isReadOnly() : bool
+    {
         // Renvoit un booléen qui indique si le bouton est dispo en readOnly
-        return Langage::s_isActionReadOnly($this->m_clInfoBouton->getOption(self::OPTION_IDTypeAction));
-	}
+        return Langage::s_isActionReadOnly($this->clInfoBouton->getOption(self::OPTION_IDTypeAction));
+    }
 
+    const WITHVALIDATION_Default = 0;
+    const WITHVALIDATION_Avant = 1;
+    const WITHVALIDATION_Apres = 2;
+    const WITHVALIDATION_SansFermer = 4;
+
+    const SUBSTITUTION_Annuler = 1;
+    const SUBSTITUTION_Enregistrer = 2;
+    const SUBSTITUTION_Imprimer = 2392;
 }
