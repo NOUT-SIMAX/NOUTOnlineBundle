@@ -8,7 +8,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageParametre;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
@@ -146,7 +147,7 @@ abstract class StructureColonne
             }
 
             // Pour mettre ensemble le champ recherche et recherche globale
-            if ($this->isOption(self::OPTION_Modele_Search) || ($this->m_nIDColonne == Langage::PA_Recherche_Global))
+            if ($this->isOption(self::OPTION_Modele_Search) || ($this->m_nIDColonne == LangageParametre::RechercheGlobal))
             {
                 return self::FUSIONTYPE_Search;
             }
@@ -184,7 +185,7 @@ abstract class StructureColonne
         if($isParamcard)
         {
             // Permet de faire le whole et la fusion avec le champ de recherche
-            if (($this->m_nIDColonne == Langage::PA_Recherche_Global) || $this->isOption(self::OPTION_Modele_Search))
+            if (($this->m_nIDColonne == LangageParametre::RechercheGlobal) || $this->isOption(self::OPTION_Modele_Search))
             {
                 return self::BUDDYTYPE_Search;
             }
@@ -213,7 +214,7 @@ abstract class StructureColonne
         // Si on est en mode filtres + liste
         if($isParamcard)
         {
-            if (($this->m_nIDColonne == Langage::PA_Recherche_Global) || $this->isOption(self::OPTION_Modele_Search))
+            if (($this->m_nIDColonne == LangageParametre::RechercheGlobal) || $this->isOption(self::OPTION_Modele_Search))
             {
                 return true;
             }
@@ -648,6 +649,10 @@ abstract class StructureColonne
     const OPTION_Disabled          = "disabled";
     const OPTION_ReadWithoutModify = "readWithoutModify";
 
+    const OPTION_ConfigurationFlags = "configurationFlags";
+    const OPTION_RealFormID         = "realFormID";
+    const OPTION_RealFormName       = "realFormName";
+
     const OPTION_Required  = "required";
     const OPTION_Transform = "transform";
     const OPTION_Crypted   = "crypted";
@@ -806,8 +811,72 @@ abstract class StructureColonne
     const BTNVAL_Avant              = 1; //on enregistre avant
     const BTNVAL_Apres              = 2; //on enregistre après
     const BTNVAL_Question           = 3; //on pose la question à l'utilisateur
-    const BTNSUB_Annuler            = 1; //remplace le bouton annuler
-    const BTNSUB_Enregistrer        = 2; //remplace le bouton enregistrer
-    const BTNSUB_Imprimer           = 3; //remplace le bouton imprimer
+    const BTNSUB_Annuler            = 1; //remplace le bouton 'annuler'
+    const BTNSUB_Enregistrer        = 2; //remplace le bouton 'enregistrer'
+    const BTNSUB_Imprimer           = 3; //remplace le bouton 'imprimer'
 
+    //---------------------------------------------------
+    //les flags pour la configuration
+    const FC_Visible            = 0x0000000000000002;        // Visible par parametrage
+    const FC_AImprimer          = 0x0000000000000004;        // A imprimer
+    const FC_Obligatoire        = 0x0000000000000008;        // Valeur obligatoire
+    const FC_Unique             = 0x0000000000000010;        // Valeur unique
+    const FC_VisibleUtilisateur = 0x0000000000000020;        // Visible demande par l'utilisateur
+    const FC_TriableDS          = 0x0000000000000040;        // le DS peut trier
+    const FC_TriableRequete     = 0x0000000400000000;        // le DS peut trier
+    const FC_CommenceParDS      = 0x0000000000000080;        // le DS peut faire un 'commence par'
+    const FC_Intitule           = 0x0000000000001000;        // repris dans l'intitulé
+    const OBS_FC_Vignette       = 0x0000000000000800;        // la valeur de la colonne est affichée en mode vignette
+    const FC_FicheInvisible     = 0x0000000002000000;        // invisible en fiche
+    const FC_DroitInvisible     = 0x0000002000000000;        // droit Invisible sur la colonne ça permet de filtrer par exemple pour les listes images
+    const FC_LectureSeule       = 0x0000010000000000;        // en lecture seulement (par droit; ctrl etat; ...)
+
+    const FC_ListeInvisible        = 0x0000000000000001;        // Detail (pas en liste)
+    const FC_ListeImportant        = 0x0000000100000000;        // Important (non detail; affichage non obligatoire)
+    const FC_ListeALaDemande       = 0x0000000800000000;        // A la demande
+    const FC_ListeBoutonSurLaLigne = 0x0000008000000000;        // pour les boutons en ligne
+    //const FC_FlagListeParSeparateur = 0x0000001000000000;        // le FC_ListeXxxxx a ete herite par le separateur
+    const FC_MaskFlagListe         = 0x0000008900000001;                // FC_ListeXxxxxx
+
+    const FC_AvecCtrlEtat      = 0x0000100000000000;
+    const FC_AvecCtrlEtatListe = 0x0000200000000000;        // se combine avec FC_AvecCtrlEtat si actif en liste
+
+    const FC_MaskFlagAPlatFiche = 0x0000302D020018FF;
+    const FC_MaskFlagAPlatTable = 0x0000302902000027;        // flag repercute depuis un separateur pour recup a Plat
+
+    const FC_ListeOrdonne       = 0x0000000000100000;        // la liste est ordonnee (soit par colonne ordre soit par groupe)
+    const FC_ListeNonGroupe     = 0x0000000000002000;
+    const FC_ListeGroupe        = 0x0000000000004000;
+    const FC_Relation11         = 0x0000000000008000;
+    const FC_Relation01         = 0x0000000000800000;
+    const FC_AEvaluer           = 0x0000000000200000;        // la valeur est a evaluer (formule; ...) = ILangageModele::OPT_AEvaluer
+    const FC_InitUniqParFormule = 0x0000000004000000;
+    const FC_CalculModifiable   = 0x0000000000080000;        // le calcul est modifiable (saisie directe dans le tableau croise)
+    const FC_ModifDirectListe   = 0x0000004000000000;        // autorise la modification directe en mode liste
+    const FC_Arborescence       = 0x0000400000000000;        // c'est l'arborescence
+
+    const FC_CalculAuto         = 0x0000000000000100;        // c'est un calcul ajoute par le DS
+    const FC_Bouton             = 0x0000000000000200;        // c'est un bouton
+    const FC_Separateur         = 0x0000000000000400;        // c'est un separateur
+    const FC_Donnee             = 0x0000000000010000;        // c'est une donnee
+    const FC_CalculStocke       = 0x0000000000020000;        // c'est un calcul stocke (non recalcule)
+    const FC_CalculRecalcule    = 0x0000000000040000;        // c'est un calcul recalcule
+    const FC_TexteImage         = 0x0000020000000000;        // c'est une colonne texte ou image
+    const FC_TypeColonneInconnu = 0x0000040000000000;        // c'est un type inconnu à ignorer
+    const FC_MaskType           = 0x0000060000070700;
+    const FC_MaskNonLangage     = 0x0000060000000700;
+    const FC_MaskSansValeur     = 0x0000040000000600;
+
+    const FC_DonneeEnLectureIHM      = 0x0000000200000000;        // colonne donnee en lecture seule par modèle; peut etre doublon avec FC_LectureSeule
+    const FC_DonneeEcritureAnticipee = 0x0000001000000000;
+
+    const FC_Virtuel       = 0x0000000000400000;        // ajout interne par le DS
+    const FC_IDTemporaire  = 0x0000000001000000;        // l'id de cette colonne est regenere
+    const FC_ToujoursDsXML = 0x0000000008000000;        // il faut toujours le mettre dans XML
+
+    const FC_Separateur_MaskNiveau = 0x0000000070000000;
+
+    const FC_SC_DansFactory = 0x0000000080000000;        // interne pour FactoryStructureColonne
+    
+    
 }
