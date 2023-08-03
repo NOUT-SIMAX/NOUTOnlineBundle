@@ -15,29 +15,29 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXSDSchema;
 class StructureBouton extends StructureColonne
 {
 
-	/**
-	 * @var InfoButton information sur le bouton
-	 */
-	protected $m_clInfoBouton;
+    /**
+     * @var InfoButton information sur le bouton
+     */
+    protected $m_clInfoBouton;
 
-	/** @var  string */
-	protected $m_ID;
+    /** @var  string */
+    protected $m_ID;
 
-	/** @var StructureBouton[] */
+    /** @var StructureBouton[] */
     protected $subButtons;
 
-	/**
-	 * @param \SimpleXMLElement $clAttribNOUT
-	 * @param \SimpleXMLElement $clAttribXS
+    /**
+     * @param \SimpleXMLElement $clAttribNOUT
+     * @param \SimpleXMLElement $clAttribXS
      * @param \SimpleXMLElement|null $subButtons
-	 */
-	public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS, \SimpleXMLElement $subButtons = null)
-	{
-		parent::__construct('', $clAttribNOUT, $clAttribXS);
+     */
+    public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS, \SimpleXMLElement $subButtons = null)
+    {
+        parent::__construct('', $clAttribNOUT, $clAttribXS);
         $this->m_ID = spl_object_hash($clAttribNOUT);
         $this->m_nIDColonne = (string)$clAttribNOUT['idButton'];
-		$this->m_clInfoBouton = new InfoButton($clAttribNOUT);
-		$this->subButtons = array();
+        $this->m_clInfoBouton = new InfoButton($clAttribNOUT);
+        $this->subButtons = array();
         if (!is_null($subButtons)) {
             foreach ($subButtons->children(ParserXSDSchema::NAMESPACE_XSD) as $subButton) {
                 /** @var \SimpleXMLElement $subButton */
@@ -64,39 +64,39 @@ class StructureBouton extends StructureColonne
                 array_push($this->subButtons, new StructureBouton($clAttribNOUT, $clAttribXS, $ndSeqSousButtons));
             }
         }
-	}
+    }
 
     /**
      * @return StructureBouton[]
      */
-	public function getSubButtons(): array
+    public function getSubButtons(): array
     {
-	    return $this->subButtons;
+        return $this->subButtons;
     }
 
     /**
      * @return string
      */
-	public function getID(): string
+    public function getID(): string
     {
-	    return $this->m_ID;
+        return $this->m_ID;
     }
 
-	/**
-	 * @return InfoButton
-	 */
-	public function getInfoBouton(): InfoButton
+    /**
+     * @return InfoButton
+     */
+    public function getInfoBouton(): InfoButton
     {
-		return $this->m_clInfoBouton;
-	}
+        return $this->m_clInfoBouton;
+    }
 
     /**
      * @return bool
      */
-	public function isReadOnly() : bool
-	{
+    public function isReadOnly() : bool
+    {
         // Renvoit un booléen qui indique si le bouton est dispo en readOnly
         return Langage::s_isActionReadOnly($this->m_clInfoBouton->getOption(self::OPTION_IDTypeAction));
-	}
+    }
 
 }
