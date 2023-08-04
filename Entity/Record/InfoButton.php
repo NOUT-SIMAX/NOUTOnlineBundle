@@ -25,11 +25,9 @@ class InfoButton
 
         foreach ($clAttribNOUT as $sAttribName => $ndAttrib)
         {
-            if (($sAttribName == StructureColonne::OPTION_IDBouton)
-                || ($sAttribName == StructureColonne::OPTION_TypeElement)
-                || ($sAttribName == StructureColonne::OPTION_Name))
+            if (!in_array($sAttribName, self::aGetOptionList()))
             {
-                // On ignore ces options
+                //on ne prend pas les attributs suivant
                 continue;
             }
 
@@ -57,6 +55,30 @@ class InfoButton
     public function getTabOption(): array
     {
         return $this->m_TabOptions;
+    }
+
+    /**
+     * @return array
+     */
+    public static function aGetOptionList(): array
+    {
+        return [
+            StructureColonne::OPTION_Icone            ,
+            StructureColonne::OPTION_IDAction         ,
+            StructureColonne::OPTION_WithValidation   ,
+            StructureColonne::OPTION_TypeSelection    ,
+            StructureColonne::OPTION_Sentence         ,
+            StructureColonne::OPTION_TypeAction       ,
+            StructureColonne::OPTION_IDColToUpdate    ,
+            StructureColonne::OPTION_IDColSelection   ,
+            StructureColonne::OPTION_IDTypeAction     ,
+            StructureColonne::OPTION_Substitution     ,
+            StructureColonne::OPTION_ColumnAssignation,
+            StructureColonne::OPTION_DisplayOnLine    ,
+            StructureColonne::OPTION_ListMode         ,
+            StructureColonne::OPTION_IDButtonAction   ,
+            StructureColonne::OPTION_Hidden   ,
+        ];
     }
 
 
