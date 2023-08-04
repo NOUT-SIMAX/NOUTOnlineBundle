@@ -17,8 +17,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class NOUTOnlineDataCollector  extends DataCollector
 {
-    private $clLogger;
-    private $clTokenStorage;
+    private NOUTOnlineLogger $clLogger;
+    private ?TokenStorageInterface $clTokenStorage;
 
     public function getName()
     {
@@ -33,7 +33,7 @@ class NOUTOnlineDataCollector  extends DataCollector
 
     public function reset()
     {
-
+        //c'est normal si c'est vide, pas de reset
     }
     public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
@@ -51,7 +51,7 @@ class NOUTOnlineDataCollector  extends DataCollector
         $this->data['superviseur']   = false;
         $this->data['ip']            = '';
         $this->data['version']       = '';
-        $this->data['extranet']      = false;
+        $this->data['extranet']      = '';
 
         if ( !is_null($this->clTokenStorage) && !is_null($token = $this->clTokenStorage->getToken()))
         {
@@ -77,24 +77,27 @@ class NOUTOnlineDataCollector  extends DataCollector
 
     /**
      * @return int
+     * @noinspection PhpUnused
      */
-    public function getQueryCount()
+    public function getQueryCount() : int
     {
         return count($this->data['queries']);
     }
 
     /**
      * @return array
+     * @noinspection PhpUnused
      */
-    public function getQueries()
+    public function getQueries() : array
     {
         return $this->data['queries'];
     }
 
     /**
      * @return int
+     * @noinspection PhpUnused
      */
-    public function getTime()
+    public function getTime() : int
     {
         $time = 0;
         foreach ($this->data['queries'] as $query)
@@ -107,24 +110,26 @@ class NOUTOnlineDataCollector  extends DataCollector
 
     /**
      * @return bool
+     * @noinspection PhpUnused
      */
-    public function getSuperviseur()
+    public function getSuperviseur() : bool
     {
         return $this->data['superviseur'];
     }
 
     /**
-     * @return bool
+     * @return string
+     * @noinspection PhpUnused
      */
-    public function getExtranet()
+    public function getExtranet() : string
     {
         return $this->data['extranet'];
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function getVersion()
+    public function getVersion() : string
     {
         if ($this->data['version'] instanceof NOUTOnlineVersion){
             return $this->data['version']->get();
@@ -138,7 +143,7 @@ class NOUTOnlineDataCollector  extends DataCollector
      *
      * @return bool    true if the user is authenticated, false otherwise
      */
-    public function isAuthenticated()
+    public function isAuthenticated() : bool
     {
         return $this->data['authenticated'];
     }
@@ -148,7 +153,7 @@ class NOUTOnlineDataCollector  extends DataCollector
      *
      * @return string The user
      */
-    public function getUser()
+    public function getUser() : string
     {
         return $this->data['user'];
     }
@@ -157,8 +162,9 @@ class NOUTOnlineDataCollector  extends DataCollector
      * Gets the client IP.
      *
      * @return string the client IP
+     * @noinspection PhpUnused
      */
-    public function getIP()
+    public function getIP() : string
     {
         return $this->data['ip'];
     }
@@ -166,8 +172,9 @@ class NOUTOnlineDataCollector  extends DataCollector
      * get the token of the session
      *
      * @return string
+     * @noinspection PhpUnused
      */
-    public function getSessionToken()
+    public function getSessionToken() : string
     {
         return $this->data['session_token'];
     }
@@ -176,7 +183,7 @@ class NOUTOnlineDataCollector  extends DataCollector
      * get the time zone
      * @return string
      */
-    public function getTimeZone()
+    public function getTimeZone() : string
     {
         return $this->data['time_zone'];
     }
