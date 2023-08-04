@@ -14,7 +14,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\TokenWithNOUTOnlineVersionInterface;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -30,23 +29,21 @@ class NOUTOnlineExtension extends AbstractExtension
     /**
      * @var OnlineServiceFactory
      */
-    protected $m_clServiceFactory;
+    protected OnlineServiceFactory $clServiceFactory;
 
     /**
      * @var ConfigurationDialogue
      */
-    protected $m_clConfiguration;
+    protected ConfigurationDialogue $clConfiguration;
 
     /** @var string */
-    protected $m_sVersionMin;
+    protected string $sVersionMin;
 
     /** @var string */
-    protected $m_sVersionMultilanguage;
+    protected string $sVersionMultilanguage;
 
-    /**
-     * @var TokenInterface|null
-     */
-    protected $m_oToken;
+    /** @var TokenStorageInterface  */
+    protected TokenStorageInterface $clTokenStorage;
 
     /**
      * @param OnlineServiceFactory  $factory
@@ -55,11 +52,11 @@ class NOUTOnlineExtension extends AbstractExtension
      */
     public function __construct(TokenStorageInterface $tokenStorage, OnlineServiceFactory $factory, ConfigurationDialogue $configuration, array $aVersionsMin)
     {
-        $this->m_clServiceFactory = $factory;
-        $this->m_clConfiguration = $configuration;
-        $this->m_sVersionMin = $aVersionsMin['site'];
-        $this->m_sVersionMultilanguage = $aVersionsMin['multilanguage'];
-        $this->m_oToken = $tokenStorage->getToken();
+        $this->clServiceFactory = $factory;
+        $this->clConfiguration  = $configuration;
+        $this->sVersionMin    = $aVersionsMin['site'];
+        $this->sVersionMultilanguage = $aVersionsMin['multilanguage'];
+        $this->clTokenStorage = $tokenStorage;
     }
 
 
@@ -164,11 +161,12 @@ class NOUTOnlineExtension extends AbstractExtension
      */
     public function state(): NOUTOnlineState
     {
-        if ($this->m_oToken instanceof TokenWithNOUTOnlineVersionInterface) {
-            $ret = $this->m_oToken->clGetNOUTOnlineState($this->m_sVersionMin);
+        $oToken = $this->clTokenStorage->getToken();
+        if ($oToken instanceof TokenWithNOUTOnlineVersionInterface) {
+            $ret = $oToken->clGetNOUTOnlineState($this->sVersionMin);
         } else {
-            $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
-            $ret = $clRest->clGetNOUTOnlineState($this->m_sVersionMin);
+            $clRest = $this->clServiceFactory->clGetRESTProxy($this->clConfiguration);
+            $ret = $clRest->clGetNOUTOnlineState($this->sVersionMin);
         }
 
         return $ret;
@@ -190,10 +188,11 @@ class NOUTOnlineExtension extends AbstractExtension
      */
     public function isVersionSup($version): bool
     {
-        if (!$this->m_oToken instanceof NOUTToken) {
+        $oToken = $this->clTokenStorage->getToken();
+        if (!$oToken instanceof NOUTToken) {
             return false;
         }
-        return $this->m_oToken->isVersionSup($version, true);
+        return $oToken->isVersionSup($version, true);
     }
 
     /**
@@ -202,13 +201,14 @@ class NOUTOnlineExtension extends AbstractExtension
      */
     public function support(string $property): bool
     {
-        if (!$this->m_oToken instanceof NOUTToken) {
+        $oToken = $this->clTokenStorage->getToken();
+        if (!$oToken instanceof NOUTToken) {
             return false;
         }
         switch ($property) {
             case 'multilanguage':
             {
-                return $this->m_oToken->isVersionSup($this->m_sVersionMultilanguage, true);
+                return $oToken->isVersionSup($this->sVersionMultilanguage, true);
             }
         }
         return false;
