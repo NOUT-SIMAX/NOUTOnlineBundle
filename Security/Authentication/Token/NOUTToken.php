@@ -454,7 +454,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
 
         $this->clLangage = new Langage();
         $this->clLangage->fromSerialization($aUnserialised['language']);
-        $this->m_clVersionNO = new NOUTOnlineVersion($aUnserialised['version']);
+        $this->clVersionNO = new NOUTOnlineVersion($aUnserialised['version']);
 
         $this->oUsernameToken = new $aUnserialised['user']['class']();
         $this->oUsernameToken->fromSerialization($aUnserialised['user']['data']);
@@ -489,7 +489,7 @@ class NOUTToken extends UsernamePasswordToken implements TokenInterface, TokenWi
             $this->bWithConfiguration = $aUnserialised['withconfiguration'];
         }
         if (isset($aUnserialised['isStarter'])){
-            $this->m_bIsSIMAXStarter = $aUnserialised['isStarter'];
+            $this->bIsSIMAXStarter = $aUnserialised['isStarter'];
         }
 
         $this->sNameToDisplay = $aUnserialised['name'];

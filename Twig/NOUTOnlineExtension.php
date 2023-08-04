@@ -46,6 +46,7 @@ class NOUTOnlineExtension extends AbstractExtension
     protected TokenStorageInterface $clTokenStorage;
 
     /**
+     * @param TokenStorageInterface $tokenStorage
      * @param OnlineServiceFactory  $factory
      * @param ConfigurationDialogue $configuration
      * @param array                 $aVersionsMin
@@ -65,7 +66,7 @@ class NOUTOnlineExtension extends AbstractExtension
      *
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return 'nout_online_extension';
     }
@@ -87,7 +88,7 @@ class NOUTOnlineExtension extends AbstractExtension
      * @param string $query
      * @return string
      */
-    public function beautifyXML($query)
+    public function beautifyXML(string $query) : string
     {
         $nPos = strpos($query, '<?xml ');
         if ($nPos === false) {
@@ -102,22 +103,25 @@ class NOUTOnlineExtension extends AbstractExtension
         $doc->formatOutput = true;
         $doc->loadXML($xml);
 
-        $result = $header . $doc->saveXML();
-        return $result;
+        return $header . $doc->saveXML();
     }
 
     /**
      * @param string $query
      * @return string
      */
-    public function beautifyJSON($query)
+    public function beautifyJSON(string $query) : string
     {
         $oTemp = json_decode($query);
         return json_encode($oTemp, JSON_PRETTY_PRINT);
     }
 
-
-    public function getLanguageQuery($query)
+    /**
+     * @param string $query
+     *
+     * @return string
+     */
+    public function getLanguageQuery(string $query) : string
     {
         if (strncmp(trim($query), '<?xml ', strlen('<?xml ')) == 0) {
             return 'markup';
@@ -192,7 +196,7 @@ class NOUTOnlineExtension extends AbstractExtension
         if (!$oToken instanceof NOUTToken) {
             return false;
         }
-        return $oToken->isVersionSup($version, true);
+        return $oToken->isVersionSup($version);
     }
 
     /**
@@ -205,12 +209,10 @@ class NOUTOnlineExtension extends AbstractExtension
         if (!$oToken instanceof NOUTToken) {
             return false;
         }
-        switch ($property) {
-            case 'multilanguage':
-            {
-                return $oToken->isVersionSup($this->sVersionMultilanguage, true);
-            }
+        if ($property == 'multilanguage'){
+            return $oToken->isVersionSup($this->sVersionMultilanguage);
         }
+
         return false;
     }
 
@@ -241,7 +243,7 @@ class NOUTOnlineExtension extends AbstractExtension
      * @return bool
      * @throws \Exception
      */
-    public function isStarted(): string
+    public function isStarted(): bool
     {
         $state = $this->state();
         return $state->isStarted;

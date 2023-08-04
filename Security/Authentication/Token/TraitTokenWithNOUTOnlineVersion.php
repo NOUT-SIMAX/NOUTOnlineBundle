@@ -13,21 +13,21 @@ trait TraitTokenWithNOUTOnlineVersion
      * version du noutonline
      * @var NOUTOnlineVersion|string m_clVersionNO
      */
-    protected $m_clVersionNO = null;
+    protected $clVersionNO = null;
 
     /** @var bool  */
-    protected $m_bIsSIMAXStarter = false;
+    protected bool $bIsSIMAXStarter = false;
 
     /**
      * @return bool
      */
     public function isStarted(): bool
     {
-        if (empty($this->m_clVersionNO)){
+        if (empty($this->clVersionNO)){
             return false;
         }
 
-        if ((!$this->m_clVersionNO instanceof NOUTOnlineVersion) && (strcmp($this->m_clVersionNO, "N/A")==0)){
+        if ((!$this->clVersionNO instanceof NOUTOnlineVersion) && (strcmp($this->clVersionNO, "N/A") == 0)){
             return false;
         }
 
@@ -39,7 +39,7 @@ trait TraitTokenWithNOUTOnlineVersion
      */
     public function clGetNOUTOnlineVersion() : ?NOUTOnlineVersion
     {
-        return $this->m_clVersionNO;
+        return $this->clVersionNO;
     }
 
 
@@ -48,14 +48,14 @@ trait TraitTokenWithNOUTOnlineVersion
      */
     public function getVersionNO() : string
     {
-        if (is_null($this->m_clVersionNO)){
+        if (is_null($this->clVersionNO)){
             $sVersion='';
         }
-        elseif ($this->m_clVersionNO instanceof NOUTOnlineVersion) {
-            $sVersion = $this->m_clVersionNO->get();
+        elseif ($this->clVersionNO instanceof NOUTOnlineVersion) {
+            $sVersion = $this->clVersionNO->get();
         }
         else {
-            $sVersion = $this->m_clVersionNO;
+            $sVersion = $this->clVersionNO;
         }
         return $sVersion;
     }
@@ -68,11 +68,11 @@ trait TraitTokenWithNOUTOnlineVersion
     {
         if (is_null($versionNO) || $versionNO instanceof NOUTOnlineVersion)
         {
-            $this->m_clVersionNO = $versionNO;
+            $this->clVersionNO = $versionNO;
         }
         else
         {
-            $this->m_clVersionNO = new NOUTOnlineVersion($versionNO);
+            $this->clVersionNO = new NOUTOnlineVersion($versionNO);
         }
         return $this;
     }
@@ -85,16 +85,16 @@ trait TraitTokenWithNOUTOnlineVersion
      */
     public function isVersionSup(string $sVersionMin, bool $bInclu=true) : bool
     {
-        if (is_null($this->m_clVersionNO)){
+        if (is_null($this->clVersionNO)){
             return false;
         }
 
-        if ($this->m_clVersionNO instanceof  NOUTOnlineVersion)
+        if ($this->clVersionNO instanceof NOUTOnlineVersion)
         {
-            return $this->m_clVersionNO->isVersionSup($sVersionMin, $bInclu);
+            return $this->clVersionNO->isVersionSup($sVersionMin, $bInclu);
         }
 
-        $clVersion = new NOUTOnlineVersion($this->m_clVersionNO);
+        $clVersion = new NOUTOnlineVersion($this->clVersionNO);
         return $clVersion->isVersionSup($sVersionMin, $bInclu);
     }
 
@@ -103,7 +103,7 @@ trait TraitTokenWithNOUTOnlineVersion
      */
     public function isSIMAXStarter(): bool
     {
-        return $this->m_bIsSIMAXStarter;
+        return $this->bIsSIMAXStarter;
     }
 
     /**
@@ -112,7 +112,7 @@ trait TraitTokenWithNOUTOnlineVersion
      */
     public function setIsSIMAXStarter(bool $bIsSIMAXStarter)
     {
-        $this->m_bIsSIMAXStarter = $bIsSIMAXStarter;
+        $this->bIsSIMAXStarter = $bIsSIMAXStarter;
         return $this;
     }
 
