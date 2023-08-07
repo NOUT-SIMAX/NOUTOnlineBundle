@@ -2,7 +2,6 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\DependencyInjection;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Security\EncryptionType;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

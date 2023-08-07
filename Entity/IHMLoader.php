@@ -11,6 +11,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageTableau;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\ReponseWSParser;
@@ -64,20 +66,20 @@ class IHMLoader
         $this->m_clParserMenu = $clResponseParserMenu->InitFromXmlXsd($clReponseMenu);
 
         //on récupère tous les id des options de menu et des menus depuis les différentes réponses
-        $this->m_aTabIDEnregOptionMenu = $this->m_clParserOption->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_OptionMenuPourTous);
-        $this->m_aTabIDEnregMenu = $this->m_clParserMenu->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_MenuPourTous);
+        $this->m_aTabIDEnregOptionMenu = $this->m_clParserOption->GetTabEnregTableau()->GetTabIDEnreg(LangageTableau::OptionMenuPourTous);
+        $this->m_aTabIDEnregMenu = $this->m_clParserMenu->GetTabEnregTableau()->GetTabIDEnreg(LangageTableau::MenuPourTous);
 
 
         $clResponseParserBigIcon = new ReponseWSParser();
         /** @var ParserList $clParserBigIcon */
         $clParserBigIcon = $clResponseParserBigIcon->InitFromXmlXsd($clReponseBigIcon);
-        $this->m_aTabIDEnregBigIcon = $clParserBigIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
+        $this->m_aTabIDEnregBigIcon = $clParserBigIcon->GetTabEnregTableau()->GetTabIDEnreg(LangageTableau::ImageCatalogue);
 
 
         $clResponseParserSmallIcon = new ReponseWSParser();
         /** @var ParserList $clParserSmallIcon */
         $clParserSmallIcon = $clResponseParserSmallIcon->InitFromXmlXsd($clReponseSmallIcon);
-        $this->m_aTabIDEnregSmallIcon = $clParserSmallIcon->GetTabEnregTableau()->GetTabIDEnreg(Langage::TABL_ImageCatalogue);
+        $this->m_aTabIDEnregSmallIcon = $clParserSmallIcon->GetTabEnregTableau()->GetTabIDEnreg(LangageTableau::ImageCatalogue);
     }
 
     /**
@@ -122,9 +124,9 @@ class IHMLoader
      */
     protected function _aGetMenu(InfoIHM $oInfoIHM, $sIDMenu, $bUniquementRacine): ?ItemMenu
     {
-        $clRecordMenu = $this->m_clParserMenu->getRecordFromID(Langage::TABL_MenuPourTous, $sIDMenu);
+        $clRecordMenu = $this->m_clParserMenu->getRecordFromID(LangageTableau::MenuPourTous, $sIDMenu);
 
-        $sIDMenuPere = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_IDMenuParent);
+        $sIDMenuPere = $clRecordMenu->getValCol(LangageColonne::MENUPOURTOUS_IDMenuParent);
         if ($bUniquementRacine && !empty($sIDMenuPere))
         {
             //on prend que les menus qui n'ont pas de père
@@ -132,7 +134,7 @@ class IHMLoader
         }
 
         //on construit un menu
-        $libelle = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_Libelle);
+        $libelle = $clRecordMenu->getValCol(LangageColonne::MENUPOURTOUS_Libelle);
         if (is_array($libelle)){
             $libelle = $libelle['display'];
         }
@@ -140,7 +142,7 @@ class IHMLoader
         $clMenu->setIdMenuParent($sIDMenuPere);
         $clMenu->setRootMenu(empty($sIDMenuPere));
 
-        $ValOptionMenu = $clRecordMenu->getValCol(Langage::COL_MENUPOURTOUS_OptionsMenu);
+        $ValOptionMenu = $clRecordMenu->getValCol(LangageColonne::MENUPOURTOUS_OptionsMenu);
         foreach($ValOptionMenu as $sIDOptionMenu)
         {
             if (in_array($sIDOptionMenu, $this->m_aTabIDEnregMenu))
@@ -156,22 +158,22 @@ class IHMLoader
             if (!in_array($sIDOptionMenu, $this->m_aTabIDEnregOptionMenu))
                 continue;
 
-            $clRecordOption = $this->m_clParserOption->getRecordFromID(Langage::TABL_OptionMenuPourTous, $sIDOptionMenu);
+            $clRecordOption = $this->m_clParserOption->getRecordFromID(LangageTableau::OptionMenuPourTous, $sIDOptionMenu);
 
-            $libelle = $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Libelle);
+            $libelle = $clRecordOption->getValCol(LangageColonne::OPTIONMENUPOURTOUS_Libelle);
             if (is_array($libelle)){
                 $libelle = $libelle['display'];
             }
 
             $clOptionMenu = new ItemMenu($sIDOptionMenu, $libelle, true);
             $clOptionMenu
-                ->setIdMenuParent($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent))
-                ->setIdAction($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDAction))
-                ->setCommand($clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_Commande))
+                ->setIdMenuParent($clRecordOption->getValCol(LangageColonne::OPTIONMENUPOURTOUS_IDMenuParent))
+                ->setIdAction($clRecordOption->getValCol(LangageColonne::OPTIONMENUPOURTOUS_IDAction))
+                ->setCommand($clRecordOption->getValCol(LangageColonne::OPTIONMENUPOURTOUS_Commande))
             ;
 
 
-            $sIDIcon = $clRecordOption->getValCol(Langage::COL_OPTIONMENUPOURTOUS_IDIcone);
+            $sIDIcon = $clRecordOption->getValCol(LangageColonne::OPTIONMENUPOURTOUS_IDIcone);
             if (!empty($sIDIcon))
             {
                 $sBigIcon = in_array($sIDIcon, $this->m_aTabIDEnregBigIcon) ? $sIDIcon : '';

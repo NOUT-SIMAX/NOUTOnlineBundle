@@ -12,7 +12,7 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
  * Parser pour le NOUVEAU planning (DHX)
  */
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageTableau;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
@@ -52,7 +52,7 @@ class ParserScheduler extends ParserList
     {
         $ndSchema    = $clReponseXML->getNodeXSDRessource();
         $ndXML       = $clReponseXML->getNodeXMLRessource();
-        $idForm      = Langage::TABL_Ressource; //toutes les ressources sont fils du tableau ressource
+        $idForm      = LangageTableau::Ressource; //toutes les ressources sont fils du tableau ressource
 
         if (count($ndSchema)>0)
         {

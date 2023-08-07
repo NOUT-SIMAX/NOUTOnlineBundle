@@ -14,7 +14,6 @@ use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\TokenWithNOUTOnlineVersionInterface;
 use NOUT\Bundle\NOUTOnlineBundle\Service\OnlineServiceFactory;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -30,36 +29,35 @@ class NOUTOnlineExtension extends AbstractExtension
     /**
      * @var OnlineServiceFactory
      */
-    protected $m_clServiceFactory;
+    protected OnlineServiceFactory $clServiceFactory;
 
     /**
      * @var ConfigurationDialogue
      */
-    protected $m_clConfiguration;
+    protected ConfigurationDialogue $clConfiguration;
 
     /** @var string */
-    protected $m_sVersionMin;
+    protected string $sVersionMin;
 
     /** @var string */
-    protected $m_sVersionMultilanguage;
+    protected string $sVersionMultilanguage;
+
+    /** @var TokenStorageInterface  */
+    protected TokenStorageInterface $clTokenStorage;
 
     /**
-     * @var TokenInterface|null
-     */
-    protected $m_oToken;
-
-    /**
+     * @param TokenStorageInterface $tokenStorage
      * @param OnlineServiceFactory  $factory
      * @param ConfigurationDialogue $configuration
      * @param array                 $aVersionsMin
      */
     public function __construct(TokenStorageInterface $tokenStorage, OnlineServiceFactory $factory, ConfigurationDialogue $configuration, array $aVersionsMin)
     {
-        $this->m_clServiceFactory = $factory;
-        $this->m_clConfiguration = $configuration;
-        $this->m_sVersionMin = $aVersionsMin['site'];
-        $this->m_sVersionMultilanguage = $aVersionsMin['multilanguage'];
-        $this->m_oToken = $tokenStorage->getToken();
+        $this->clServiceFactory = $factory;
+        $this->clConfiguration  = $configuration;
+        $this->sVersionMin    = $aVersionsMin['site'];
+        $this->sVersionMultilanguage = $aVersionsMin['multilanguage'];
+        $this->clTokenStorage = $tokenStorage;
     }
 
 
@@ -68,7 +66,7 @@ class NOUTOnlineExtension extends AbstractExtension
      *
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return 'nout_online_extension';
     }
@@ -90,7 +88,7 @@ class NOUTOnlineExtension extends AbstractExtension
      * @param string $query
      * @return string
      */
-    public function beautifyXML($query)
+    public function beautifyXML(string $query) : string
     {
         $nPos = strpos($query, '<?xml ');
         if ($nPos === false) {
@@ -105,22 +103,25 @@ class NOUTOnlineExtension extends AbstractExtension
         $doc->formatOutput = true;
         $doc->loadXML($xml);
 
-        $result = $header . $doc->saveXML();
-        return $result;
+        return $header . $doc->saveXML();
     }
 
     /**
      * @param string $query
      * @return string
      */
-    public function beautifyJSON($query)
+    public function beautifyJSON(string $query) : string
     {
         $oTemp = json_decode($query);
         return json_encode($oTemp, JSON_PRETTY_PRINT);
     }
 
-
-    public function getLanguageQuery($query)
+    /**
+     * @param string $query
+     *
+     * @return string
+     */
+    public function getLanguageQuery(string $query) : string
     {
         if (strncmp(trim($query), '<?xml ', strlen('<?xml ')) == 0) {
             return 'markup';
@@ -164,11 +165,12 @@ class NOUTOnlineExtension extends AbstractExtension
      */
     public function state(): NOUTOnlineState
     {
-        if ($this->m_oToken instanceof TokenWithNOUTOnlineVersionInterface) {
-            $ret = $this->m_oToken->clGetNOUTOnlineState($this->m_sVersionMin);
+        $oToken = $this->clTokenStorage->getToken();
+        if ($oToken instanceof TokenWithNOUTOnlineVersionInterface) {
+            $ret = $oToken->clGetNOUTOnlineState($this->sVersionMin);
         } else {
-            $clRest = $this->m_clServiceFactory->clGetRESTProxy($this->m_clConfiguration);
-            $ret = $clRest->clGetNOUTOnlineState($this->m_sVersionMin);
+            $clRest = $this->clServiceFactory->clGetRESTProxy($this->clConfiguration);
+            $ret = $clRest->clGetNOUTOnlineState($this->sVersionMin);
         }
 
         return $ret;
@@ -190,10 +192,11 @@ class NOUTOnlineExtension extends AbstractExtension
      */
     public function isVersionSup($version): bool
     {
-        if (!$this->m_oToken instanceof NOUTToken) {
+        $oToken = $this->clTokenStorage->getToken();
+        if (!$oToken instanceof NOUTToken) {
             return false;
         }
-        return $this->m_oToken->isVersionSup($version, true);
+        return $oToken->isVersionSup($version);
     }
 
     /**
@@ -202,15 +205,14 @@ class NOUTOnlineExtension extends AbstractExtension
      */
     public function support(string $property): bool
     {
-        if (!$this->m_oToken instanceof NOUTToken) {
+        $oToken = $this->clTokenStorage->getToken();
+        if (!$oToken instanceof NOUTToken) {
             return false;
         }
-        switch ($property) {
-            case 'multilanguage':
-            {
-                return $this->m_oToken->isVersionSup($this->m_sVersionMultilanguage, true);
-            }
+        if ($property == 'multilanguage'){
+            return $oToken->isVersionSup($this->sVersionMultilanguage);
         }
+
         return false;
     }
 
@@ -241,7 +243,7 @@ class NOUTOnlineExtension extends AbstractExtension
      * @return bool
      * @throws \Exception
      */
-    public function isStarted(): string
+    public function isStarted(): bool
     {
         $state = $this->state();
         return $state->isStarted;

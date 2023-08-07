@@ -8,34 +8,69 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
+use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy;
 
 class NOUTClientConfiguration extends NOUTClientBase
 {
     /**
-     * @return mixed
+     * @param string $idcontext
+     * @return ActionResult
      * @throws \Exception
      */
-    public function oGetConfigurationDropdownParams(string $idcontext) : ActionResult
+    public function oGetConfigurationDropdownAction(string $idcontext) : ActionResult
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
 
-        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownParams($clIdentification);
+        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownAction($clIdentification);
 
         return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
     }
 
     /**
-     * @return mixed
+     * @param string $idcontext
+     * @return ActionResult
      * @throws \Exception
      */
-    public function oGetConfigurationDropdownColumns(string $idcontext) : ActionResult
+    public function oGetConfigurationDropdownForm(string $idcontext) : ActionResult
     {
         $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
 
-        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownColumns($clIdentification);
+        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownForm($clIdentification);
 
         return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
     }
+
+    /**
+     * @param string $idconfig
+     * @param string $idcontext
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownColumn(string $idconfig, string $idcontext) : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+
+        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownColumn([OnlineServiceProxy::PARAM_IDCol], $clIdentification);
+
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
+    }
+
+    /**
+     * @param string $idcontext
+     * @param string $idconfig
+     * @return ActionResult
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownParameter(string $idconfig, string $idcontext) : ActionResult
+    {
+        $clIdentification = $this->_clGetIdentificationREST($idcontext, true);
+
+        $httpresponse = $this->m_clRESTProxy->oGetConfigurationDropdownParameter($clIdentification);
+
+        return $this->_oGetJSONActionResultFromHTTPResponse($httpresponse);
+    }
+
+
 
     /**
      * @return mixed

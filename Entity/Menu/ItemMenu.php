@@ -13,7 +13,7 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Menu;
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
 
 class ItemMenu
 {

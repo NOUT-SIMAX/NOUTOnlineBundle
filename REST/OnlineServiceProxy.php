@@ -16,7 +16,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineState;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UserExists\UserExists;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\Service\CURLProxy;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class OnlineServiceProxy
 {
@@ -29,15 +31,26 @@ class OnlineServiceProxy
     /** @var CURLProxy  */
     private CURLProxy $clCurl;
 
+    /** @var NOUTOnlineVersion|null  */
+    private ?NOUTOnlineVersion $clNOUTOnlineVersion = null;
+
     /**
      * constructeur permettant d'instancier les classe de communication soap avec les bonne question
-     * @param CURLProxy             $clCurl
+     * @param CURLProxy $clCurl
      * @param ConfigurationDialogue $clConfig
+     * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(ConfigurationDialogue $clConfig, CURLProxy $clCurl)
+    public function __construct(ConfigurationDialogue $clConfig, CURLProxy $clCurl, TokenStorageInterface $tokenStorage)
     {
         $this->clConfigurationDialogue = $clConfig;
         $this->clCurl = $clCurl;
+
+        $token = $tokenStorage->getToken();
+        if ($token instanceof NOUTToken && !empty($token->nGetIDUser()))
+        {
+            //uniquement si connecté
+            $this->clNOUTOnlineVersion = $token->clGetNOUTOnlineVersion();
+        }
     }
 
     /**
@@ -217,8 +230,15 @@ class OnlineServiceProxy
      */
     public function clGetVersion(): NOUTOnlineVersion
     {
-        $sURI = $this->_sCreateRequest(['GetVersion'], [], []);
+        if (!is_null($this->clNOUTOnlineVersion)){
+            $version = $this->clNOUTOnlineVersion->get();
+            if (is_string($version) && preg_match('/^(?:\d{2}\.\d{2}\.)?\d{4}\.\d{2}$/', $version))
+            {
+                return new NOUTOnlineVersion($version);
+            }
+        }
 
+        $sURI = $this->_sCreateRequest(['GetVersion'], [], []);
         return new NOUTOnlineVersion($this->_oExecuteGET('', $sURI, __FUNCTION__, null, 1)->content);
     }
 
@@ -481,7 +501,7 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-    public function oGetConfigurationDropdownParams(Identification $clIdentification): HTTPResponse
+    public function oGetConfigurationDropdownAction(Identification $clIdentification): HTTPResponse
     {
         $sURI = $this->_sCreateRequest(['GetConfigurationDropdownParams'], [], [], $clIdentification);
         return $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
@@ -493,9 +513,33 @@ class OnlineServiceProxy
      * @return HTTPResponse
      * @throws \Exception
      */
-    public function oGetConfigurationDropdownColumns(Identification $clIdentification): HTTPResponse
+    public function oGetConfigurationDropdownForm(Identification $clIdentification): HTTPResponse
     {
         $sURI = $this->_sCreateRequest(['GetConfigurationDropdownColumns'], [], [], $clIdentification);
+        return $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
+    }
+
+    /**
+     * @param array $aTabParams
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownColumn(array $aTabParams, Identification $clIdentification): HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest(['GetConfigurationDropdownColumns'], $aTabParams, [], $clIdentification);
+        return $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
+    }
+
+    /**
+     * @param array $aTabParams
+     * @param Identification $clIdentification
+     * @return HTTPResponse
+     * @throws \Exception
+     */
+    public function oGetConfigurationDropdownParameter(array $aTabParams, Identification $clIdentification): HTTPResponse
+    {
+        $sURI = $this->_sCreateRequest(['GetConfigurationDropdownColumns'], $aTabParams, [], $clIdentification);
         return $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
     }
 

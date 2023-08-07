@@ -9,7 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\TypeAction;
 
 class InfoButton
 {
@@ -82,12 +82,12 @@ class InfoButton
     }
 
 
-    const TYPE_Imprimer = Langage::eTYPEACTION_Impression;
-    const TYPE_Imprimer_liste = Langage::eTYPEACTION_Impression;
-    const TYPE_Supprimer = Langage::eTYPEACTION_Suppression;
-    const TYPE_Ajouter = Langage::eTYPEACTION_AjouterA;
-    const TYPE_Modifier = Langage::eTYPEACTION_Modification;
-    const TYPE_Enlever = Langage::eTYPEACTION_EnleverDe;
-    const TYPE_Creer = Langage::eTYPEACTION_Creation;
-    const TYPE_Detail = Langage::eTYPEACTION_Consultation;
+    const TYPE_Imprimer       = TypeAction::Impression;
+    const TYPE_Imprimer_liste = TypeAction::Impression;
+    const TYPE_Supprimer      = TypeAction::Suppression;
+    const TYPE_Ajouter        = TypeAction::AjouterA;
+    const TYPE_Modifier       = TypeAction::Modification;
+    const TYPE_Enlever        = TypeAction::EnleverDe;
+    const TYPE_Creer          = TypeAction::Creation;
+    const TYPE_Detail         = TypeAction::Consultation;
 }
