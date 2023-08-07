@@ -10,7 +10,11 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageAction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageParametre;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageTableau;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Messaging\MailServiceStatus;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
@@ -186,7 +190,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($requestHeaders);
 
         $clReponseXML = $this->m_clSOAPProxy->getFolderList($this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Dossier);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Dossier);
     }
 
     /**
@@ -204,7 +208,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $clParam->IDList = $listID;
 
         $clReponseXML = $this->m_clSOAPProxy->closeFolderList($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Dossier);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Dossier);
     }
 
     /**
@@ -223,7 +227,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $folderContent->IDFolder = $folderID;
 
         $clReponseXML = $this->m_clSOAPProxy->getContentFolder($folderContent, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -251,7 +255,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         }
 
         $clReponseXML = $this->m_clSOAPProxy->getListIDMessFromFolder($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -280,7 +284,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         }
 
         $clReponseXML = $this->m_clSOAPProxy->getListIDMessFromRequest($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -298,7 +302,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $clParam->IDMessage = implode('|', $aMessagesID);
 
         $clReponseXML = $this->m_clSOAPProxy->getMessagesFromListID($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -318,7 +322,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $requestMessage->Filter = $requestParams[self::PARAMMESS_Filter];
 
         $clReponseXML = $this->m_clSOAPProxy->getRequestMessage($requestMessage, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -336,7 +340,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $clParam->IDList = $listID;
 
         $clReponseXML = $this->m_clSOAPProxy->closeMessageList($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
 
@@ -354,10 +358,10 @@ class NOUTClientMessagerie extends NOUTClientBase
 
         $updateMessage = new UpdateMessage();
         $updateMessage->IDMessage=$idmessage;
-        $updateMessage->UpdateData = ParametersManagement::s_sStringifyUpdateData(Langage::TABL_Messagerie_Message, $updateData, null);
+        $updateMessage->UpdateData = ParametersManagement::s_sStringifyUpdateData(LangageTableau::Messagerie_Message, $updateData, null);
 
         $clReponseXML = $this->m_clSOAPProxy->updateMessage($updateMessage, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -379,7 +383,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $updateMessages->Value = $value;
 
         $clReponseXML =  $this->m_clSOAPProxy->updateColumnMessageValueInBatch($updateMessages, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -399,7 +403,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $deleteMessages->IDMessage = $messages;
 
         $clReponseXML =  $this->m_clSOAPProxy->deleteMessage($deleteMessages, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
 
@@ -421,7 +425,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $message->IDMessage = $originalMessage ?? '';
 
         $clReponseXML=$this->m_clSOAPProxy->createMessage($message, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -438,7 +442,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $action->IDMessage = $idMessage;
 
         $clReponseXML = $this->m_clSOAPProxy->cancelMessage($action,  $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -455,7 +459,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $specialParamList->WithEndCalculation = 0;
 
         $execaction = new Execute();
-        $execaction->ID = Langage::ACTION_RechercherReponseType;
+        $execaction->ID = LangageAction::RechercherReponseType;
         $execaction->SpecialParamList = $specialParamList;
 
         $clReponseXML = $this->m_clSOAPProxy->execute($execaction, $this->_aGetTabHeader($aTabHeaderSuppl));
@@ -479,8 +483,8 @@ class NOUTClientMessagerie extends NOUTClientBase
 
         // on commence par la liste des types d'action
         $listTypeAction = new Execute();
-        $listTypeAction->ID = Langage::ACTION_ListeChoix;
-        $listTypeAction->ParamXML='<id_'.Langage::PA_ListeChoix_Modele.'>'.Langage::MT_TypeDAction.'</id_'.Langage::PA_ListeChoix_Modele.'>';
+        $listTypeAction->ID = LangageAction::ListeChoix;
+        $listTypeAction->ParamXML='<id_'.LangageParametre::LISTECHOIX_Modele . '>' . Langage::MT_TypeDAction . '</id_' . LangageParametre::LISTECHOIX_Modele . '>';
 
 
         $clReponseXML = $this->m_clSOAPProxy->execute($listTypeAction, $this->_aGetTabHeader($aTabHeaderSuppl));
@@ -489,8 +493,8 @@ class NOUTClientMessagerie extends NOUTClientBase
 
         //on fait aussi la liste des formulaires
         $listFormulaire = new Execute();
-        $listFormulaire->ID = Langage::ACTION_ListeFormulaire;
-        $listFormulaire->ParamXML='<id_'.Langage::PA_ListeFormulaire_SousModule.'></id_'.Langage::PA_ListeFormulaire_SousModule.'>';
+        $listFormulaire->ID = LangageAction::ListeFormulaire;
+        $listFormulaire->ParamXML='<id_'.LangageParametre::LISTEFORMULAIRE_SousModule . '></id_' . LangageParametre::LISTEFORMULAIRE_SousModule . '>';
 
 
         $clReponseXML = $this->m_clSOAPProxy->execute($listFormulaire, $this->_aGetTabHeader($aTabHeaderSuppl));
@@ -526,7 +530,7 @@ class NOUTClientMessagerie extends NOUTClientBase
 
         // on commence par la liste des types d'action
         $listUtilisateur = new Execute();
-        $listUtilisateur->ID = Langage::ACTION_ListeUtilisateur;
+        $listUtilisateur->ID = LangageAction::ListeUtilisateur;
 
         $clReponseXML = $this->m_clSOAPProxy->execute($listUtilisateur, $this->_aGetTabHeader($aTabHeaderSuppl));
         $oRetUtilisateur = $this->_oGetActionResultFromXMLResponse($clReponseXML);
@@ -558,7 +562,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $message = new ModifyMessage();
         $message->IDMessage = $messageID;
         $clReponseXML = $this->m_clSOAPProxy->modifyMessage($message, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -577,7 +581,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $message = new SendMessage();
         $message->IDMessage = $messageID;
         $clReponseXML = $this->m_clSOAPProxy->sendMessage($message, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -626,7 +630,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $addPJ->DataPJ = $PJType;
 
         $clReponseXML = $this->m_clSOAPProxy->addPJ($addPJ, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -645,7 +649,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $deletePJ->IDPJ = $attachmentId;
 
         $clReponseXML = $this->m_clSOAPProxy->deletePj($deletePJ, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -660,7 +664,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $aTabParam=[];
         $aTabOption=[];
 
-        $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(Langage::TABL_CompteEmail, $compteID, Langage::COL_COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
+        $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(LangageTableau::CompteEmail, $compteID, LangageColonne::COMPTEEMAIL_Signature, $aTabParam, $aTabOption, $clIdentification);
 
         return $oRetHTTP->content;
     }
@@ -679,15 +683,15 @@ class NOUTClientMessagerie extends NOUTClientBase
         }
 
         $nIDCol=(($sType==CreateMessage::CREATE_TYPE_EMPTY) || (($sType==CreateMessage::CREATE_TYPE_ANSWER_TYPE) && !$withOriginalMessage))
-            ? Langage::COL_COMPTEEMAIL_SignatureNouveau
-            : Langage::COL_COMPTEEMAIL_SignatureRepondre;
+            ? LangageColonne::COMPTEEMAIL_SignatureNouveau
+            : LangageColonne::COMPTEEMAIL_SignatureRepondre;
 
         $clIdentification = $this->_clGetIdentificationREST('', false);
 
         $aTabParam=[];
         $aTabOption=['displayvalue' => 0];
 
-        $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(Langage::TABL_CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
+        $oRetHTTP = $this->m_clRESTProxy->oGetColInRecord(LangageTableau::CompteEmail, $compteID, $nIDCol, $aTabParam, $aTabOption, $clIdentification);
         $sRes= $oRetHTTP->content;
 
         return ($sRes==="Oui") || ($sRes==="Vrai") || intval($sRes) <> 0;
@@ -749,7 +753,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $getUndoListParam->OtherCriteria = $requestParams[self::PARAMMESS_OtherCriteria];
 
         $clReponseXML = $this->m_clSOAPProxy->getUndoList($getUndoListParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -781,7 +785,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         }
 
         $clReponseXML = $this->m_clSOAPProxy->getUndoListID($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
 
@@ -805,7 +809,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $getRedoListParam->OtherCriteria = $requestParams[self::PARAMMESS_OtherCriteria];
 
         $clReponseXML = $this->m_clSOAPProxy->getRedoList($getRedoListParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -837,7 +841,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         }
 
         $clReponseXML = $this->m_clSOAPProxy->getRedoListID($clParam, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -853,7 +857,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $param->IDMessage = $idMessage;
 
         $clReponseXML = $this->m_clSOAPProxy->displayUndoMessage($param, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return  $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return  $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
 
@@ -870,7 +874,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $param->IDMessage = $idMessage;
 
         $clReponseXML = $this->m_clSOAPProxy->displayRedoMessage($param, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -886,7 +890,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $param->IDMessage = $idMessage;
 
         $clReponseXML = $this->m_clSOAPProxy->undo($param, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     /**
@@ -902,7 +906,7 @@ class NOUTClientMessagerie extends NOUTClientBase
         $param->IDMessage = $idMessage;
 
         $clReponseXML = $this->m_clSOAPProxy->redo($param, $this->_aGetTabHeader($aTabHeaderSuppl));
-        return $this->_oGetActionResultFromXMLResponse($clReponseXML, Langage::TABL_Messagerie_Message);
+        return $this->_oGetActionResultFromXMLResponse($clReponseXML, LangageTableau::Messagerie_Message);
     }
 
     const PARAMMESS_Filter = 'Filter';

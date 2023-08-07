@@ -11,9 +11,9 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheProvider;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageTableau;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class NOUTClientCache
 {
@@ -121,7 +121,7 @@ class NOUTClientCache
     public function fetchImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption)
     {
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        if ($sIDFormulaire == Langage::TABL_ImageCatalogue)
+        if ($sIDFormulaire == LangageTableau::ImageCatalogue)
         {
             return $this->m_clCacheIcones->fetch($sName);
         }
@@ -141,7 +141,7 @@ class NOUTClientCache
     public function deleteImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption)
     {
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        if ($sIDFormulaire == Langage::TABL_ImageCatalogue)
+        if ($sIDFormulaire == LangageTableau::ImageCatalogue)
         {
             return $this->m_clCacheIcones->delete($sName);
         }
@@ -162,7 +162,7 @@ class NOUTClientCache
     public function saveImageFromLangage($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption, $data)
     {
         $sName = $this->_sGetNameForFile($sIDFormulaire, $sIDColonne, $sIDEnreg, $aTabOption);
-        if ($sIDFormulaire == Langage::TABL_ImageCatalogue)
+        if ($sIDFormulaire == LangageTableau::ImageCatalogue)
         {
             return $this->m_clCacheIcones->save($sName, $data, self::TIMEOUT_3J);
         }

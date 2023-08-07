@@ -9,7 +9,11 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageAction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageParametre;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageTableau;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\TypeAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ParametersManagement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondColumn;
@@ -85,15 +89,18 @@ class NOUTClient extends NOUTClientBase
 
     /**
      * Execute une action via son id
+     *
      * @param array      $tabParamQuery
      * @param array|null $aTabHeaderQuery
      * @param string     $sIDAction
      * @param int        $final
      * @param string     $sIDContext
+     * @param array|null $aUpdateData
+     *
      * @return ActionResult
      * @throws \Exception
      */
-    public function oExecIDAction(string $sIDAction, string $sIDContext, array $tabParamQuery, ?array $aTabHeaderQuery = null, int $final = 0) : ActionResult
+    public function oExecIDAction(string $sIDAction, string $sIDContext, array $tabParamQuery, ?array $aTabHeaderQuery = null, ?array $aUpdateData = null, int $final = 0) : ActionResult
     {
         // Les paramètres du header sont passés par array
 
@@ -102,6 +109,10 @@ class NOUTClient extends NOUTClientBase
         $clParam = $this->_oGetParam(Execute::class, $tabParamQuery);
         $clParam->ID = $sIDAction;             // identifiant de l'action (String)
         $clParam->Final = $final;
+
+        if (!is_null($aUpdateData)){
+            $clParam->UpdateData = ParametersManagement::s_sStringifyUpdateData('dummy', $aUpdateData, null);
+        }
 
         //--------------------------------------------------------------------------------------------
         // Headers
@@ -216,7 +227,7 @@ class NOUTClient extends NOUTClientBase
     public function oConnexionExtranet(string $sLoginExtranet, string $sPwdExtra, EncryptionType $clHashExtra, int $codeLangue, string $sLoginIntranet, string $sPwdIntra, EncryptionType $clHashIntra, string $sFormulaireExtranet, bool $bFromLogin) : ActionResult
     {
         $clParam = new Execute();
-        $clParam->ID = Langage::ACTION_ConnexionExtranet;
+        $clParam->ID = LangageAction::ConnexionExtranet;
 
         //il faut encoder le mot de passe simax
         $sEncodedIntranet = $clHashIntra->sGetPassword($sPwdIntra, true);
@@ -224,13 +235,13 @@ class NOUTClient extends NOUTClientBase
         $sEncodedExtranet = $clHashExtra->sGetPassword($sPwdExtra, true);
 
         $clParam->ParamXML = ParametersManagement::s_sStringifyParamXML([
-            Langage::PA_ConnexionExtranet_Extranet_Pseudo => $sLoginExtranet,
-            Langage::PA_ConnexionExtranet_Extranet_Mdp    => $sEncodedExtranet,
-            Langage::PA_ConnexionExtranet_Intranet_Pseudo => $sLoginIntranet,
-            Langage::PA_ConnexionExtranet_Intranet_Mdp    => $sEncodedIntranet,
-            Langage::PA_ConnexionExtranet_Formulaire      => $sFormulaireExtranet,
-            Langage::PA_ConnexionExtranet_CodeLangue      => $codeLangue,
-            Langage::PA_ConnexionExtranet_FromLogin       => $bFromLogin ? 1 : 0,
+                                                                            LangageParametre::CONNEXIONEXTRANET_Extranet_Pseudo => $sLoginExtranet,
+                                                                            LangageParametre::CONNEXIONEXTRANET_Extranet_Mdp    => $sEncodedExtranet,
+                                                                            LangageParametre::CONNEXIONEXTRANET_Intranet_Pseudo => $sLoginIntranet,
+                                                                            LangageParametre::CONNEXIONEXTRANET_Intranet_Mdp    => $sEncodedIntranet,
+                                                                            LangageParametre::CONNEXIONEXTRANET_Formulaire      => $sFormulaireExtranet,
+                                                                            LangageParametre::CONNEXIONEXTRANET_CodeLangue      => $codeLangue,
+                                                                            LangageParametre::CONNEXIONEXTRANET_FromLogin       => $bFromLogin ? 1 : 0,
         ]);
 
         $oRet = $this->_oExecute($clParam, []);
@@ -271,7 +282,7 @@ class NOUTClient extends NOUTClientBase
      */
     public function oExecListRequest(string $tableID, string $contextID = '', ?array $aTabHeaderQuery=null) : ActionResult
     {
-        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Requete, Langage::COL_REQUETE_IDTableau, [], $aTabHeaderQuery);
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, LangageTableau::Requete, LangageColonne::REQUETE_IDTableau, [], $aTabHeaderQuery);
     }
 
     /**
@@ -337,12 +348,12 @@ class NOUTClient extends NOUTClientBase
         //----------------------------------------------------------------------------------
         $aTabColonne = array();
         $default_export_action = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondColumn(LangageColonne::ACTION_IDAction),
             new CondType(CondType::COND_EQUAL),
-            new CondValue(Langage::ACTION_Export)
+            new CondValue(LangageAction::Export)
         );
         $has_rights = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondColumn(LangageColonne::ACTION_IDAction),
             new CondType(CondType::COND_WITHRIGHT),
             new CondValue('1')
         );
@@ -353,7 +364,7 @@ class NOUTClient extends NOUTClientBase
 
         $condList = CondListTypeFactory::create($operator);
 
-        $clReponseXML = $this->_oNewRequest(Langage::TABL_Action,
+        $clReponseXML = $this->_oNewRequest(LangageTableau::Action,
             $condList,
             $aTabColonne,
             $aTabHeaderSuppl);
@@ -370,7 +381,7 @@ class NOUTClient extends NOUTClientBase
      */
     public function oGetExportsList(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
     {
-        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Export, Langage::COL_EXPORT_IDTableau, [Langage::COL_EXPORT_Libelle], $aTabHeaderQuery);
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, LangageTableau::Export, LangageColonne::EXPORT_IDTableau, [LangageColonne::EXPORT_Libelle], $aTabHeaderQuery);
     }
 
     /**
@@ -381,7 +392,7 @@ class NOUTClient extends NOUTClientBase
      */
     public function oGetImportsList(string $tableID, string $contextID) : ActionResult
     {
-        return $this->_oExecRequestOnIDTableau($tableID, $contextID, Langage::TABL_Import, Langage::COL_IMPORT_Formulaire, [Langage::COL_IMPORT_Libelle]);
+        return $this->_oExecRequestOnIDTableau($tableID, $contextID, LangageTableau::Import, LangageColonne::IMPORT_Formulaire, [LangageColonne::IMPORT_Libelle]);
     }
 
     /**
@@ -472,19 +483,19 @@ class NOUTClient extends NOUTClientBase
         $aTabHeaderSuppl = $this->_aGetHeaderSuppl($aTabHeaderQuery, $contextID);
 
         //--------------------------------------------------------------------------------------------
-        $colList = array(Langage::COL_ACTION_Libelle);
+        $colList = array(LangageColonne::ACTION_Libelle);
         $table_actions = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDTableau),
+            new CondColumn(LangageColonne::ACTION_IDTableau),
             new CondType(CondType::COND_EQUAL),
             new CondValue($tableID)
         );
         $has_rights = new Condition(
-            new CondColumn(Langage::COL_ACTION_IDAction),
+            new CondColumn(LangageColonne::ACTION_IDAction),
             new CondType(CondType::COND_WITHRIGHT),
             new CondValue(1)
         );
         $type_actions = new Condition(
-            new CondColumn(Langage::COL_ACTION_TypeAction),
+            new CondColumn(LangageColonne::ACTION_TypeAction),
             new CondType(CondType::COND_EQUAL),
             new CondValue($eTypeAction)
         );
@@ -497,7 +508,7 @@ class NOUTClient extends NOUTClientBase
 
         //----------------------------------
         $clReponseXML = $this->_oNewRequest(
-            Langage::TABL_Action,
+            LangageTableau::Action,
             $condList,
             $colList,
             $aTabHeaderSuppl);
@@ -514,7 +525,7 @@ class NOUTClient extends NOUTClientBase
      */
     public function oGetExportsActions(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
     {
-        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Exporter, $aTabHeaderQuery);
+        return $this->_oRequestImportExportActions($tableID, $contextID, TypeAction::Exporter, $aTabHeaderQuery);
     }
 
     /**
@@ -526,7 +537,7 @@ class NOUTClient extends NOUTClientBase
      */
     public function oGetImportsActions(string $tableID, string $contextID, ?array $aTabHeaderQuery=null) : ActionResult
     {
-        return $this->_oRequestImportExportActions($tableID, $contextID, Langage::eTYPEACTION_Importer, $aTabHeaderQuery);
+        return $this->_oRequestImportExportActions($tableID, $contextID, TypeAction::Importer, $aTabHeaderQuery);
     }
 
     /**

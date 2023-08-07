@@ -13,13 +13,15 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageAction;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageColonne;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageTableau;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Menu\ItemMenu;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ColListType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Condition\CondType;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
-
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordCache;
@@ -27,11 +29,9 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
-use NOUT\Bundle\NOUTOnlineBundle\SOAP\GestionWSDL;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
-use function PHPUnit\Framework\isNull;
 
 /**
  * Class NOUTClient
@@ -75,7 +75,7 @@ class NOUTClientIHM extends NOUTClientBase
             SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
         );
 
-        return $this->_oRequest(Langage::TABL_ImageCatalogue, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
+        return $this->_oRequest(LangageTableau::ImageCatalogue, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
     }
 
 
@@ -87,38 +87,38 @@ class NOUTClientIHM extends NOUTClientBase
     protected function _oGetTabMenu_OptionMenu() : XMLResponseWS
     {
         $aTabColonne = array(
-            Langage::COL_OPTIONMENUPOURTOUS_IDAction,
-            Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu,
-            Langage::COL_OPTIONMENUPOURTOUS_Libelle,
-            Langage::COL_OPTIONMENUPOURTOUS_Commande,
-            Langage::COL_OPTIONMENUPOURTOUS_IDIcone,
-            Langage::COL_OPTIONMENUPOURTOUS_IDMenuParent,
+            LangageColonne::OPTIONMENUPOURTOUS_IDAction,
+            LangageColonne::OPTIONMENUPOURTOUS_IDOptionMenu,
+            LangageColonne::OPTIONMENUPOURTOUS_Libelle,
+            LangageColonne::OPTIONMENUPOURTOUS_Commande,
+            LangageColonne::OPTIONMENUPOURTOUS_IDIcone,
+            LangageColonne::OPTIONMENUPOURTOUS_IDMenuParent,
         );
 
         $clFileNPI = new ConditionFileNPI();
 
         //les options de menu qui servent de séparateur
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_EQUAL, '');
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Libelle, CondType::COND_EQUAL, '-');
+        $clFileNPI->EmpileCondition(LangageColonne::OPTIONMENUPOURTOUS_IDAction, CondType::COND_EQUAL, '');
+        $clFileNPI->EmpileCondition(LangageColonne::OPTIONMENUPOURTOUS_Libelle, CondType::COND_EQUAL, '-');
         $clFileNPI->EmpileOperateur(Operator::OP_AND);
-        $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_Commande, CondType::COND_EQUAL, '');
+        $clFileNPI->EmpileCondition(LangageColonne::OPTIONMENUPOURTOUS_Commande, CondType::COND_EQUAL, '');
         $clFileNPI->EmpileOperateur(Operator::OP_AND);
 
         //les options de menu sur lesquelles les droits sont accordés
         if ($this->bGereWSDL(self::OPT_MenuVisible))
         {
-            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDOptionMenu, CondType::COND_MENUVISIBLE, 1);
+            $clFileNPI->EmpileCondition(LangageColonne::OPTIONMENUPOURTOUS_IDOptionMenu, CondType::COND_MENUVISIBLE, 1);
         }
         else
         {
-            $clFileNPI->EmpileCondition(Langage::COL_OPTIONMENUPOURTOUS_IDAction, CondType::COND_WITHRIGHT, 1);
+            $clFileNPI->EmpileCondition(LangageColonne::OPTIONMENUPOURTOUS_IDAction, CondType::COND_WITHRIGHT, 1);
         }
         $clFileNPI->EmpileOperateur(Operator::OP_OR);
         $aTabHeaderSuppl = array(
             SOAPProxy::HEADER_AutoValidate => SOAPProxy::AUTOVALIDATE_Cancel,  //on ne garde pas le contexte ouvert
         );
 
-        return $this->_oRequest(Langage::TABL_OptionMenuPourTous, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
+        return $this->_oRequest(LangageTableau::OptionMenuPourTous, $clFileNPI, $aTabColonne, $aTabHeaderSuppl);
     }
 
 
@@ -130,10 +130,10 @@ class NOUTClientIHM extends NOUTClientBase
     protected function _oGetTabMenu_Menu() : XMLResponseWS
     {
         $aTabColonne = array(
-            Langage::COL_MENUPOURTOUS_OptionsMenu,
-            Langage::COL_MENUPOURTOUS_IDMenuParent,
-            Langage::COL_MENUPOURTOUS_Libelle,
-            Langage::COL_MENUPOURTOUS_Ordre,
+            LangageColonne::MENUPOURTOUS_OptionsMenu,
+            LangageColonne::MENUPOURTOUS_IDMenuParent,
+            LangageColonne::MENUPOURTOUS_Libelle,
+            LangageColonne::MENUPOURTOUS_Ordre,
         );
 
         $aTabHeaderSuppl = array(
@@ -141,7 +141,7 @@ class NOUTClientIHM extends NOUTClientBase
             SOAPProxy::HEADER_APIUser => SOAPProxy::APIUSER_Active,           //on force l'utilisation de l'user d'application (max) car un utilisateur classique n'aura pas les droit d'exécuter cette requête
         );
 
-        return $this->_oRequest(Langage::TABL_MenuPourTous, new ConditionFileNPI(), $aTabColonne, $aTabHeaderSuppl);
+        return $this->_oRequest(LangageTableau::MenuPourTous, new ConditionFileNPI(), $aTabColonne, $aTabHeaderSuppl);
     }
 
     /**
@@ -163,8 +163,8 @@ class NOUTClientIHM extends NOUTClientBase
         //on a pas les infos, il faut les calculer
         $clReponseXML_OptionMenu = $this->_oGetTabMenu_OptionMenu();
         $clReponseXML_Menu = $this->_oGetTabMenu_Menu();
-        $clReponseXML_SmallIcon = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_Image);
-        $clReponseXML_BigIcon = $this->_oGetTabIcon(Langage::COL_IMAGECATALOGUE_ImageGrande);
+        $clReponseXML_SmallIcon = $this->_oGetTabIcon(LangageColonne::IMAGECATALOGUE_Image);
+        $clReponseXML_BigIcon = $this->_oGetTabIcon(LangageColonne::IMAGECATALOGUE_ImageGrande);
 
         $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
         $oInfoIHM = $clIHMLoader->oGetInfoIHM();
@@ -216,9 +216,9 @@ class NOUTClientIHM extends NOUTClientBase
             {
                 //TODO: Remove when annuler/refaire/recherche globale is implemented
                 if(
-                    $objet->idaction != Langage::ACTION_Annulation &&
-                    $objet->idaction != Langage::ACTION_Refaire &&
-                    $objet->idaction != Langage::ACTION_RechercheGlobale
+                    $objet->idaction != LangageAction::Annulation &&
+                    $objet->idaction != LangageAction::Refaire &&
+                    $objet->idaction != LangageAction::RechercheGlobale
                 ) {
                     $itemMenu = $this->__oGetItemMenu($objet);
                     $aInfo[] = $itemMenu;
@@ -277,9 +277,9 @@ class NOUTClientIHM extends NOUTClientBase
             {
                 //TODO: Remove when annuler/refaire is implemented
                 if(
-                    $objChild->idaction != Langage::ACTION_Annulation &&
-                    $objChild->idaction != Langage::ACTION_Refaire &&
-                    $objChild->idaction != Langage::ACTION_RechercheGlobale
+                    $objChild->idaction != LangageAction::Annulation &&
+                    $objChild->idaction != LangageAction::Refaire &&
+                    $objChild->idaction != LangageAction::RechercheGlobale
                 ) {
                     $childMenu = $this->__oGetItemMenu($objChild);
                     $itemMenu->AddOptionMenu($childMenu);
@@ -515,7 +515,7 @@ class NOUTClientIHM extends NOUTClientBase
         //--------------------------------------------------------------------------------------------
         // Paramètres
         $clParam = $this->_oGetParam(Execute::class, []);
-        $clParam->ID = Langage::ACTION_Horaires_Ouverture;             // identifiant de l'action (String)
+        $clParam->ID = LangageAction::HorairesOuverture;             // identifiant de l'action (String)
         $clParam->Final = 0;
 
         //--------------------------------------------------------------------------------------------
@@ -549,10 +549,10 @@ class NOUTClientIHM extends NOUTClientBase
             $week = array();
             foreach($records as $record) {
                 /** @var Record $record */
-                if(($dayNumber = array_search($record->getValCol(Langage::COL_HORAIREOUVERTURE_JourSemaine), $days)) !== false) {
+                if(($dayNumber = array_search($record->getValCol(LangageColonne::HORAIREOUVERTURE_JourSemaine), $days)) !== false) {
                     $day = new \stdClass();
-                    $day->openingTime = $record->getValCol(Langage::COL_HORAIREOUVERTURE_HeureDeb);
-                    $day->closingTime = $record->getValCol(Langage::COL_HORAIREOUVERTURE_HeureFin);
+                    $day->openingTime = $record->getValCol(LangageColonne::HORAIREOUVERTURE_HeureDeb);
+                    $day->closingTime = $record->getValCol(LangageColonne::HORAIREOUVERTURE_HeureFin);
                     $week[$dayNumber] = $day;
                 }
             }
@@ -652,8 +652,8 @@ class NOUTClientIHM extends NOUTClientBase
         $obj->id = $info->id;
         $obj->title = $info->title;
 
-        if (property_exists($info->columns, Langage::COL_GENERIQUE_TYPEFORMULAIRE)){
-            $info_typecol = $info->columns->{Langage::COL_GENERIQUE_TYPEFORMULAIRE};
+        if (property_exists($info->columns, LangageColonne::GENERIQUE_TYPEFORMULAIRE)){
+            $info_typecol = $info->columns->{LangageColonne::GENERIQUE_TYPEFORMULAIRE};
             $obj->type = new \stdClass();
             $obj->type->id = $info_typecol->value;
             $obj->type->title = $info_typecol->displayValue;
@@ -681,10 +681,10 @@ class NOUTClientIHM extends NOUTClientBase
                 $obj = $this->__initFromJson($info);
 
                 //le type bdd si pertinant
-                if (property_exists($info->columns, Langage::COL_MODELECLASSIQUE_TypeModele)) {
+                if (property_exists($info->columns, LangageColonne::MODELECLASSIQUE_TypeModele)) {
                     $obj->type->bdd = new \stdClass();
-                    $obj->type->bdd->title = $info->columns->{Langage::COL_MODELECLASSIQUE_TypeModele}->displayValue;
-                    $obj->type->bdd->id = $info->columns->{Langage::COL_MODELECLASSIQUE_TypeModele}->value;
+                    $obj->type->bdd->title = $info->columns->{LangageColonne::MODELECLASSIQUE_TypeModele}->displayValue;
+                    $obj->type->bdd->id = $info->columns->{LangageColonne::MODELECLASSIQUE_TypeModele}->value;
                 }
 
                 $aReturnFinal[$obj->id]=$obj;
@@ -726,18 +726,18 @@ class NOUTClientIHM extends NOUTClientBase
                 }
 
                 $obj = $this->__initFromJson($info);
-                $obj->title = $info->columns->{Langage::COL_COLONNE_Libelle}->displayValue;
+                $obj->title = $info->columns->{LangageColonne::COLONNE_Libelle}->displayValue;
 
-                if (property_exists($info->columns, Langage::COL_COLLIBELLE_IDNiveau)) {
-                    $obj->type->level = $info->columns->{Langage::COL_COLLIBELLE_IDNiveau}->value;
+                if (property_exists($info->columns, LangageColonne::COLLIBELLE_IDNiveau)) {
+                    $obj->type->level = $info->columns->{LangageColonne::COLLIBELLE_IDNiveau}->value;
                 }
 
-                $info_tableau = $info->columns->{Langage::COL_COLONNE_IDTableau};
+                $info_tableau = $info->columns->{LangageColonne::COLONNE_IDTableau};
                 $obj->form = new \stdClass();
                 $obj->form->id = $info_tableau->value;
                 $obj->form->title = $info_tableau->displayValue;
 
-                $info_modele = $info->columns->{Langage::COL_COLONNE_IDModele};
+                $info_modele = $info->columns->{LangageColonne::COLONNE_IDModele};
                 if (!empty($info_modele->value)){
                     if (array_key_exists($info_modele->value, $aModeles)){
                         //on connait le modèle
@@ -751,7 +751,7 @@ class NOUTClientIHM extends NOUTClientBase
                     }
                 }
 
-                $obj->order = $info->columns->{Langage::COL_COLONNE_Ordre}->value;
+                $obj->order = $info->columns->{LangageColonne::COLONNE_Ordre}->value;
                 $aReturnFinal[$obj->id]=$obj;
             }
             return $aReturnFinal;
@@ -882,7 +882,7 @@ class NOUTClientIHM extends NOUTClientBase
         return $this->_getFromCache(NOUTClientCache::CACHE_Language, "form_table_list_without_columns", function(){
             $aReturnFinal = $this->_getBaseTableListWithoutColumns();
             $aReturnFinal = array_filter($aReturnFinal, function($form){
-                return property_exists($form, 'type') && ($form->type->id==Langage::TABL_Tableau);
+                return property_exists($form, 'type') && ($form->type->id==LangageTableau::Tableau);
             });
             return $aReturnFinal;
         });
@@ -897,7 +897,7 @@ class NOUTClientIHM extends NOUTClientBase
         return $this->_getFromCache(NOUTClientCache::CACHE_Language, "form_table_list_with_columns", function(){
             $aReturnFinal = $this->_getBaseTableListWithColumns();
             $aReturnFinal = array_filter($aReturnFinal, function($form){
-                return property_exists($form, 'type') && ($form->type->id==Langage::TABL_Tableau);
+                return property_exists($form, 'type') && ($form->type->id==LangageTableau::Tableau);
             });
             return $aReturnFinal;
         });

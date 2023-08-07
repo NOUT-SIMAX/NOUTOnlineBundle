@@ -180,7 +180,7 @@ class ParametersManagement
      * @param array|null $aFilesToSend
      * @return string
      */
-    public static function s_sStringifyUpdateData(string $sIDForm, array $aTabColumnsValues, ?array $aTabColMultilangue, array $aFilesToSend = null) : string
+    public static function s_sStringifyUpdateData(string $sIDForm, array $aTabColumnsValues, ?array $aTabColMultilangue, ?array $aFilesToSend = null) : string
     {
         $sUpdateData = "<xml><id_$sIDForm>\n";
         $sUpdateData.= self::s_sStringifyXMLColonne($aTabColumnsValues, $aTabColMultilangue, $aFilesToSend);
@@ -298,5 +298,4 @@ class ParametersManagement
 
         return $sFileXml;
     }
-
 }

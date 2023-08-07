@@ -14,7 +14,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Header\OptionDialogue;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\LangageAction;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserChart;
@@ -333,8 +333,8 @@ abstract class NOUTClientBase
         {
             $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE);
             $clActionResult->setData($oNOUTFileInfo);
-            if($clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_ModeleFichier ||
-                $clActionResult->getAction()->getID() == Langage::ACTION_AfficherFichier_NomFichier)
+            if($clActionResult->getAction()->getID() == LangageAction::AfficherFichier_ModeleFichier ||
+                $clActionResult->getAction()->getID() == LangageAction::AfficherFichier_NomFichier)
             {
                 $clActionResult->setReturnType(XMLResponseWS::VIRTUALRETURNTYPE_FILE_PREVIEW);
             }

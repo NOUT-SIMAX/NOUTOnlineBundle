@@ -9,11 +9,10 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Parser;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\EnregTableauArray;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordList;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureElement;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 
 class ParserList extends ParserWithParam

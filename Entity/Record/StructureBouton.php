@@ -9,7 +9,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\Record;
 
 
-use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parser\ParserXSDSchema;
 
 class StructureBouton extends StructureColonne
@@ -18,13 +18,13 @@ class StructureBouton extends StructureColonne
     /**
      * @var InfoButton information sur le bouton
      */
-    protected $m_clInfoBouton;
+    protected InfoButton $clInfoBouton;
 
     /** @var  string */
-    protected $m_ID;
+    protected string $ID;
 
     /** @var StructureBouton[] */
-    protected $subButtons;
+    protected array $subButtons;
 
     /**
      * @param \SimpleXMLElement $clAttribNOUT
@@ -34,9 +34,9 @@ class StructureBouton extends StructureColonne
     public function __construct(\SimpleXMLElement $clAttribNOUT, \SimpleXMLElement $clAttribXS, \SimpleXMLElement $subButtons = null)
     {
         parent::__construct('', $clAttribNOUT, $clAttribXS);
-        $this->m_ID = spl_object_hash($clAttribNOUT);
+        $this->ID           = spl_object_hash($clAttribNOUT);
         $this->m_nIDColonne = (string)$clAttribNOUT['idButton'];
-        $this->m_clInfoBouton = new InfoButton($clAttribNOUT);
+        $this->clInfoBouton = new InfoButton($clAttribNOUT);
         $this->subButtons = array();
         if (!is_null($subButtons)) {
             foreach ($subButtons->children(ParserXSDSchema::NAMESPACE_XSD) as $subButton) {
@@ -79,7 +79,7 @@ class StructureBouton extends StructureColonne
      */
     public function getID(): string
     {
-        return $this->m_ID;
+        return $this->ID;
     }
 
     /**
@@ -87,7 +87,7 @@ class StructureBouton extends StructureColonne
      */
     public function getInfoBouton(): InfoButton
     {
-        return $this->m_clInfoBouton;
+        return $this->clInfoBouton;
     }
 
     /**
@@ -96,7 +96,15 @@ class StructureBouton extends StructureColonne
     public function isReadOnly() : bool
     {
         // Renvoit un booléen qui indique si le bouton est dispo en readOnly
-        return Langage::s_isActionReadOnly($this->m_clInfoBouton->getOption(self::OPTION_IDTypeAction));
+        return Langage::s_isActionReadOnly($this->clInfoBouton->getOption(self::OPTION_IDTypeAction));
     }
 
+    const WITHVALIDATION_Default = 0;
+    const WITHVALIDATION_Avant = 1;
+    const WITHVALIDATION_Apres = 2;
+    const WITHVALIDATION_SansFermer = 4;
+
+    const SUBSTITUTION_Annuler = 1;
+    const SUBSTITUTION_Enregistrer = 2;
+    const SUBSTITUTION_Imprimer = 2392;
 }
