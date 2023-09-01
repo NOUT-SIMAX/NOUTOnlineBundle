@@ -130,13 +130,14 @@ class NOUTOnlineLogger
      * @param $sOperation
      * @param $extra
      */
-    protected function _getSOAPContext($way, $sOperation, $extra)
+    protected function _getSOAPContext($way, $sOperation, $extra, $exec_time=null)
     {
         $oCtxt = new \stdClass();
         $oCtxt->way = $way;
         $oCtxt->operation = $sOperation;
         $oCtxt->soap = true;
         $oCtxt->rest = false;
+        $oCtxt->exec_time = $exec_time;
         $oCtxt->content_type = 'application/xml+soap';
 
         return $this->__getContext($oCtxt, $extra);
@@ -186,6 +187,8 @@ class NOUTOnlineLogger
 
     protected function _stopSOAPQuery($sTo, $sFrom, $sOperation, $extra, $logMethod)
     {
+        $exec_time = microtime(true) - $this->m_fStart;
+
         // log de l'envoi
         $sTo = str_replace('><', ">\r\n<", $sTo);
         $this->m_clMonolog->$logMethod(
@@ -196,7 +199,7 @@ class NOUTOnlineLogger
         //log du retour
         $this->m_clMonolog->$logMethod(
             $sFrom,
-            $this->_getSOAPContext(self::WAY_Receive, $sOperation, $extra)
+            $this->_getSOAPContext(self::WAY_Receive, $sOperation, $extra, $exec_time)
         );
 
         // log du retour
@@ -226,7 +229,7 @@ class NOUTOnlineLogger
             'response'        => $sResponse,
             'request_header'  => $sRequestHeader,
             'response_header' => $sResponseHeader,
-            'executionMS'     => microtime(true) - $this->m_fStart,
+            'executionMS'     => $exec_time,
             'sendMS'          => $this->m_fSend,
             'operation'       => $sOperation,
             'soap'            => true,
