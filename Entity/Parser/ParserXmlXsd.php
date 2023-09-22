@@ -233,6 +233,7 @@ class ParserXmlXsd extends AbstractParser
         $sIDTableau     = str_replace('id_', '', $clXML->getName());
         $sIDEnreg       = (string) $TabAttrib['id'];
         $linkedTableID  = (string) $TabAttrib['linkedTableID'];
+        $nIDIcone       = (string) ($TabAttrib['recordIconID'] ?? '');
 
         $clStructureElement = $this->m_clParserXSD->clGetStructureElement($sIDTableau);
 
@@ -241,6 +242,7 @@ class ParserXmlXsd extends AbstractParser
         $clRecord->addOptionsLayout($TabAttribLayout); // Les attributs HTML sont ajoutés dans le record
 
         $clRecord->setLinkedTableID($linkedTableID);
+        $clRecord->setIDIcone($nIDIcone);
 
         $subtitle = $TabAttrib['subtitle'];
 

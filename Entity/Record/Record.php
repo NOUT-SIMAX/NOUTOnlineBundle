@@ -19,41 +19,62 @@ class Record extends IHMWindows
 {
 
     /** @var string : contient le sous-titre quand il y en a un */
-    protected $m_sSubTitle='';
+    protected string $sSubTitle ='';
 
-	/** @var string : identitifant de l'enregistrement */
-	protected $m_nIDEnreg='';
-
-    /** @var array */
-    protected $m_TabOptionsRecord = [];
+    /** @var string : identitifant de l'enregistrement */
+    protected string $nIDEnreg ='';
 
     /** @var array */
-    protected $m_TabOptionsLayout = [];
+    protected array $aTabOptionsRecord = [];
 
-	/** @var InfoColonne[] : tableau avec les informations variables des colonnes (mise en forme ...) */
-	protected $m_TabColumnsInfo = [];
+    /** @var array */
+    protected array $aTabOptionsLayout = [];
 
-	/** @var array : tableau avec les valeurs des colonnes */
-	protected $m_TabColumnsValues = [];
+    /** @var InfoColonne[] : tableau avec les informations variables des colonnes (mise en forme ...) */
+    protected array $aTabColumnsInfo = [];
 
-	/** @var array : tableau de booleen pour indiquer que la valeur à changée */
-	protected $m_TabColumnsModified = [];
+    /** @var array : tableau avec les valeurs des colonnes */
+    protected array $aTabColumnsValues = [];
 
-	/** @var RecordCache */
-	protected $m_clCacheRecordLie;
+    /** @var array : tableau de booleen pour indiquer que la valeur à changée */
+    protected array $aTabColumnsModified = [];
 
-	/** @var int */
-	protected $m_nXSDNiv=0;
+    /** @var RecordCache */
+    protected RecordCache $clCacheRecordLie;
+
+    /** @var int */
+    protected int $nXSDNiv =0;
 
     /** @var  string */
-    protected $m_sLinkedTableID='';
+    protected string $sLinkedTableID ='';
+
+    /** @var string  */
+    protected string $nIDIcone ='';
+
+    /**
+     * @return string
+     */
+    public function getIDIcone() : string
+    {
+        return $this->nIDIcone;
+    }
+
+    /**
+     * @param string $nIDIcone
+     *
+     * @return void
+     */
+    public function setIDIcone(string $nIDIcone) : void
+    {
+        $this->nIDIcone = $nIDIcone;
+    }
 
     /**
      * @return string
      */
     public function getLinkedTableID(): string
     {
-        return $this->m_sLinkedTableID;
+        return $this->sLinkedTableID;
     }
 
     /**
@@ -61,7 +82,7 @@ class Record extends IHMWindows
      */
     public function setLinkedTableID(string $linkedTableID)
     {
-        $this->m_sLinkedTableID = $linkedTableID;
+        $this->sLinkedTableID = $linkedTableID;
     }
 
     /**
@@ -72,32 +93,32 @@ class Record extends IHMWindows
      * @param int                   $nNiv
      * @param StructureElement|null $clStruct
      */
-	public function __construct(string $sIDTableau, string $sIDEnreg, string $sTitle, int $nNiv, StructureElement $clStruct = null)
-	{
-	    parent::__construct($sTitle, $sIDTableau, $clStruct);
-
-		$this->m_nIDEnreg     = $sIDEnreg;
-		$this->m_nXSDNiv      = (int)$nNiv;
-
-		//tableau des éléments liés
-		$this->m_clCacheRecordLie = new RecordCache();
-	}
-
-	/**
-	 * @param Record $clRecord
-	 * @return bool
-	 */
-	public function isBetterLevel(Record $clRecord): bool
+    public function __construct(string $sIDTableau, string $sIDEnreg, string $sTitle, int $nNiv, StructureElement $clStruct = null)
     {
-		return $this->m_nXSDNiv <= $clRecord->m_nXSDNiv;
-	}
+        parent::__construct($sTitle, $sIDTableau, $clStruct);
+
+        $this->nIDEnreg = $sIDEnreg;
+        $this->nXSDNiv  = (int)$nNiv;
+
+        //tableau des éléments liés
+        $this->clCacheRecordLie = new RecordCache();
+    }
+
+    /**
+     * @param Record $clRecord
+     * @return bool
+     */
+    public function isBetterLevel(Record $clRecord): bool
+    {
+        return $this->nXSDNiv <= $clRecord->nXSDNiv;
+    }
 
     /**
      * @return array
      */
     public function aGetTabColumnsValues(): array
     {
-        return $this->m_TabColumnsValues;
+        return $this->aTabColumnsValues;
     }
 
     /**
@@ -107,7 +128,7 @@ class Record extends IHMWindows
      */
     public function addOption($option, $valeur): Record
     {
-        $this->m_TabOptionsRecord[$option]=$valeur;
+        $this->aTabOptionsRecord[$option] =$valeur;
         return $this;
     }
     /**
@@ -129,7 +150,7 @@ class Record extends IHMWindows
      */
     public function getOptions(): array
     {
-        return $this->m_TabOptionsRecord;
+        return $this->aTabOptionsRecord;
     }
 
     /**
@@ -139,7 +160,7 @@ class Record extends IHMWindows
      */
     public function getOption($option, $default=null)
     {
-        return $this->m_TabOptionsRecord[$option] ?? $default;
+        return $this->aTabOptionsRecord[$option] ?? $default;
     }
 
 
@@ -150,7 +171,7 @@ class Record extends IHMWindows
      */
     public function addOptionLayout($option, $valeur): Record
     {
-        $this->m_TabOptionsLayout[$option]=$valeur;
+        $this->aTabOptionsLayout[$option] =$valeur;
         return $this;
     }
     /**
@@ -173,9 +194,9 @@ class Record extends IHMWindows
      */
     public function getOptionLayout($option, $default=null)
     {
-        if (isset($this->m_TabOptionsLayout[$option]))
+        if (isset($this->aTabOptionsLayout[$option]))
         {
-            return $this->m_TabOptionsLayout[$option];
+            return $this->aTabOptionsLayout[$option];
         }
         return $default;
     }
@@ -184,17 +205,17 @@ class Record extends IHMWindows
      * renvoi l'identifiant de l'enregistrement
      * @return string
      */
-	public function getIDEnreg(): string
+    public function getIDEnreg(): string
     {
-		return $this->m_nIDEnreg;
-	}
+        return $this->nIDEnreg;
+    }
 
     /**
      * @return RecordCache
      */
     public function getRecordLie(): RecordCache
     {
-        return $this->m_clCacheRecordLie;
+        return $this->clCacheRecordLie;
     }
 
 
@@ -203,7 +224,7 @@ class Record extends IHMWindows
      */
     public function getSubTitle(): ?string
     {
-        return $this->m_sSubTitle;
+        return $this->sSubTitle;
     }
 
     /**
@@ -212,7 +233,7 @@ class Record extends IHMWindows
      */
     public function setSubTitle(string $sSubTitle): Record
     {
-        $this->m_sSubTitle = $sSubTitle;
+        $this->sSubTitle = $sSubTitle;
         return $this;
     }
 
@@ -223,7 +244,7 @@ class Record extends IHMWindows
      */
     public function aGetTabOptionsLayout(): array
     {
-        return $this->m_TabOptionsLayout;
+        return $this->aTabOptionsLayout;
     }
 
     /**
@@ -231,19 +252,19 @@ class Record extends IHMWindows
      */
     public function aGetTabColumnsInfo(): array
     {
-        return $this->m_TabColumnsInfo;
+        return $this->aTabColumnsInfo;
     }
 
-	/**
-	 * @param InfoColonne $clInfoColonne
-	 * @return $this
-	 */
-	public function setInfoColonne(InfoColonne $clInfoColonne): Record
+    /**
+     * @param InfoColonne $clInfoColonne
+     * @return $this
+     */
+    public function setInfoColonne(InfoColonne $clInfoColonne): Record
     {
-		$this->m_TabColumnsInfo[$clInfoColonne->getIDColonne()] = $clInfoColonne;
+        $this->aTabColumnsInfo[$clInfoColonne->getIDColonne()] = $clInfoColonne;
 
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * @param $idColonne
@@ -251,42 +272,42 @@ class Record extends IHMWindows
      */
     public function getInfoColonne($idColonne): ?InfoColonne
     {
-        if (!isset($this->m_TabColumnsInfo[$idColonne]))
+        if (!isset($this->aTabColumnsInfo[$idColonne]))
         {
             return null;
         }
 
-        return $this->m_TabColumnsInfo[$idColonne];
+        return $this->aTabColumnsInfo[$idColonne];
     }
 
-	/**
-	 * @return bool
-	 */
-	public function bRef(): bool
+    /**
+     * @return bool
+     */
+    public function bRef(): bool
     {
-		return !empty($this->m_TabColumnsInfo);
-	}
+        return !empty($this->aTabColumnsInfo);
+    }
 
-	/**
+    /**
      * retourne la valeur stockée
-	 * @param $idColonne
-	 * @return mixed
-	 */
-	public function getValCol($idColonne)
-	{
-		if (!isset($this->m_TabColumnsValues[$idColonne]))
-		{
-			return null;
-		}
+     * @param $idColonne
+     * @return mixed
+     */
+    public function getValCol($idColonne)
+    {
+        if (!isset($this->aTabColumnsValues[$idColonne]))
+        {
+            return null;
+        }
 
-		return $this->m_TabColumnsValues[$idColonne];
-	}
+        return $this->aTabColumnsValues[$idColonne];
+    }
 
     /**
      * @param $idColonne
      * @return array
      */
-	public function getMultilangValue($idColonne) : array
+    public function getMultilangValue($idColonne) : array
     {
         if (!isset($this->m_TabMultilangueValues[$idColonne]))
         {
@@ -305,13 +326,13 @@ class Record extends IHMWindows
      */
     public function getTitleFromIDRecordLie($idRecordLie, $idColonne): string
     {
-        if (!isset($this->m_clCacheRecordLie) || !isset($this->clStructElem))
+        if ( !isset($this->clCacheRecordLie) || !isset($this->clStructElem))
         {
             return "";
         }
 
         $clStructureColonne = $this->clStructElem->getStructureColonne($idColonne);
-        $record = $this->m_clCacheRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
+        $record = $this->clCacheRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $idRecordLie);
         if (!isset($record)){
             return '';
         }
@@ -328,7 +349,7 @@ class Record extends IHMWindows
      */
     public function getDisplayValCol($idColonne)
     {
-        if (!isset($this->m_TabColumnsValues[$idColonne])){
+        if (!isset($this->aTabColumnsValues[$idColonne])){
             return null;
         }
 
@@ -338,13 +359,13 @@ class Record extends IHMWindows
         {
             case StructureColonne::TM_Tableau:
             {
-                $valStockee = $this->m_TabColumnsValues[$idColonne];
+                $valStockee = $this->aTabColumnsValues[$idColonne];
                 if (empty($valStockee) || ($valStockee=='0'))
                 {
                     return '';
                 }
 
-                $clRecordLie = $this->m_clCacheRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $valStockee);
+                $clRecordLie = $this->clCacheRecordLie->getRecord($clStructureColonne->getOption(StructureColonne::OPTION_LinkedTableID), $valStockee);
                 /** @var Record|null $clRecordLie */
                 if (is_null($clRecordLie))
                 {
@@ -355,7 +376,7 @@ class Record extends IHMWindows
 
             default:
             {
-                return $this->m_TabColumnsValues[$idColonne];
+                return $this->aTabColumnsValues[$idColonne];
             }
         }
 
@@ -369,76 +390,76 @@ class Record extends IHMWindows
      */
     public function isModified($idColonne, bool $byUser): bool
     {
-        if (!isset($this->m_TabColumnsModified[$idColonne])){
+        if (!isset($this->aTabColumnsModified[$idColonne])){
             return false;
         }
 
         return $byUser
-            ? $this->m_TabColumnsModified[$idColonne] > 0
-            : $this->m_TabColumnsModified[$idColonne] < 0;
+            ? $this->aTabColumnsModified[$idColonne] > 0
+            : $this->aTabColumnsModified[$idColonne] < 0;
     }
 
-	/**
-	 * @param string $idcolonne
-	 * @param $value
-	 * @param bool   $modifiedByUser
+    /**
+     * @param string $idcolonne
+     * @param $value
+     * @param bool   $modifiedByUser
      * @param int    $codelangue
      * @param bool   $bCurrentLanguage
-	 * @return $this
-	 */
-	public function setValCol(string $idcolonne, $value, bool $modifiedByUser = true, int $codelangue = 0, bool $bCurrentLanguage=true): Record
+     * @return $this
+     */
+    public function setValCol(string $idcolonne, $value, bool $modifiedByUser = true, int $codelangue = 0, bool $bCurrentLanguage=true): Record
     {
-		$this->m_TabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
-		$clStructColonne = $this->getStructColonne($idcolonne);
-		if (isset($clStructColonne) && $clStructColonne->isOption(StructureColonne::OPTION_Modele_Multilanguage)){
+        $this->aTabColumnsModified[$idcolonne] = $modifiedByUser ? 1 : -1;
+        $clStructColonne                       = $this->getStructColonne($idcolonne);
+        if (isset($clStructColonne) && $clStructColonne->isOption(StructureColonne::OPTION_Modele_Multilanguage)){
             if (is_array($value)){
-                $this->m_TabColumnsValues[$idcolonne] = $value;
+                $this->aTabColumnsValues[$idcolonne] = $value;
             }
             else {
-                if (!array_key_exists($idcolonne, $this->m_TabColumnsValues)){
-                    $this->m_TabColumnsValues[$idcolonne]=['display' => ''];
+                if (!array_key_exists($idcolonne, $this->aTabColumnsValues)){
+                    $this->aTabColumnsValues[$idcolonne] =['display' => ''];
                 }
                 if ($codelangue == 0){
-                    $this->m_TabColumnsValues[$idcolonne]['display']=$value;
+                    $this->aTabColumnsValues[$idcolonne]['display'] =$value;
                 }
                 else {
-                    $this->m_TabColumnsValues[$idcolonne][$codelangue]=$value;
+                    $this->aTabColumnsValues[$idcolonne][$codelangue] =$value;
                     if ($bCurrentLanguage){
-                        $this->m_TabColumnsValues[$idcolonne]['display'] = $value;
+                        $this->aTabColumnsValues[$idcolonne]['display'] = $value;
                     }
                 }
             }
         }
-		else {
-            $this->m_TabColumnsValues[$idcolonne] = $value;
+        else {
+            $this->aTabColumnsValues[$idcolonne] = $value;
         }
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
+    /**
      * @param $nNiv
-	 * @param Record $clRecordLie
-	 * @return $this
-	 */
-	public function addRecordLie($nNiv, Record $clRecordLie): Record
+     * @param Record $clRecordLie
+     * @return $this
+     */
+    public function addRecordLie($nNiv, Record $clRecordLie): Record
     {
-        $this->m_clCacheRecordLie->SetRecord($nNiv, $clRecordLie);
-		return $this;
-	}
+        $this->clCacheRecordLie->SetRecord($nNiv, $clRecordLie);
+        return $this;
+    }
 
-	/**
+    /**
      * @param $nNiv
-	 * @param array $aRecordsLies
-	 * @return $this
-	 */
-	public function addTabRecordLie($nNiv, array $aRecordsLies): Record
+     * @param array $aRecordsLies
+     * @return $this
+     */
+    public function addTabRecordLie($nNiv, array $aRecordsLies): Record
     {
-		foreach($aRecordsLies as $clRecord)
-		{
+        foreach($aRecordsLies as $clRecord)
+        {
             $this->addRecordLie($nNiv, $clRecord);
-		}
-		return $this;
-	}
+        }
+        return $this;
+    }
 
 
     /**
@@ -446,15 +467,15 @@ class Record extends IHMWindows
      * @param $idColonne
      * @throws \Exception
      */
-	public function __get($idColonne)
-	{
-		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
-		{
-			throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __get() n\'est pas autorisé');
-		}
+    public function __get($idColonne)
+    {
+        if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
+        {
+            throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __get() n\'est pas autorisé');
+        }
 
-		return $this->getValCol($idColonne);
-	}
+        return $this->getValCol($idColonne);
+    }
 
     /**
      * méthode magique pour les formulaires - Met à jour les valeurs des colonnes depuis les formulaires Symfony
@@ -463,15 +484,15 @@ class Record extends IHMWindows
      * @return Record
      * @throws \Exception
      */
-	public function __set($idColonne, $value)
+    public function __set($idColonne, $value)
     {
-		if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
-		{
-			throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __call() n\'est pas autorisé');
-		}
+        if (in_array($idColonne, array('m_sTitle', 'm_nIDEnreg', 'm_nIDTableau', 'm_TabColumnsInfo', 'm_TabColumnsValues', 'm_TabColumnsModified', 'm_clStructElem')))
+        {
+            throw new \Exception("Accès au membre $idColonne de ".get_class($this).'via __call() n\'est pas autorisé');
+        }
 
-		return $this->setValCol($idColonne, $value);
-	}
+        return $this->setValCol($idColonne, $value);
+    }
 
     /**
      * retourne la liste des colonnes qui déclenchent un update partiel
@@ -518,7 +539,7 @@ class Record extends IHMWindows
      */
     public function resetLastModified(): Record
     {
-        array_walk($this->m_TabColumnsModified, function(&$item){
+        array_walk($this->aTabColumnsModified, function(&$item){
             $item=0;
         });
         return $this;
@@ -526,7 +547,7 @@ class Record extends IHMWindows
 
     public function updateRecordLie(RecordCache $src): Record
     {
-        $this->m_clCacheRecordLie->update($src);
+        $this->clCacheRecordLie->update($src);
         return $this;
     }
 
@@ -541,18 +562,18 @@ class Record extends IHMWindows
 
         //mise à jour du titre
         $this->sTitle = $clRecordSrc->getTitle();
-        $this->m_clCacheRecordLie->update($clRecordSrc->m_clCacheRecordLie);
+        $this->clCacheRecordLie->update($clRecordSrc->clCacheRecordLie);
 
         //mise à jour des valeurs
-        foreach($clRecordSrc->m_TabColumnsValues as $idcolonne=>$value)
+        foreach($clRecordSrc->aTabColumnsValues as $idcolonne=> $value)
         {
             $this->setValCol($idcolonne, $value, false);
         }
 
         //il faut mettre à jour l'etat des champs
-        foreach($clRecordSrc->m_TabColumnsInfo as $idcolonne=>$clInfo)
+        foreach($clRecordSrc->aTabColumnsInfo as $idcolonne=> $clInfo)
         {
-            $this->m_TabColumnsInfo[$idcolonne]=$clInfo;
+            $this->aTabColumnsInfo[$idcolonne] =$clInfo;
         }
         return $this;
     }
@@ -567,7 +588,7 @@ class Record extends IHMWindows
                 if ($transform == StructureColonne::OPTION_Transform_Secret)
                 {
                     //il faut vider le champ
-                    $this->m_TabColumnsValues[$idcolonne]='';
+                    $this->aTabColumnsValues[$idcolonne] ='';
                 }
             }
 
@@ -650,7 +671,7 @@ class Record extends IHMWindows
      */
     protected function _filterTabColumnsValues(array $aFilesToSend = null, $onlyModified=false) : array
     {
-        $aTabColumnsValues = array_filter($this->m_TabColumnsValues, function ($sIDColonne) use ($aFilesToSend, $onlyModified)
+        $aTabColumnsValues = array_filter($this->aTabColumnsValues, function ($sIDColonne) use ($aFilesToSend, $onlyModified)
         {
             if(!is_null($aFilesToSend) && array_key_exists($sIDColonne, $aFilesToSend)){
                 return true;
