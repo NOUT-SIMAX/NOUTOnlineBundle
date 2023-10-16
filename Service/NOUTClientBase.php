@@ -244,6 +244,7 @@ abstract class NOUTClientBase
     {
         $aPtrFct = array(
             XMLResponseWS::RETURNTYPE_EMPTY => null,
+            XMLResponseWS::RETURNTYPE_DONOTHING => null,
 
             XMLResponseWS::RETURNTYPE_REPORT => function () use ($clReponseXML, $clActionResult) {
                 $this->_oGetReport($clReponseXML, $clActionResult);
