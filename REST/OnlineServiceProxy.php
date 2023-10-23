@@ -604,6 +604,37 @@ class OnlineServiceProxy
 
     /**
      * @param Identification $clIdentification
+     * @param bool           $bVerifDroit
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetActionList(bool $bVerifDroit, Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetActionList'], ['Verify' => $bVerifDroit ? 1 : 0], [], $clIdentification);
+        $result = $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
+
+
+
+    /**
+     * @param Identification $clIdentification
+     * @param bool           $bVerifDroit
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetSentenceList(bool $bVerifDroit, Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetSentenceList'], ['Verify' => $bVerifDroit ? 1 : 0], [], $clIdentification);
+        $result = $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
+
+
+    /**
+     * @param Identification $clIdentification
      * @return mixed
      * @throws \Exception
      */

@@ -137,6 +137,7 @@ class NOUTClient extends NOUTClientBase
         return $this->_oExecute($clParam, $aTabHeaderSuppl);
     }
 
+
     /**
      * Execute une action via sa phrase
      * @param array      $tabParamQuery

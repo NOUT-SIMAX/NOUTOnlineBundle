@@ -33,6 +33,7 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayRedoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DisplayUndoMessage;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\DrillThrough;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExecuteWithoutIHM;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetCalculation;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetChart;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\GetColInRecord;
@@ -933,6 +934,21 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
     public function execute(Execute $clWsdlTypeExecute, array $aHeaders = array()) : XMLResponseWS
     {
         return $this->call('Execute', array($clWsdlTypeExecute), null, null, $aHeaders);
+    }
+
+
+    /**
+     *  Fonction permettant l'appel de la fonction SOAP du service simaxOnline : Execute
+     *
+     * @param ExecuteWithoutIHM $clWsdlTypeExecute
+     * @param array   $aHeaders tableau d'headers a ajouter a la requete
+     * @return XMLResponseWS
+     * @throws \Exception
+     * @access public
+     */
+    public function executeWithoutIHM(ExecuteWithoutIHM $clWsdlTypeExecute, array $aHeaders = array()) : XMLResponseWS
+    {
+        return $this->call('ExecuteWithoutIHM', array($clWsdlTypeExecute), null, null, $aHeaders);
     }
 
     /**

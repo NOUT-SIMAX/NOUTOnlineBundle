@@ -110,6 +110,8 @@ abstract class LangageAction
 
     const HorairesOuverture = 9600;
 
+    const ExtranetResetPass = 18253;
+
     //sur le formulaire paramètre
     const MODIFIER_Parametre  = 2223;
     const SUPPRIMER_Parametre = 2230;
@@ -122,4 +124,8 @@ abstract class LangageAction
     const MODIFIER_Separateur = 6120;
     const MODIFIER_ColInfo = 2285;
     const MODIFIER_Bouton = 5235;
+
+    const EXTRANETRESETPASS_Pseudo = 18254;
+    const EXTRANETRESETPASS_Email = 18255;
+    const EXTRANETRESETPASS_Formulaire = 18256;
 }
