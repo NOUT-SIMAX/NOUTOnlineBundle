@@ -4,6 +4,7 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\PwdInfo;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Encryption;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
@@ -32,18 +33,29 @@ trait TraitUseBlowfishUsernameToken
      * @param string $sPassPhrase
      * @return string
      */
-    protected function _decryptConnectedUser(string $pwd, string $iv, int $ks, string $sPassPhrase) : string
+    protected function _decryptConnectedUser(PwdInfo $pwdInfo, string $sPassPhrase) : string
     {
-        $iv = base64_decode($iv);
-
-        /* Create key */
-        $securePassPhrase = base64_encode(md5($sPassPhrase, true));
-        $key = substr($securePassPhrase, 0, $ks);
-
-        $password = openssl_decrypt($pwd, 'bf-cbc', $key, 0, $iv);
-        if ($password == false)
+        $iv = base64_decode($pwdInfo->getIV());
+        switch ($pwdInfo->getCipher())
         {
-            throw new BadCredentialsException('Error while login');
+            default:
+            case 'bf':
+                $cipher_algo = 'bf-cbc';
+                $securePassPhrase = base64_encode(md5($sPassPhrase, true));
+                break;
+            case 'aes':
+                $cipher_algo = 'aes-'.($pwdInfo->getKS()*8).'-cbc';
+                $securePassPhrase = base64_encode(hash('sha256', $sPassPhrase, true));
+                break;
+
+        }
+
+        //on coupe la clé à la bonne taille
+        $key = substr($securePassPhrase, 0, $pwdInfo->getKS());
+        $password = openssl_decrypt($pwdInfo->getPwd(), $cipher_algo, $key, 0, $iv);
+        if (!$password)
+        {
+            throw new BadCredentialsException('Error while login : '.openssl_error_string());
         }
 
         return $password;

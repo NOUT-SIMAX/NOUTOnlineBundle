@@ -15,63 +15,79 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
  */
 class CurrentAction
 {
-	/**
-	 * @var string
-	 */
-	protected $m_sID;
-
-	/**
-	 * @var string
-	 */
-
-	protected $m_sTitle;
-	/**
-	 * @var int
-	 */
-	protected $m_nIDTypeAction;
+    /**
+     * @var string
+     */
+    protected string $sID='';
 
     /**
      * @var string
      */
-    protected $m_nIDForm;
+
+    protected string $sTitle ='';
+    /**
+     * @var int
+     */
+    protected int $nIDTypeAction =0;
 
     /**
      * @var string
      */
-    protected $m_userConfirmation;
+    protected string $nIDForm ='';
+
+    /**
+     * @var string
+     */
+    protected string $sUserConfirmation='';
 
     /** @var bool  */
-    protected $m_isConfiguration = false;
+    protected bool $bIsConfiguration = false;
 
     /**
      * CurrentAction constructor.
      * @param \SimpleXMLElement $clAction
      */
-	public function __construct(\SimpleXMLElement $clAction)
-	{
-		$this->m_sID                = (string) $clAction;
-		$this->m_sTitle             = (string) $clAction['title'];
-		$this->m_nIDTypeAction      = (int)$clAction['typeAction'];
-        $this->m_nIDForm            = (string) $clAction['actionForm'];
-        $this->m_userConfirmation   = (string) $clAction['userConfirmation'];
-        $this->m_isConfiguration   = ((int) ($clAction['isConfiguration'] ?? 0)) != 0;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getIDTypeAction(): int
+    public function initFromXML(\SimpleXMLElement $clAction) : CurrentAction
     {
-		return $this->m_nIDTypeAction;
-	}
+        $this->sID             = (string) $clAction;
+        $this->sTitle          = (string)$clAction['title'];
+        $this->nIDTypeAction = (int)$clAction['typeAction'];
+        $this->nIDForm            = (string)$clAction['actionForm'];
+        $this->sUserConfirmation   = (string)$clAction['userConfirmation'];
+        $this->bIsConfiguration   = ((int) ($clAction['isConfiguration'] ?? 0)) != 0;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getID(): string
+    /**
+     * CurrentAction constructor.
+     * @param \SimpleXMLElement $clAction
+     */
+    public function initFromJSON(\stdClass $clAction) : CurrentAction
     {
-		return $this->m_sID;
-	}
+        $this->sID               = (string)$clAction->id;
+        $this->sTitle            = (string)$clAction->title;
+        $this->nIDTypeAction     = (int)$clAction->typeAction;
+        $this->nIDForm           = (string)$clAction->actionForm;
+        $this->sUserConfirmation = property_exists($clAction, 'userConfirmation') ? (string)$clAction->userConfirmation : '';
+        $this->bIsConfiguration  = property_exists($clAction, 'isConfiguration') && ((int)($clAction->isConfiguration ?? 0)) != 0;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIDTypeAction(): int
+    {
+        return $this->nIDTypeAction;
+    }
+
+    /**
+     * @return string
+     */
+    public function getID(): string
+    {
+        return $this->sID;
+    }
 
 
     /**
@@ -79,23 +95,23 @@ class CurrentAction
      */
     public function getIDForm(): string
     {
-        return $this->m_nIDForm;
+        return $this->nIDForm;
     }
-
-    /**
-	 * @return string
-	 */
-	public function getTitle(): string
-    {
-		return $this->m_sTitle;
-	}
 
     /**
      * @return string
      */
-	public function getUserConfirmation(): string
+    public function getTitle(): string
     {
-        return $this->m_userConfirmation;
+        return $this->sTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserConfirmation(): string
+    {
+        return $this->sUserConfirmation;
     }
 
     /**
@@ -103,7 +119,7 @@ class CurrentAction
      */
     public function isConfiguration(): bool
     {
-        return $this->m_isConfiguration;
+        return $this->bIsConfiguration;
     }
 
 }

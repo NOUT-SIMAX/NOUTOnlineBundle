@@ -48,42 +48,100 @@ class EncryptionType
     }
 
     /**
-     * @param string|null $sEncodedBlowfish
+     * @param string|null $sEncoded
+     * @param string|null $sIV
+     * @param string|null $sCipher
+     *
+     * @return void
+     */
+    public function initFromHeaderInfo(?string $sEncoded, ?string $sIV, ?string $sCipher)
+    {
+        if (empty($sEncoded)){
+            return ;
+        }
+
+        if (empty($sCipher)){
+            $sCipher = 'bf';
+        }
+        switch ($sCipher){
+            default:
+            case 'bf':
+                $this->_initFromBlowfish($sEncoded, $sIV);
+                break;
+            case 'aes':
+                $this->_initFromAES($sEncoded, $sIV);
+                break;
+        }
+    }
+
+    /**
+     * @param string|null $sEncoded
      * @param string|null $sIV
      */
-    public function initFromBlowfish(?string $sEncodedBlowfish, ?string $sIV)
+    protected function _initFromBlowfish(?string $sEncoded, ?string $sIV)
     {
-        if (!empty($sEncodedBlowfish))
+        if (!empty($sEncoded))
         {
             if (!empty($sIV)){
-                $sDecrypt = openssl_decrypt($sEncodedBlowfish, 'bf-cfb', hex2bin(self::BLOWFISHKEY), 0, base64_decode($sIV));
+                $sDecrypt = openssl_decrypt($sEncoded, 'bf-cfb', hex2bin(self::BLOWFISHKEY), 0, base64_decode($sIV));
             }
             else {
-                $sDecrypt = openssl_decrypt($sEncodedBlowfish, 'bf-cfb', hex2bin(self::BLOWFISHKEY));
+                $sDecrypt = openssl_decrypt($sEncoded, 'bf-cfb', hex2bin(self::BLOWFISHKEY));
             }
 
             if ($sDecrypt){
-                $json = json_decode($sDecrypt);
-                if ($json){
-                    $this->m_sUuidLicence = $json->uuidlicence;
-                    $this->m_id = $json->id;
-                    $this->m_dwPassOptions = $json->options;
-                    switch ((int)$json->security)
-                    {
-                        case -1:
-                            $this->m_sTypeEncryption = self::PLAINTEXT;
-                            break;
-                        case 0:
-                            $this->m_sTypeEncryption = self::MD5;
-                            break;
-                        case 1:
-                            $this->m_sTypeEncryption = self::SHA_1;
-                            break;
-                        case 2:
-                            $this->m_sTypeEncryption = self::SHA_256;
-                            break;
-                    }
-                }
+                $this->_initFromJSON($sDecrypt);
+            }
+        }
+    }
+
+    /**
+     * @param string|null $sEncoded
+     * @param string|null $sIV
+     */
+    protected function _initFromAES(?string $sEncoded, ?string $sIV)
+    {
+        if (!empty($sEncoded))
+        {
+            if (!empty($sIV)){
+                $sDecrypt = openssl_decrypt($sEncoded, 'aes-256-cfb', self::AESKEY, 0, base64_decode($sIV));
+            }
+            else {
+                $sDecrypt = openssl_decrypt($sEncoded, 'ase-256-cfb', self::AESKEY);
+            }
+
+            if ($sDecrypt){
+                $this->_initFromJSON($sDecrypt);
+            }
+        }
+    }
+
+    /**
+     * @param string $json
+     *
+     * @return void
+     */
+    protected function _initFromJSON(string $json)
+    {
+        $json = json_decode($json);
+        if ($json){
+            $this->m_sUuidLicence = $json->uuidlicence;
+            $this->m_id = $json->id;
+            $this->m_dwPassOptions = $json->options;
+            switch ((int)$json->security)
+            {
+                case -1:
+                    $this->m_sTypeEncryption = self::PLAINTEXT;
+                    break;
+                case 0:
+                    $this->m_sTypeEncryption = self::MD5;
+                    break;
+                case 1:
+                    $this->m_sTypeEncryption = self::SHA_1;
+                    break;
+                case 2:
+                    $this->m_sTypeEncryption = self::SHA_256;
+                    break;
             }
         }
     }
@@ -119,22 +177,22 @@ class EncryptionType
             switch ($sTypeEncryption)
             {
                 case self::MD5:
-                    return 'AAAAAAAAAAAAAAAAAAAAAA==';
+                    return self::EMPTY_BASE64_MD5;
                 case self::SHA_1:
-                    return 'AAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+                    return self::EMPTY_BASE64_SHA1;
                 case self::SHA_256:
-                    return 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+                    return self::EMPTY_BASE64_SHA256;
             }
         }
 
         switch ($sTypeEncryption)
         {
             case self::MD5:
-                return '00000000000000000000000000000000';
+                return self::EMPTY_BIN_MD5;
             case self::SHA_1:
-                return '0000000000000000000000000000000000000000';
+                return self::EMPTY_BIN_SHA1;
             case self::SHA_256:
-                return '0000000000000000000000000000000000000000000000000000000000000000';
+                return self::EMPTY_BIN_SHA256;
         }
 
         return '';
@@ -218,8 +276,18 @@ class EncryptionType
     const SHA_256 = 'sha-2-256';
 
     protected const BLOWFISHKEY = 'c215ffb8f826dcc77f162350d89622b328653fab43fb4776c33a6be5171af3270f8420609fa2f4eb4d50d7b23c1232c28b59e244c7cc7357e50314254fd7cd3cd9d3329cefbd8cf7f820f9b1d8ddd746f4de6580104a34c9ccbf56ae76982821b4bf6a459ccedff0447f0f6a06a3f2d4bad3354d114b9531f7d20ac2b5d93e21';
+    protected const AESKEY = '/{KZo3qu5cQLb|z[OCeR%ggSbptexmZT';
 
     protected const OPT_SALT_ID = 0x01;
     protected const OPT_SALT_UUID = 0x02;
     public const OPT_EmptyNoHash = 0x04;
+
+
+    public const EMPTY_BASE64_MD5 = 'AAAAAAAAAAAAAAAAAAAAAA==';
+    public const EMPTY_BASE64_SHA1 = 'AAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+    public const EMPTY_BASE64_SHA256 = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+    public const EMPTY_BIN_MD5 = '00000000000000000000000000000000';
+    public const EMPTY_BIN_SHA1 = '0000000000000000000000000000000000000000';
+    public const EMPTY_BIN_SHA256 = '0000000000000000000000000000000000000000000000000000000000000000';
+
 }

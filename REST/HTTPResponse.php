@@ -228,24 +228,29 @@ class HTTPResponse
         }
     }
 
-    public function getXNOUTOnlineInfoCnx()
+    /**
+     * @return array
+     */
+    public function aGetXNOUTOnlineInfoCnx() : array
     {
+        if(array_key_exists (self::HEADER_XNOUTOnlineInfoCnxEx, $this->aHeaders))
+        {
+            $header = $this->aHeaders[self::HEADER_XNOUTOnlineInfoCnxEx];
+            $sInfo = $header->value;
+            $sIV = $header->options[self::OPTION_iv] ?? null;
+            $sCipher = $header->options[self::OPTION_cipher] ?? null;
+            return [$sInfo, $sIV, $sCipher];
+        }
+
         if(array_key_exists (self::HEADER_XNOUTOnlineInfoCnx, $this->aHeaders))
         {
-            return $this->aHeaders[self::HEADER_XNOUTOnlineInfoCnx]->value;
-        }
-    }
-
-    public function getIVForInfoCnx()
-    {
-        if (array_key_exists(self::HEADER_XNOUTOnlineInfoCnx, $this->aHeaders))
-        {
             $header = $this->aHeaders[self::HEADER_XNOUTOnlineInfoCnx];
-            if (array_key_exists(self::OPTION_iv, $header->options))
-            {
-                return $header->options[self::OPTION_iv];
-            }
+            $sInfo =  $header->value;
+            $sIV = $header->options[self::OPTION_iv] ?? null;
+            return [ $sInfo, $sIV, 'bf'];
         }
+
+        return [null, null, null];
     }
 
     /**
@@ -274,7 +279,9 @@ class HTTPResponse
     protected const HEADER_ContentLength = 'Content-Length';
     protected const HEADER_Status = 'status';
     protected const HEADER_XNOUTOnlineInfoCnx = 'X-NOUTOnline-InfoCnx';
+    protected const HEADER_XNOUTOnlineInfoCnxEx = 'X-NOUTOnline-InfoCnx-ex';
 
     protected const OPTION_filename = 'filename';
     protected const OPTION_iv = 'iv';
+    protected const OPTION_cipher = 'cipher';
 }

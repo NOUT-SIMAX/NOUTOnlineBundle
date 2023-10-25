@@ -201,13 +201,13 @@ class NOUTClient extends NOUTClientBase
             $clExtraExists = $this->clExtranetUserExists($loginExtra, $formExtra, $defaultExtraEncrypt);
         }
         catch (\Exception $e){
-            $clExtraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, $defaultExtraEncrypt);
+            $clExtraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, null, $defaultExtraEncrypt);
         }
         try{
             $clIntraExists = $this->clUserExists($loginIntra);
         }
         catch (\Exception $e){
-            $clIntraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, null);
+            $clIntraExists = new UserExists(UserExists::TYPEUTIL_NONE, null, null, null, null);
         }
         return [$clExtraExists, $clIntraExists];
     }
@@ -573,8 +573,11 @@ class NOUTClient extends NOUTClientBase
      */
     protected function _oExecute(Execute $clParamExecute, array $aTabHeaderSuppl) : ActionResult
     {
-        $clReponseXML = $this->m_clSOAPProxy->execute($clParamExecute, $this->_aGetTabHeader($aTabHeaderSuppl));
+        if (!is_null($clParamExecute->ParamXML) && !is_string($clParamExecute->ParamXML)){
+            $clParamExecute->ParamXML = ParametersManagement::s_sStringifyParamXML($clParamExecute->ParamXML);
+        }
 
+        $clReponseXML = $this->m_clSOAPProxy->execute($clParamExecute, $this->_aGetTabHeader($aTabHeaderSuppl));
         return $this->_oGetActionResultFromXMLResponse($clReponseXML);
     }
 
