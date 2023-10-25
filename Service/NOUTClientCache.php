@@ -45,10 +45,34 @@ class NOUTClientCache
      */
     public function __construct(NOUTCacheFactory $cacheFactory, $sSessionToken, Langage $clLangage, NOUTOnlineVersion $clNOVersion )
     {
-        $this->m_clCacheSession = $cacheFactory->getCache($sSessionToken, self::SOUSREPCACHE_SESSION, self::REPCACHE);
+        if (!empty($sSessionToken)){
+            $this->m_clCacheSession = $cacheFactory->getCache($sSessionToken, self::SOUSREPCACHE_SESSION, self::REPCACHE);
+        }
+
         $this->m_clCacheLanguage =  $cacheFactory->getCache($clLangage->getVersionLangage(), self::SOUSREPCACHE_LANGUAGE, self::REPCACHE);
-        $this->m_clCacheIcones =  $cacheFactory->getCache($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON, self::REPCACHE);
+
+        $vIcone = $clLangage->getVersionIcone();
+        if (!empty($vIcone)){
+            $this->m_clCacheIcones =  $cacheFactory->getCache($clLangage->getVersionIcone(), self::SOUSREPCACHE_ICON, self::REPCACHE);
+        }
+
         $this->m_clCacheNOUTOnline =  $cacheFactory->getCache($clNOVersion->get(), self::SOUSREPCACHE_NOUTONLINE, self::REPCACHE);
+    }
+
+
+    /**
+     * @param array|null $aTabCtxt
+     *
+     * @return void
+     */
+    public function deleteCtxtFromCacheSession(?array $aTabCtxt)
+    {
+        if (!is_array($aTabCtxt)){
+            return ;
+        }
+        foreach($aTabCtxt as $idctxt){
+            $this->m_clCacheSession->deletePrefix($idctxt);
+        }
     }
 
     /**
@@ -272,7 +296,7 @@ class NOUTClientCache
         // we want to retain the "essence" of the original file name, if possible
         // char replace table found at:
         // http://www.php.net/manual/en/function.strtr.php#98669
-        $replace_chars = array(
+        $replaceChars = array(
             'Š' => 'S', 'š' => 's', 'Ð' => 'Dj', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
             'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I',
             'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U',
@@ -281,7 +305,7 @@ class NOUTClientCache
             'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
             'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
         );
-        $filename = strtr($filename, $replace_chars);
+        $filename = strtr($filename, $replaceChars);
         // convert & to "and", @ to "at", and # to "number"
         $filename = preg_replace(array('/[&]/', '/[@]/', '/[#]/'), array('-and-', '-at-', '-number-'), $filename);
         $filename = preg_replace('/[^(\x20-\x7F)]*/', '', $filename); // removes any special chars we missed

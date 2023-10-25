@@ -31,7 +31,7 @@ class NOUTFileCache extends NOUTCacheProvider
 
         $key = $prefix;
         foreach($id as $subid){
-            $key.=sprintf('/%s', (string)$subid);
+            $key.=sprintf('/%s', stripslashes((string)$subid));
         }
         return $key;
     }
@@ -41,64 +41,61 @@ class NOUTFileCache extends NOUTCacheProvider
      */
     protected function _getNamespacedId($id) : string
     {
-        $key = $this->_makeKey($id, $this->namespace);
-        if (!empty($id))
-        {
-            $key.=self::FILE_EXTENSION;
-        }
-        return $key;
+        return $this->_makeKey($id, $this->namespace);
     }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function _doFetch(string $id)
-	{
-		if (!file_exists($id))
-		{
-			return false;
-		}
-
-		return unserialize(file_get_contents($id));
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function _doContains(string $id)
-	{
-		return file_exists($id);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function _doSave(string $id, $data, $lifeTime = 0)
-	{
-        $dir = dirname($id);
-		if (!file_exists($dir))
-		{
-			if (!@mkdir($dir, 0777, true))
-			{
-				return false;
-			}
-		}
-		file_put_contents($id, serialize($data));
-		return true;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function _doDelete(string $id)
-	{
-        if (file_exists($id))
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doFetch(string $id)
+    {
+        $filename = $id.self::FILE_EXTENSION;
+        if (!file_exists($filename))
         {
-            unlink($id);
+            return false;
         }
 
-		return true;
-	}
+        return unserialize(file_get_contents($filename));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doContains(string $id)
+    {
+        return file_exists($id.self::FILE_EXTENSION);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doSave(string $id, $data, $lifeTime = 0)
+    {
+        $dir = dirname($id);
+        if (!file_exists($dir))
+        {
+            if (!@mkdir($dir, 0777, true))
+            {
+                return false;
+            }
+        }
+        file_put_contents($id.self::FILE_EXTENSION, serialize($data));
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doDelete(string $id)
+    {
+        $filename = $id.self::FILE_EXTENSION;
+        if (file_exists($filename))
+        {
+            unlink($filename);
+        }
+
+        return true;
+    }
 
     /**
      * Fetches an entry from the cache.
@@ -117,12 +114,13 @@ class NOUTFileCache extends NOUTCacheProvider
             $finder = new Finder();
             $finder
                 ->files()
-                ->in($id.'/*')
+                ->in($id)
                 ->name('*'.self::FILE_EXTENSION);
 
             foreach ($finder as $file) {
                 /** @var SplFileInfo $file */
-                $aRet[]=$file->getRealPath();
+                $realpath = $file->getRealPath();
+                $aRet[]=str_replace(self::FILE_EXTENSION, "", $realpath);
             }
             return $aRet;
         }
@@ -183,7 +181,7 @@ class NOUTFileCache extends NOUTCacheProvider
 
         try{
             $finder = new Finder();
-            $finder->directories()->in($id.'/*');
+            $finder->directories()->in($id);
             $finder->sort(function (\SplFileInfo $a, \SplFileInfo $b)
             {
                 return -strcmp($a->getRealPath(), $b->getRealPath());
@@ -194,13 +192,13 @@ class NOUTFileCache extends NOUTCacheProvider
             $aRet = array();
             foreach ($finder as $dir) {
                 /** @var SplFileInfo $dir */
-                $path_dir = $dir->getRealPath();
+                $pathDir = $dir->getRealPath();
                 do
                 {
-                    $aRet[]=$path_dir;
-                    $path_dir=dirname($path_dir);
+                    $aRet[]=$pathDir;
+                    $pathDir=dirname($pathDir);
                 }
-                while(str_replace(array('\\', '/'), array('_', '_'), $path_dir) != $id);
+                while(str_replace(array('\\', '/'), array('_', '_'), $pathDir) != $id);
             }
             return $aRet;
         }
@@ -209,6 +207,4 @@ class NOUTFileCache extends NOUTCacheProvider
             return array();
         }
     }
-
-
 }

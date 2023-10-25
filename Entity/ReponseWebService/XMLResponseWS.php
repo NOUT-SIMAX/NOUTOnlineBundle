@@ -17,7 +17,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\StructureColonne;
  *
  * class qui contient le SimpleXMLElement de la réponse du webservice
  */
-class XMLResponseWS
+class XMLResponseWS implements IResponseWS
 {
     /**
      * @var \SimpleXMLElement noeud du body
@@ -128,15 +128,10 @@ class XMLResponseWS
     }
 
     /**
-     * @return mixed, false si pas une erreur, un tableau d'erreur SIMAX si c'est une erreur
+     * @return array|null, false si pas une erreur, un tableau d'erreur SIMAX si c'est une erreur
      */
-    public function getTabError()
+    public function getTabError() : ?array
     {
-        if (!isset($this->m_TabError))
-        {
-            return false;
-        }
-
         return $this->m_TabError;
     }
 
@@ -274,7 +269,7 @@ class XMLResponseWS
     {
         $clAction = $this->m_ndHeader->children()->Action;
 
-        return new CurrentAction($clAction);
+        return (new CurrentAction())->initFromXML($clAction);
     }
 
     /**
@@ -355,7 +350,8 @@ class XMLResponseWS
             $oUser->setPwdInfo(new PwdInfo(
                 $oXMLConnecterUser->children()->PwdInfo,
                 $oXMLConnecterUser->children()->PwdInfo['iv'],
-                $oXMLConnecterUser->children()->PwdInfo['ks']
+                $oXMLConnecterUser->children()->PwdInfo['ks'],
+                $oXMLConnecterUser->children()->PwdInfo['cipher'] ?? null
             ));
         }
         if (isset($oXMLConnecterUser->children()->Extranet)){
@@ -765,62 +761,4 @@ class XMLResponseWS
         return $imports->children();
     }
 
-    //réponse générique
-    const RETURNTYPE_ERROR          = 'Error';
-    const RETURNTYPE_EMPTY          = 'Empty';
-    const RETURNTYPE_DONOTHING      = 'DoNothing';
-    const RETURNTYPE_REPORT         = 'Report';
-    const RETURNTYPE_VALUE          = 'Value';
-    const RETURNTYPE_REQUESTFILTER  = 'RequestFilter';
-    const RETURNTYPE_CHART          = 'Chart';
-    const RETURNTYPE_NUMBEROFCHART  = 'NumberOfChart';
-
-    //retourne des enregistrements
-    const RETURNTYPE_RECORD         = 'Record';
-    const RETURNTYPE_LIST           = 'List';
-    const RETURNTYPE_THUMBNAIL      = 'Thumbnail';
-    const RETURNTYPE_DATATREE       = 'Datatree';
-
-    //réponse particulière
-    const RETURNTYPE_XSD                = 'XSD';
-    const RETURNTYPE_IDENTIFICATION     = 'Identification';
-    const RETURNTYPE_PLANNING           = 'Planning'; // Vieux planning
-    const RETURNTYPE_SCHEDULER          = 'Scheduler'; // Nouveau planning
-    const RETURNTYPE_GLOBALSEARCH       = 'GlobalSearch';
-    const RETURNTYPE_LISTCALCULATION    = 'ListCalculation';
-    const RETURNTYPE_EXCEPTION          = 'Exception';
-
-    //réponse intermédiaire
-    const RETURNTYPE_AMBIGUOUSCREATION  = 'AmbiguousAction';
-    const RETURNTYPE_MESSAGEBOX         = 'MessageBox';
-    const RETURNTYPE_VALIDATEACTION     = 'ValidateAction';
-    const RETURNTYPE_VALIDATERECORD     = 'ValidateEnreg';
-    const RETURNTYPE_PRINTTEMPLATE      = 'PrintTemplate';
-    const RETURNTYPE_CHOICE             = 'Choice';
-
-    //réponse de messagerie
-    const RETURNTYPE_MAILSERVICERECORD      = 'MailServiceRecord';
-    const RETURNTYPE_MAILSERVICELIST        = 'MailServiceList';
-    const RETURNTYPE_MAILSERVICESTATUS      = 'MailServiceStatus';
-    const RETURNTYPE_WITHAUTOMATICRESPONSE  = 'WithAutomaticResponse';
-    const RETURNTYPE_MAILSERVICEIDLIST      = 'MailServiceIDList';
-
-    //types virtuels pour traitement spéciaux
-    const VIRTUALRETURNTYPE_AFFICHEMESSAGE = 'MessageDisplay';
-    const VIRTUALRETURNTYPE_FILE = "File";
-    const VIRTUALRETURNTYPE_FILE_PREVIEW = "FilePreview";
-    const VIRTUALRETURNTYPE_CASCADE = 'Cascade';
-    const VIRTUALRETURNTYPE_CASCADE_INPUT = 'CascadeInput';
-    const VIRTUALRETURNTYPE_CASCADE_VALIDATE = 'CascadeValidate';
-    const VIRTUALRETURNTYPE_MAILSERVICERECORD_PJ = 'MailServiceRecordPJ';
-
-    //les différent type d'affichage pour les listes
-    const DISPLAYMODE_List = 'List';
-    const DISPLAYMODE_Planning = 'Planning';
-    const DISPLAYMODE_DataTree = 'DataTree';
-    const DISPLAYMODE_Thumbnail = 'Thumbnail';
-    const DISPLAYMODE_Chart = 'Chart';
-    const DISPLAYMODE_Flowchart = 'Flowchart';
-    const DISPLAYMODE_Gantt = 'Gantt';
-    const DISPLAYMODE_Map = 'Map';
 }

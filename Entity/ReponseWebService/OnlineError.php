@@ -10,35 +10,35 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class OnlineError implements \JsonSerializable
 {
-    protected $m_nCode = 0;
-    protected $m_nErreur = 0;
-    protected $m_nCategorie = 0;
-    protected $m_sMessage = '';
-    protected $m_TabParametres = [];
+    protected string $nCode   = '';
+    protected int    $nErreur = 0;
+    protected int    $nCategorie    = 0;
+    protected string $sMessage       = '';
+    protected array  $aTabParametres = [];
 
     public function __construct($nCode, $nErreur, $nCategorie, $sMessage)
     {
-        $this->m_nCode      = (string) $nCode;
-        $this->m_nCategorie = (int) $nCategorie;
-        $this->m_nErreur    = (int) $nErreur;
-        $this->m_sMessage   = (string) $sMessage;
+        $this->nCode      = (string) $nCode;
+        $this->nCategorie = (int) $nCategorie;
+        $this->nErreur    = (int) $nErreur;
+        $this->sMessage   = (string) $sMessage;
     }
 
 
     public function jsonSerialize(): array
     {
         return array(
-            'code'       => $this->m_nCode,
-            'error'      => $this->m_nErreur,
-            'category'   => $this->m_nCategorie,
-            'message'    => $this->m_sMessage,
-            'parameters' => $this->m_TabParametres,
+            'code'       => $this->nCode,
+            'error'      => $this->nErreur,
+            'category'   => $this->nCategorie,
+            'message'    => $this->sMessage,
+            'parameters' => $this->aTabParametres,
         );
     }
 
     public function AddParameter(OnlineErrorParameter $clError)
     {
-        $this->m_TabParametres[] = $clError;
+        $this->aTabParametres[] = $clError;
     }
 
     /**
@@ -46,7 +46,7 @@ class OnlineError implements \JsonSerializable
      */
     public function setTabParametres(array $TabParametres)
     {
-        $this->m_TabParametres = $TabParametres;
+        $this->aTabParametres = $TabParametres;
     }
 
     /**
@@ -54,7 +54,7 @@ class OnlineError implements \JsonSerializable
      */
     public function getTabParametres() : array
     {
-        return $this->m_TabParametres;
+        return $this->aTabParametres;
     }
 
     /**
@@ -62,7 +62,7 @@ class OnlineError implements \JsonSerializable
      */
     public function setCategorie(int $nCategorie)
     {
-        $this->m_nCategorie = $nCategorie;
+        $this->nCategorie = $nCategorie;
     }
 
     /**
@@ -70,7 +70,7 @@ class OnlineError implements \JsonSerializable
      */
     public function getCategorie(): ?int
     {
-        return $this->m_nCategorie;
+        return $this->nCategorie;
     }
 
     /**
@@ -78,7 +78,7 @@ class OnlineError implements \JsonSerializable
      */
     public function setCode(string $nCode)
     {
-        $this->m_nCode = $nCode;
+        $this->nCode = $nCode;
     }
 
     /**
@@ -86,7 +86,7 @@ class OnlineError implements \JsonSerializable
      */
     public function getCode(): ?string
     {
-        return $this->m_nCode;
+        return $this->nCode;
     }
 
     /**
@@ -94,7 +94,7 @@ class OnlineError implements \JsonSerializable
      */
     public function setErreur(int $nErreur)
     {
-        $this->m_nErreur = $nErreur;
+        $this->nErreur = $nErreur;
     }
 
     /**
@@ -102,7 +102,7 @@ class OnlineError implements \JsonSerializable
      */
     public function getErreur(): ?int
     {
-        return $this->m_nErreur;
+        return $this->nErreur;
     }
 
     /**
@@ -110,7 +110,7 @@ class OnlineError implements \JsonSerializable
      */
     public function setMessage(string $sMessage)
     {
-        $this->m_sMessage = $sMessage;
+        $this->sMessage = $sMessage;
     }
 
     /**
@@ -118,7 +118,7 @@ class OnlineError implements \JsonSerializable
      */
     public function getMessage(): ?string
     {
-        return $this->m_sMessage;
+        return $this->sMessage;
     }
 
     public function parseFromREST($output)
@@ -134,15 +134,15 @@ class OnlineError implements \JsonSerializable
         $re = '/^([0-9]+)\(([0-9]+)\|([0-9]+)\)(?:<br\/>)?\s{1,2}(.*)/s';
         if (preg_match_all($re, $output, $matches))
         {
-            $this->m_nErreur = $matches[1][0];
-            $this->m_nCategorie = $matches[2][0];
-            $this->m_nCode = $matches[3][0];
+            $this->nErreur    = $matches[1][0];
+            $this->nCategorie = $matches[2][0];
+            $this->nCode      = $matches[3][0];
 
-            $this->m_sMessage = strip_tags($matches[4][0]);
+            $this->sMessage = strip_tags($matches[4][0]);
         }
         else
         {
-            $this->m_sMessage = strip_tags($output);
+            $this->sMessage = strip_tags($output);
         }
     }
 

@@ -6,24 +6,25 @@ namespace NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService;
 
 class PwdInfo
 {
-    /**
-     * @var string
-     */
-    protected $m_sPwdEncoded;
-    /**
-     * @var string
-     */
-    protected $m_sIV;
-    /**
-     * @var int
-     */
-    protected $m_nKS;
+    protected string $sPwdEncoded;
 
-    public function __construct($pwd, $iv, $ks)
+    protected string $sIV;
+
+    protected int $nKS;
+
+    protected string $cipher;
+
+    public function __construct(\SimpleXMLElement $pwd, \SimpleXMLElement $iv, \SimpleXMLElement $ks, ?\SimpleXMLElement $cipher)
     {
-        $this->m_sPwdEncoded = (string)$pwd;
-        $this->m_sIV = (string)$iv;
-        $this->m_nKS = (int)$ks;
+        $this->sPwdEncoded = (string)$pwd;
+        $this->sIV         = (string)$iv;
+        $this->nKS       = (int)$ks;
+        if (!is_null($cipher)){
+            $this->cipher = (string)$cipher;
+        }
+        else {
+            $this->cipher = 'bf';
+        }
     }
 
     /**
@@ -31,7 +32,7 @@ class PwdInfo
      */
     public function getPwd(): ?string
     {
-        return $this->m_sPwdEncoded;
+        return $this->sPwdEncoded;
     }
 
     /**
@@ -39,7 +40,7 @@ class PwdInfo
      */
     public function getIV(): ?string
     {
-        return $this->m_sIV;
+        return $this->sIV;
     }
 
     /**
@@ -47,6 +48,13 @@ class PwdInfo
      */
     public function getKS(): ?int
     {
-        return $this->m_nKS;
+        return $this->nKS;
     }
+
+    public function getCipher() : string
+    {
+        return $this->cipher;
+    }
+
+
 }

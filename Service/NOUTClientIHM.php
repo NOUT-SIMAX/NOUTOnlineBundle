@@ -8,9 +8,12 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Service;
 
+use App\Security\Token\AdminToken;
 use App\Service\IconManipulation;
+use NOUT\Bundle\NOUTOnlineBundle\Cache\NOUTCacheFactory;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResult;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ActionResultCache;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\IHMLoader;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\InfoIHM;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Langage\Langage;
@@ -25,13 +28,18 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\ConditionFileNPI;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Parametre\Operator\Operator;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\Record;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\Record\RecordCache;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\JSONResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\XMLResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\REST\HTTPResponse;
 use NOUT\Bundle\NOUTOnlineBundle\REST\OnlineServiceProxy as RESTProxy;
+use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\OnlineServiceProxy as SOAPProxy;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Execute;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExecuteWithoutIHM;
 use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Class NOUTClient
@@ -39,6 +47,39 @@ use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Request;
  */
 class NOUTClientIHM extends NOUTClientBase
 {
+
+    /**
+     * @param OnlineServiceFactory  $serviceFactory
+     * @param ConfigurationDialogue $configurationDialogue
+     * @param NOUTCacheFactory      $cacheFactory
+     * @param $nVersionDialPref
+     * @param Stopwatch|null        $stopwatch
+     * @param array                 $aVersionsMin
+     * @param TokenStorageInterface $tokenStorage
+     * @throws \Exception
+     */
+    public function __construct(TokenStorageInterface $tokenStorage,
+                                OnlineServiceFactory  $serviceFactory,
+                                ConfigurationDialogue $configurationDialogue,
+                                NOUTCacheFactory      $cacheFactory,
+                                array                 $aVersionsMin,
+                                                      $nVersionDialPref,
+                                Stopwatch             $stopwatch=null
+    )
+    {
+        parent::__construct($tokenStorage, $serviceFactory, $configurationDialogue, $cacheFactory, $aVersionsMin, $nVersionDialPref, $stopwatch);
+
+        $oSecurityToken = $this->_oGetToken();
+        if (is_null($this->m_clCache) && ($oSecurityToken instanceof AdminToken)) {
+
+            $this->m_clNOVersion = $oSecurityToken->clGetNOUTOnlineVersion();
+            $langage             = new Langage($this->m_clRESTProxy->oGetChecksumLangage($this->_clGetIdentificationRESTForLanguage())->content);
+
+            $this->m_clCache = new NOUTClientCache($cacheFactory, '', $langage, $oSecurityToken->clGetNOUTOnlineVersion());
+
+        }
+    }
+
     /**
      * @param string           $sIDform        identifiant du formulaire
      * @param ConditionFileNPI $clFileNPI      condition pour la requête
@@ -161,12 +202,12 @@ class NOUTClientIHM extends NOUTClientBase
         }
 
         //on a pas les infos, il faut les calculer
-        $clReponseXML_OptionMenu = $this->_oGetTabMenu_OptionMenu();
-        $clReponseXML_Menu = $this->_oGetTabMenu_Menu();
-        $clReponseXML_SmallIcon = $this->_oGetTabIcon(LangageColonne::IMAGECATALOGUE_Image);
-        $clReponseXML_BigIcon = $this->_oGetTabIcon(LangageColonne::IMAGECATALOGUE_ImageGrande);
+        $clReponseXMLOptionMenu = $this->_oGetTabMenu_OptionMenu();
+        $clReponseXMLMenu = $this->_oGetTabMenu_Menu();
+        $clReponseXMLSmallIcon = $this->_oGetTabIcon(LangageColonne::IMAGECATALOGUE_Image);
+        $clReponseXMLBigIcon = $this->_oGetTabIcon(LangageColonne::IMAGECATALOGUE_ImageGrande);
 
-        $clIHMLoader = new IHMLoader($clReponseXML_OptionMenu, $clReponseXML_Menu, $clReponseXML_SmallIcon, $clReponseXML_BigIcon);
+        $clIHMLoader = new IHMLoader($clReponseXMLOptionMenu, $clReponseXMLMenu, $clReponseXMLSmallIcon, $clReponseXMLBigIcon);
         $oInfoIHM = $clIHMLoader->oGetInfoIHM();
 
         $this->_saveInCache(NOUTClientCache::CACHE_Session, "info_$sUsername", $oInfoIHM);
@@ -291,24 +332,25 @@ class NOUTClientIHM extends NOUTClientBase
     }
 
     /**
-     * @param string $member_name
-     * @param string $method_name
+     * @param string $memberName
+     * @param string $methodName
      * @param string $prefix
+     *
      * @return ActionResult
      * @throws \Exception
      */
-    protected function _oGetIhmMenuPart(string $member_name, string $method_name, string $prefix) : ActionResult
+    protected function _oGetIhmMenuPart(string $memberName, string $methodName, string $prefix) : ActionResult
     {
         $clActionResult = new ActionResult(null);
         if (!$this->_oGetToken()->isVersionSup('1637.02', false))
         {
             //l'ancien système
             $oInfoMenu = $this->_oGetInfoIhmMenu();
-            $clActionResult->setData($oInfoMenu->$member_name);
+            $clActionResult->setData($oInfoMenu->$memberName);
         }
         else
         {
-            $tabMenu = $this->__oGetIhmMenuPart($method_name, $prefix);
+            $tabMenu = $this->__oGetIhmMenuPart($methodName, $prefix);
             $clActionResult->setData($tabMenu);
         }
 
@@ -417,7 +459,7 @@ class NOUTClientIHM extends NOUTClientBase
         }
 
         $aTabOptionsForName = $aTabOptions;
-        if (count($aTabPHPManipulation)>0)
+        if (!empty($aTabPHPManipulation))
         {
             $aTabOptionsForName += $this->_aTabPHPManipulationToOptions($aTabPHPManipulation);
             if (!is_null($this->m_clCache)){
@@ -453,7 +495,7 @@ class NOUTClientIHM extends NOUTClientBase
         }
 
         //on applique les modifications
-        if (count($aTabPHPManipulation)>0)
+        if (!empty($aTabPHPManipulation))
         {
             $bOnManipIsOk = false;
             foreach($aTabPHPManipulation as $name=>$option)
@@ -575,6 +617,47 @@ class NOUTClientIHM extends NOUTClientBase
 
         return $this->m_clRESTProxy->oGetFunctionsList($clIdentification);
     }
+
+    /**
+     * @param bool $bVerify
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function _getActionList(bool $bVerify)
+    {
+        if (!$bVerify)
+        {
+            $clIdentification = $this->_clGetIDWithAuthTokenForApp();
+        }
+        else
+        {
+            $clIdentification = $this->_clGetIdentificationREST('', true);
+        }
+
+        return $this->m_clRESTProxy->oGetActionList($bVerify, $clIdentification);
+    }
+
+    /**
+     * @param bool $bVerify
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function _getSentenceList(bool $bVerify)
+    {
+        if (!$bVerify)
+        {
+            $clIdentification = $this->_clGetIDWithAuthTokenForApp();
+        }
+        else
+        {
+            $clIdentification = $this->_clGetIdentificationREST('', true);
+        }
+
+        return $this->m_clRESTProxy->oGetSentenceList($bVerify, $clIdentification);
+    }
+
     /**
      * @return mixed
      * @throws \Exception
@@ -622,15 +705,27 @@ class NOUTClientIHM extends NOUTClientBase
         $clIdentification = parent::_clGetIdentificationREST('', true);
         if (is_null($clIdentification))
         {
-            $clIdentification = new Identification();
-            $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
-
-            $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
-            $clIdentification->m_bAPIUser = true;
-            $clIdentification->m_clUsernameToken = null;
+            $clIdentification = $this->_clGetIDWithAuthTokenForApp();
         }
         return $clIdentification;
     }
+
+    /**
+     * @return Identification
+     * @throws \Exception
+     */
+    protected function _clGetIDWithAuthTokenForApp() : Identification
+    {
+        $clIdentification = new Identification();
+        $clIdentification->m_clUsernameToken = $this->_oGetNCSUsernameToken();
+
+        $clIdentification->m_sAuthToken = $this->m_clRESTProxy->sGenerateAuthTokenForApp($clIdentification);
+        $clIdentification->m_bAPIUser = true;
+        $clIdentification->m_clUsernameToken = null;
+
+        return $clIdentification;
+    }
+
 
     /**
      * @return mixed
@@ -653,10 +748,10 @@ class NOUTClientIHM extends NOUTClientBase
         $obj->title = $info->title;
 
         if (property_exists($info->columns, LangageColonne::GENERIQUE_TYPEFORMULAIRE)){
-            $info_typecol = $info->columns->{LangageColonne::GENERIQUE_TYPEFORMULAIRE};
+            $infoTypeCol = $info->columns->{LangageColonne::GENERIQUE_TYPEFORMULAIRE};
             $obj->type = new \stdClass();
-            $obj->type->id = $info_typecol->value;
-            $obj->type->title = $info_typecol->displayValue;
+            $obj->type->id = $infoTypeCol->value;
+            $obj->type->title = $infoTypeCol->displayValue;
         }
 
         return $obj;
@@ -732,22 +827,22 @@ class NOUTClientIHM extends NOUTClientBase
                     $obj->type->level = $info->columns->{LangageColonne::COLLIBELLE_IDNiveau}->value;
                 }
 
-                $info_tableau = $info->columns->{LangageColonne::COLONNE_IDTableau};
+                $infoTableau = $info->columns->{LangageColonne::COLONNE_IDTableau};
                 $obj->form = new \stdClass();
-                $obj->form->id = $info_tableau->value;
-                $obj->form->title = $info_tableau->displayValue;
+                $obj->form->id = $infoTableau->value;
+                $obj->form->title = $infoTableau->displayValue;
 
-                $info_modele = $info->columns->{LangageColonne::COLONNE_IDModele};
-                if (!empty($info_modele->value)){
-                    if (array_key_exists($info_modele->value, $aModeles)){
+                $infoModele = $info->columns->{LangageColonne::COLONNE_IDModele};
+                if (!empty($infoModele->value)){
+                    if (array_key_exists($infoModele->value, $aModeles)){
                         //on connait le modèle
-                        $obj->modele = $aModeles[$info_modele->value];
+                        $obj->modele = $aModeles[$infoModele->value];
                     }
                     else {
                         //on prend ce qu'on a dans la description de la colonne
                         $obj->modele = new \stdClass();
-                        $obj->modele->title = $info_modele->displayValue;
-                        $obj->modele->id = $info_modele->value;
+                        $obj->modele->title = $infoModele->displayValue;
+                        $obj->modele->id = $infoModele->value;
                     }
                 }
 
@@ -755,6 +850,130 @@ class NOUTClientIHM extends NOUTClientBase
                 $aReturnFinal[$obj->id]=$obj;
             }
             return $aReturnFinal;
+        });
+    }
+
+
+    /**
+     * @param bool $bVerify
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getActionList(bool $bVerify)
+    {
+        $cacheKey = "action_list";
+        if ($bVerify){
+            $token = $this->_oGetToken();
+            if (!$token instanceof NOUTToken){
+                throw new \Exception(); //on est pas connecté, on peut pas vérifier
+            }
+            $cacheKey.='_'.$token->nGetIDUser();
+        }
+
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, $cacheKey, function() use ($bVerify){
+            $oRestResponse = $this->_getActionList($bVerify);
+            $aReturnFinal=[];
+            foreach($oRestResponse->result as $idObj)
+            {
+                if (!property_exists($oRestResponse->values->elements, $idObj)){
+                    continue;
+                }
+                $info = $oRestResponse->values->elements->$idObj;
+                if (is_null($info)){
+                    continue;
+                }
+
+                $obj = $this->__initFromJson($info);
+                $obj->title = $info->columns->{LangageColonne::ACTION_Libelle}->displayValue;
+
+                $obj->action_type =  new \stdClass();
+                $obj->action_type->id = $info->columns->{LangageColonne::ACTION_TypeAction}->value;
+                $obj->action_type->title = $info->columns->{LangageColonne::ACTION_TypeAction}->displayValue;
+
+                $infoTableau = $info->columns->{LangageColonne::ACTION_IDTableau};
+                $obj->form = new \stdClass();
+                $obj->form->id = $infoTableau->value;
+                $obj->form->title = $infoTableau->displayValue;
+
+                $aReturnFinal[$obj->id]=$obj;
+            }
+            return $aReturnFinal;
+
+
+        });
+    }
+
+    /**
+     * @param bool $bVerify
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getSentenceList(bool $bVerify)
+    {
+        $cacheKey = "sentence_list";
+        if ($bVerify){
+            $token = $this->_oGetToken();
+            if (!$token instanceof NOUTToken){
+                throw new \Exception(); //on est pas connecté, on peut pas vérifier
+            }
+            $cacheKey.='_'.$token->nGetIDUser();
+        }
+
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, $cacheKey, function() use ($bVerify){
+            $oRestResponse = $this->_getSentenceList($bVerify);
+            $aReturnFinal=[];
+            foreach($oRestResponse->result as $idObj)
+            {
+                if (!property_exists($oRestResponse->values->elements, $idObj)){
+                    continue;
+                }
+                $info = $oRestResponse->values->elements->$idObj;
+                if (is_null($info)){
+                    continue;
+                }
+
+                $obj = $this->__initFromJson($info);
+
+                $obj->action =  new \stdClass();
+                $obj->action->id = $info->columns->{LangageColonne::PHRASE_IDAction}->value;
+                $obj->action->title = $info->columns->{LangageColonne::PHRASE_IDAction}->displayValue;
+
+                $aReturnFinal[$obj->id]=$obj;
+            }
+            return $aReturnFinal;
+        });
+    }
+
+    public function getMaxAutoCompletion()
+    {
+        $cacheKey = "max_autocomplete_list";
+        $token = $this->_oGetToken();
+        if (!$token instanceof NOUTToken){
+            throw new \Exception(); //on est pas connecté, on peut pas vérifier
+        }
+        $cacheKey.='_'.$token->nGetIDUser();
+
+        return $this->_getFromCache(NOUTClientCache::CACHE_Language, $cacheKey, function() {
+            $aSentences = array_values($this->getSentenceList(true));
+            $oAction = array_values($this->getActionList(true));
+
+            foreach($oAction as $action)
+            {
+                $idaction = $action->id;
+
+                if (empty(array_filter($aSentences, function($sentence) use ($idaction){
+                    return $sentence->action->id == $idaction;
+                }))){
+                    $pseudoSentence = new \stdClass();
+                    $pseudoSentence->title = $action->title;
+                    $pseudoSentence->id = null;
+                    $pseudoSentence->action = new \stdClass();
+                    $pseudoSentence->action->id = $idaction;
+                    $pseudoSentence->action->tite = $action->title;
+                    $aSentences[]=$pseudoSentence;
+                }
+            }
+            return $aSentences;
         });
     }
 
@@ -768,8 +987,8 @@ class NOUTClientIHM extends NOUTClientBase
     {
         return $this->_getFromCache(NOUTClientCache::CACHE_Language, "column_list_$idtableau", function() use ($idtableau) {
 
-            $column_list = $this->getColumnList();
-            $filtered = array_filter($column_list, function($item) use ($idtableau) {
+            $columnList = $this->getColumnList();
+            $filtered = array_filter($columnList, function($item) use ($idtableau) {
                 return $item->form->id == $idtableau;
             });
 
@@ -917,5 +1136,24 @@ class NOUTClientIHM extends NOUTClientBase
         return $this->_getFormTableListWithoutColumns();
     }
 
+    /**
+     * @param array $tabParamQuery
+     * @param array|null $tabHeaderQuery
+     * @return JSONResponseWS
+     * @throws \Exception
+     */
+    public function oExecuteWithoutIHM(array $tabParamQuery, ?array $tabHeaderQuery=null) : JSONResponseWS
+    {
+        $clIdentification = $this->_clGetIdentificationRESTForLanguage();
 
+        $clParam = $this->_oGetParam(ExecuteWithoutIHM::class, $tabParamQuery);
+        try
+        {
+            return $this->m_clRESTProxy->oExecuteWithoutIHM($clParam, $clIdentification);
+        }
+        catch(\Exception $e)
+        {
+            throw $e;
+        }
+    }
 }

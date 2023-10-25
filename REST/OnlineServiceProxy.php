@@ -14,10 +14,12 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ConfigurationDialogue;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTFileInfo;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineState;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\NOUTOnlineVersion;
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\JSONResponseWS;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\REST\Identification;
 use NOUT\Bundle\NOUTOnlineBundle\Entity\UserExists\UserExists;
 use NOUT\Bundle\NOUTOnlineBundle\Security\Authentication\Token\NOUTToken;
 use NOUT\Bundle\NOUTOnlineBundle\Service\CURLProxy;
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\ExecuteWithoutIHM;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class OnlineServiceProxy
@@ -186,10 +188,10 @@ class OnlineServiceProxy
 
         $clHttpResponse = $this->_oExecuteGET('', $sURI, __FUNCTION__);
         $sContent = $clHttpResponse->content;
-        $sInfoEncryption = $clHttpResponse->getXNOUTOnlineInfoCnx();
-        $sIV = $clHttpResponse->getIVForInfoCnx();
 
-        return new UserExists($sContent, $sInfoEncryption, $sIV, null);
+        list($sInfoEncryption, $sIV, $sCipher) = $clHttpResponse->aGetXNOUTOnlineInfoCnx();
+
+        return new UserExists($sContent, $sInfoEncryption, $sIV, $sCipher,null);
     }
 
     /**
@@ -205,10 +207,10 @@ class OnlineServiceProxy
 
         $clHttpResponse = $this->_oExecuteGET('', $sURI, __FUNCTION__);
         $sContent = $clHttpResponse->content;
-        $sInfoEncryption = $clHttpResponse->getXNOUTOnlineInfoCnx();
-        $sIV = $clHttpResponse->getIVForInfoCnx();
 
-        return new UserExists($sContent, $sInfoEncryption, $sIV, $defaultEncryption);
+        list($sInfoEncryption, $sIV, $sCipher) = $clHttpResponse->aGetXNOUTOnlineInfoCnx();
+
+        return new UserExists($sContent, $sInfoEncryption, $sIV, $sCipher, $defaultEncryption);
     }
 
     /**
@@ -604,6 +606,37 @@ class OnlineServiceProxy
 
     /**
      * @param Identification $clIdentification
+     * @param bool           $bVerifDroit
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetActionList(bool $bVerifDroit, Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetActionList'], ['Verify' => $bVerifDroit ? 1 : 0], [], $clIdentification);
+        $result = $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
+
+
+
+    /**
+     * @param Identification $clIdentification
+     * @param bool           $bVerifDroit
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function oGetSentenceList(bool $bVerifDroit, Identification $clIdentification)
+    {
+        $sURI = $this->_sCreateRequest(['GetSentenceList'], ['Verify' => $bVerifDroit ? 1 : 0], [], $clIdentification);
+        $result = $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
+        return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
+    }
+
+
+    /**
+     * @param Identification $clIdentification
      * @return mixed
      * @throws \Exception
      */
@@ -661,6 +694,22 @@ class OnlineServiceProxy
         $result = $this->_oExecuteGET('', $sURI, __FUNCTION__, $clIdentification, null, true);
         return json_decode($result->content, false, 512, JSON_BIGINT_AS_STRING);
     }
+
+
+    /**
+     * @param ExecuteWithoutIHM $clExecuteWithoutIHM
+     * @param Identification    $clIdentification
+     *
+     * @return JSONResponseWS
+     * @throws \Exception
+     */
+    public function oExecuteWithoutIHM(ExecuteWithoutIHM $clExecuteWithoutIHM, Identification $clIdentification): JSONResponseWS
+    {
+        $sURI = $this->_sCreateRequest(['ExecuteWithoutIHM'], [], [], $clIdentification);
+        $oRet = $this->_oExecutePOST('', $sURI, json_encode($clExecuteWithoutIHM), __FUNCTION__, $clIdentification);
+        return new JSONResponseWS($oRet->content);
+    }
+
 
 
     const PARAM_TestRestart = 'TestRestart';

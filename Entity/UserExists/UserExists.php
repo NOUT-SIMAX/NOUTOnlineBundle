@@ -22,9 +22,10 @@ class UserExists
      * @param string      $sType le contenu de la requête pour l'existance de l'utilisateur
      * @param string|null $sEncodedBlowfish
      * @param string|null $sIV
+     * @param string|null $sCipher
      * @param string|null $sDefaultEncryption
      */
-    public function __construct(string $sType, ?string $sEncodedBlowfish, ?string $sIV, ?string $sDefaultEncryption)
+    public function __construct(string $sType, ?string $sEncodedBlowfish, ?string $sIV, ?string $sCipher, ?string $sDefaultEncryption)
     {
         $nType = (int)$sType;
 
@@ -39,8 +40,8 @@ class UserExists
         else {
             $this->clEncryptionType=new EncryptionType($sDefaultEncryption, 0, true);
         }
-        //init
-        $this->clEncryptionType->initFromBlowfish($sEncodedBlowfish, $sIV);
+
+        $this->clEncryptionType->initFromHeaderInfo($sEncodedBlowfish, $sIV, $sCipher);
     }
 
     const TYPEUTIL_NONE        = 0;

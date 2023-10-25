@@ -4,6 +4,8 @@
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
 
+use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\PwdInfo;
+
 class PartialOASISUsernameToken extends LoginPasswordUsernameToken
 {
     use TraitUseBlowfishUsernameToken;
@@ -11,19 +13,18 @@ class PartialOASISUsernameToken extends LoginPasswordUsernameToken
 
     /**
      * PartialOASISUsernameToken constructor.
+     *
      * @param string $sUsername
-     * @param string $pwd
-     * @param string $iv
-     * @param int    $ks
+     * @param PwdInfo|null $pwdInfo
      * @param string $sPassPhrase
      */
-    public function __construct(string $sUsername='', string $pwd='', string $iv='', int $ks=0, string $sPassPhrase='')
+    public function __construct(string $sUsername='', ?PwdInfo $pwdInfo=null, string $sPassPhrase='')
     {
-        if (!empty($pwd)){
+        if (!is_null($pwdInfo)){
             $this->_setPassPhrase($sPassPhrase);
-            $pwd = $this->_decryptConnectedUser($pwd, $iv, $ks, $this->m_sPassPhrase);
+            $pwd = $this->_decryptConnectedUser($pwdInfo, $this->m_sPassPhrase);
         }
-        parent::__construct($sUsername, $pwd);
+        parent::__construct($sUsername);
     }
 
 
@@ -50,5 +51,4 @@ class PartialOASISUsernameToken extends LoginPasswordUsernameToken
     {
         list($this->Username, $this->m_sSecretPassword) = $data;
     }
-
 }

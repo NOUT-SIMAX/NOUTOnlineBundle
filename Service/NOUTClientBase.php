@@ -50,7 +50,7 @@ abstract class NOUTClientBase
     /**
      * @var ConfigurationDialogue
      */
-    private $m_clConfigurationDialogue;
+    protected $m_clConfigurationDialogue;
 
     /**
      * @var SOAPProxy
@@ -146,6 +146,7 @@ abstract class NOUTClientBase
             $bSessionDeParametrage = $oSecurityToken->isWithConfiguration();
         }
 
+
         $this->m_clOptionDialogue = new OptionDialogue();
         $this->_initOptionDialogue($nVersionDialPref, $bSessionDeParametrage);
     }
@@ -237,6 +238,10 @@ abstract class NOUTClientBase
         $this->__GetActionResultFromXMLResponse($clReponseXML, $clActionResult, $ReturnType, $idForm);
 
         $this->__stopStopwatch($stopWatchEvent);
+
+        //on nettoi un peu les contextes fermes
+        $this->m_clCache->deleteCtxtFromCacheSession($clActionResult->getContexteToClose());
+
         return $clActionResult;
     }
 
