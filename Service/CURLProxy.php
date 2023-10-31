@@ -324,9 +324,6 @@ class CURLProxy
 
         if (isset($this->clLogger)) {
             $extra = [];
-            if (!is_null($clIdentification) && !empty($clIdentification->m_sTokenSession)) {
-                $extra[NOUTOnlineLogger::EXTRA_TokenSession] = $clIdentification->m_sTokenSession;
-            }
             if (!is_null($clIdentification) && !empty($clIdentification->m_sIDContexteAction)) {
                 $extra[NOUTOnlineLogger::EXTRA_ActionContext] = $clIdentification->m_sIDContexteAction;
             }
