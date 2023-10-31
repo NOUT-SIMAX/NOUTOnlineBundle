@@ -83,7 +83,7 @@ class Configuration implements ConfigurationInterface
             ->children()
             ->enumNode('mode')
                 ->info("mode d'authentification pour NOUTOnline")
-                ->values(array('OASIS', 'base64', 'blowfish'))
+                ->values(array('OASIS', 'base64', 'blowfish', 'aes'))
                 ->defaultValue('OASIS')
             ->end()
             ->scalarNode('secret')

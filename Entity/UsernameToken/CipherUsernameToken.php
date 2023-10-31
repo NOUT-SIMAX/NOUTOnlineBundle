@@ -3,21 +3,23 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
-class BlowfishUsernameToken extends LoginPasswordUsernameToken
+class CipherUsernameToken extends LoginPasswordUsernameToken
 {
     use TraitWithPassPhraseUsernameToken;
     use TraitUseEncryptionUsernameToken;
-    use TraitUseBlowfishUsernameToken;
+    use TraitUseCipherUsernameToken;
 
     /**
      * BlowfishUsernameToken constructor.
+     *
+     * @param string $cipher
      * @param string $sUsername
      * @param string $sPassword
      * @param string $sPassPhrase
      */
-    public function __construct(string $sUsername='', string $sPassword='', string $sPassPhrase='')
+    public function __construct(string $cipher, string $sUsername='', string $sPassword='', string $sPassPhrase='')
     {
-        $this->_setEncryptionMode('blowfish');
+        $this->_setEncryptionMode($cipher);
         $this->_setPassPhrase($sPassPhrase);
         parent::__construct($sUsername, $sPassword);
     }

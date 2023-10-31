@@ -8,7 +8,7 @@ use NOUT\Bundle\NOUTOnlineBundle\Entity\ReponseWebService\PwdInfo;
 
 class PartialOASISUsernameToken extends LoginPasswordUsernameToken
 {
-    use TraitUseBlowfishUsernameToken;
+    use TraitUseCipherUsernameToken;
     use TraitWithPassPhraseUsernameToken;
 
     /**
