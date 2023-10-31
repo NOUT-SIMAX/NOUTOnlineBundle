@@ -3,6 +3,8 @@
 
 namespace NOUT\Bundle\NOUTOnlineBundle\Entity\UsernameToken;
 
+use NOUT\Bundle\NOUTOnlineBundle\SOAP\WSDLEntity\Encryption;
+
 class CipherUsernameToken extends LoginPasswordUsernameToken
 {
     use TraitWithPassPhraseUsernameToken;
@@ -17,7 +19,7 @@ class CipherUsernameToken extends LoginPasswordUsernameToken
      * @param string $sPassword
      * @param string $sPassPhrase
      */
-    public function __construct(string $cipher, string $sUsername='', string $sPassword='', string $sPassPhrase='')
+    public function __construct(string $cipher='', string $sUsername='', string $sPassword='', string $sPassPhrase='')
     {
         $this->_setEncryptionMode($cipher);
         $this->_setPassPhrase($sPassPhrase);
@@ -34,7 +36,12 @@ class CipherUsernameToken extends LoginPasswordUsernameToken
      */
     public function forSerialization(): array
     {
-        return [$this->Username, $this->m_sSecretPassword, $this->m_sPassPhrase];
+        return [
+            'username' => $this->Username,
+            'password' => $this->m_sSecretPassword,
+            'passphrase' => $this->m_sPassPhrase,
+            'cipher' => $this->Encryption instanceof Encryption ?  $this->Encryption->_ : $this->Encryption['!'] ,
+        ];
     }
 
     /**
@@ -42,6 +49,25 @@ class CipherUsernameToken extends LoginPasswordUsernameToken
      */
     public function fromSerialization(array $data): void
     {
-        list($this->Username, $this->m_sSecretPassword, $this->m_sPassPhrase) = $data;
+        if (array_key_exists('username', $data)){
+            $this->Username = $data['username'];
+            $this->m_sSecretPassword = $data['password'];
+            $this->m_sPassPhrase = $data['passphrase'];
+            if (is_array($this->Encryption)){
+                $this->Encryption['_'] = $data['cipher'];
+            }
+            else {
+                $this->Encryption->_ = $data['cipher'];
+            }
+        }
+        else {
+            list($this->Username, $this->m_sSecretPassword, $this->m_sPassPhrase) = $data;
+            if ($this->Encryption instanceof Encryption){
+                $this->Encryption->_ = 'blowfish';
+            }
+            else {
+                $this->Encryption['!'] = 'blowfish';
+            }
+        }
     }
 }
