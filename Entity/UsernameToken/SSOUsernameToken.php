@@ -7,10 +7,10 @@ class SSOUsernameToken extends UsernameToken
 {
     use TraitWithPassPhraseUsernameToken;
     use TraitUseEncryptionUsernameToken;
-    use TraitUseBlowfishUsernameToken;
+    use TraitUseCipherUsernameToken;
 
-    protected $m_sEmail='';
-    protected $m_sId='';
+    protected string $sEmail ='';
+    protected string $sId    ='';
 
     /**
      * SSOUsernameToken constructor.
@@ -18,11 +18,11 @@ class SSOUsernameToken extends UsernameToken
      * @param string $id
      * @param string $sPassPhrase
      */
-    public function __construct(?string $email='', ?string $id='', ?string $sPassPhrase='')
+    public function __construct(?string $email='', ?string $id='', ?string $sPassPhrase='', string $sEncryptionMode = 'sso_bf')
     {
-        $this->m_sEmail = $email ?? '';
-        $this->m_sId = $id ?? '';
-        $this->_setEncryptionMode('sso');
+        $this->sEmail = $email ?? '';
+        $this->sId    = $id ?? '';
+        $this->_setEncryptionMode($sEncryptionMode);
         $this->_setPassPhrase($sPassPhrase ?? '');
         parent::__construct();
     }
@@ -34,7 +34,7 @@ class SSOUsernameToken extends UsernameToken
      */
     public function bIsValid() : bool
     {
-        return !empty($this->m_sEmail) || !empty($this->m_sId);
+        return !empty($this->sEmail) || !empty($this->sId);
     }
 
     /**
@@ -42,7 +42,7 @@ class SSOUsernameToken extends UsernameToken
      */
     protected function _Compute(): void
     {
-        $this->Password = $this->_crypt($this->Encryption, json_encode([$this->m_sEmail, $this->m_sId]), $this->m_sPassPhrase, $this->Nonce, $this->Created);
+        $this->Password = $this->_crypt($this->Encryption, json_encode([$this->sEmail, $this->sId]), $this->m_sPassPhrase, $this->Nonce, $this->Created);
     }
 
     /**
@@ -50,7 +50,7 @@ class SSOUsernameToken extends UsernameToken
      */
     public function forSerialization(): array
     {
-        return [$this->m_sEmail, $this->m_sId, $this->m_sPassPhrase];
+        return [$this->sEmail, $this->sId, $this->m_sPassPhrase];
     }
 
     /**
@@ -58,6 +58,6 @@ class SSOUsernameToken extends UsernameToken
      */
     public function fromSerialization(array $data): void
     {
-        list($this->m_sEmail, $this->m_sId, $this->m_sPassPhrase) = $data;
+        list($this->sEmail, $this->sId, $this->m_sPassPhrase) = $data;
     }
 }

@@ -573,9 +573,6 @@ final class OnlineServiceProxy extends ModifiedNusoapClient
         if (isset($this->clLogger)) //log des requetes
         {
             $extra = array();
-            if (isset($this->aListHeaders[self::HEADER_SessionToken])) {
-                $extra[NOUTOnlineLogger::EXTRA_TokenSession] = $this->aListHeaders[self::HEADER_SessionToken];
-            }
             if (isset($this->aListHeaders[self::HEADER_ActionContext])) {
                 $extra[NOUTOnlineLogger::EXTRA_ActionContext] = $this->aListHeaders[self::HEADER_ActionContext];
             }
