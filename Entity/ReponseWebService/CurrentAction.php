@@ -47,8 +47,12 @@ class CurrentAction
      * CurrentAction constructor.
      * @param \SimpleXMLElement $clAction
      */
-    public function initFromXML(\SimpleXMLElement $clAction) : CurrentAction
+    public function initFromXML(?\SimpleXMLElement $clAction) : CurrentAction
     {
+        if (is_null($clAction)){
+            return $this;
+        }
+
         $this->sID             = (string) $clAction;
         $this->sTitle          = (string)$clAction['title'];
         $this->nIDTypeAction = (int)$clAction['typeAction'];
