@@ -16,6 +16,6 @@ trait TraitWithPassPhraseUsernameToken
      */
     protected function _setPassPhrase(string $sPassPhrase)
     {
-        $this->m_sPassPhrase = utf8_decode(trim(str_replace("\r", "", $sPassPhrase)));
+        $this->m_sPassPhrase = mb_convert_encoding(trim(str_replace("\r", "", $sPassPhrase)), 'Windows-1252', 'UTF-8');
     }
 }

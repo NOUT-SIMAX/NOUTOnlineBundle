@@ -89,7 +89,7 @@ abstract class AbstractRestEntity implements RestEntityInterface {
     private static function generateRouteOptions($options) {
         $uriParams = '';
         foreach($options as $name => $value) {
-            $uriParams .= urlencode(utf8_decode($name)) . "=" . urlencode(utf8_decode($value)) . "&";
+            $uriParams .= urlencode(mb_convert_encoding($name, 'Windows-1252', 'UTF-8')) . "=" . urlencode(mb_convert_encoding($value, 'Windows-1252', 'UTF-8')) . "&";
         }
         trim($uriParams, "&");
 

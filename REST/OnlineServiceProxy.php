@@ -124,7 +124,7 @@ class OnlineServiceProxy
             $sListeParam = '';
 
             foreach ($aTabParam as $sKey => $sValue) {
-                $sListeParam .= '&' . urlencode(utf8_decode($sKey)) . '=' . urlencode(utf8_decode($sValue));
+                $sListeParam .= '&' . urlencode(mb_convert_encoding($sKey, 'Windows-1252', 'UTF-8')) . '=' . urlencode(mb_convert_encoding($sValue, 'Windows-1252', 'UTF-8'));
             }
 
             $sUrl .= trim($sListeParam, '&');
@@ -135,7 +135,7 @@ class OnlineServiceProxy
             $sListeOption = '';
 
             foreach ($aTabOption as $sKey => $sValue) {
-                $sListeOption .= '&' . urlencode(utf8_decode($sKey)) . '=' . urlencode(utf8_decode($sValue));
+                $sListeOption .= '&' . urlencode(mb_convert_encoding($sKey, 'Windows-1252', 'UTF-8')) . '=' . urlencode(mb_convert_encoding($sValue, 'Windows-1252', 'UTF-8'));
             }
 
             $sUrl .= ';' . trim($sListeOption, '&');
