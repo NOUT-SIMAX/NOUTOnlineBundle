@@ -61,8 +61,8 @@ class NonceCreatedSecretUsernamePassword extends UsernameToken
     {
         $this->Compute(); //on fait le compute
 
-        $sBottom = 'nonce='.urlencode(utf8_decode($this->Nonce));
-        $sBottom .= '&created='.urlencode(utf8_decode($this->Created));
+        $sBottom = 'nonce='.urlencode(mb_convert_encoding($this->Nonce, 'Windows-1252', 'UTF-8'));
+        $sBottom .= '&created='.urlencode(mb_convert_encoding($this->Created, 'Windows-1252', 'UTF-8'));
 
         if (!empty($this->Encryption))
         {

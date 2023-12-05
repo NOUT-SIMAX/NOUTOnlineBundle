@@ -18,7 +18,7 @@ abstract class LoginPasswordUsernameToken extends UsernameToken
      */
     public function __construct(string $sUsername='', string $sPassword='')
     {
-        $this->m_sSecretPassword = utf8_decode($sPassword);
+        $this->_setClearPassword($sPassword);
 
         parent::__construct($sUsername);
     }
@@ -36,6 +36,13 @@ abstract class LoginPasswordUsernameToken extends UsernameToken
      */
     protected function _setClearPassword(string $password) : void
     {
-        $this->m_sSecretPassword = utf8_decode($password);
+        if (empty($password)){
+            $this->m_sSecretPassword = '';
+            return ;
+        }
+
+        //on triche pour l'euro
+        $this->m_sSecretPassword = mb_convert_encoding($password, 'Windows-1252', 'UTF-8');
+
     }
 }
